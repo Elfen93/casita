@@ -257,6 +257,10 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #colbox .colg{display:flex;flex-direction:column;gap:8px;margin:6px 0 12px}
 #colbox .colg b{display:block;font-size:12.5px;margin-bottom:3px}
 #colbox .chipc{display:inline-block;background:#f3eee6;border-radius:10px;padding:3px 8px;margin:2px 3px 2px 0;font-size:11.5px;font-weight:700}
+#phone .phwrite{display:flex;gap:6px;padding:0 10px 28px;background:#f6f1ea}
+#phone .phwrite input{flex:1;border:0;border-radius:20px;padding:10px 14px;font:700 13.5px Nunito,sans-serif;background:#fff;color:#2b2533;outline:none;box-shadow:inset 0 0 0 1px #e6dfd4;min-width:0}
+#phone .phwrite button{border:0;background:#2fb36a;color:#fff;border-radius:50%;width:40px;height:40px;font-size:16px;cursor:pointer;flex:0 0 auto}
+#phone .phcomp{padding-bottom:6px}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -13565,13 +13569,21 @@ function phPeople(){return (S.people||[]).filter(p=>p&&p.k&&p.stage!=='muerta');
 function phRole(p){if(p.k==='madre')return 'madre';if(isPartner(p)||p.stage==='rollo'||p.stage==='cita')return 'amor';if(p.k==='compi')return 'compi';if(p.k==='vecina')return 'vecina';if(p.k==='amiga'||p.stage==='amiga')return 'amiga';if(p.stage==='ex')return 'ex';return 'conocida';}
 // --- plantillas: [texto, tipo de respuesta] ---
 function phTemplates(p){const r=phRole(p),h=S.t/60,c=CH(),n=c.name,o=oa(),L=[];const add=(t,k='gen',w=1)=>L.push([t,k,w]);
-  const jl=S.jobless,str=S.strike&&S.strike.on,crisis=W_().crisis>=60,rent=!S.owned;
-  if(r==='madre'){add('¿Has comido? Que te conozco.','carino',2);add(`¿Vienes el domingo? Hago croquetas 🥘`,'domingo',1.5);add('🎤 Audio de 4:37','audio',1.2);{const lo=LIFE().orient;add(`Me ha llamado tu tía. Pregunta que cuándo te echas novi${lo==='hombres'?'o':lo==='mujeres'?'a':'e'} 🙄`,'gen');}add('¿Has visto lo que ha subido la luz? Una vergüenza.','gen');add(`Cuídate, ${kidW()}, que te veo muy delgad${o}.`,'carino');add('[Imagen: un gatito con flores] Buenos días ☀️🌸','carino',h<11?2:.3);
-    if(jl)add(`¿Has mirado lo del paro, ${kidW()}? Aquí siempre tienes un plato.`,'carino',2);if(rent)add('¿Otra vez te ha subido el casero? Esos no tienen madre.','gen',crisis?1.5:.5);}
+  const jl=S.jobless,str=S.strike&&S.strike.on,crisis=W_().crisis>=60,rent=!S.owned;const lo=LIFE().orient;const nov=lo==='hombres'?'novio':lo==='mujeres'?'novia':'novie';
+  if(r==='madre'){
+    add('¿Has comido? Que te conozco.',[['🍽️ «Sí, mamá, ya he comido»',3,null,'Más te vale. ¿Y qué has comido? 🤨','Sí, mamá, ya he comido'],['😅 «Ahora iba»',1,null,'Pues ve, que luego te duele la cabeza.','Ahora iba a comer algo'],['🙄 «Tengo 27 años, mamá»',-2,null,'Y yo 58 y sigo siendo tu madre.','Que tengo 27 años, mamá']],2);
+    add(`¿Vienes el domingo? Hago croquetas 🥘`,[['🥘 «Allí estaré»',7,null,'¡Pues no llegues tarde! 🥰','Allí estaré, guárdame muchas'],['😬 «No puedo, tengo lío»',-3,null,'Bueno… te guardo un táper 😔','Este domingo no puedo, tengo lío'],['❓ «¿Puedo llevar a alguien?»',4,null,'¡Claro! ¿Quién es? 👀','¿Puedo llevar a alguien?']],1.5);
+    add('🎤 Audio de 4:37',[['🎧 Escucharlo entero',5,null,'¿Lo has oído? Es importante 😤','(escuchado entero)'],['⏩ A 2x',2,null,null,'(escuchado a 2x)'],['👍 Responder sin escuchar',-2,null,'¿Lo has escuchado? 🤨','👍']],1.2);
+    add(`Me ha llamado tu tía. Pregunta que cuándo te echas ${nov} 🙄`,[['😂 «Dile que estoy en ello»',3,null,'Se lo digo. Ya sabes cómo es tu tía 🙄','Dile que estoy en ello 😂'],['🙃 «Dile que no es asunto suyo»',1,null,'Jajaja no se lo digo ni loca. Pero razón tienes.','Dile que no es asunto suyo'],['💘 «Pues mira… igual hay alguien»',2,'gossip','¿¿QUIÉN?? Cuéntame TODO 😱','Pues mira… igual hay alguien']],1);
+    add('¿Has visto lo que ha subido la luz? Una vergüenza.',[['😤 «Y el alquiler, y todo»',3,null,'Así no hay quien viva, '+kidW()+'.','Y el alquiler, y la compra, y todo'],['💡 «Cámbiate de compañía, mamá»',2,null,'¿Y eso cómo se hace? Ven y me lo miras.','Cámbiate de compañía, mamá'],['🤷 «Es lo que hay»',-1,null,'Pues no debería serlo.','Es lo que hay…']],1);
+    add(`Cuídate, ${kidW()}, que te veo muy delgad${o}.`,[['❤️ «Estoy bien, mamá. Te quiero»',5,null,'Y yo a ti. Come.','Estoy bien, mamá. Te quiero ❤️'],['😂 «Es que no tengo tus croquetas»',4,null,'Pues ven a por ellas 🥘','Es que no tengo tus croquetas'],['📞 Llamarla',6,'call',null,null]],1);
+    add('[Imagen: un gatito con flores] Buenos días ☀️🌸',[['😊 «Buenos días, mamá»',3,null,'¡Que tengas buen día! 🌸','Buenos días, mamá ☀️'],['😂 «Otro gatito no»',1,null,'Pues a mí me gustan 😤','Otro gatito no, mamá 😂'],['👍',0,null,null,'👍']],h<11?2:.3);
+    if(jl)add(`¿Has mirado lo del paro, ${kidW()}? Aquí siempre tienes un plato.`,[['🫶 «Gracias, mamá. Estoy en ello»',5,null,'Lo sé. Y si no, aquí estamos.','Gracias, mamá. Estoy en ello'],['😔 «Está todo fatal»',3,null,'Ya saldrá algo. Siempre sale.','Está todo fatal, mamá'],['📞 Llamarla',6,'call',null,null]],2);
+    if(rent)add('¿Otra vez te ha subido el casero? Esos no tienen madre.',[['😤 «Y lo que te rondaré»',3,null,'Si hubiera un sindicato de inquilinos… ¿no hay?','Y lo que te rondaré'],['🏠 «Igual me vuelvo contigo»',2,null,'Tu cuarto sigue como lo dejaste 🥹','Igual acabo volviendo contigo'],['👍',0,null,null,'👍']],crisis?1.5:.5);}
   else if(r==='amor'){add('¿Qué haces? 🙈','amor',2);add('Pienso en ti, tont'+o+'.','amor',1.5);add('¿Cenamos juntos esta noche?','cena',h>=16&&h<21?2.5:.4);add('¿Te quedas a dormir hoy? 🌙','dormir',h>=19?1.5:.2);add('Hoy en el curro he tenido un día de mierda 😩','apoyo',1);add('[Foto: un perro con chubasquero] Es tu espíritu animal','risa',1);add('Buenos días, guap'+o+' ☀️','amor',h<11?2:.2);}
   else if(r==='compi'){add('El jefe hoy estaba insoportable. Otra vez con lo de las horas extra «voluntarias».','queja',2);add('¿Te has enterado? Dicen que van a recortar turnos.','queja',crisis?2:.8);add('Mañana hay asamblea en el descanso. ¿Vienes?','asamblea',S.office&&S.office.org>25?1.5:.6);add('😂😂 [Meme: «yo cuando el jefe dice que somos una familia»]','risa',1.2);
     if(str)add('Piquete a las 6 en la puerta. Trae termo. ✊','asamblea',3);}
-  else if(r==='vecina'){add('Se ha vuelto a romper el ascensor. Ya van tres veces este mes.','gen',1.5);add('Reunión de la comunidad el jueves. Lleva paciencia.','gen',1);add('¿Te ha llegado a ti también la carta del administrador? Quieren cobrarnos la fachada.','gen',rent?.6:1.2);add('Te he dejado un táper de lentejas en la puerta 🥘','regalo',.8);}
+  else if(r==='vecina'){add('Se ha vuelto a romper el ascensor. Ya van tres veces este mes.',[['😤 «Hay que reclamar al administrador»',3,null,'Yo ya he llamado dos veces. Ni caso.','Hay que reclamar al administrador'],['😅 «Pues a subir andando»',1,null,'Con mis rodillas… 😩','Pues a subir andando'],['👍',0,null,null,'👍']],1.5);add('Reunión de la comunidad el jueves. Lleva paciencia.','gen',1);add('¿Te ha llegado a ti también la carta del administrador? Quieren cobrarnos la fachada.','gen',rent?.6:1.2);add('Te he dejado un táper de lentejas en la puerta 🥘','regalo',.8);}
   else if(r==='amiga'){add('¿Cañas el viernes? 🍻','canas',2);add('😂😂😂 [Meme de un gato con chaleco de sindicato]','risa',1.5);add('Me han subido el alquiler OTRA VEZ. 80 pavos. Me quiero morir.','apoyo',rent||crisis?1.6:.7);add('Te echo de menos, ¿cuándo nos vemos?','canas',1.2);add('¿Has visto lo de las noticias? Flipo.','gen',1);if(jl)add('¿Cómo llevas lo del curro? Si necesitas algo, dímelo, eh.','carino',2);}
   else if(r==='ex'){add('Hola… ¿qué tal estás?','ex',1);add('He visto una peli que te habría gustado. Ya está, solo eso.','ex',.6);}
   else{add('¡Hola! ¿Qué tal todo?','gen',1);add('¿Te apetece quedar algún día? ☕','canas',1);add('[Enlace: «10 trucos para llegar a fin de mes» ¡el 7 te sorprenderá!]','risa',.6);}
@@ -13592,9 +13604,9 @@ const PH_REP={
   regalo:[['🥰 «¡Muchas gracias!»',6,null,'¡De nada, cariño!','¡Muchas gracias, de verdad!'],['🍪 Devolverle el táper con galletas',8,null,'¡Ay, qué apañad{o}!','Le dejé el táper con galletas 🍪']],
   ex:[['🙂 Contestar cordial',2,null,'Me alegro de que estés bien.','Bien, tirando. Me alegro de saber de ti.'],['🚫 No contestar',0,null,null,null],['💬 «¿Quedamos para hablar?»',4,'out','Vale… mejor en persona.']],
 };
-function phRepOpts(k){const g=s=>s&&s.replace(/\{o\}/g,oa());return (PH_REP[k]||PH_REP.gen).map(([t,rel,act,back,say])=>{const q=t.match(/«([^»]+)»/);return [g(t),rel,act,g(back),say===undefined?(q?g(q[1]):null):g(say)];});}
+function phRepOpts(k){const g=s=>s&&s.replace(/\{o\}/g,oa());return (Array.isArray(k)?k:(PH_REP[k]||PH_REP.gen)).map(([t,rel,act,back,say])=>{const q=t.match(/«([^»]+)»/);return [g(t),rel,act,g(back),say===undefined?(q?g(q[1]):null):g(say)];});}
 function phPush(pk,m){const P=PH();const th=P.th[pk]||(P.th[pk]=[]);th.push(m);if(th.length>40)th.splice(0,th.length-40);}
-function phIncoming(p,txt,k){phPush(p.k,{f:'t',t:txt,k,m:phNow(),open:!!PH_REP[k]});const P=PH();P.un[p.k]=(P.un[p.k]||0)+1;phBadge();
+function phIncoming(p,txt,k){phPush(p.k,{f:'t',t:txt,k,m:phNow(),open:!!(Array.isArray(k)||PH_REP[k])});const P=PH();P.un[p.k]=(P.un[p.k]||0)+1;phBadge();
   if(!phOpenNow())toast(`💬 ${p.n}: ${txt.replace(/<[^>]+>/g,'').slice(0,46)}${txt.length>46?'…':''}`);else phRender();}
 function phPick(L){let t=0;for(const x of L)t+=x[2];let r=Math.random()*t;for(const x of L){r-=x[2];if(r<=0)return x;}return L[0];}
 function phTick(){if(!S||!S.people)return;const P=PH(),now=phNow(),h=S.t/60;
@@ -13605,8 +13617,8 @@ function phTick(){if(!S||!S.people)return;const P=PH(),now=phNow(),h=S.t/60;
   // más mensajes de quien más te quiere
   const w=p=>(phRole(p)==='amor'?4:phRole(p)==='madre'?2.6:phRole(p)==='amiga'?2.2:phRole(p)==='compi'?(S.jobless?.4:1.6):phRole(p)==='vecina'?.8:.5)*(0.4+(p.rel||30)/100);
   let tot=ppl.reduce((a,p)=>a+w(p),0),r=Math.random()*tot,pp=ppl[0];for(const p of ppl){r-=w(p);if(r<=0){pp=p;break;}}
-  const th=P.th[pp.k]||[];const lastOpen=th.length&&th[th.length-1].f==='t'&&th[th.length-1].open;if(lastOpen&&Math.random()<.7)return;
-  const [txt,k]=phPick(phTemplates(pp));phIncoming(pp,txt,k);}
+  const th=P.th[pp.k]||[];const lastOpen=th.length&&th[th.length-1].f==='t'&&th[th.length-1].open;if(lastOpen&&Math.random()<.85)return;
+  const recent=th.slice(-8).map(m=>m.t);const cand=phTemplates(pp).filter(x=>!recent.includes(x[0]));if(!cand.length)return;const [txt,k]=phPick(cand);phIncoming(pp,txt,k);}
 function phAnswer(pk,i,oi){const P=PH(),th=P.th[pk],m=th&&th[i];const p=(S.people||[]).find(q=>q.k===pk);if(!m||!m.open||!p)return;m.open=false;
   const [t,rel,act,back,say]=phRepOpts(m.k)[oi];if(say)phPush(pk,{f:'me',t:say,m:phNow()});else if(act!=='call')phPush(pk,{f:'sys',t:rel<0?'(visto)':'',m:phNow()});
   p.rel=Math.max(0,Math.min(100,(p.rel||30)+rel));p.last=S.day;if(rel>0)S.needs.social=Math.min(100,S.needs.social+3+rel);if(act==='love'&&p.love!=null)p.love=Math.min(100,p.love+3);
@@ -13616,6 +13628,7 @@ function phAnswer(pk,i,oi){const P=PH(),th=P.th[pk],m=th&&th[i];const p=(S.peopl
   if(act==='stay'){phClose();inviteHome(p,true);return;}
   if(act==='out'){const why=outAvail('amigos');if(why&&why!=='solo en días libres'){toast('Ahora no puede salir: '+why);return;}phClose();S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);doOut('amigos');return;}
   if(act==='org'&&S.office){S.office.org=Math.min(100,(S.office.org||0)+2);}
+  if(act==='gossip'){const pt=partner()||(S.people||[]).find(q=>['cita','rollo'].includes(q.stage));setTimeout(()=>{phPush(pk,{f:'me',t:pt?`Se llama ${pt.n}…`:'Nada serio todavía. Ya te contaré.',m:phNow()});phIncoming(p,pt?`¿${pt.n}? ¿Y cuándo l${pt.g==='m'||pt.g==='o'?'o':'a'} traes a comer? 🥘`:'Ya me contarás, ya. Que yo me entero de todo.','gen');},3500);}
   phRender();}
 // --- llamadas ---
 function phCall(p){phApp='call';phCallP=p.k;phCallT=performance.now();phRender();
@@ -13649,7 +13662,7 @@ function phPost(){const P=PH();if(P.lastPost===S.day){toast('Ya ha publicado hoy
   else{const p=pickR(phPeople());if(p)setTimeout(()=>phIncoming(p,pickR(['Me ha encantado tu publicación 😂','Jajaja muy tú','Así se habla 👏']),'risa'),2000);}
   toast(`📸 Publicado · ${likes} me gusta`);phRender();}
 // --- interfaz ---
-let phApp=null,phThread=null,phCallP=null,phCallT=0,phCallRes=null,phEl=null;
+let phFocus=false,phApp=null,phThread=null,phCallP=null,phCallT=0,phCallRes=null,phEl=null;
 const phOpenNow=()=>!!(phEl&&phEl.classList.contains('on'));
 function phBadge(){const b=document.getElementById('phbadge');if(!b||!S)return;const n=Object.values(PH().un).reduce((a,b)=>a+b,0);b.textContent=n>9?'9+':n;b.style.display=n?'flex':'none';}
 function phOpen(app){if(!phEl){phEl=document.createElement('div');phEl.id='phone';document.body.appendChild(phEl);phEl.addEventListener('pointerdown',e=>{if(e.target===phEl)phClose();});}
@@ -13671,7 +13684,7 @@ function phRender(){if(!phEl||!S)return;const P=PH();const n=CH().name;const now
       if(m.f==='sys'){if(m.t)h+=`<div class="phday">✓✓ ${m.t}</div>`;}else h+=`<div class="phm ${m.f==='me'?'me':''}">${m.t}<small>${phHM(m.m)}</small></div>`;
       if(m.open&&i===th.length-1)h+=`<div class="phreps">${phRepOpts(m.k).map((o,oi)=>`<button data-rep="${i}:${oi}">${o[0]}</button>`).join('')}</div>`;});
     if(!th.length)h+=`<div class="phempty">Aún no os habéis escrito.</div>`;
-    h+=`</div><div class="phcomp">${['👋 ¿Qué tal?','🍻 ¿Quedamos?','❤️ Te echo de menos'].map((t,i)=>`<button data-say="${i}">${t}</button>`).join('')}</div>`;}
+    h+=`</div><div class="phcomp">${['👋 ¿Qué tal?','🍻 ¿Quedamos?','❤️ Te echo de menos'].map((t,i)=>`<button data-say="${i}">${t}</button>`).join('')}</div><form class="phwrite" id="phwrite"><input id="phin" maxlength="140" placeholder="Escribe un mensaje…" autocomplete="off"><button type="submit">➤</button></form>`;}
   else if(phApp==='call'){const p=phCallP&&(S.people||[]).find(q=>q.k===phCallP);
     if(p){h+=`<div class="phcallsc">${avatar(p)}<b>${p.n}</b><small>${phCallRes||'Llamando…'}</small><button class="phhang" data-ph="callend">${phCallRes?'Colgar':'📵'}</button></div>`;}
     else{h+=`<div class="phtop">${back}<b>Contactos</b></div><div class="phlist">`+phPeople().map(p=>`<button class="phrow" data-callp="${p.k}">${avatar(p)}<span class="phrt"><b>${p.n}</b><small>${p.r||''}</small></span><span class="phtm">📞</span></button>`).join('')+`</div>`;}}
@@ -13705,6 +13718,7 @@ function phRender(){if(!phEl||!S)return;const P=PH();const n=CH().name;const now
     setTimeout(()=>{const k=i===1?'canas':i===2?(phRole(p)==='amor'?'amor':'carino'):'gen';const ans=i===1?(p.rel>40?'¡Venga! ¿Cuándo?':'Uf, ando liad'+pO(p)+'…'):i===2?(p.rel>50?'Y yo a ti 🫶':'Ah… vale 😅'):pickR(['Bien, aquí, sobreviviendo. ¿Y tú?','Liad'+pO(p)+' con el curro. ¿Tú qué tal?','¡Bien! Hacía mucho 🙂']);
       if(i===2){p.rel=Math.min(100,p.rel+(p.rel>50?3:-1));if(p.love!=null&&['cita','rollo','pareja','convive','casada'].includes(p.stage))p.love=Math.min(100,p.love+2);}else p.rel=Math.min(100,p.rel+2);
       phIncoming(p,ans,i===1&&p.rel>40?'canas':'gen');},1500+Math.random()*2000);phRender();});
+  {const f=phEl.querySelector('#phwrite');if(f){const inp=f.querySelector('#phin');f.onsubmit=e=>{e.preventDefault();const t=inp.value.trim();if(!t)return;const p=(S.people||[]).find(q=>q.k===phThread);if(!p)return;phFree(p,t);};if(phFocus){inp.focus();phFocus=false;}}}
   phEl.querySelectorAll('[data-like]').forEach(b=>b.onclick=()=>{const f=PH().feed[+b.dataset.like];if(!f||f.liked)return;f.liked=true;const p=(S.people||[]).find(q=>q.k===f.pk);if(p)p.rel=Math.min(100,p.rel+1);phRender();});
 }
 // botón 📱 en la barra lateral
@@ -13728,6 +13742,28 @@ function phRender(){if(!phEl||!S)return;const P=PH();const n=CH().name;const now
 // abrir el móvil también desde la app de citas antigua y con la tecla M
 addEventListener('keydown',e=>{if((e.key==='m'||e.key==='M')&&!/INPUT|TEXTAREA/.test((e.target||{}).tagName||'')){phOpenNow()?phClose():phOpen();}});
 setInterval(()=>{try{phBadge();if(phOpenNow()&&phApp!=='msg')phEl.querySelector('.phs span').textContent=phHM(S.t);}catch(e){}},1000);
+
+// --- cuando escribes tú: entiende lo básico y contesta como quien es ---
+function phFree(p,t){const P=PH();const th=P.th[p.k]||[];const last=th[th.length-1];if(last&&last.open)last.open=false;
+  phPush(p.k,{f:'me',t,m:phNow()});phFocus=true;phRender();
+  const r=phRole(p),n=CH().name,o=oa(),k=t.toLowerCase();const has=(...w)=>w.some(x=>k.includes(x));
+  let rel=1,love=0,act=null,ans;
+  const warm=has('te quiero','te echo de menos','❤','😘','gracias','guap','cariño','mamá','mami','abrazo');const rude=has('pesad','déjame','dejame','paso','cállate','callate','mierda','joder','no me rayes','tonto','tonta');
+  const plan=has('quedamos','cañas','cenar','cena','comer','vemos','tomar algo','salir','cine','domingo','vienes','vente','ven a casa','casa');const q=k.includes('?')||has('qué','que tal','cómo','como estás','como estas','dónde','donde');
+  const money=has('dinero','pasta','alquiler','paro','euros','€','pagar','cobr','sueldo');const work=has('curro','trabajo','jefe','turno','horas');const sleep=has('dormir','quedarte','quedas a dormir','noche');
+  if(rude){rel=-4;ans=r==='madre'?pickR(['Oye, que soy tu madre. Un respeto.','Muy bien, '+kidW()+'. Ya hablaremos.','…']):r==='amor'?pickR(['Vale. 👍','No sé qué te pasa hoy, pero no me hables así.','Ok.']):pickR(['Vale, tío. 👋','Pues nada. Ya si eso.','Ok…']);}
+  else if(sleep&&r==='amor'){love=3;rel=4;act='stay';ans=pickR(['¡Voy! 😘 Llevo el cepillo de dientes','Cojo el metro ya 🌙','Pensaba que no lo ibas a pedir nunca 🙈']);}
+  else if(plan){rel=4;if(r==='amor')love=3;act=has('ven a casa','vente','casa')?'home':'out';ans=r==='madre'?pickR(['¡Ay, qué alegría! Hago croquetas 🥘','¿Vienes de verdad? Preparo la mesa.','¡Sí! Pero avisa, que compro pan.']):r==='amor'?pickR(['¡Sí! ¿A qué hora? 😍','Me pongo guap'+(p.g==='m'||p.g==='o'?'o':'a')+' 💃','Reservo yo 🍝']):r==='compi'?pickR(['Vale, pero no hablamos del curro. Ok, un poco sí.','¡Venga! Después del turno.','Me apunto si invitas la primera 🍻']):pickR(['¡Vamos! 🍻','Dime hora y bajo.','¡Hacía falta! 🙌']);}
+  else if(warm){rel=5;if(r==='amor')love=4;ans=r==='madre'?pickR(['Y yo a ti, '+kidW()+' mío. Come bien.','Ay, que me haces llorar 🥹','Eres lo mejor que he hecho en la vida. Y las croquetas.']):r==='amor'?pickR(['🥰🥰🥰','Yo más, tont'+o,'Ven aquí y me lo dices a la cara 😏']):r==='amiga'?pickR(['Ayyy 🫶','¡Te quiero, '+n+'!','Para ya que me emociono en el bus']):pickR(['¡Qué majo! 🫶','Gracias, de verdad.','🥹']);}
+  else if(money){rel=2;ans=r==='madre'?pickR(['Si necesitas algo me lo dices, ¿eh? Tengo un dinerillo guardado.','Ay, '+kidW()+', esto está imposible.','No te agobies. Entre todos salimos.']):r==='compi'?pickR(['Con lo que nos pagan, normal.','Pide un adelanto, que a mí me lo dieron.','Ya ves. Y el jefe con coche nuevo.']):r==='amor'?pickR(['Lo que haga falta, lo vemos juntos.','No te preocupes por eso ahora.','¿Te hace falta algo? En serio.']):pickR(['Ya ves cómo está todo.','Qué me vas a contar…','Un sindicato de inquilinos, te lo digo yo.']);}
+  else if(work){rel=2;ans=r==='compi'?pickR(['Ni me hables. Hoy el jefe ha superado su propio récord.','Mañana lo hablamos en el descanso. Con más gente.','Esto hay que organizarlo, '+n+'.']):r==='madre'?pickR(['Tú no te dejes pisar, que te conozco.','Descansa, que trabajas demasiado.','¿Y te pagan las horas esas? 🤨']):pickR(['Qué pereza, tío.','Aguanta, que es viernes pronto.','Déjalo y monta algo, yo te ayudo 😂']);}
+  else if(q){rel=2;ans=r==='madre'?pickR(['Bien, '+kidW()+'. Aquí, con la tele y tu padre, que sigue igual. ¿Y tú?','Bien. ¿Has comido?','Pues aquí, haciendo croquetas. Adivina para quién.']):r==='amor'?pickR(['Pensando en ti 🙈 ¿Y tú?','En el curro, aburrid'+(p.g==='m'||p.g==='o'?'o':'a')+'. Cuéntame algo.','Bien, ahora que me escribes 😊']):r==='compi'?pickR(['Sobreviviendo al turno. ¿Tú?','Aquí, fichando. Luego te cuento.','Bien. El jefe no. Jaja']):pickR(['¡Bien! ¿Y tú?','Aquí, tirando. ¿Qué tal tú?','Todo bien por aquí 🙂']);}
+  else{rel=1;ans=r==='madre'?pickR(['Vale, '+kidW()+'. Cuídate.','Ya. ¿Y has comido?','Bueno, bueno. Luego te llamo.','Jajaja qué cosas tienes.']):r==='amor'?pickR(['Jaja 😘','Ven y me lo cuentas mejor 😏','🥰','Qué tont'+o+' eres. Me encanta.']):pickR(['Jajaja','Ya ves.','Total.','👍','Jaja qué dices']);}
+  p.rel=Math.max(0,Math.min(100,(p.rel||30)+rel));if(love&&p.love!=null)p.love=Math.min(100,p.love+love);p.last=S.day;if(rel>0)S.needs.social=Math.min(100,S.needs.social+3+rel);
+  setTimeout(()=>{if(!S)return;phPush(p.k,{f:'t',t:ans,m:phNow()});if(phOpenNow())phRender();else{PH().un[p.k]=(PH().un[p.k]||0)+1;phBadge();}
+    if(act==='stay'||act==='home'){setTimeout(()=>{if(!S.sim.work&&!(S.res||[]).some(x=>x.pid===p.k)){inviteHome(p,act==='stay');}},2500);}
+    else if(act==='out'){const why=outAvail('amigos');if(!why||why==='solo en días libres'){setTimeout(()=>{if(S.sim.work>0)return;S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);phClose();doOut('amigos');},2500);}else setTimeout(()=>phIncoming(p,pickR(['Bueno, cuando puedas. Avísame.','Ok, otro día entonces 🙂']),'gen'),3000);}
+  },1200+Math.random()*1800);}
 // =================== LA CASA COBRA VIDA: actividades por objeto, progreso, calidad y colecciones ===================
 const COL=()=>{if(!S.col)S.col={rec:[],lib:{},libDone:[],can:[],arte:[],cur:{},curDone:[],plat:0};const c=S.col;c.rec=c.rec||[];c.lib=c.lib||{};c.libDone=c.libDone||[];c.can=c.can||[];c.arte=c.arte||[];c.cur=c.cur||{};c.curDone=c.curDone||[];return c;};
 const RECIPES=[['Tortilla de patatas',0,'🍳'],['Arroz a la cubana',0,'🍚'],['Lentejas de la abuela',1,'🥣'],['Macarrones con chorizo',1,'🍝'],['Pisto manchego',2,'🫑'],['Mafé senegalés',2,'🥜'],['Croquetas caseras',3,'🧆'],['Yassa de pollo',3,'🍗'],['Paella de domingo',4,'🥘'],['Ramen casero',5,'🍜'],['Cocido madrileño',5,'🍲'],['Thieboudienne',6,'🐟'],['Pulpo a feira',6,'🐙'],['Menú degustación de táper',8,'🍱']];
