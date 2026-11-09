@@ -13619,7 +13619,9 @@ function rvAwayWhy(r){const p=r.pid&&(S.people||[]).find(q=>q.k===r.pid);const o
   const ox=D.i%N,oy=D.i/N|0;const [vx,vy]=w2v(ox,oy);let front,right;
   try{setFrame(...wc2vc(ox,oy),o.t,o.r,ox,oy);({front,right}=frontFacing());}catch(e){front=true;right=true;}
   let x=r.x,y=r.y,z=0,pose=D.pose;
-  if(pose==='sit'&&RV_SIT.has(D.t)){x=ox+.5;y=oy+.5;z=RV_Z[D.t]||8;}
+  // asiento: el mismo punto y orientación que usa Ana en cada mueble
+  const SEAT={sofa:[.5,.55,13],sofacama:[.5,.55,10],sillon:[.5,.56,16],butaca:[.5,.56,16],silla:[.5,.52,11.5],mesacoc:[.5,.52,11.5],banco:[.5,.5,8],bancoj:[.5,.5,8]};
+  if(pose==='sit'&&RV_SIT.has(D.t)){const A=SEAT[D.t]||[.5,.5,RV_Z[D.t]||8];try{setFrame(...wc2vc(ox,oy),o.t,o.r,ox,oy);const [bx,by]=LP(A[0],A[1],A[2]);const saved=anaRT.phase;anaRT.phase=0;ctx.save();drawAna(bx,by,{ch,shirt:ch.shirt,mood:70,front,right,pose:'sit',act:D.act==='watch'?null:D.act,noShadow:true});ctx.restore();anaRT.phase=saved;if(cam.z>0.7)label(p.n,bx,by-54,'rgba(255,253,248,.9)','#3b3247',8);return;}catch(e){console.error(e);}}
   else{// de pie o sentada mirando al objeto
     const [a,b]=w2v(x,y),[c,d]=w2v(ox+.5,oy+.5);right=(c-a)-(d-b)>0;front=(c-a)+(d-b)>-.01;if(pose==='sit')pose='stand';}
   const [u,v]=w2v(x,y);const [bx,by]=P(u,v,z);const saved=anaRT.phase;anaRT.phase=0;
