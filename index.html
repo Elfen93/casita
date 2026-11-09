@@ -9283,17 +9283,17 @@ function pickLook(g,age,opt={}){const used=lookUsed();let c=LOOKS.filter(l=>!l.s
   if(opt.skin){const L0=_lum(opt.skin);c=c.filter(l=>Math.abs(_lum(l.skin)-L0)<.16);}
   if(!c.length)return null;c.sort((a,b)=>Math.abs(a.age-(age??a.age))-Math.abs(b.age-(age??b.age)));return pickR(c.slice(0,3));}
 function lookPerson(p,full){const g=personG(p);let l;if(g==='x')return false;
-  if(p.k==='madre')l=pickLook('f',62,{tol:10,skin:CH().skin});
+  if(p.k==='madre'){l=window.creMom&&lookById(window.creMom)||pickLook('f',60,{tol:22});}
   else if(p.k==='vecina')l=pickLook(g,60,{tol:25});
   else{l=pickLook(g,p.age||CH().age||30,{tol:full?14:12});if(!l&&full&&!p.romantic)l=pickLook(g,null);}
   if(!l)return false;p.ch=applyLook(p.ch||personCh(p),l.id);p.ch.age=p.age=full||p.k==='vecina'?l.age:(p.age||l.age);p.ch.name=p.n;
   if(full){p.n=p.ch.name=l.n;p.job=l.job;if(l.ideo)p.ideo=l.ideo;}
-  p.bio=l.bio;p.ltr=l.traits;p.g=l.g;return true;}
+  if(p.k==='madre'){p.age=p.ch.age=Math.max(l.age,(CH().age||27)+20);p.g='f';return true;}p.bio=l.bio;p.ltr=l.traits;p.g=l.g;return true;}
 {const _np=newPerson;newPerson=function(where,romantic){const p=_np(where,romantic);p.romantic=!!romantic;
   const used=new Set([CH().name,...(S.people||[]).filter(q=>q!==p).map(q=>q.n)]);
   const ok=lookPerson(p,true);if(ok&&used.has(p.n)){/* nombre repetido: conserva el aleatorio */}
   delete p.romantic;if(ok)p.r=roleTxt(p);return p;};}
-function lookSweep(){if(!S||!S.people)return;for(const p of S.people){if(p.ch&&p.ch.look)continue;if(p.noLook)continue;if(!lookPerson(p,false))p.noLook=S.day;}}
+function lookSweep(){if(!S||!S.people)return;for(const p of S.people){if(p.ch&&p.ch.look)continue;if(p.noLook===S.day)continue;if(!lookPerson(p,false))p.noLook=S.day;}}
 // ---- creador: elegir un look ----
 {const _rc=renderCreator;renderCreator=function(diff,edit){_rc(diff,edit);
   const pre=card.querySelector('.crepre');if(!pre)return;const row=pre.nextElementSibling.nextElementSibling;
@@ -9307,6 +9307,17 @@ function lookSweep(){if(!S||!S.people)return;for(const p of S.people){if(p.ch&&p
 {const _gt=genteTab;genteTab=function(...a){try{lookSweep();}catch(e){console.error(e);}return _gt.apply(this,a);};}
 {const _ip=initPeople;initPeople=function(...a){const r=_ip.apply(this,a);try{lookSweep();}catch(e){console.error(e);}return r;};}
 {const FEMN=new Set(['Carmen','Manoli','Rosa','Pilar','Maite','Concha','Lola','Isabel','Inés','Nur','Raquel','Mercedes','Dolores','Consuelo','Belén','Rocío','Pilar']);const _pg=personG;personG=function(p){if(!p.g&&FEMN.has(p.n))return 'f';return _pg(p);};}
+// madre elegible en el creador
+const MOM_LOOKS=()=>LOOKS.filter(l=>l.g==='f'&&l.age>=40);
+{const _rc2=renderCreator;renderCreator=function(diff,edit){_rc2(diff,edit);
+  const strip=card.querySelector('.lookstrip');if(!strip)return;const host=strip.parentElement;
+  const cur=edit?((P_('madre')||{}).ch||{}).look||'':(window.creMom||'');
+  const box=document.createElement('div');box.innerHTML=`<div class="clab">Su madre</div><div class="lookstrip"><button class="lk${cur?'':' on'}" data-mom=""><span>🎲</span><small>Al azar</small></button>${MOM_LOOKS().map(l=>`<button class="lk${cur===l.id?' on':''}" data-mom="${l.id}"><img src="${LOOK_SRC[l.id]}" alt=""><small>${l.n}</small></button>`).join('')}</div>`;
+  host.after(box);
+  box.querySelectorAll('[data-mom]').forEach(b=>b.onclick=()=>{const id=b.dataset.mom;window.creMom=id||null;
+    if(edit){const m=P_('madre');if(m){if(id){const l=lookById(id);m.ch=applyLook(m.ch||personCh(m),id);m.ch.name=m.n;m.age=m.ch.age=Math.max(l.age,(CH().age||27)+20);m.bio=null;m.ltr=null;delete m.noLook;}else{delete m.ch;m.noLook=null;}save();}}
+    renderCreator(diff,edit);});
+};}
 // <</LOOKS>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
