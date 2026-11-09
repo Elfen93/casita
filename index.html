@@ -4251,8 +4251,18 @@ function ensure(){if(rd)return;const cv=document.createElement('canvas');rd=new 
 function sig(ch){return [ch.g,ch.skin,ch.hair,ch.style,ch.beard,ch.glasses,ch.build,ch.outfit,ch.shirt,ch.pants,ch.acc2,ch.shoes,(ch.acc||[]).join(),ch.capc,ch.capBack,ch.eyes,ch.age>=62?1:0,ch.earrings,ch.helmet,ch.vest,ch.g==='f'&&ch.age<50,ch.name&&ch.name.charCodeAt(0)%3].join('|');}
 function model(ch){const k=sig(ch);let R=cache.get(k);if(!R){R=build(ch);cache.set(k,R);if(cache.size>40){const f=cache.keys().next().value;cache.delete(f);}}return R;}
 // dibuja en ctx2d con los pies en (x,y); px = píxeles por metro; yaw en radianes (0 = mirando a cámara)
-function draw(ctx2,ch,x,y,px,o={},sc=1){ensure();const R=model(ch);scn.add(R.root);pose(R,o);R.root.rotation.y=(o.yaw||0)+(o.lie?0:0);if(o.lie)R.root.rotation.z=0;
-  const W=Math.ceil(px*1.7),H=Math.ceil(px*2.3);const sz=rd.getSize(new T.Vector2());if(sz.x<W||sz.y<H||sz.x>W*2.2)rd.setSize(W,H,false);
+const FC=new Map();let fcN=0;
+function draw(ctx2,ch,x,y,px,o={},sc=1){ensure();
+  // caché de fotogramas: la pose se cuantiza (12 pasos por zancada, 4 fps en reposo)
+  const walk=o.pose==='walk';const TW2=Math.PI*2;const pb=walk?Math.round(((o.ph||0)%TW2+TW2)%TW2/TW2*12)%12:0;const tb=Math.floor((o.t||0)*4)%(o.act?24:16);
+  const W0=Math.ceil(px*1.7),H0=Math.ceil(px*2.3);const fk=sig(ch)+'|'+(o.pose||'s')+'|'+(o.yaw||0).toFixed(2)+'|'+(o.act||'')+'|'+pb+'|'+tb+'|'+W0+'|'+(o.sad?1:0);
+  let F=FC.get(fk);if(F){FC.delete(fk);FC.set(fk,F);ctx2.drawImage(F,x-F.width/2/sc,y-F.height*.85/sc,F.width/sc,F.height/sc);return;}
+  const o2={...o};if(walk)o2.ph=pb/12*TW2;o2.t=tb/4;
+  drawRaw(ctx2,ch,x,y,px,o2,sc);
+  const src=rd.domElement;F=document.createElement('canvas');F.width=src.width;F.height=src.height;F.getContext('2d').drawImage(src,0,0);FC.set(fk,F);
+  if(FC.size>220){const k=FC.keys().next().value;FC.delete(k);}}
+function drawRaw(ctx2,ch,x,y,px,o={},sc=1){const R=model(ch);scn.add(R.root);pose(R,o);R.root.rotation.y=(o.yaw||0)+(o.lie?0:0);if(o.lie)R.root.rotation.z=0;
+  const W=Math.ceil(px*1.7),H=Math.ceil(px*2.3);const sz=rd.getSize(new T.Vector2());if(sz.x!==W||sz.y!==H)rd.setSize(W,H,false);
   const cw=rd.domElement.width,chh=rd.domElement.height;const hw=cw/2/px,hh=chh/px;
   // los pies (origen) quedan a 85% de la altura del lienzo
   cam.left=-hw;cam.right=hw;cam.top=hh*.85;cam.bottom=-hh*.15;cam.updateProjectionMatrix();
@@ -13428,6 +13438,31 @@ function rvChoose(r){const h=S.t/60;const home=!(S.sim.work>0);
   if(cam.z>0.7)label(p.n,bx,by-(pose==='sit'?54:66),'rgba(255,253,248,.9)','#3b3247',8);};}
 // los dilemas no llegan de madrugada ni mientras duerme: esperan a que se despierte
 {const _dt=dlgTick;dlgTick=function(){const h=S.t/60,u=S.sim&&S.sim.use;const asleep=u&&['cama','camamat','litera','colchon','sofacama'].includes(u.type)&&!u.nap;if(asleep||h<7.5||h>=23.5)return;return _dt.apply(this,arguments);};}
+// ---------- higiene más realista y rutina de ducha que se aprende ----------
+{const base=DECAY.higiene;Object.defineProperty(DECAY,'higiene',{get(){const se=typeof seasonOf==='function'?seasonOf():'pri';
+  // de 100 a 40: invierno ~2,3 días, primavera/otoño ~1,8, verano ~1,3 (en casa; trabajando un poco más rápido)
+  return se==='inv'?0.018:se==='ver'?0.032:0.023;},configurable:true});void base;}
+const SHOWERS=new Set(['ducha','banera']);
+{const _su=startUse;startUse=function(){const s=S.sim,i=s.target,o=i!=null&&S.obj[i];const r=_su.apply(this,arguments);
+  try{if(o&&SHOWERS.has(o.t)){const h=S.t/60;const R=S.shw||(S.shw={m:0,n:0,last:0});const slot=h>=5&&h<13?'m':(h>=18||h<3)?'n':null;
+    const prev=R.m===R.n?null:(R.m>R.n?'m':'n');if(slot)R[slot]=Math.min(12,R[slot]+1);if(slot){const o2=slot==='m'?'n':'m';R[o2]=Math.max(0,R[o2]-.5);}
+    R.last=S.day*1440+S.t;const now=R.m===R.n?null:(R.m>R.n?'m':'n');
+    if(now&&now!==prev&&Math.max(R.m,R.n)>=3)toast(`🚿 ${CH().name} ya tiene su rutina: se ducha ${now==='m'?'por la mañana':'por la noche'}`);}}catch(e){console.error(e);}
+  return r;};}
+function showerPref(){const R=S.shw||{m:0,n:0};if(R.m!==R.n)return R.m>R.n?'m':'n';return (S.track&&!S.jobless)?'m':'n';}
+function routineShower(){const s=S.sim;if(s.leaving||s.use||s.target!=null||s.path&&s.path.length||s.work>0)return false;
+  const h=S.t/60,nd=S.needs;const R=S.shw||{last:0};const since=(S.day*1440+S.t-(R.last||0))/60;if(nd.higiene>92||(since<14&&nd.higiene>50)||since<2)return false;
+  if(nd.vejiga<20||nd.hambre<15)return false;
+  const pref=showerPref();let ok=false;
+  if(pref==='m'){ok=h>=6.2&&h<10.5;if(ok&&typeof shouldWork==='function'&&shouldWork()&&h>=7.6)ok=false;}
+  else ok=h>=21&&h<23.6;
+  // si se le pasó la suya, que no llegue al día siguiente hecha un desastre
+  if(!ok&&((since>30&&nd.higiene<60)||nd.higiene<50)&&h>=7&&h<23.5)ok=true;
+  if(!ok)return false;
+  const r=bestObjFor('higiene');if(!r||!r.path)return false;go(r,'higiene',false);return true;}
+{const _au=autonomy;autonomy=function(){try{if(routineShower())return;}catch(e){console.error(e);}return _au.apply(this,arguments);};}
+// de noche: si aprieta la vejiga, se levanta a hacer pis en vez de mojar la cama
+{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim,u=s.use;if(u&&['cama','camamat','litera','colchon','sofacama'].includes(u.type)&&S.needs.vejiga<9&&!s.work){const b=bestObjFor('vejiga');if(b&&b.path){s.use=null;go(b,'vejiga',false);if(throttled('pisnoche',600000))tell(`${CH().name} se levantó medio dormid${oa()} a hacer pis.`,'🚽');}}}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
