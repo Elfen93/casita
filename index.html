@@ -4360,7 +4360,7 @@ return {build,pose,draw,model,sig,ok};
 
 // ---------- muñecos Quaternius: modelos reales con animaciones (CC0) ----------
 const Q3D=(()=>{
-const T=window.THREE;const BASE=(typeof Q3D_BASE!=='undefined')?Q3D_BASE:'q3d/';
+const T=window.THREE;const BASE=(typeof Q3D_BASE!=='undefined')?Q3D_BASE:((location.protocol==='file:'||/github\.io$/.test(location.hostname)||location.hostname==='localhost')?'q3d/':'https://elfen93.github.io/casita/q3d/');
 let anims=null,animsP=null,fail=false;const models={},modelP={};const inst=new Map();const FC=new Map();
 function loadAnims(){if(animsP)return animsP;animsP=fetch(BASE+'anims_lite.json').then(r=>r.json()).then(d=>{const dec=s=>{const b=atob(s);const a=new Int16Array(b.length/2);for(let i=0;i<a.length;i++)a[i]=(b.charCodeAt(i*2)|(b.charCodeAt(i*2+1)<<8))<<16>>16;return a;};
   const out={};for(const k in d.clips){const c=d.clips[k];const tr={};for(const nm in c.tr)tr[nm]=dec(c.tr[nm]);out[k]={d:c.d,n:c.n,fps:d.fps,tr};}anims=out;return out;}).catch(e=>{console.error('Q3D anims',e);fail=true;});return animsP;}
