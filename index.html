@@ -6264,7 +6264,7 @@ function goOut(kind){
   const s=S.sim;s.use=null;s.target=null;s.outing=kind;
   const p=bfs(simCell(),(x,y)=>x===0||y===0||x===N-1||y===N-1);
   if(p&&p.length){s.path=p;s.leaving=true;}else depart();
-  toast(kind==='eat'?'🍔 No hay nada para comer en casa: Ana sale a comer fuera':kind==='amigos'?`🍻 Ana ha quedado con ${(P_('amiga')||{n:'unos amigos'}).n}`:OUT[kind]?`${OUT[kind].e} Ana sale: ${outName(kind).toLowerCase()}`:'🚶‍♀️ Ana sale a dar una vuelta');
+  toast(kind==='eat'?'🍔 No hay nada para comer en casa: Ana sale a comer fuera':kind==='amigos'?`🍻 Ana ha quedado con ${(outFriend()||{n:'unos amigos'}).n}`:OUT[kind]?`${OUT[kind].e} Ana sale: ${outName(kind).toLowerCase()}`:'🚶‍♀️ Ana sale a dar una vuelta');
 }
 const mealOutCost=()=>Math.round(8*PM()+Dm().food*3);
 function depart(){
@@ -6623,6 +6623,7 @@ function maybeFriendOuting(){
   if((S.weather||{}).k==='tormenta'||Math.random()>0.35){S.outDay=S.day;return false;}
   S.outDay=S.day;goOut('amigos');return true;
 }
+function outFriend(){return (S.outWith&&(S.people||[]).find(q=>q.k===S.outWith))||P_('amiga');}
 function friendBack(){const f=(S.outWith&&(S.people||[]).find(q=>q.k===S.outWith))||P_('amiga')||{n:'unos amigos'};const date=S.dateOut;S.outWith=null;S.dateOut=false;f.last=S.day;
   if(date&&f.love!=null){f.love=Math.min(100,f.love+8+compatOf(f)/10);f.rel=Math.min(100,f.rel+8);}else if(Math.random()<.5)setTimeout(()=>maybeMeet('amigos'),5);const c=Math.round(mealOutCost()*1.6);S.money-=c;S.needs.social=100;S.needs.diversion=Math.min(100,S.needs.diversion+40);S.needs.hambre=Math.max(S.needs.hambre,85);if(f.rel!=null)f.rel=Math.min(100,f.rel+18);
   const plan=date?pickR(['a cenar a un italiano pequeñito','al cine y luego a pasear','a un concierto','a ver el atardecer en el parque','a una terraza que no conocían']):pickR(['a tomar algo','a una terraza','al cine','a cenar a un sitio nuevo','a dar un paseo por el parque','a un concierto pequeñito']);
@@ -8513,7 +8514,7 @@ SCENES['bar']=function(E){
         if(p.ana)p.ana(cx,cy,dir);else add(cx,cy,()=>sPerson(cx,cy,p.ch,{pose:'sit',act:p.act,front:dir[0],right:dir[1],name:p.name,prop:p.prop,mood:p.mood}));}
       if(back)add(cx+.03,cy+.03,()=>{const bx=s==='e'?cx+.17:cx,by=s==='s'?cy+.17:cy;if(s==='s')sBox(cx-.17,by-.02,cx+.17,by+.02,11,24,'#8a5d34');else sBox(bx-.02,cy-.17,bx+.02,cy+.17,11,24,'#8a5d34');});}
   };
-  const amiga=P_('amiga');const AN={};
+  const amiga=outFriend();const AN={};
   const anaSeat=(cx,cy,dir)=>{AN.x=cx;AN.y=cy;AN.front=dir[0];AN.right=dir[1];};
   const lunch=h>=13&&h<16.5;
   // mesa 1: la de Ana cuando viene de visita (o una pareja cualquiera)
@@ -9597,10 +9598,10 @@ SCENES['parque']=function(E){
   let ana;
   if(act==='deporte'){const u=(tt*.075)%2,go=u<1;const x=go?1+10*u:11-10*(u-1),y=go?2.75:3.1;ana={x,y,pose:'walk',walkPh:tt*13,front:go,right:go};
     if(rain)add(x,y+.02,()=>{const [a,b]=P(x,y);for(let k=0;k<3;k++){const p=(tt*3+k/3)%1;ctx.strokeStyle=`rgba(200,220,240,${.6*(1-p)})`;ctx.lineWidth=.7;ctx.beginPath();ctx.ellipse(a+(go?-1:1)*k*6,b,2+p*4,1+p*2,0,0,Math.PI*2);ctx.stroke();}});}
-  else if(act==='amigos'){const f=P_('amiga'),fn=f?f.n:null;
-    if(terraza){const [x,y]=tabs[0];ana={x:x-.42,y,pose:'sit',act:'talk',front:true,right:true};add(x+.42,y,()=>sPerson(x+.42,y,npc[4],{pose:'sit',act:'eat',front:true,right:false,name:fn}));
+  else if(act==='amigos'){const f=outFriend(),fn=f?f.n:null;const fch=f&&f.ch?f.ch:npc[4];
+    if(terraza){const [x,y]=tabs[0];ana={x:x-.42,y,pose:'sit',act:'talk',front:true,right:true};add(x+.42,y,()=>sPerson(x+.42,y,fch,{pose:'sit',act:'eat',front:true,right:false,name:fn}));
       if(!rain)add(x+.05,y+.55,()=>sPerson(x+.05,y+.55,npc[0],{pose:'sit',act:'talk',front:false,right:false}));}
-    else{ana={x:8.45,y:3.85,pose:'sit',act:'talk',front:true,right:true};add(9.25,3.85,()=>sPerson(9.25,3.85,npc[4],{pose:'sit',act:'talk',front:true,right:false,name:fn}));
+    else{ana={x:8.45,y:3.85,pose:'sit',act:'talk',front:true,right:true};add(9.25,3.85,()=>sPerson(9.25,3.85,fch,{pose:'sit',act:'talk',front:true,right:false,name:fn}));
       add(9.3,4.35,()=>{const [a,b]=P(9.3,4.35);ctx.fillStyle='#3a6a2a';ctx.fillRect(a-1.5,b-9,3,9);ctx.fillRect(a-.8,b-12,1.6,3);});}}
   else{const yy=4+((tt*.25)%1)*4.6;ana={x:6.05-.25,y:Math.min(D-.3,3.4+((tt*.25)%1)*5),pose:'walk',walkPh:tt*7,front:true,right:false};void yy;}
   if(rain&&ana&&ana.pose==='walk'&&act!=='deporte'){const a2=ana;add(a2.x-.01,a2.y-.01,()=>{const [a,b]=P(a2.x,a2.y);umb(a,b,'#7a3a8c');});}
@@ -10158,7 +10159,7 @@ SCENES['sala']=function(E){
   add(9.45,6.95,()=>sPerson(9.45,7.1,{...npc[5],shirt:'#2b2b33'},{act:'type',front:false,right:false}));
   // ---------- público ----------
   const spots=[];for(let r=0;r<4;r++)for(let c=0;c<6;c++){const x=2.3+c*1.08+(r%2)*.5+(hs(r*7+c)-.5)*.35,y=3.15+r*.95+(hs(r*3+c*5)-.5)*.3;if(x>8.4&&y>5.9)continue;spots.push([x,y]);}
-  const fr=P_('amiga');const anaSpot=[4.75,4.15],amiSpot=[5.55,4.3];
+  const fr=outFriend();const anaSpot=[4.75,4.15],amiSpot=[5.55,4.3];
   let n=0;for(let k=0;k<spots.length&&n<crowdN;k++){const [x,y]=spots[(k*7)%spots.length];if(!work&&Math.hypot(x-anaSpot[0],y-anaSpot[1])<.7)continue;if(!work&&act==='amigos'&&Math.hypot(x-amiSpot[0],y-amiSpot[1])<.6)continue;n++;
     const ch=npc[(k*5+3)%12],jump=show?Math.max(0,Math.sin(tt*Math.PI*2.1+k*.7))*(hs(k)<.4?4:1.5):0;const a=show?(k%4===0?'cheer':k%5===1?'phone':null):(k%2?'talk':null);
     add(x,y,()=>{ctx.save();ctx.translate(0,-jump);sPerson(x,y,ch,{act:a,front:false,right:k%5!==2,ph:tt*3+k});ctx.restore();if(k%6===3){const [p,q]=P(x,y);ctx.fillStyle='rgba(240,190,60,.9)';ctx.fillRect(p+4,q-30-jump,2.6,5);}});}
@@ -10166,7 +10167,7 @@ SCENES['sala']=function(E){
   let ana;
   if(work){ana={x:4.75,y:1.85,z:13,pose:'stand',act:'strum',front:true,right:true};}
   else{const j=show?Math.max(0,Math.sin(tt*Math.PI*2.1))*2:0;ana={x:anaSpot[0],y:anaSpot[1],pose:'stand',act:show?'cheer':'talk',front:!show,right:show};void j;
-    if(act==='amigos')add(amiSpot[0],amiSpot[1],()=>sPerson(amiSpot[0],amiSpot[1],npc[4],{act:show?'cheer':'talk',front:!show,right:false,name:fr?fr.n:null}));}
+    if(act==='amigos')add(amiSpot[0],amiSpot[1],()=>sPerson(amiSpot[0],amiSpot[1],fr&&fr.ch?fr.ch:npc[4],{act:show?'cheer':'talk',front:!show,right:false,name:fr?fr.n:null}));}
   // ---------- luces, humo ----------
   const after=()=>{
     // truss
@@ -11171,7 +11172,7 @@ function bindGente(){
   const ab=card.querySelector('#appbtn');if(ab)ab.onclick=()=>{datingApp(false);openMenu('gente');};
   card.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const p=S.people.find(q=>q.k===b.dataset.p);const a=b.dataset.act;
     if(a==='solo'){tryBaby(null);openMenu('gente');return;}if(!p)return;
-    if(a==='call')callP(p);else if(a==='out'){menu.classList.remove('open');S.outWith=p.k;if(outAvail('amigos')&&outAvail('amigos')!=='solo en días libres'){toast('Ahora no puede salir: '+outAvail('amigos'));S.outWith=null;return;}doOut('amigos');return;}
+    if(a==='call')callP(p);else if(a==='out'){menu.classList.remove('open');S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);if(outAvail('amigos')&&outAvail('amigos')!=='solo en días libres'){toast('Ahora no puede salir: '+outAvail('amigos'));S.outWith=null;return;}doOut('amigos');return;}
     else if(a==='home')inviteHome(p,false);else if(a==='stay')inviteHome(p,true);else if(a==='flirt')flirt(p);else if(a==='ask')askOut(p);else if(a==='movein')moveIn(p);
     else if(a==='wed')wedding(p,S.money>1600*PM()*1.3?'grande':'sencilla');else if(a==='hecho')wedding(p,'hecho');else if(a==='break')breakUp(p,'');else if(a==='baby')tryBaby(p);
     else if(a==='date'){menu.classList.remove('open');S.outWith=p.k;S.dateOut=true;doOut('amigos');return;}
