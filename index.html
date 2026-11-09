@@ -323,8 +323,8 @@ const CH=()=>(S&&S.char)||DEFCHAR;
 const ga=(f,m,x)=>{const g=CH().g;return g==='m'?m:g==='x'?(x??m):f;};
 const oa=()=>ga('a','o','e');
 const pickR=a=>a[Math.random()*a.length|0];
-function randomChar(){
-  const r=Math.random(),g=r<.46?'f':r<.9?'m':'x';
+function randomChar(gForce){
+  const r=Math.random(),g=gForce||(r<.46?'f':r<.9?'m':'x');
   const skin=pickR(SKINS),dark=['#9a623c','#6a3f25'].includes(skin)||(skin==='#c68a5c'&&Math.random()<.4);
   const st=dark?(g==='f'?pickR(['afro','boxbraids','cornrows','puffs','twists','locs','bantu','twa','bob','melena']):g==='m'?pickR(['fade','fade','twa','hightop','cornrows','locs','twists','rapado','calvo']):pickR(['twa','locs','twists','afro','fade','boxbraids'])):
     g==='f'?pickR(['coleta','melena','media','bob','larga','ondas','flequillo','rizos','mono','corto','trenzas']):g==='m'?pickR(['corto','corto','tupe','rapado','rizos','calvo','media','flequillo']):pickR(['corto','media','rizos','rapado','mono','bob','tupe']);
@@ -6950,7 +6950,7 @@ let PID=1;
 function newPerson(where,romantic){
   const L=LIFE();let g;
   if(romantic&&L.orient!=='nadie'){g=L.orient==='hombres'?'m':L.orient==='mujeres'?'f':pickR(['f','m']);}else g=pickR(['f','m','f','m','x']);
-  const ch=randomChar();ch.g=g;const used=new Set([CH().name,...(S.people||[]).map(q=>q.n)]);ch.name=pickR(NAMES[g]);for(let t=0;t<8&&used.has(ch.name);t++)ch.name=pickR(NAMES[g]);if(g==='f')ch.beard='no';ch.age=Math.max(19,Math.min(70,(CH().age||27)+Math.round((Math.random()-.5)*12)));
+  const ch=randomChar(g);const used=new Set([CH().name,...(S.people||[]).map(q=>q.n)]);ch.name=pickR(NAMES[g]);for(let t=0;t<8&&used.has(ch.name);t++)ch.name=pickR(NAMES[g]);if(g==='f')ch.beard='no';ch.age=Math.max(19,Math.min(70,(CH().age||27)+Math.round((Math.random()-.5)*12)));
   const og=CH().g;const orient=romantic?(og==='f'?(g==='m'?pickR(['mujeres','mujeres','ambos']):pickR(['mujeres','ambos'])):og==='m'?(g==='f'?pickR(['hombres','hombres','ambos']):pickR(['hombres','ambos'])):'ambos'):pickR(['hombres','mujeres','ambos','mujeres','hombres']);
   const ideo=Math.random()<.35&&S.ideo?S.ideo:pickR(IDEO_ORDER);
   const p={k:'p'+(S.pid=(S.pid||100)+1),n:ch.name,g,ch,age:ch.age,ideo,orient,relStyle:pickR(['estable','estable','libre','soltera']),kids:pickR(['si','quiza','no']),boda:pickR(['si','igual','no']),
@@ -7121,7 +7121,7 @@ function genteTab(){
   return h;
 }
 function bindGente(){
-  card.querySelectorAll('[data-por]').forEach(c=>{const p=S.people.find(q=>q.k===c.dataset.por);if(!p)return;const ch=p.ch||{...DEFCHAR,name:p.n,g:/a$/.test(p.n)?'f':'m',skin:SKINS[(p.n.length)%6],hair:p.k==='madre'?'#bdbdbd':HAIRCOLS[p.n.length%6],style:p.k==='madre'?'mono':pickR(['corto','melena','coleta']),age:p.k==='madre'?58:30,beard:'no',shirt:SHIRTC[p.n.length%SHIRTC.length]};if(!p.ch)p.ch=ch;paintPortrait(c,ch,65);});
+  card.querySelectorAll('[data-por]').forEach(c=>{const p=S.people.find(q=>q.k===c.dataset.por);if(!p)return;const ch=p.ch||personCh(p);if(!p.ch)p.ch=ch;paintPortrait(c,ch,65);});
   card.querySelectorAll('[data-life]').forEach(b=>b.onclick=()=>{LIFE()[b.dataset.life]=b.dataset.v;openMenu('gente');});
   const ab=card.querySelector('#appbtn');if(ab)ab.onclick=()=>{datingApp(false);openMenu('gente');};
   card.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const p=S.people.find(q=>q.k===b.dataset.p);const a=b.dataset.act;
@@ -8383,7 +8383,7 @@ function dressUp(ch,k){const R=pickR,rr=Math.random;ch.outfit=k;ch.acc=[];ch.cap
 function nearCol(h){const v=c=>{const n=parseInt(c.slice(1),16);return [n>>16,(n>>8)&255,n&255];},a=v(h);let best=OUTC[0],bd=1e9;for(const c of OUTC){const b=v(c),d=(a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2;if(d<bd){bd=d;best=c;}}return best;}
 function pickOutfit(g){const W={basico:5,hiphop:12,mono:12,chandal:8,traje:7,obrero:5,vestido:g==='f'?10:g==='x'?5:1,falda:g==='f'?7:g==='x'?4:.5,vaquera:8,punk:7,punto:8,deporte:7};
   let t=0;for(const k in W)t+=W[k];let r=Math.random()*t;for(const k in W){r-=W[k];if(r<=0)return k;}return 'basico';}
-{const _rc=randomChar;randomChar=function(){const c=_rc();return dressUp(c,pickOutfit(c.g));};}
+{const _rc=randomChar;randomChar=function(g){const c=_rc(g);return dressUp(c,pickOutfit(c.g));};}
 const lumOf=h=>{const a=shade(h,1).match(/[\d.]+/g);if(!a)return .5;return (a[0]*.3+a[1]*.59+a[2]*.11)/255;};
 // qué lleva puesto (null = dibujo clásico: partida antigua o uniforme de una escena)
 function outfitSpec(C){const k=C&&C.outfit;if(!k||!OUTFITS[k])return null;if(C.ofSig&&C.ofSig!==ofSig(C))return null;
@@ -9203,6 +9203,13 @@ function wpFace(pts,u0,u1,z0,z1,face,W){ // pts: 4 esquinas; u: coordenada a lo 
   wpFace([P(x1,y0,z0),P(x1,y1,z0),P(x1,y1,z1),P(x1,y0,z1)],y0,y1,z0,z1,(u,z)=>P(x1,u,z),W);
   ctx.restore();};}
 
+
+// ---------- que cada persona tenga un aspecto acorde a su género ----------
+const FEM_ONLY=new Set(['melena','coleta','mono','larga','ondas','bob','trenzas','boxbraids','puffs','bantu','flequillo']);
+const MASC_STY=['corto','tupe','rapado','fade','twa','calvo','rizos'];
+function personG(p){if(p.k==='madre')return 'f';if(p.g==='o'||p.g==='m')return 'm';if(p.g==='a'||p.g==='f')return 'f';if(p.g==='x'||p.g==='e')return 'x';return /a$/.test(p.n)?'f':'m';}
+function personCh(p){const g=personG(p);const ch=randomChar(g);ch.name=p.n;if(p.k==='madre'){ch.age=58;ch.hair='#bdbdbd';ch.style='mono';ch.beard='no';}else ch.age=p.age||30;return ch;}
+function fixLook(ch,g){if(!ch)return;g=g||ch.g;if(g==='m'&&FEM_ONLY.has(ch.style))ch.style=pickR(MASC_STY);if(g==='f'&&ch.beard&&ch.beard!=='no')ch.beard='no';if(g==='m'&&(ch.outfit==='vestido'||ch.outfit==='falda')&&typeof dressUp==='function')dressUp(ch,pickR(['hiphop','vaquera','basico','punto']));if(ch.rf&&ch.rf.face&&!ch.rf.face._g){ch.rf.face.estructura=g==='f'?'suave':g==='m'?'marcada':'media';ch.rf.face._g=1;if(g==='m'){ch.rf.makeup=false;}}ch.g=g;}
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
 const ROOM_FOR={nevera:'Cocina',fogon:'Cocina',cama:'Dormitorio',ducha:'Baño',vater:'Baño',espejo:'Baño',sofa:'Salón',tele:'Salón',telefono:'Salón',libros:'Estudio',compu:'Estudio',guitarra:'Estudio'};
@@ -10270,6 +10277,7 @@ function loop(now){
 }
 for(const i of findObjs((d,t)=>t==='compu'))withChair(i);
 {if(S&&S.home&&['padres','habitacion','bueno'].includes(S.home.type)){const mv=(a,b)=>{const i=idx(...a),j=idx(...b);if(S.obj[i]&&S.obj[i].t==='fogon'&&!S.obj[j]){S.obj[j]=S.obj[i];S.obj[i]=null;}};if(S.home.type==='bueno')mv([6,11],[5,12]);else{const want={nevera:[5,10],fogon:[5,11],mesa:[7,11],silla:[8,12],sofa:[9,12],tele:[10,12]};const got={};for(let x=5;x<=10;x++)for(let y=10;y<=12;y++){const i=idx(x,y),q=S.obj[i];if(q&&!q.priv&&want[q.t]&&!got[q.t]){got[q.t]=q;S.obj[i]=null;}}for(const [t,[x,y]] of Object.entries(want)){const i=idx(x,y);if(got[t]&&!S.obj[i]){S.obj[i]=got[t];delete got[t];}}for(const q of Object.values(got)){for(let x=5;x<=10&&q;x++)for(let y=10;y<=12;y++){const i=idx(x,y);if(!S.obj[i]&&!(x===6||x===8&&y<12||y===10&&x>=8||x===10&&y===11||x===7&&y===12)){S.obj[i]=q;break;}}}mv([6,10],[5,11]);{const i=idx(10,10),j=idx(9,10);if(S.obj[i]&&S.obj[i].t==='tele'&&!S.obj[j]){S.obj[j]=S.obj[i];S.obj[i]=null;}}if(S.obj[idx(5,12)]&&S.obj[idx(5,12)].t==='silla'&&!S.obj[idx(8,12)]){S.obj[idx(8,12)]=S.obj[idx(5,12)];S.obj[idx(5,12)]=null;}}for(let i=0;i<N*N;i++){const q=S.obj[i];if(!q||OBJ[q.t].cat==='garden')continue;const x=i%N,y=i/N|0;for(let r=0;r<4;r++){const dx=[0,1,0,-1][r],dy=[-1,0,1,0][r];if(!inb(x+dx,y+dy))continue;const w=S.wall[idx(x+dx,y+dy)];if(w===1||w===3){q.r=r;break;}}}S.res=(S.res||[]).filter(r=>r.kind!=='mate');const [x,y]=simCell();if(!walkable(x,y)){S.sim.x=S.home.area[0]+.5;S.sim.y=S.home.area[1]+1.5;}S.sim.path=[];S.sim.stuck=0;}}
+try{for(const p of S.people||[]){if(p.ch){p.ch.g=personG(p)==='x'?(p.ch.g||'x'):personG(p);fixLook(p.ch,p.ch.g);}}}catch(e){}
 if(!S.track)S.track='oficina';setTrack(S.track);if(!S.ideo)S.ideo='apolitica';if(!S.pol)S.pol={xp:0,inf:0,stages:{},comp:2,red:0};S.pol.stages=S.pol.stages||{};W_();
 if(!S.char)S.char={...DEFCHAR,shirt:(S.sim&&S.sim.shirt)||DEFCHAR.shirt};if(!S.people)initPeople();if(!S.weather)rollWeather();if(!S.today)newToday();storyState();if(!S.story.chap.start&&!firstRun)chapter('start','Una casa con eco',`${S.char.name} vive en esta casita de alquiler y trabaja de ${CAREER[S.career].t.toLowerCase()}. Su historia empieza a contarse hoy.`);
 ensureSimFree();hud();
