@@ -98,7 +98,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:b
 .entry.d{background:#fbf7f0;border-radius:10px;padding:7px 8px;margin:3px 0}
 .entry.c{background:#fdeee4;border-radius:10px;padding:7px 8px;margin:3px 0}
 .crepre{display:flex;gap:6px;justify-content:center;align-items:flex-end;margin:0 -16px 6px;padding:6px 16px 8px;position:sticky;top:-16px;z-index:3;background:linear-gradient(#fffdf8 85%,rgba(255,253,248,0));}
-.crepre.small canvas:first-child{width:72px;height:72px}.crepre.small canvas:last-child{width:45px;height:72px}.crepre canvas{transition:width .15s,height .15s}
+.crepre.small canvas:first-child{width:72px;height:72px}.crepre.small canvas:last-child{width:45px;height:72px}.crepre canvas{transition:width .15s,height .15s}.crepre.notr canvas{transition:none}
+.mini.tr{padding:7px 10px;font-size:12.5px}.mini.dim{opacity:.4}
 .crepre canvas:first-child{width:120px;height:120px;border-radius:50%}
 .crepre canvas:last-child{width:75px;height:120px}
 .crow{display:flex;gap:6px;align-items:center}
@@ -327,7 +328,7 @@ function randomChar(){
     shirt:pickR(SHIRTC),pants:pickR(PANTSC),eyes:pickR(EYECOLS),age,faceSeed:Math.random().toString(36).slice(2),bday:[Math.random()*12|0,1+(Math.random()*28|0)]};
 }
 // los textos están escritos para Ana: se adaptan al nombre y al género del personaje
-const GW=['misma','arromántica','embarazada','justa','voluntaria','Cajera','fija','Encargada','Jefa','Camarera','Cocinera','Peona','Enfermera','Supervisora','Programadora','administrativa','Administrativa','veterana','Autónoma','Empresaria','Socia','coordinadora','Libertaria','Conservadora','Apolítica','Afiliada','afiliada','Delegada','Candidata','Concejala','concejala','Activa','Detenida','detenida','Despedida','Aprobada','sola','Becaria','Técnica','Coordinadora','Directora','Propietaria','propietaria','dueña','enferma','Enferma','cansada','agotada','dormida','sentada','Tirada','tirada','quemada','marcada','equilibrada','contenta','despedida','Bienvenida','Trabajadora','Perezosa','Ahorradora','Derrochadora','Solitaria','Ordenada','Despistada','preocupada','orgullosa','ocupada','sentadita','tumbada','Tumbada','mojada','encantada','harta'];
+const GW=['misma','arromántica','embarazada','justa','voluntaria','Cajera','fija','Encargada','Jefa','Camarera','Cocinera','Peona','Enfermera','Supervisora','Programadora','administrativa','Administrativa','veterana','Autónoma','Empresaria','Socia','coordinadora','Libertaria','Conservadora','Apolítica','Afiliada','afiliada','Delegada','Candidata','Concejala','concejala','Activa','Detenida','detenida','Despedida','Aprobada','sola','Becaria','Técnica','Coordinadora','Directora','Propietaria','propietaria','dueña','enferma','Enferma','cansada','agotada','dormida','sentada','Tirada','tirada','quemada','marcada','equilibrada','contenta','despedida','Bienvenida','Trabajadora','Perezosa','Ahorradora','Derrochadora','Solitaria','Ordenada','Despistada','preocupada','orgullosa','ocupada','sentadita','tumbada','Tumbada','mojada','encantada','harta','Romántica','Curiosa','Fiestera','Casera','Nocturna','Madrugadora','Impulsiva','Tozuda','Desencantada','Solidaria','Desconfiada','Combativa'];
 const GSPEC={Jefa:['Jefe','Jefe'],Peona:['Peón','Peone'],Socia:['Socio','Socie'],sola:['solo','sole'],fija:['fijo','fije']};
 function gform(w,g){if(GSPEC[w])return GSPEC[w][g==='m'?0:1];if(w==='Técnica')return g==='m'?'Técnico':'Técnique';if(w==='dueña')return g==='m'?'dueño':'dueñe';if(/ora$/.test(w))return g==='m'?w.slice(0,-1):w.slice(0,-1)+'e';return w.slice(0,-1)+(g==='m'?'o':'e');}
 let GRX=null,GWL=null;
@@ -495,7 +496,7 @@ function emoji(e,x,y,size){ctx.font=`${size}px "Apple Color Emoji","Segoe UI Emo
 function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function label(text,x,y,bg,fg,size=12){ctx.font=`900 ${size}px Nunito, sans-serif`;const w=ctx.measureText(text).width+14;ctx.fillStyle=bg;roundRect(x-w/2,y-size*0.9,w,size*1.8,8);ctx.fill();ctx.fillStyle=fg;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,x,y+0.5);}
 const O_COL=(o,c)=>(o&&o.q!=null&&o.q<=1)?mixHex(c,'#8c8c80',0.35):c;
-const hash=i=>{let h=(i*2654435761)>>>0;h^=h>>>15;return (h%1000)/1000;};
+const hash=i=>{let h=(i*2654435761)>>>0;h=(h^(h>>>15))>>>0;return (h%1000)/1000;};
 function mix(a,b,t){const A=parseInt(a.slice(1),16),B=parseInt(b.slice(1),16);const r=(A>>16)+((B>>16)-(A>>16))*t,g=((A>>8)&255)+(((B>>8)&255)-((A>>8)&255))*t,bl=(A&255)+((B&255)-(A&255))*t;return `rgb(${r|0},${g|0},${bl|0})`;}
 function mixHex(a,b,t){const m=mix(a,b,t).match(/\d+/g).map(Number);return '#'+m.map(v=>v.toString(16).padStart(2,'0')).join('');}
 function nightFactor(){const h=S.t/60;if(h>=7&&h<=19)return 0;if(h>19&&h<21)return (h-19)/2;if(h>=5&&h<7)return 1-(h-5)/2;return 1;}
@@ -3439,112 +3440,251 @@ function sPerson(x,y,ch,o={}){const [px,py]=P(x,y);const old=anaRT.phase;anaRT.p
   if(o.prop){emoji(o.prop,px+8,py-44,11);}if(o.name){ctx.save();ctx.globalAlpha=.85;label(o.name,px,py-64,'rgba(255,253,248,.92)','#3b3247',8);ctx.restore();}}
 const elder=k=>({...NPCS()[k%12],hair:'#d6d6d6',style:k%2?'corto':'mono',glasses:true});
 // cada escena devuelve {W,D,items[], ana:{x,y,...}, out?, floor, wall}
-function buildScene(key,tt,night){
-  const act=sceneAct(),w=W_(),npc=NPCS(),it=[],add=(x,y,f)=>it.push({d:x+y,f});let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
-  const cp=P_('compi');
-  switch(key){
-  case 'super':{W=10;D=7;wall='#f4f1ea';decor=()=>{sShelf(1,.2,8,true);};
-    for(let k=0;k<3;k++){const cx=1.5+k*2.8;add(cx+1,4,()=>sCaja(cx,4));}
-    ana={x:2.2,y:5.3,pose:'stand',act:'type',front:false,right:true};
-    add(4.6,5.3,()=>sPerson(4.6,5.3,npc[3],{act:'type',front:false,name:cp?cp.n:null}));add(7.4,5.3,()=>sPerson(7.4,5.3,npc[6],{act:'type',front:false}));
-    const q=2+Math.round(w.crisis/30);for(let k=0;k<q;k++)add(3.2+(k%3)*2.8,3.2-Math.floor(k/3)*.8,()=>sPerson(3.2+(k%3)*2.8,3.2-Math.floor(k/3)*.8,npc[(k+5)%12],{front:true,right:false,prop:k%2?'🛒':null}));
-    break;}
-  case 'bar':{W=8;D=6;floor='#b08850';wall='#e8d5b5';tile=false;decor=()=>{sShelf(1,.2,3,true);sPoster(5,30,'#d1242f','🍺');};
-    add(4,1.8,()=>{sBox(.8,1.4,4.8,2.1,0,17,'#7a5230');sBox(.7,1.35,4.9,2.15,17,19,'#a0754c');});
-    for(const [tx,ty] of [[5.6,3.6],[2.5,4.2],[5.4,5]]){add(tx+.5,ty+.5,()=>sTable(tx,ty));}
-    if(act==='work'){ana={x:2.6,y:.95,pose:'stand',act:'stir',front:true,right:true};}
-    else{ana={x:2.2,y:4.4,pose:'sit',act:act==='eat'?'eat':'talk',front:true,right:true};const f=P_('amiga');if(act==='amigos')add(3.4,4.6,()=>sPerson(3.4,4.6,npc[4],{pose:'sit',act:'talk',front:true,right:false,name:f?f.n:null}));}
-    add(6.3,3.8,()=>sPerson(6.3,3.8,npc[1],{pose:'sit',act:'talk',right:false}));add(5.3,4.8,()=>sPerson(5.3,4.8,npc[7],{pose:'sit',act:'eat'}));
-    if(act!=='work')add(2.8,.95,()=>sPerson(2.8,.95,npc[9],{act:'stir'}));
-    break;}
-  case 'torre':{W=9;D=7;floor='#c9ccd4';wall='#e7ecf2';
-    if(act==='networking'){for(let k=0;k<4;k++){const x=2+k*1.8,y=3+(k%2);add(x+.5,y+.5,()=>sTable(x,y,'#e7ecf2'));}ana={x:3.2,y:4.6,act:'talk'};for(let k=0;k<6;k++){const x=1.5+k*1.2,y=2.5+(k%3);add(x,y,()=>sPerson(x,y,npc[k],{act:k%2?'talk':null,prop:'🥂',right:k%2===0}));}}
-    else{for(let r=0;r<2;r++)for(let c=0;c<3;c++){const x=1.2+c*2.6,y=1.8+r*2.6;add(x+.5,y+.5,()=>sDesk(x,y));add(x+.5,y+1.4,()=>sChair(x,y+.9,'#3b3f46'));if(!(r===1&&c===0))add(x+.5,y+1.3,()=>sPerson(x+.5,y+1.3,npc[(r*3+c)%12],{pose:'sit',act:'type',front:false,right:false,name:r===0&&c===1&&cp?cp.n:null}));}
-      ana={x:1.7,y:5.7,pose:'sit',act:'type',front:false,right:false};}
-    break;}
-  case 'obra':{W=9;D=7;floor='#a08a6a';wall='#bdb6aa';tile=false;decor=()=>{sScaffold(1,.3,6,60);};
-    add(6.5,4.5,()=>{cyl(6.5,4.5,.5,6,22,'#f0ad4e','#e0901e');});add(2,5.3,()=>sBricks(1.6,5));add(7.6,2.6,()=>sBricks(7.2,2.3));
-    ana={x:3.5,y:3.6,act:'hammer',helmet:true,vest:true};add(5.2,2.8,()=>sPerson(5.2,2.8,npc[2],{act:'hammer',helmet:true,vest:true,name:cp?cp.n:null}));add(6.8,5.8,()=>sPerson(6.8,5.8,npc[8],{helmet:true,vest:true,act:'dig'}));
-    break;}
-  case 'residencia':{W=9;D=7;floor='#e4ddd0';wall='#f1e3d3';decor=()=>{sPoster(3,28,'#9fb4c8','🌻');};
-    for(let k=0;k<4;k++){const x=1.2+k*1.9,y=2.2;add(x+.5,y+.5,()=>{sArm(x,y);sPerson(x+.5,y+.6,elder(k),{pose:'sit',mood:k===2?30:60,sad:k===2});});}
-    add(2,5,()=>sBed(1.2,4.6));ana={x:3.6,y:3.6,act:'talk',front:true,right:false};add(6.5,4.2,()=>sPerson(6.5,4.2,npc[5],{act:'talk',name:cp?cp.n:null}));
-    break;}
-  case 'ayto':{
+const SCENES={};
+// <<SCENES>>
+// Escena: _calle
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['_calle']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{out=true;W=12;D=4;floor='#d8d2c4';tile=false;const s=S.sim;const tot=s.awayTotal||s.work,el=tot-s.work,tr=Math.min(20,tot/3);const f=el<tr?el/tr:1-s.work/tr,back=el>=tr;
+    decor=()=>{for(let k=0;k<6;k++){const x=k*2;sBox(x,-.4,x+2,0,0,60+(k%3)*20,['#e8b7a0','#c9d8b6','#b9c6d8','#efe9dc','#d8c3dc','#e9d27a'][k]);for(let z=12;z<60;z+=16)poly([P(x+.4,0,z),P(x+1.6,0,z),P(x+1.6,0,z+9),P(x+.4,0,z+9)],night>.5?'#ffe08a':'#9fc4dc');}
+      topQuad(0,2.6,W,D,0.05,'#5d6168');};
+    const x=back?11-f*10:1+f*10;ana={x,y:1.6,pose:'walk',walkPh:tt*9,front:true,right:!back};
+    for(let k=0;k<4;k++){const a=(tt*0.5*(k%2?1:-1)+k*3)%12,xx=((a%12)+12)%12;add(xx,1+((k%2)*.9),()=>sPerson(xx,1+((k%2)*.9),npc[k+3],{pose:'walk',ph:tt*7+k,right:k%2===0}));}
+    const cx=((tt*2.4)%16)-2;add(cx,3.3,()=>{sBox(cx-.7,3,cx+.7,3.6,2,9,'#d9534f');sBox(cx-.4,3.05,cx+.4,3.55,9,14,'#e66a66');});
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: _piquete
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['_piquete']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{out=true;W=9;D=6;floor='#cfc6b4';tile=false;const wk=destOf('work');const pl=PLACES[wk]||{c:'#e8e2d4',n:'el trabajo'};
+    decor=()=>{sBox(0,-.2,W,0,0,70,pl.c);poly([P(3.5,0,0),P(5.5,0,0),P(5.5,0,30),P(3.5,0,30)],'#5f6670');sBanner(1,8,40,'¡EN HUELGA!');};
+    for(let k=0;k<8;k++){const x=1+k*.95,y=2.6+(k%2)*.6;add(x,y,()=>sPerson(x,y,npc[k],{act:'cheer',ph:tt*3+k,prop:k%2?'🪧':null}));}ana={x:4.6,y:3.8,act:'cheer',prop:'📣'};break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: _ride
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['_ride']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{out=true;W=12;D=4;floor='#d8d2c4';tile=false;decor=()=>{for(let k=0;k<6;k++){const x=k*2;sBox(x,-.4,x+2,0,0,60+(k%3)*20,['#e8b7a0','#c9d8b6','#b9c6d8','#efe9dc','#d8c3dc','#e9d27a'][k]);}topQuad(0,1.8,W,D,0.05,'#5d6168');};
+    const x=((tt*1.8)%14)-1;ana={x,y:2.8,pose:'walk',walkPh:tt*3,front:true,right:true,prop:'🛵'};
+    const cx=((tt*1.2+6)%16)-2;add(cx,3.4,()=>{sBox(cx-.7,3.1,cx+.7,3.7,2,9,'#3b3f46');});break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: ateneo
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['ateneo']=function(E){
+  const {tt,night,act,w,npc,cp,key}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=8;D=7;floor=key==='ateneo'?'#c9b48a':'#d8d2c4';wall=key==='ateneo'?'#e3d3e6':'#ecd9d2';tile=key!=='ateneo';
+    decor=()=>{sPoster(1,30,'#d1242f','✊');sPoster(3,30,key==='ateneo'?'#2b2b2b':'#e9c46a',key==='ateneo'?'🏴':'📢');sPoster(5.5,30,'#7a6fd0','📅');if(W_().mov>40)sBanner(1,7,50,key==='ateneo'?'APOYO MUTUO':'UNIDAD');};
+    add(4,1.6,()=>sBox(2.5,1.2,5.5,1.9,0,15,'#a0754c'));
+    const size=key==='sindicato'?4+Math.round((office().org||0)/12):4+Math.round(w.mov/10);const speak=S.pol.inf>=45;
+    for(let k=0;k<Math.min(16,size);k++){const x=1.4+(k%5)*1.3,y=3.2+Math.floor(k/5)*1.1;add(x,y,()=>{sChair(x-.5,y-.3,'#3b3f46');sPerson(x,y,npc[k%12],{pose:'sit',front:false,right:false,act:k===1&&!speak?'talk':null});});}
+    if(speak)ana={x:4,y:1.1,act:'talk',front:true,right:true};else{ana={x:1.4+3*1.3,y:3.2+1.1,pose:'sit',act:'talk',front:false,right:false};add(4,1.1,()=>sPerson(4,1.1,npc[10],{act:'talk'}));}
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: ayto
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['ayto']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{
     if(act==='manifestacion'){out=true;W=10;D=8;floor='#cfc6b4';tile=false;decor=()=>{sBox(0,-.2,W,0,0,90,'#e7dcc2');for(let k=1;k<W;k+=2)poly([P(k,0,30),P(k+1,0,30),P(k+1,0,60),P(k,0,60)],night>.5?'#ffe08a':'#9fb4c8');sBanner(2,8,70,(W_().manif&&W_().manif.cause||'').toUpperCase());};
       const n=10+Math.round(w.mov/5);for(let k=0;k<n;k++){const x=1+(k*1.37)%8,y=2+((k*2.11)%5);add(x,y,()=>sPerson(x,y,npc[k%12],{act:k%3?'cheer':null,ph:tt*3+k,prop:k%4===0?(isI('conservadora','liberal','libertaria')?'🇪🇸':'🚩'):k%5===0?'📣':null}));}
       ana={x:5,y:6.2,act:'cheer',prop:'🪧'};if(W_().gov==='conservador'||W_().era==='represion')add(9,7,()=>{sBox(8.2,6.6,9.8,7.6,0,22,'#2b3a5a');const [a,b]=P(9,7,26);emoji('🚨',a,b,12);});break;}
     W=9;D=7;floor='#d8d2c4';wall='#efe6d2';decor=()=>{sPoster(6,30,'#e9c46a','🏛️');};
     if(act==='militancia'){add(4.5,3.5,()=>{sBox(2,3,7,4,0,15,'#a0754c');});for(let k=0;k<6;k++){const x=2.4+k*.8,y=k%2?2.5:4.4;add(x,y,()=>sPerson(x,y,npc[k],{pose:'sit',act:k===2?'talk':null,front:k%2===1,right:k%2===0}));}ana={x:4.6,y:4.4,pose:'sit',act:'talk',front:false,right:false};}
     else{add(4.5,3,()=>{sBox(1,2.6,8,3.2,0,22,'#c9c3b8');});for(let k=0;k<3;k++){const x=1.6+k*2.3;add(x,2.2,()=>sPerson(x,2.2,npc[k+3],{pose:'sit',act:'type',front:true}));add(x,4.4,()=>sPerson(x,4.4,npc[k+6],{front:false,right:false}));}ana={x:3.9,y:2.2,pose:'sit',act:'type',front:true};}
-    break;}
-  case 'sindicato':case 'ateneo':{W=8;D=7;floor=key==='ateneo'?'#c9b48a':'#d8d2c4';wall=key==='ateneo'?'#e3d3e6':'#ecd9d2';tile=key!=='ateneo';
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: bar
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['bar']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=8;D=6;floor='#b08850';wall='#e8d5b5';tile=false;decor=()=>{sShelf(1,.2,3,true);sPoster(5,30,'#d1242f','🍺');};
+    add(4,1.8,()=>{sBox(.8,1.4,4.8,2.1,0,17,'#7a5230');sBox(.7,1.35,4.9,2.15,17,19,'#a0754c');});
+    for(const [tx,ty] of [[5.6,3.6],[2.5,4.2],[5.4,5]]){add(tx+.5,ty+.5,()=>sTable(tx,ty));}
+    if(act==='work'){ana={x:2.6,y:.95,pose:'stand',act:'stir',front:true,right:true};}
+    else{ana={x:2.2,y:4.4,pose:'sit',act:act==='eat'?'eat':'talk',front:true,right:true};const f=P_('amiga');if(act==='amigos')add(3.4,4.6,()=>sPerson(3.4,4.6,npc[4],{pose:'sit',act:'talk',front:true,right:false,name:f?f.n:null}));}
+    add(6.3,3.8,()=>sPerson(6.3,3.8,npc[1],{pose:'sit',act:'talk',right:false}));add(5.3,4.8,()=>sPerson(5.3,4.8,npc[7],{pose:'sit',act:'eat'}));
+    if(act!=='work')add(2.8,.95,()=>sPerson(2.8,.95,npc[9],{act:'stir'}));
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: biblioteca
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['biblioteca']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=8;D=7;floor='#c9b48a';wall='#e7e0d0';tile=false;decor=()=>{sShelf(.5,.2,7,true,'libros');};
+    for(const [x,y] of [[1.5,3],[4.5,3],[1.5,5],[4.5,5]])add(x+1,y+.5,()=>{sBox(x,y,x+2,y+.9,12,15,'#a0754c');sBox(x+.1,y+.1,x+.2,y+.8,0,12,'#6b4a2e');sBox(x+1.8,y+.1,x+1.9,y+.8,0,12,'#6b4a2e');});
+    ana={x:2.2,y:4.2,pose:'sit',act:'book',front:false,right:false};add(5.3,4.2,()=>sPerson(5.3,4.2,npc[6],{pose:'sit',act:'book',front:false,right:false}));add(2,6.2,()=>sPerson(2,6.2,npc[9],{pose:'sit',act:'type',front:false}));
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: comedor
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['comedor']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=8;D=7;wall='#dfe7d9';decor=()=>{sPoster(1,30,'#2f8a5a','🥫');};
+    add(4,2.4,()=>{sBox(1.2,2,6.8,2.8,0,15,'#c9c3b8');for(let k=0;k<5;k++)sBoxes(1.4+k*1.1,2.1);});
+    const q=3+Math.round(w.crisis/10);for(let k=0;k<q;k++){const x=1.4+(k%6)*1,y=3.8+Math.floor(k/6)*.8;add(x,y,()=>sPerson(x,y,npc[(k+2)%12],{front:false,right:false,mood:40}));}
+    if(act==='comedor'){ana={x:6.5,y:5.6,pose:'stand',act:'eat',front:false,right:false};add(2.4,1.6,()=>sPerson(2.4,1.6,npc[0],{act:'stir'}));}else{ana={x:3.5,y:1.6,act:'stir',front:true};add(5.5,1.6,()=>sPerson(5.5,1.6,npc[11],{act:'stir'}));}
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: comisaria
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['comisaria']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=6;D=5;floor='#b9bec6';wall='#d9dde3';decor=()=>{};
+    add(3,2.5,()=>{sBox(1,1,4.5,3.6,0,1,'#a9aeb6');sBox(1.4,1.2,3.6,1.8,0,9,'#7a7f88');});ana={x:2.4,y:1.9,pose:'sit',sad:true,front:true};
+    add(5,4,()=>{for(let k=0;k<7;k++){const a=P(1+k*.55,3.6),b=P(1+k*.55,3.6,48);capsule(a[0],a[1],b[0],b[1],1.6,'#3b3f46');}const a=P(1,3.6,48),b=P(4.6,3.6,48);capsule(a[0],a[1],b[0],b[1],2,'#3b3f46');});
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: coop
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['coop']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=9;D=7;floor='#c9c3b8';wall='#eadfae';decor=()=>{sPoster(2,30,'#e9c46a','🐝');sPoster(5,30,'#2f8a5a','🤝');};
+    for(let k=0;k<3;k++){const x=1.2+k*2.6;add(x+1,2.4,()=>{sBox(x,2,x+2,2.8,0,15,'#a0754c');sBox(x+.2,2.1,x+.6,2.5,15,20,'#5f6670');});add(x+1,3.4,()=>sPerson(x+1,3.4,npc[k+2],{act:'hammer',front:false,right:false}));}
+    ana={x:5,y:5.2,act:'talk',front:false,right:false};
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: obra
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['obra']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=9;D=7;floor='#a08a6a';wall='#bdb6aa';tile=false;decor=()=>{sScaffold(1,.3,6,60);};
+    add(6.5,4.5,()=>{cyl(6.5,4.5,.5,6,22,'#f0ad4e','#e0901e');});add(2,5.3,()=>sBricks(1.6,5));add(7.6,2.6,()=>sBricks(7.2,2.3));
+    ana={x:3.5,y:3.6,act:'hammer',helmet:true,vest:true};add(5.2,2.8,()=>sPerson(5.2,2.8,npc[2],{act:'hammer',helmet:true,vest:true,name:cp?cp.n:null}));add(6.8,5.8,()=>sPerson(6.8,5.8,npc[8],{helmet:true,vest:true,act:'dig'}));
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: parque
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['parque']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{out=true;W=10;D=8;floor=shade(LAWN,.95);tile=false;decor=()=>{};
+    for(const [x,y] of [[1,1],[8.5,1.5],[1.5,6.5],[9,6.8],[5,.8]])add(x,y,()=>sTree(x,y));add(5,4,()=>{cyl(5,4,1,0,6,'#c9c3b8','#7cc8f0');});add(2.5,3.6,()=>sBench(2,3.4));
+    if(act==='deporte'){const a=tt*0.6;const x=5+Math.cos(a)*3.2,y=4+Math.sin(a)*2.6;ana={x,y,pose:'walk',walkPh:tt*12,front:Math.sin(a)<0?false:true,right:Math.cos(a+Math.PI/2)>0};}
+    else{ana={x:2.6,y:3.9,pose:'sit',act:'talk',front:true};const f=P_('amiga');add(3.3,3.9,()=>sPerson(3.3,3.9,npc[4],{pose:'sit',act:'talk',right:false,name:f?f.n:null}));}
+    for(let k=0;k<3;k++){const a=tt*0.4+k*2.1;const x=5+Math.cos(a)*3.6,y=4+Math.sin(a)*3;add(x,y,()=>sPerson(x,y,npc[k+6],{pose:'walk',ph:tt*8+k,front:Math.sin(a)<0?false:true,right:Math.cos(a+Math.PI/2)>0}));}
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: parroquia
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['parroquia']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=8;D=8;floor='#c9b48a';wall='#e6dcc4';tile=false;decor=()=>{sBox(3,.1,5,.9,0,20,'#f4f1ea');const [a,b]=P(4,.5,40);emoji('✝️',a,b,16);poly([P(1,0,40),P(2,0,40),P(2,0,64),P(1,0,64)],'#c4568f');poly([P(6,0,40),P(7,0,40),P(7,0,64),P(6,0,64)],'#4f6fd1');};
+    if(act==='voluntariado'){add(4,3,()=>{sBox(1.5,2.6,6.5,3.4,0,15,'#a0754c');for(let k=0;k<4;k++)sBoxes(1.8+k*1.2,2.7);});ana={x:3,y:2.2,act:'stir',front:true};const q=3+Math.round(w.crisis/15);for(let k=0;k<q;k++)add(2+k*.7,4.3+(k%2)*.5,()=>sPerson(2+k*.7,4.3+(k%2)*.5,npc[k%12],{front:false,right:false}));}
+    else{for(let r=0;r<4;r++){add(4,2.4+r*1.3,()=>sPew(1.2,2+r*1.3,5.6));for(let k=0;k<(r%2?3:2);k++){const x=1.8+k*1.6+r*.3,y=2.3+r*1.3;add(x,y+.01,()=>sPerson(x,y,elder(k+r),{pose:'sit',front:false,right:false}));}}ana={x:5.6,y:3.6,pose:'sit',front:false,right:false};add(4,1.4,()=>sPerson(4,1.4,{...npc[0],shirt:'#1d1714',hair:'#bdbdbd'},{act:'talk'}));}
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: residencia
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['residencia']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=9;D=7;floor='#e4ddd0';wall='#f1e3d3';decor=()=>{sPoster(3,28,'#9fb4c8','🌻');};
+    for(let k=0;k<4;k++){const x=1.2+k*1.9,y=2.2;add(x+.5,y+.5,()=>{sArm(x,y);sPerson(x+.5,y+.6,elder(k),{pose:'sit',mood:k===2?30:60,sad:k===2});});}
+    add(2,5,()=>sBed(1.2,4.6));ana={x:3.6,y:3.6,act:'talk',front:true,right:false};add(6.5,4.2,()=>sPerson(6.5,4.2,npc[5],{act:'talk',name:cp?cp.n:null}));
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: sala
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['sala']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=8;D=7;floor='#3b2f3a';wall='#4a3040';tile=false;decor=()=>{for(let k=0;k<4;k++){const [a,b]=P(1+k*2,.1,70);ctx.fillStyle=['rgba(255,80,120,.25)','rgba(80,160,255,.25)','rgba(255,220,80,.25)','rgba(140,255,160,.25)'][(k+Math.floor(tt*2))%4];ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(a-30,b+90);ctx.lineTo(a+30,b+90);ctx.fill();}};
+    add(4,1.5,()=>sBox(1,.4,7,2.4,0,10,'#2b2026'));
+    if(act==='work'){ana={x:4,y:1.4,act:'strum',front:true,right:true,z:10};for(let k=0;k<5+Math.round((S.career||0)*4);k++){const x=1.4+(k%6)*1,y=3.5+Math.floor(k/6)*1;add(x,y,()=>sPerson(x,y,npc[k%12],{act:k%2?'cheer':null,front:false,right:false,ph:tt*4+k}));}}
+    else{add(4,1.4,()=>{const [a,b]=P(4,1.4);sPerson(4,1.4-.0,npc[10],{act:'strum'});});ana={x:3,y:4.4,act:'cheer',front:false,right:false};for(let k=0;k<7;k++){const x=1.4+(k%5)*1.2,y=3.6+Math.floor(k/5)*1.4;add(x,y,()=>sPerson(x,y,npc[k%12],{act:k%3?'cheer':null,front:false,right:false,ph:tt*4+k}));}}
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: sindicato
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['sindicato']=function(E){
+  const {tt,night,act,w,npc,cp,key}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=8;D=7;floor=key==='ateneo'?'#c9b48a':'#d8d2c4';wall=key==='ateneo'?'#e3d3e6':'#ecd9d2';tile=key!=='ateneo';
     decor=()=>{sPoster(1,30,'#d1242f','✊');sPoster(3,30,key==='ateneo'?'#2b2b2b':'#e9c46a',key==='ateneo'?'🏴':'📢');sPoster(5.5,30,'#7a6fd0','📅');if(W_().mov>40)sBanner(1,7,50,key==='ateneo'?'APOYO MUTUO':'UNIDAD');};
     add(4,1.6,()=>sBox(2.5,1.2,5.5,1.9,0,15,'#a0754c'));
     const size=key==='sindicato'?4+Math.round((office().org||0)/12):4+Math.round(w.mov/10);const speak=S.pol.inf>=45;
     for(let k=0;k<Math.min(16,size);k++){const x=1.4+(k%5)*1.3,y=3.2+Math.floor(k/5)*1.1;add(x,y,()=>{sChair(x-.5,y-.3,'#3b3f46');sPerson(x,y,npc[k%12],{pose:'sit',front:false,right:false,act:k===1&&!speak?'talk':null});});}
     if(speak)ana={x:4,y:1.1,act:'talk',front:true,right:true};else{ana={x:1.4+3*1.3,y:3.2+1.1,pose:'sit',act:'talk',front:false,right:false};add(4,1.1,()=>sPerson(4,1.1,npc[10],{act:'talk'}));}
-    break;}
-  case 'parroquia':{W=8;D=8;floor='#c9b48a';wall='#e6dcc4';tile=false;decor=()=>{sBox(3,.1,5,.9,0,20,'#f4f1ea');const [a,b]=P(4,.5,40);emoji('✝️',a,b,16);poly([P(1,0,40),P(2,0,40),P(2,0,64),P(1,0,64)],'#c4568f');poly([P(6,0,40),P(7,0,40),P(7,0,64),P(6,0,64)],'#4f6fd1');};
-    if(act==='voluntariado'){add(4,3,()=>{sBox(1.5,2.6,6.5,3.4,0,15,'#a0754c');for(let k=0;k<4;k++)sBoxes(1.8+k*1.2,2.7);});ana={x:3,y:2.2,act:'stir',front:true};const q=3+Math.round(w.crisis/15);for(let k=0;k<q;k++)add(2+k*.7,4.3+(k%2)*.5,()=>sPerson(2+k*.7,4.3+(k%2)*.5,npc[k%12],{front:false,right:false}));}
-    else{for(let r=0;r<4;r++){add(4,2.4+r*1.3,()=>sPew(1.2,2+r*1.3,5.6));for(let k=0;k<(r%2?3:2);k++){const x=1.8+k*1.6+r*.3,y=2.3+r*1.3;add(x,y+.01,()=>sPerson(x,y,elder(k+r),{pose:'sit',front:false,right:false}));}}ana={x:5.6,y:3.6,pose:'sit',front:false,right:false};add(4,1.4,()=>sPerson(4,1.4,{...npc[0],shirt:'#1d1714',hair:'#bdbdbd'},{act:'talk'}));}
-    break;}
-  case 'comedor':{W=8;D=7;wall='#dfe7d9';decor=()=>{sPoster(1,30,'#2f8a5a','🥫');};
-    add(4,2.4,()=>{sBox(1.2,2,6.8,2.8,0,15,'#c9c3b8');for(let k=0;k<5;k++)sBoxes(1.4+k*1.1,2.1);});
-    const q=3+Math.round(w.crisis/10);for(let k=0;k<q;k++){const x=1.4+(k%6)*1,y=3.8+Math.floor(k/6)*.8;add(x,y,()=>sPerson(x,y,npc[(k+2)%12],{front:false,right:false,mood:40}));}
-    if(act==='comedor'){ana={x:6.5,y:5.6,pose:'stand',act:'eat',front:false,right:false};add(2.4,1.6,()=>sPerson(2.4,1.6,npc[0],{act:'stir'}));}else{ana={x:3.5,y:1.6,act:'stir',front:true};add(5.5,1.6,()=>sPerson(5.5,1.6,npc[11],{act:'stir'}));}
-    break;}
-  case 'parque':{out=true;W=10;D=8;floor=shade(LAWN,.95);tile=false;decor=()=>{};
-    for(const [x,y] of [[1,1],[8.5,1.5],[1.5,6.5],[9,6.8],[5,.8]])add(x,y,()=>sTree(x,y));add(5,4,()=>{cyl(5,4,1,0,6,'#c9c3b8','#7cc8f0');});add(2.5,3.6,()=>sBench(2,3.4));
-    if(act==='deporte'){const a=tt*0.6;const x=5+Math.cos(a)*3.2,y=4+Math.sin(a)*2.6;ana={x,y,pose:'walk',walkPh:tt*12,front:Math.sin(a)<0?false:true,right:Math.cos(a+Math.PI/2)>0};}
-    else{ana={x:2.6,y:3.9,pose:'sit',act:'talk',front:true};const f=P_('amiga');add(3.3,3.9,()=>sPerson(3.3,3.9,npc[4],{pose:'sit',act:'talk',right:false,name:f?f.n:null}));}
-    for(let k=0;k<3;k++){const a=tt*0.4+k*2.1;const x=5+Math.cos(a)*3.6,y=4+Math.sin(a)*3;add(x,y,()=>sPerson(x,y,npc[k+6],{pose:'walk',ph:tt*8+k,front:Math.sin(a)<0?false:true,right:Math.cos(a+Math.PI/2)>0}));}
-    break;}
-  case 'biblioteca':{W=8;D=7;floor='#c9b48a';wall='#e7e0d0';tile=false;decor=()=>{sShelf(.5,.2,7,true,'libros');};
-    for(const [x,y] of [[1.5,3],[4.5,3],[1.5,5],[4.5,5]])add(x+1,y+.5,()=>{sBox(x,y,x+2,y+.9,12,15,'#a0754c');sBox(x+.1,y+.1,x+.2,y+.8,0,12,'#6b4a2e');sBox(x+1.8,y+.1,x+1.9,y+.8,0,12,'#6b4a2e');});
-    ana={x:2.2,y:4.2,pose:'sit',act:'book',front:false,right:false};add(5.3,4.2,()=>sPerson(5.3,4.2,npc[6],{pose:'sit',act:'book',front:false,right:false}));add(2,6.2,()=>sPerson(2,6.2,npc[9],{pose:'sit',act:'type',front:false}));
-    break;}
-  case 'sala':{W=8;D=7;floor='#3b2f3a';wall='#4a3040';tile=false;decor=()=>{for(let k=0;k<4;k++){const [a,b]=P(1+k*2,.1,70);ctx.fillStyle=['rgba(255,80,120,.25)','rgba(80,160,255,.25)','rgba(255,220,80,.25)','rgba(140,255,160,.25)'][(k+Math.floor(tt*2))%4];ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(a-30,b+90);ctx.lineTo(a+30,b+90);ctx.fill();}};
-    add(4,1.5,()=>sBox(1,.4,7,2.4,0,10,'#2b2026'));
-    if(act==='work'){ana={x:4,y:1.4,act:'strum',front:true,right:true,z:10};for(let k=0;k<5+Math.round((S.career||0)*4);k++){const x=1.4+(k%6)*1,y=3.5+Math.floor(k/6)*1;add(x,y,()=>sPerson(x,y,npc[k%12],{act:k%2?'cheer':null,front:false,right:false,ph:tt*4+k}));}}
-    else{add(4,1.4,()=>{const [a,b]=P(4,1.4);sPerson(4,1.4-.0,npc[10],{act:'strum'});});ana={x:3,y:4.4,act:'cheer',front:false,right:false};for(let k=0;k<7;k++){const x=1.4+(k%5)*1.2,y=3.6+Math.floor(k/5)*1.4;add(x,y,()=>sPerson(x,y,npc[k%12],{act:k%3?'cheer':null,front:false,right:false,ph:tt*4+k}));}}
-    break;}
-  case 'comisaria':{W=6;D=5;floor='#b9bec6';wall='#d9dde3';decor=()=>{};
-    add(3,2.5,()=>{sBox(1,1,4.5,3.6,0,1,'#a9aeb6');sBox(1.4,1.2,3.6,1.8,0,9,'#7a7f88');});ana={x:2.4,y:1.9,pose:'sit',sad:true,front:true};
-    add(5,4,()=>{for(let k=0;k<7;k++){const a=P(1+k*.55,3.6),b=P(1+k*.55,3.6,48);capsule(a[0],a[1],b[0],b[1],1.6,'#3b3f46');}const a=P(1,3.6,48),b=P(4.6,3.6,48);capsule(a[0],a[1],b[0],b[1],2,'#3b3f46');});
-    break;}
-  case 'coop':{W=9;D=7;floor='#c9c3b8';wall='#eadfae';decor=()=>{sPoster(2,30,'#e9c46a','🐝');sPoster(5,30,'#2f8a5a','🤝');};
-    for(let k=0;k<3;k++){const x=1.2+k*2.6;add(x+1,2.4,()=>{sBox(x,2,x+2,2.8,0,15,'#a0754c');sBox(x+.2,2.1,x+.6,2.5,15,20,'#5f6670');});add(x+1,3.4,()=>sPerson(x+1,3.4,npc[k+2],{act:'hammer',front:false,right:false}));}
-    ana={x:5,y:5.2,act:'talk',front:false,right:false};
-    break;}
-  case 'tienda':{W=7;D=5;wall='#e9eef2';decor=()=>{sShelf(.5,.2,6,true);};add(3.5,2.4,()=>sBox(1.5,2,5.5,2.7,0,16,'#a0754c'));
-    ana={x:3,y:1.6,act:'talk',front:true};const c=Math.max(0,3-Math.round(w.crisis/30));for(let k=0;k<c;k++)add(2+k*1.4,3.6,()=>sPerson(2+k*1.4,3.6,npc[k+4],{front:false,right:false}));break;}
-  case '_piquete':{out=true;W=9;D=6;floor='#cfc6b4';tile=false;const wk=destOf('work');const pl=PLACES[wk]||{c:'#e8e2d4',n:'el trabajo'};
-    decor=()=>{sBox(0,-.2,W,0,0,70,pl.c);poly([P(3.5,0,0),P(5.5,0,0),P(5.5,0,30),P(3.5,0,30)],'#5f6670');sBanner(1,8,40,'¡EN HUELGA!');};
-    for(let k=0;k<8;k++){const x=1+k*.95,y=2.6+(k%2)*.6;add(x,y,()=>sPerson(x,y,npc[k],{act:'cheer',ph:tt*3+k,prop:k%2?'🪧':null}));}ana={x:4.6,y:3.8,act:'cheer',prop:'📣'};break;}
-  case '_calle':{out=true;W=12;D=4;floor='#d8d2c4';tile=false;const s=S.sim;const tot=s.awayTotal||s.work,el=tot-s.work,tr=Math.min(20,tot/3);const f=el<tr?el/tr:1-s.work/tr,back=el>=tr;
-    decor=()=>{for(let k=0;k<6;k++){const x=k*2;sBox(x,-.4,x+2,0,0,60+(k%3)*20,['#e8b7a0','#c9d8b6','#b9c6d8','#efe9dc','#d8c3dc','#e9d27a'][k]);for(let z=12;z<60;z+=16)poly([P(x+.4,0,z),P(x+1.6,0,z),P(x+1.6,0,z+9),P(x+.4,0,z+9)],night>.5?'#ffe08a':'#9fc4dc');}
-      topQuad(0,2.6,W,D,0.05,'#5d6168');};
-    const x=back?11-f*10:1+f*10;ana={x,y:1.6,pose:'walk',walkPh:tt*9,front:true,right:!back};
-    for(let k=0;k<4;k++){const a=(tt*0.5*(k%2?1:-1)+k*3)%12,xx=((a%12)+12)%12;add(xx,1+((k%2)*.9),()=>sPerson(xx,1+((k%2)*.9),npc[k+3],{pose:'walk',ph:tt*7+k,right:k%2===0}));}
-    const cx=((tt*2.4)%16)-2;add(cx,3.3,()=>{sBox(cx-.7,3,cx+.7,3.6,2,9,'#d9534f');sBox(cx-.4,3.05,cx+.4,3.55,9,14,'#e66a66');});
-    break;}
-  case '_ride':{out=true;W=12;D=4;floor='#d8d2c4';tile=false;decor=()=>{for(let k=0;k<6;k++){const x=k*2;sBox(x,-.4,x+2,0,0,60+(k%3)*20,['#e8b7a0','#c9d8b6','#b9c6d8','#efe9dc','#d8c3dc','#e9d27a'][k]);}topQuad(0,1.8,W,D,0.05,'#5d6168');};
-    const x=((tt*1.8)%14)-1;ana={x,y:2.8,pose:'walk',walkPh:tt*3,front:true,right:true,prop:'🛵'};
-    const cx=((tt*1.2+6)%16)-2;add(cx,3.4,()=>{sBox(cx-.7,3.1,cx+.7,3.7,2,9,'#3b3f46');});break;}
-  default:{W=6;D=5;}
-  }
+    break;}while(0);
   return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: super
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['super']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=10;D=7;wall='#f4f1ea';decor=()=>{sShelf(1,.2,8,true);};
+    for(let k=0;k<3;k++){const cx=1.5+k*2.8;add(cx+1,4,()=>sCaja(cx,4));}
+    ana={x:2.2,y:5.3,pose:'stand',act:'type',front:false,right:true};
+    add(4.6,5.3,()=>sPerson(4.6,5.3,npc[3],{act:'type',front:false,name:cp?cp.n:null}));add(7.4,5.3,()=>sPerson(7.4,5.3,npc[6],{act:'type',front:false}));
+    const q=2+Math.round(w.crisis/30);for(let k=0;k<q;k++)add(3.2+(k%3)*2.8,3.2-Math.floor(k/3)*.8,()=>sPerson(3.2+(k%3)*2.8,3.2-Math.floor(k/3)*.8,npc[(k+5)%12],{front:true,right:false,prop:k%2?'🛒':null}));
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: tienda
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['tienda']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=7;D=5;wall='#e9eef2';decor=()=>{sShelf(.5,.2,6,true);};add(3.5,2.4,()=>sBox(1.5,2,5.5,2.7,0,16,'#a0754c'));
+    ana={x:3,y:1.6,act:'talk',front:true};const c=Math.max(0,3-Math.round(w.crisis/30));for(let k=0;k<c;k++)add(2+k*1.4,3.6,()=>sPerson(2+k*1.4,3.6,npc[k+4],{front:false,right:false}));break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// Escena: torre
+// E = {tt, night, act, w, npc, cp, h} · devuelve {W,D,floor,wall,out,tile,decor,items,ana[,drawBase][,after]}
+SCENES['torre']=function(E){
+  const {tt,night,act,w,npc,cp}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});
+  let ana={x:3,y:3,pose:'stand',act:null,front:true,right:true};let W=9,D=7,floor='#e9e6df',wall='#f4f1ea',out=false,tile=true,decor=null;
+  do{W=9;D=7;floor='#c9ccd4';wall='#e7ecf2';
+    if(act==='networking'){for(let k=0;k<4;k++){const x=2+k*1.8,y=3+(k%2);add(x+.5,y+.5,()=>sTable(x,y,'#e7ecf2'));}ana={x:3.2,y:4.6,act:'talk'};for(let k=0;k<6;k++){const x=1.5+k*1.2,y=2.5+(k%3);add(x,y,()=>sPerson(x,y,npc[k],{act:k%2?'talk':null,prop:'🥂',right:k%2===0}));}}
+    else{for(let r=0;r<2;r++)for(let c=0;c<3;c++){const x=1.2+c*2.6,y=1.8+r*2.6;add(x+.5,y+.5,()=>sDesk(x,y));add(x+.5,y+1.4,()=>sChair(x,y+.9,'#3b3f46'));if(!(r===1&&c===0))add(x+.5,y+1.3,()=>sPerson(x+.5,y+1.3,npc[(r*3+c)%12],{pose:'sit',act:'type',front:false,right:false,name:r===0&&c===1&&cp?cp.n:null}));}
+      ana={x:1.7,y:5.7,pose:'sit',act:'type',front:false,right:false};}
+    break;}while(0);
+  return {W,D,floor,wall,out,tile,decor,items:it,ana};
+};
+// <</SCENES>>
+function buildScene(key,tt,night){
+  if(SCENES[key]){try{const r=SCENES[key]({tt,night,act:sceneAct(),w:W_(),npc:NPCS(),cp:P_('compi'),h:S.t/60,key});if(r)return r;}catch(e){console.error('escena',key,e);}}
+  return {W:6,D:5,floor:'#e9e6df',wall:'#f4f1ea',out:false,tile:true,decor:null,items:[],ana:{x:3,y:3,pose:'stand',act:null,front:true,right:true}};
 }
 function drawScene(key,tt,night){
   const sc=buildScene(key,tt,night);
-  sFloor(sc.W,sc.D,sc.floor,sc.tile);
-  if(!sc.out)sWalls(sc.W,sc.D,70,sc.wall,night);
+  if(sc.drawBase)sc.drawBase();else{sFloor(sc.W,sc.D,sc.floor,sc.tile);if(!sc.out)sWalls(sc.W,sc.D,70,sc.wall,night);}
   if(sc.decor)sc.decor();
   const a=sc.ana;sc.items.push({d:a.x+a.y,f:()=>{const [px,py]=P(a.x,a.y,a.z||0);const old=anaRT.phase;if(a.walkPh!=null)anaRT.phase=a.walkPh;const o={...anaOpts(),pose:a.pose||'stand',act:a.act,front:a.front??true,right:a.right??true,helmet:a.helmet,vest:a.vest};if(a.sad)o.mood=20;
     if(a.pose==='sit'&&!a.noChair){}drawAna(px,py+(a.pose==='sit'?-4:0),o);anaRT.phase=old;if(a.prop)emoji(a.prop,px+(a.prop==='🛵'?4:9),py-(a.prop==='🛵'?4:46),a.prop==='🛵'?20:13);
     ctx.save();label(CH().name,px,py-70,'#ff8a5b','#fff',9);ctx.restore();bubbleAt=[px,py-58];}});
   sc.items.sort((p,q)=>p.d-q.d);for(const x of sc.items)x.f();
+  if(sc.after)sc.after();
   return sc;
 }
 function sceneTitle(key){const act=sceneAct();if(key==='_calle')return (S.sim.awayTotal||0)-S.sim.work<20?`De camino: ${placeName(S.sim.dest)}`:'Volviendo a casa';if(key==='_ride')return 'Repartiendo por la ciudad';if(key==='_piquete')return `Piquete en ${placeName(destOf('work'))}`;
@@ -4357,6 +4497,65 @@ function drawEntorno(night,tt,phase){ // phase 0: detrás de la parcela · 1: de
   for(const p of entParked(night)){const g=(p.u<0||p.v<0)&&!(p.u>N||p.v>N)?0:1;if(g===phase)items.push({d:p.u+p.v,f:p.f});}
   items.sort((a,b)=>a.d-b.d);for(const it of items)it.f();
 }
+
+// =================== RASGOS AMPLIADOS ===================
+Object.assign(TRAITS,{
+  multitarea:{n:'Multitarea',e:'🔀',cat:'mente',d:'Hace varias cosas a la vez: aprende un poco de todo más rápido, pero se dispersa y a veces se le olvida algo.'},
+  milideas:{n:'Mil ideas',e:'💡',cat:'mente',d:'Siempre tiene un proyecto nuevo en la cabeza. Le sobra creatividad, le cuesta acabar: cambia de plan a menudo.',no:'constante'},
+  constante:{n:'Constante',e:'🧱',cat:'mente',d:'Lo que empieza, lo acaba. Termina antes las obras y sus planes no cambian.',no:'milideas'},
+  curiosa:{n:'Curiosa',e:'🔎',cat:'mente',d:'Quiere entenderlo todo: lee, pregunta y aprende lógica más rápido.'},
+  dondegentes:{n:'Don de gentes',e:'🤝',cat:'gente',d:'Sabe tratar con la gente aunque no la busque: carisma más rápido, negocia y liga mejor.'},
+  romantica:{n:'Romántica',e:'💘',cat:'gente',d:'Se enamora con facilidad y cuida mucho a su pareja. Las rupturas le duelen el doble.'},
+  independiente:{n:'Independiente',e:'🧭',cat:'gente',d:'No necesita a nadie para estar bien. Echa menos de menos y le pesa menos estar sola.'},
+  fiestera:{n:'Fiestera',e:'🎉',cat:'estilo',d:'Le encanta salir: queda con amigos a menudo y se divierte más fuera… y gasta más.',no:'casera'},
+  casera:{n:'Casera',e:'🛋️',cat:'estilo',d:'Donde mejor está es en casa. Sale poco y disfruta más del sofá, la cocina y sus cosas.',no:'fiestera'},
+  deportista:{n:'Deportista',e:'🏃',cat:'estilo',d:'Necesita moverse: sale a correr a menudo, se cansa menos y enferma menos.'},
+  nocturna:{n:'Nocturna',e:'🦉',cat:'estilo',d:'Rinde de noche y le cuesta madrugar. Se acuesta tarde y se despierta peor.',no:'madrugadora'},
+  madrugadora:{n:'Madrugadora',e:'🐓',cat:'estilo',d:'Se levanta con energía y llega pronto, pero por la noche se apaga.',no:'nocturna'},
+  optimista:{n:'Optimista',e:'🌤️',cat:'animo',d:'Ve el vaso medio lleno: su ánimo aguanta mejor los golpes.',no:'pesimista'},
+  pesimista:{n:'Pesimista',e:'🌧️',cat:'animo',d:'Espera lo peor. Su ánimo baja antes, pero los golpes la pillan preparada: ahorra un poco más.',no:'optimista'},
+  impulsiva:{n:'Impulsiva',e:'⚡',cat:'animo',d:'Decide en caliente: liga, compra y se planta sin pensarlo mucho. A veces sale bien.'},
+  tozuda:{n:'Tozuda',e:'🐂',cat:'animo',d:'Cuesta muchísimo que cambie de ideas, para bien y para mal.'}});
+Object.assign(TRAITS.trabajadora,{cat:'trabajo'});Object.assign(TRAITS.perezosa,{cat:'trabajo'});Object.assign(TRAITS.puntual,{cat:'trabajo'});Object.assign(TRAITS.despistada,{cat:'trabajo'});Object.assign(TRAITS.manitas,{cat:'trabajo'});
+Object.assign(TRAITS.ahorradora,{cat:'dinero'});Object.assign(TRAITS.derrochadora,{cat:'dinero'});
+Object.assign(TRAITS.sociable,{cat:'gente'});Object.assign(TRAITS.solitaria,{cat:'gente'});
+Object.assign(TRAITS.cocinillas,{cat:'estilo'});Object.assign(TRAITS.naturaleza,{cat:'estilo'});Object.assign(TRAITS.artista,{cat:'mente'});Object.assign(TRAITS.ordenada,{cat:'estilo'});
+const TRAIT_CATS=[['trabajo','💼 Trabajo'],['dinero','💰 Dinero'],['gente','🫂 Con la gente'],['mente','🧠 Cabeza'],['estilo','🏡 Estilo de vida'],['animo','🌦️ Carácter']];
+const TRAIT_MAX=5;
+// ---------- efectos ----------
+{const _xp=traitXP;traitXP=function(k){let m=_xp(k);if(T('multitarea'))m*=1.15;if(T('curiosa')&&k==='logica')m*=1.35;if(T('dondegentes')&&k==='carisma')m*=1.6;if(T('milideas')&&(k==='musica'||k==='logica'))m*=1.2;return m;};}
+{const _b=traitBoost;traitBoost=function(type){let b=_b(type);if(T('casera')&&['sofa','tele','fogon','libros','compu','guitarra','planta'].includes(type))b*=1.3;if(T('curiosa')&&(type==='libros'||type==='compu'))b*=1.25;return b;};}
+{const dE=TRAIT_DECAY.energia;TRAIT_DECAY.energia=()=>{let f=dE();if(T('deportista'))f*=.9;const h=S.t/60;if(T('nocturna'))f*=h>=21||h<2?.75:h>=6&&h<11?1.3:1;if(T('madrugadora'))f*=h>=5&&h<12?.8:h>=21?1.3:1;return f;};
+ const dS=TRAIT_DECAY.social;TRAIT_DECAY.social=()=>dS()*(T('independiente')?.7:1)*(T('fiestera')?1.2:1);}
+{const _m=mood;mood=function(){let v=_m();if(T('optimista'))v=v+(100-v)*.08;if(T('pesimista'))v-=4;return v;};}
+{const _lt=leaveTime;leaveTime=function(){let t=_lt();if(T('madrugadora'))t-=.25;if(T('nocturna')&&Math.random()<.25)t+=.3;if(T('multitarea')&&Math.random()<.08)t+=.4;return t;};}
+// salir más o menos
+{const _out=maybeOuting;maybeOuting=function(){if(T('casera')&&Math.random()<.45)return false;if(T('fiestera')&&!outAvail('amigos')&&Math.random()<.12&&S.outDay!==S.day){const nd=S.needs;if(nd.energia>30&&nd.hambre>25&&outCost('amigos')<=spare()){doOut('amigos');return true;}}
+  if(T('deportista')&&!outAvail('deporte')&&Math.random()<.1&&S.outDay!==S.day&&!['lluvia','tormenta','nieve'].includes((S.weather||{}).k)&&S.needs.energia>35){doOut('deporte');return true;}return _out.apply(this,arguments);};}
+// cambiar de ideas
+{const _dw=driftWeekly;driftWeekly=function(){if(T('tozuda')){const c=ex();for(const k in c.drift)if(k!==S.ideo)c.drift[k]*=.85;}return _dw.apply(this,arguments);};}
+// amor
+{const _f=flirt;flirt=function(p){if((T('dondegentes')||T('impulsiva'))&&p&&p.love!=null)p.love=Math.min(100,p.love+(T('dondegentes')?6:3));return _f.apply(this,arguments);};}
+{const _bu=breakUp;breakUp=function(p){const r=_bu.apply(this,arguments);if(T('romantica')){S.needs.diversion=Math.max(0,S.needs.diversion-30);ex().exp.stress++;}if(T('independiente'))S.needs.social=Math.min(100,S.needs.social+15);return r;};}
+{const _tk=talkTo;talkTo=function(p){_tk.apply(this,arguments);if(T('romantica')&&p&&['cita','rollo','pareja','convive','casada'].includes(p.stage))p.love=Math.min(100,p.love+2);if(T('dondegentes')&&p)p.rel=Math.min(100,p.rel+3);};}
+// pedir aumento
+{const _ar=askRaise;askRaise=function(manual){if(T('dondegentes')||T('impulsiva')){const ch=S.skills&&S.skills.carisma;}const save=ID().neg;if(T('dondegentes'))IDEOS[S.ideo||'apolitica'].neg=save+.05;try{return _ar.apply(this,arguments);}finally{IDEOS[S.ideo||'apolitica'].neg=save;}};}
+// Mil ideas / constante: los planes
+function ideasWeekly(){
+  if(T('milideas')&&S.want&&Math.random()<.35){const old=S.want.name;S.want=null;tell(pickR([`Ana ha dejado aparcado lo de «${old}». Ahora tiene otra idea mucho mejor. O eso cree.`,`«${old}» ya no le ilusiona. Ha llenado media libreta con un proyecto nuevo.`,`Tres pestañas abiertas, dos libretas empezadas y una idea nueva a las dos de la mañana. Lo de «${old}» puede esperar.`]),'💡');}
+  if(T('milideas')&&Math.random()<.25){S.needs.diversion=Math.min(100,S.needs.diversion+10);gainSkill(pickR(['logica','musica','carisma']),1.5);}
+  if(T('multitarea')&&Math.random()<.18)tell(pickR(['Ana ha cocinado, contestado tres correos y puesto una lavadora a la vez. Se le ha quemado el arroz.','Hoy Ana ha hecho mil cosas a medias. Mañana, otras mil.','Podcast, fregar y repasar las cuentas: todo a la vez. Ana no sabe estar quieta.']),'🔀');
+  if(T('pesimista')&&S.money>0)S.money+=Math.round(weeklyRent()*.03);}
+{const _cw=conexWeekly;conexWeekly=function(){_cw.apply(this,arguments);try{ideasWeekly();}catch(e){console.error(e);}};}
+// pensamientos
+{const _tc=thoughtCandidates;thoughtCandidates=function(){const c=_tc.apply(this,arguments);const add=(t,w=1)=>c.push([t,w]);
+  if(T('milideas'))add(pickR(['¿Y si monto una app para eso?','Tengo una idea buenísima. Otra.','Apuntar en la libreta: idea nº 47.']),.8);
+  if(T('multitarea'))add(pickR(['¿Dónde había dejado el móvil?','Ya que estoy, hago también lo otro.']),.6);
+  if(T('independiente'))add(pickR(['Se está bien sola.','No necesito a nadie para pasarlo bien.']),.4);
+  if(T('dondegentes')&&T('solitaria'))add('Me cae bien la gente… a ratos.',.6);
+  if(T('optimista'))add('Saldrá bien. Seguro.',.4);if(T('pesimista'))add('Algo saldrá mal. Siempre sale.',.4);
+  if(T('nocturna')&&S.t/60<9)add('Café. Ya. Por favor.',1);if(T('madrugadora')&&S.t/60<8)add('¡Qué bien se está a estas horas!',.8);
+  return c;};}
 
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
@@ -5173,7 +5372,7 @@ function renderCreator(diff,edit){
   const sw=(key,list)=>`<div class="swatches">${list.map(c=>`<div class="sw${cre[key]===c?' on':''}" data-k="${key}" data-v="${c}" style="background:${c}"></div>`).join('')}</div>`;
   const chips=(key,obj)=>`<div class="chips">${Object.entries(obj).map(([k,v])=>`<button class="mini${cre[key]===k?' sel':''}" data-k="${key}" data-v="${k}">${Array.isArray(v)?v[0]:v}</button>`).join('')}</div>`;
   let h=`<h2>${edit?'Cambiar aspecto':'Crea tu personaje'}</h2>`;
-  h+=`<div class="crepre"><canvas id="crePor" width="240" height="240"></canvas><canvas id="creBody" width="150" height="240"></canvas></div>`;
+  h+=`<div class="crepre${card.scrollTop>140&&menu.classList.contains('open')&&card.querySelector('#crePor')?' small notr':''}"><canvas id="crePor" width="240" height="240"></canvas><canvas id="creBody" width="150" height="240"></canvas></div>`;
   h+=`<div class="crow"><input id="crename" maxlength="16" value="${cre.name.replace(/"/g,'')}" placeholder="Nombre"></div><div class="chips" style="margin-top:4px"><button class="mini" id="crerand">🎲 Todo al azar</button><button class="mini" id="creface">🙂 Otra cara</button></div>`;
   h+=`<div class="clab">Pronombre</div>${chips('g',PRON)}`;
   h+=`<div class="clab">Edad</div><div class="chips">${[20,24,27,32,38,45,55].map(a=>`<button class="mini${cre.age===a?' sel':''}" data-k="age" data-v="${a}">${a}</button>`).join('')}</div>`;
@@ -5200,11 +5399,11 @@ function renderCreator(diff,edit){
   if(cre.ideo!=='apolitica')h+=`<div class="chips" style="margin-top:4px">${[1,2,3].map(n=>`<button class="mini${cre.comp===n?' sel':''}" data-k="comp" data-v="${n}">${L2(COMP[n])}</button>`).join('')}</div>`;
   {const L=cre.life||(cre.life=defaultLife(cre.g));const ch2=(key,obj)=>`<div class="chips">${Object.entries(obj).map(([k,v])=>`<button class="mini${L[key]===k?' sel':''}" data-lf="${key}" data-v="${k}">${v}</button>`).join('')}</div>`;
     h+=`<div class="clab">Le atraen</div>${ch2('orient',ORIENT)}<div class="clab">Relaciones</div>${ch2('rel',RELSTYLE)}<div class="clab">Hijos</div>${ch2('kids',KIDSW)}<div class="clab">Boda</div>${ch2('boda',BODAW)}`;}
-  h+=`<div class="clab">Personalidad (hasta 3)</div><div class="chips">${Object.entries(TRAITS).filter(([k,t])=>!t.hid).map(([k,t])=>`<button class="mini${cre.traits.includes(k)?' sel':''}" data-trait="${k}">${t.e} ${L2(t.n)}</button>`).join('')}</div>`;
+  h+=`<div class="clab">Personalidad <span style="font-weight:700;text-transform:none;letter-spacing:0">· ${cre.traits.length}/${TRAIT_MAX}${cre.traits.length>=TRAIT_MAX?' (quita uno para cambiar)':''}</span></div>`+TRAIT_CATS.map(([cat,cn])=>{const ks=Object.entries(TRAITS).filter(([k,t])=>!t.hid&&(t.cat||'estilo')===cat);if(!ks.length)return '';return `<div class="sub" style="font-size:11px;margin:6px 0 2px">${cn}</div><div class="chips">${ks.map(([k,t])=>{const on=cre.traits.includes(k),full=!on&&cre.traits.length>=TRAIT_MAX&&!(t.no&&cre.traits.includes(t.no));return `<button class="mini tr${on?' sel':''}${full?' dim':''}" data-trait="${k}">${t.e} ${L2(t.n)}</button>`;}).join('')}</div>`;}).join('');
   if(cre.traits.length)h+=cre.traits.map(k=>`<div class="sub" style="font-size:11.5px">${TRAITS[k].e} ${TRAITS[k].d}</div>`).join('');
   h+=`<button class="btn" id="creok">${edit?'💾 Guardar':'✅ Empezar la historia'}</button><button class="btn grey" id="creback">${edit?'Cancelar':'← Volver'}</button>`;
   // el creador usa el género del borrador, no el de la partida
-  const keep=card.scrollTop;const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');{const sv=S.char;S.char={...cre};const hh=L(h);S.char=sv;d.set.call(card,hh);}menu.classList.add('open');card.scrollTop=keep;if(keep>140){const pp=card.querySelector('.crepre');if(pp)pp.classList.add('small');}
+  const keep=card.scrollTop;const d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');{const sv=S.char;S.char={...cre};const hh=L(h);S.char=sv;d.set.call(card,hh);}menu.classList.add('open');card.scrollTop=keep;requestAnimationFrame(()=>{const pp=card.querySelector('.crepre');if(pp)pp.classList.remove('notr');});
   card.onscroll=()=>{const p=card.querySelector('.crepre');if(p)p.classList.toggle('small',card.scrollTop>140);};
   const draw=()=>{paintPortrait(card.querySelector('#crePor'),cre,null);const bc=card.querySelector('#creBody'),bx=bc.getContext('2d');bx.setTransform(1,0,0,1,0,0);bx.clearRect(0,0,bc.width,bc.height);
     const old=ctx;ctx=bx;ctx.setTransform(3.3,0,0,3.3,bc.width/2-6,bc.height-14);anaRT.phase=0;drawAna(0,0,{ch:cre,shirt:cre.shirt,mood:72,front:true,right:true,pose:'stand'});ctx=old;};
@@ -5221,7 +5420,7 @@ function renderCreator(diff,edit){
   card.querySelectorAll('[data-gl]').forEach(b=>b.onclick=()=>{const v=b.dataset.gl;cre.glasses=v!=='no';if(v!=='no')rfOf(cre).gl=v;renderCreator(diff,edit);});
   card.querySelectorAll('[data-lf]').forEach(b=>b.onclick=()=>{cre.life[b.dataset.lf]=b.dataset.v;renderCreator(diff,edit);});
   card.querySelectorAll('[data-trait]').forEach(b=>b.onclick=()=>{const k=b.dataset.trait;let tr=cre.traits;
-    if(tr.includes(k))tr=tr.filter(x=>x!==k);else{if(TRAITS[k].no)tr=tr.filter(x=>x!==TRAITS[k].no);if(tr.length>=3){toast('Máximo 3 rasgos');return;}tr.push(k);}cre.traits=tr;renderCreator(diff,edit);});
+    if(tr.includes(k))tr=tr.filter(x=>x!==k);else{if(TRAITS[k].no)tr=tr.filter(x=>x!==TRAITS[k].no);if(tr.length>=TRAIT_MAX){b.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'none'}],{duration:200});return;}tr.push(k);}cre.traits=tr;renderCreator(diff,edit);});
   card.querySelector('#creface').onclick=()=>{cre.faceSeed=Math.random().toString(36).slice(2);delete cre.face;delete cre.rf;renderCreator(diff,edit);};
   card.querySelector('#crerand').onclick=()=>{const t=cre.traits;cre={...randomChar(),traits:t,ideo:cre.ideo,comp:cre.comp,track:cre.track};renderCreator(diff,edit);};
   card.querySelector('#creback').onclick=()=>edit?openMenu('perfil'):chooseDifficulty(true);
