@@ -175,7 +175,72 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #hint{font-size:10.5px;font-weight:800;color:var(--sub);text-align:center;padding:0 6px 5px;min-height:0;text-shadow:0 1px 0 rgba(255,255,255,.6)}
 #hint:empty{display:none}
 .lookstrip{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}.lookstrip .lk{flex:0 0 auto;width:72px;border:2px solid transparent;border-radius:12px;background:#eef1f6;padding:3px;display:flex;flex-direction:column;align-items:center;gap:2px;scroll-snap-align:center;cursor:pointer}.lookstrip .lk img{width:62px;height:62px;border-radius:9px;display:block}.lookstrip .lk span{font-size:30px;height:62px;line-height:62px}.lookstrip .lk small{font-size:10.5px;font-weight:800;color:#3b3f46;white-space:nowrap}.lookstrip .lk.on{border-color:#ff8a5b;background:#fff3ec}
-</style>
+/*<<PHCSS>>*/#phbtn{position:relative}
+#phbtn .badge{display:flex;align-items:center;justify-content:center}
+#phone{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(20,16,30,.28);backdrop-filter:blur(2px)}
+#phone.on{display:flex}
+#phone .phf{width:min(340px,92vw);height:min(680px,86vh);background:#111;border-radius:42px;padding:10px;box-shadow:0 20px 60px rgba(0,0,0,.45),inset 0 0 0 2px #333;display:flex;flex-direction:column;position:relative;animation:phin .22s ease-out}
+@keyframes phin{from{transform:translateY(30px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+#phone .phs{display:flex;justify-content:space-between;align-items:center;color:#fff;font:800 12px Nunito,sans-serif;padding:6px 18px 4px;position:absolute;top:10px;left:10px;right:10px;z-index:2;pointer-events:none}
+#phone .phcam{width:78px;height:20px;border-radius:12px;background:#000}
+#phone .phb{flex:1;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#ffd7b8,#f7a6c1 45%,#9b8cf0);display:flex;flex-direction:column;padding-top:34px;font-family:Nunito,sans-serif}
+#phone .phhome{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);width:110px;height:5px;border-radius:3px;background:rgba(255,255,255,.75);cursor:pointer}
+#phone .phwall{text-align:center;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.25);padding:26px 0 16px}
+#phone .phclock{font:900 54px Nunito,sans-serif;letter-spacing:-1px}
+#phone .phdate{font:800 14px Nunito,sans-serif;opacity:.95}
+#phone .phgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 6px;padding:10px 16px}
+#phone .phapp{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:0}
+#phone .phapp span{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:27px;box-shadow:0 4px 10px rgba(0,0,0,.18);position:relative}
+#phone .phapp span i{position:absolute;top:-5px;right:-5px;background:#ff3b30;color:#fff;font:900 11px Nunito,sans-serif;font-style:normal;border-radius:10px;min-width:19px;height:19px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+#phone .phapp small{color:#fff;font:800 11px Nunito,sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.35)}
+#phone .phtop{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,.92);border-bottom:1px solid #e8e3ee;min-height:46px}
+#phone .phtop b{flex:1;font-size:15px;color:#2b2533}
+#phone .phback{border:0;background:none;font:900 28px Nunito,sans-serif;color:#3a86ff;line-height:1;padding:0 6px 4px 0;cursor:pointer}
+#phone .phic{border:0;background:#eef1f6;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer}
+#phone .phlist{flex:1;overflow-y:auto;background:#fbf9fc;padding-bottom:30px}
+#phone .phrow{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:9px 12px;border-bottom:1px solid #efeaf2;text-align:left;cursor:pointer}
+#phone .phav{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#e3e7ef}
+#phone .phave{display:flex;align-items:center;justify-content:center;font-size:22px}
+#phone .phrt{flex:1;min-width:0;display:flex;flex-direction:column}
+#phone .phrt b{font-size:14px;color:#2b2533}
+#phone .phrt small{font-size:12px;color:#7a7285;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#phone .phun{background:#2fb36a;color:#fff;border-radius:11px;font:900 11px Nunito,sans-serif;font-style:normal;min-width:21px;height:21px;display:flex;align-items:center;justify-content:center}
+#phone .phtm{font-size:11px;color:#9a93a3}
+#phone .phchat{flex:1;overflow-y:auto;background:#efe7dd;padding:10px 10px 6px;display:flex;flex-direction:column;gap:5px}
+#phone .phm{max-width:78%;align-self:flex-start;background:#fff;border-radius:14px 14px 14px 4px;padding:7px 10px 5px;font-size:13.5px;color:#2b2533;box-shadow:0 1px 1px rgba(0,0,0,.08);line-height:1.3}
+#phone .phm.me{align-self:flex-end;background:#d7f8c6;border-radius:14px 14px 4px 14px}
+#phone .phm small{display:block;text-align:right;font-size:10px;color:#9a93a3;margin-top:2px}
+#phone .phday{align-self:center;background:rgba(255,255,255,.8);border-radius:8px;padding:2px 10px;font-size:11px;color:#7a7285;margin:6px 0;font-weight:800}
+#phone .phreps{display:flex;flex-direction:column;gap:5px;align-self:flex-end;width:82%;margin-top:4px}
+#phone .phreps button,#phone .phcomp button{border:0;background:#fff;border-radius:18px;padding:8px 12px;font:800 12.5px Nunito,sans-serif;color:#2b6b45;box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:pointer;text-align:left}
+#phone .phcomp{display:flex;gap:6px;overflow-x:auto;padding:8px 10px 26px;background:#f6f1ea}
+#phone .phcomp button{flex:0 0 auto;color:#3b3247}
+#phone .phempty{text-align:center;color:#8a8294;font-size:13px;padding:30px 10px}
+#phone .phcallsc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:linear-gradient(180deg,#2c3a5c,#14182a);color:#fff;text-align:center;padding:20px}
+#phone .phcallsc .phav{width:110px;height:110px}
+#phone .phcallsc b{font-size:24px}
+#phone .phcallsc small{font-size:14px;opacity:.85;max-width:240px}
+#phone .phhang{margin-top:30px;border:0;background:#ff3b30;color:#fff;border-radius:34px;padding:16px 26px;font:900 16px Nunito,sans-serif;cursor:pointer}
+#phone .phnews{display:flex;gap:10px;padding:12px;border-bottom:1px solid #efeaf2;background:#fff}
+#phone .phnews span{font-size:24px}
+#phone .phnews b{font-size:13.5px;color:#2b2533;display:block;line-height:1.3}
+#phone .phnews small{font-size:12px;color:#7a7285;display:block;margin-top:3px}
+#phone .phpost{background:#fff;margin:8px;border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+#phone .phph{display:flex;align-items:center;gap:8px;padding:8px 10px}
+#phone .phph .phav{width:30px;height:30px}
+#phone .phph b{flex:1;font-size:13px}
+#phone .phph small{font-size:11px;color:#9a93a3}
+#phone .phpic{height:150px;display:flex;align-items:center;justify-content:center;font-size:72px;background:linear-gradient(135deg,#fde2cf,#e7dcfb)}
+#phone .phcap{padding:8px 10px 2px;font-size:13px;color:#2b2533}
+#phone .phlike{border:0;background:none;padding:4px 10px 10px;font:800 13px Nunito,sans-serif;cursor:pointer;color:#3b3247}
+#phone .phbal{margin:14px;padding:18px;border-radius:18px;background:linear-gradient(135deg,#2c3a5c,#4a6fa5);color:#fff;display:flex;flex-direction:column;gap:4px}
+#phone .phbal b{font:900 34px Nunito,sans-serif}
+#phone .phbal b.neg{color:#ffb3a8}
+#phone .phbal small{opacity:.85;font-size:12px}
+#phone .phkv{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #efeaf2;font-size:13.5px;background:#fff}
+#phone .phkv .neg{color:#d64a3a}#phone .phkv .pos{color:#2f9a5a}
+#phone .phcomp{scrollbar-width:none}#phone .phcomp::-webkit-scrollbar{display:none}
+/*<</PHCSS>>*/</style>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -13463,6 +13528,178 @@ function routineShower(){const s=S.sim;if(s.leaving||s.use||s.target!=null||s.pa
 {const _au=autonomy;autonomy=function(){try{if(routineShower())return;}catch(e){console.error(e);}return _au.apply(this,arguments);};}
 // de noche: si aprieta la vejiga, se levanta a hacer pis en vez de mojar la cama
 {const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim,u=s.use;if(u&&['cama','camamat','litera','colchon','sofacama'].includes(u.type)&&S.needs.vejiga<9&&!s.work){const b=bestObjFor('vejiga');if(b&&b.path){s.use=null;go(b,'vejiga',false);if(throttled('pisnoche',600000))tell(`${CH().name} se levantó medio dormid${oa()} a hacer pis.`,'🚽');}}}catch(e){}return r;};}
+// =================== EL MÓVIL: mensajes, llamadas, noticias, red social, banco ===================
+const PH=()=>{if(!S.ph)S.ph={th:{},un:{},feed:[],next:0,bal:[],used:0,usedDay:0,posts:0};const p=S.ph;p.th=p.th||{};p.un=p.un||{};p.feed=p.feed||[];p.bal=p.bal||[];return p;};
+const phNow=()=>S.day*1440+S.t;
+const phHM=m=>{const t=((m%1440)+1440)%1440;return String(t/60|0).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0');};
+const kidW=()=>'hij'+oa();
+function phPeople(){return (S.people||[]).filter(p=>p&&p.k&&p.stage!=='muerta');}
+function phRole(p){if(p.k==='madre')return 'madre';if(isPartner(p)||p.stage==='rollo'||p.stage==='cita')return 'amor';if(p.k==='compi')return 'compi';if(p.k==='vecina')return 'vecina';if(p.k==='amiga'||p.stage==='amiga')return 'amiga';if(p.stage==='ex')return 'ex';return 'conocida';}
+// --- plantillas: [texto, tipo de respuesta] ---
+function phTemplates(p){const r=phRole(p),h=S.t/60,c=CH(),n=c.name,o=oa(),L=[];const add=(t,k='gen',w=1)=>L.push([t,k,w]);
+  const jl=S.jobless,str=S.strike&&S.strike.on,crisis=W_().crisis>=60,rent=!S.owned;
+  if(r==='madre'){add('¿Has comido? Que te conozco.','carino',2);add(`¿Vienes el domingo? Hago croquetas 🥘`,'domingo',1.5);add('🎤 Audio de 4:37','audio',1.2);{const lo=LIFE().orient;add(`Me ha llamado tu tía. Pregunta que cuándo te echas novi${lo==='hombres'?'o':lo==='mujeres'?'a':'e'} 🙄`,'gen');}add('¿Has visto lo que ha subido la luz? Una vergüenza.','gen');add(`Cuídate, ${kidW()}, que te veo muy delgad${o}.`,'carino');add('[Imagen: un gatito con flores] Buenos días ☀️🌸','carino',h<11?2:.3);
+    if(jl)add(`¿Has mirado lo del paro, ${kidW()}? Aquí siempre tienes un plato.`,'carino',2);if(rent)add('¿Otra vez te ha subido el casero? Esos no tienen madre.','gen',crisis?1.5:.5);}
+  else if(r==='amor'){add('¿Qué haces? 🙈','amor',2);add('Pienso en ti, tont'+o+'.','amor',1.5);add('¿Cenamos juntos esta noche?','cena',h>=16&&h<21?2.5:.4);add('¿Te quedas a dormir hoy? 🌙','dormir',h>=19?1.5:.2);add('Hoy en el curro he tenido un día de mierda 😩','apoyo',1);add('[Foto: un perro con chubasquero] Es tu espíritu animal','risa',1);add('Buenos días, guap'+o+' ☀️','amor',h<11?2:.2);}
+  else if(r==='compi'){add('El jefe hoy estaba insoportable. Otra vez con lo de las horas extra «voluntarias».','queja',2);add('¿Te has enterado? Dicen que van a recortar turnos.','queja',crisis?2:.8);add('Mañana hay asamblea en el descanso. ¿Vienes?','asamblea',S.office&&S.office.org>25?1.5:.6);add('😂😂 [Meme: «yo cuando el jefe dice que somos una familia»]','risa',1.2);
+    if(str)add('Piquete a las 6 en la puerta. Trae termo. ✊','asamblea',3);}
+  else if(r==='vecina'){add('Se ha vuelto a romper el ascensor. Ya van tres veces este mes.','gen',1.5);add('Reunión de la comunidad el jueves. Lleva paciencia.','gen',1);add('¿Te ha llegado a ti también la carta del administrador? Quieren cobrarnos la fachada.','gen',rent?.6:1.2);add('Te he dejado un táper de lentejas en la puerta 🥘','regalo',.8);}
+  else if(r==='amiga'){add('¿Cañas el viernes? 🍻','canas',2);add('😂😂😂 [Meme de un gato con chaleco de sindicato]','risa',1.5);add('Me han subido el alquiler OTRA VEZ. 80 pavos. Me quiero morir.','apoyo',rent||crisis?1.6:.7);add('Te echo de menos, ¿cuándo nos vemos?','canas',1.2);add('¿Has visto lo de las noticias? Flipo.','gen',1);if(jl)add('¿Cómo llevas lo del curro? Si necesitas algo, dímelo, eh.','carino',2);}
+  else if(r==='ex'){add('Hola… ¿qué tal estás?','ex',1);add('He visto una peli que te habría gustado. Ya está, solo eso.','ex',.6);}
+  else{add('¡Hola! ¿Qué tal todo?','gen',1);add('¿Te apetece quedar algún día? ☕','canas',1);add('[Enlace: «10 trucos para llegar a fin de mes» ¡el 7 te sorprenderá!]','risa',.6);}
+  return L;}
+const PH_REP={
+  gen:[['🙂 Contestar con cariño',3,null,'¡Ja, ja! Sí, un desastre 🙃','Jajaja, ¡qué me dices! 😄'],['👍 Un «ok»',0,null,'👍','ok'],['🙈 Dejar en visto',-2,null,null,null]],
+  carino:[['❤️ Responder con cariño',5,null,'Que sí, tranqui. Te quiero 😘','Sí, mamá, tranquila. Te quiero ❤️'],['🙄 «Que sí, pesad{o}»',-1,null,'Vale, vale…'],['📞 Llamar',6,'call',null,null]],
+  domingo:[['🥘 «Allí estaré»',7,null,'¡Pues no llegues tarde! 🥰'],['😬 «No puedo, tengo lío»',-3,null,'Bueno… otro domingo 😔']],
+  audio:[['🎧 Escucharlo entero',5,null,'¿Lo has oído? Es importante 😤','Escuchado entero, eh 😅'],['⏩ A 2x',2,null,null,'Escuchado (a 2x) 😇'],['👍 Responder sin escuchar',-2,null,'¿Lo has escuchado? 🤨','👍']],
+  amor:[['😍 Ponerse tiern{o}',5,'love','🥰🥰','Y yo en ti, todo el rato 🥰'],['😏 Responder con picardía',4,'love','😳 Calla','¿Ah, sí? ¿Y qué piensas exactamente? 😏'],['📞 Llamar',4,'call',null]],
+  cena:[['🏠 «Ven a casa»',5,'home','¡Voy! Llevo vino 🍷'],['🍝 «Vamos a cenar fuera»',6,'out','Reservo en el italiano 🍝'],['😮‍💨 «Hoy no puedo»',-3,null,'Vale… mañana entonces 😔']],
+  dormir:[['🌙 «Vente»',6,'stay','Voy para allá 😘'],['😴 «Hoy necesito dormir sol{o}»',-1,null,'Lo entiendo, descansa 💤']],
+  apoyo:[['🫂 Dar ánimos',6,null,'Gracias… de verdad 🫶','Ánimo, de verdad. Aquí me tienes 🫂'],['📞 Llamar para desahogarse',7,'call',null,null],['🤷 «Así es la vida»',-3,null,'Ya…']],
+  risa:[['😂 Reírse',3,null,'JAJAJA te lo dije','JAJAJAJA me muero 😂'],['🔁 Mandar otro meme',4,null,'😂 Para ya que estoy en el bus','[Meme de un jefe diciendo «somos una familia»]'],['😐 No hacer caso',-1,null,null,null]],
+  queja:[['✊ «Hay que organizarse»',4,'org','Tienes razón. Lo hablo con el resto.'],['😮‍💨 «Pues aguantar…»',1,null,'Ya, qué remedio.'],['🤐 Cambiar de tema',-1,null,'Ok…','Oye, ¿y tú qué tal el finde?']],
+  asamblea:[['✊ «Allí estaré»',5,'org','¡Así me gusta! 💪'],['😬 «No me la juego»',-2,null,'Bueno, tú verás…']],
+  canas:[['🍻 «¡Vamos ahora!»',6,'out','¡Bajo en 10 minutos!'],['📅 «Mejor otro día»',1,null,'¡Te tomo la palabra!'],['🏠 «Vente a casa»',5,'home','¡Voy!']],
+  regalo:[['🥰 «¡Muchas gracias!»',6,null,'¡De nada, cariño!','¡Muchas gracias, de verdad!'],['🍪 Devolverle el táper con galletas',8,null,'¡Ay, qué apañad{o}!','Le dejé el táper con galletas 🍪']],
+  ex:[['🙂 Contestar cordial',2,null,'Me alegro de que estés bien.','Bien, tirando. Me alegro de saber de ti.'],['🚫 No contestar',0,null,null,null],['💬 «¿Quedamos para hablar?»',4,'out','Vale… mejor en persona.']],
+};
+function phRepOpts(k){const g=s=>s&&s.replace(/\{o\}/g,oa());return (PH_REP[k]||PH_REP.gen).map(([t,rel,act,back,say])=>{const q=t.match(/«([^»]+)»/);return [g(t),rel,act,g(back),say===undefined?(q?g(q[1]):null):g(say)];});}
+function phPush(pk,m){const P=PH();const th=P.th[pk]||(P.th[pk]=[]);th.push(m);if(th.length>40)th.splice(0,th.length-40);}
+function phIncoming(p,txt,k){phPush(p.k,{f:'t',t:txt,k,m:phNow(),open:!!PH_REP[k]});const P=PH();P.un[p.k]=(P.un[p.k]||0)+1;phBadge();
+  if(!phOpenNow())toast(`💬 ${p.n}: ${txt.replace(/<[^>]+>/g,'').slice(0,46)}${txt.length>46?'…':''}`);else phRender();}
+function phPick(L){let t=0;for(const x of L)t+=x[2];let r=Math.random()*t;for(const x of L){r-=x[2];if(r<=0)return x;}return L[0];}
+function phTick(){if(!S||!S.people)return;const P=PH(),now=phNow(),h=S.t/60;
+  if(!P.next){P.next=now+60+Math.random()*120;return;}
+  if(now<P.next)return;
+  const night=h<7.5||h>=23.5;P.next=now+(night?240:50+Math.random()*170);if(night)return;
+  const ppl=phPeople().filter(p=>p.stage!=='ex'||Math.random()<.15);if(!ppl.length)return;
+  // más mensajes de quien más te quiere
+  const w=p=>(phRole(p)==='amor'?4:phRole(p)==='madre'?2.6:phRole(p)==='amiga'?2.2:phRole(p)==='compi'?(S.jobless?.4:1.6):phRole(p)==='vecina'?.8:.5)*(0.4+(p.rel||30)/100);
+  let tot=ppl.reduce((a,p)=>a+w(p),0),r=Math.random()*tot,pp=ppl[0];for(const p of ppl){r-=w(p);if(r<=0){pp=p;break;}}
+  const th=P.th[pp.k]||[];const lastOpen=th.length&&th[th.length-1].f==='t'&&th[th.length-1].open;if(lastOpen&&Math.random()<.7)return;
+  const [txt,k]=phPick(phTemplates(pp));phIncoming(pp,txt,k);}
+function phAnswer(pk,i,oi){const P=PH(),th=P.th[pk],m=th&&th[i];const p=(S.people||[]).find(q=>q.k===pk);if(!m||!m.open||!p)return;m.open=false;
+  const [t,rel,act,back,say]=phRepOpts(m.k)[oi];if(say)phPush(pk,{f:'me',t:say,m:phNow()});else if(act!=='call')phPush(pk,{f:'sys',t:rel<0?'(visto)':'',m:phNow()});
+  p.rel=Math.max(0,Math.min(100,(p.rel||30)+rel));p.last=S.day;if(rel>0)S.needs.social=Math.min(100,S.needs.social+3+rel);if(act==='love'&&p.love!=null)p.love=Math.min(100,p.love+3);
+  if(back)setTimeout(()=>{if(!S)return;phPush(pk,{f:'t',t:back,m:phNow()});if(phOpenNow())phRender();else{PH().un[pk]=(PH().un[pk]||0)+1;phBadge();}},1400+Math.random()*2200);
+  if(act==='call'){phCall(p);return;}
+  if(act==='home'){phClose();inviteHome(p,false);return;}
+  if(act==='stay'){phClose();inviteHome(p,true);return;}
+  if(act==='out'){const why=outAvail('amigos');if(why&&why!=='solo en días libres'){toast('Ahora no puede salir: '+why);return;}phClose();S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);doOut('amigos');return;}
+  if(act==='org'&&S.office){S.office.org=Math.min(100,(S.office.org||0)+2);}
+  phRender();}
+// --- llamadas ---
+function phCall(p){phApp='call';phCallP=p.k;phCallT=performance.now();phRender();
+  setTimeout(()=>{if(phApp!=='call'||phCallP!==p.k)return;try{callP(p);}catch(e){console.error(e);}
+    const topics=['de la familia','del curro y de lo mal que paga','del alquiler','de política (un poco a gritos)','de nada en concreto, que es lo mejor','de planes para el finde','de una serie que están viendo los dos'];
+    phCallRes=`Hablaron ${10+(Math.random()*35|0)} minutos ${pickR(topics)}.`;phRender();},2200);}
+// --- noticias ---
+function phNews(){const w=W_(),G=(typeof GOVS!=='undefined'&&GOVS[w.gov])||null,c=w.crisis,out=[];const R=(s)=>{let x=0;for(const ch of s)x=(x*31+ch.charCodeAt(0))>>>0;return x;};const d=S.day;
+  const pick=(arr,salt)=>arr[(R(salt+d)%arr.length)];
+  if(G)out.push(['🏛️',`${G.n}: ${pick(['«La economía va como un cohete», dice el ministro','El Gobierno presume de cifras macro; en los barrios no se nota','Nueva rueda de prensa sin preguntas','Se aprueba el decreto ómnibus de madrugada'],'g')}`,G.fx]);
+  out.push(c>=65?['📉','Las empresas anuncian EREs «por la incertidumbre» mientras reparten dividendos récord','El paro sube por tercer mes. Los beneficios del IBEX, también.']:c>=40?['📊','La inflación se come la subida salarial: la cesta de la compra, un 9 % más cara','Los supermercados niegan especular. Sus márgenes dicen otra cosa.']:['📈','El empleo crece, pero la mitad de los contratos duran menos de un mes','«Récord de afiliados», titula la prensa. Récord de temporalidad, dicen los sindicatos.']);
+  out.push(['🏠',pick(['El alquiler medio en el barrio supera ya el 45 % del sueldo','Un fondo de inversión compra el bloque de la calle Mayor entera','Desahucio parado en la calle del Río gracias a la vecindad','Los pisos turísticos se comen el centro: 1 de cada 4 portales'],'h'),'']);
+  if(w.mov>=50)out.push(['✊',pick(['La marea de la sanidad llena la plaza un domingo más','Las kellys convocan huelga en cinco hoteles','Las riders ganan en los tribunales: eran falsas autónomas'],'m'),'El movimiento social crece en el barrio.']);
+  if(S.strike&&S.strike.on)out.push(['🪧',`Huelga en ${office().n}: la plantilla aguanta`,'La empresa habla de «minoría radical». Son el 80 %.']);
+  if(w.elec!=null&&w.elec<20)out.push(['🗳️',`Quedan ${w.elec} días para las elecciones generales`,'Campaña a base de banderas y promesas de bajar impuestos a quien ya no los paga.']);
+  out.push(['⚽',pick(['El club del barrio sube de categoría con un presupuesto de 3.000 euros','Polémica arbitral: todo el mundo tiene razón','Un futbolista firma por 200 millones; la enfermera de su hija cobra 1.400'],'f'),'']);
+  out.push(['🌦️',`El tiempo: ${S.weather?WX[S.weather.k].e+' '+S.weather.t+' °C':'variable'}. ${pick(['Lleva chaqueta, por si acaso.','Ni frío ni calor: tiempo de terraza (si llega el sueldo).','Ola de calor en los pisos sin aislar; los ricos, en la sierra.'],'w')}`,'']);
+  return out;}
+// --- red social ---
+function phFeedDaily(){const P=PH();const ppl=phPeople();if(!ppl.length)return;const n=1+(Math.random()*3|0);
+  const T=p=>{const r=phRole(p);const L={madre:['🌸 Buenos días a todos menos a los que suben la luz','🥘 Croquetas para un regimiento. ¿Quién viene?','📿 Que Dios reparta suerte (y mejores sueldos)'],amor:['☕ Café y lluvia. No pido más','🌆 Atardecer desde el bus. Gratis, como lo mejor','🎶 Esta canción me recuerda a alguien'],compi:['😴 Turno de 10 horas. «Somos una familia», dicen','✊ Hoy en el descanso hemos hablado de cosas. Cosas importantes','🍕 Viernes de pizza con la plantilla'],vecina:['🌿 Mis geranios están mejor que la sanidad pública','🔧 Tercera avería del ascensor. Vamos por el récord','🎂 Hoy cumple mi nieto. ¡Felicidades, campeón!'],amiga:['🍻 Martes de cañas porque la vida es corta y el sueldo más','🐈 Mi gato tiene más vacaciones que yo','📦 Nueva mudanza. Cuarta en dos años. Viva el mercado'],ex:['🌙 Nuevos comienzos','📚 Leyendo mucho últimamente'],conocida:['🏃 10 km. Ahora mismo no siento las piernas','🍳 Receta de la abuela: hoy sí ha salido','🎸 Concierto en El Sótano, ¡qué nivel!']}[r];return pickR(L);};
+  for(let i=0;i<n;i++){const p=pickR(ppl);P.feed.unshift({pk:p.k,txt:T(p),d:S.day,likes:(Math.random()*12|0),liked:false});}
+  if(P.feed.length>30)P.feed.length=30;
+  P.bal.push([S.day,Math.round(S.money)]);if(P.bal.length>15)P.bal.splice(0,P.bal.length-15);}
+function phPost(){const P=PH();if(P.lastPost===S.day){toast('Ya ha publicado hoy. No hay que dar la chapa');return;}P.lastPost=S.day;
+  const td=S.today||{},opts=[td.out?'🍻 '+String(td.out).replace(/<[^>]+>/g,'').slice(0,70):'☕ Día tranquilo. Que dure.',S.jobless?'📭 Buscando curro. Se aceptan contactos (y ánimos)':'💼 Otro día más en el tajo. Lo que hay que hacer por un sueldo…',S.ideo!=='apolitica'?'✊ Si no nos organizamos, nos organizan':'🌅 Hoy toca disfrutar de lo pequeño'];
+  const txt=pickR(opts);const fr=phPeople().length;const likes=Math.max(0,Math.round(fr*(.3+Math.random()*.6)+(lvl('carisma')||0)));
+  P.feed.unshift({pk:'me',txt,d:S.day,likes,liked:false});if(P.feed.length>30)P.feed.length=30;
+  S.needs.social=Math.min(100,S.needs.social+Math.min(14,likes*1.5));S.needs.diversion=Math.min(100,S.needs.diversion+4);
+  const pt=partner();if(pt&&Math.random()<.25){setTimeout(()=>phIncoming(pt,'¿Y esa foto? ¿Con quién estabas? 🤨','gen'),2500);}
+  else{const p=pickR(phPeople());if(p)setTimeout(()=>phIncoming(p,pickR(['Me ha encantado tu publicación 😂','Jajaja muy tú','Así se habla 👏']),'risa'),2000);}
+  toast(`📸 Publicado · ${likes} me gusta`);phRender();}
+// --- interfaz ---
+let phApp=null,phThread=null,phCallP=null,phCallT=0,phCallRes=null,phEl=null;
+const phOpenNow=()=>!!(phEl&&phEl.classList.contains('on'));
+function phBadge(){const b=document.getElementById('phbadge');if(!b||!S)return;const n=Object.values(PH().un).reduce((a,b)=>a+b,0);b.textContent=n>9?'9+':n;b.style.display=n?'flex':'none';}
+function phOpen(app){if(!phEl){phEl=document.createElement('div');phEl.id='phone';document.body.appendChild(phEl);phEl.addEventListener('pointerdown',e=>{if(e.target===phEl)phClose();});}
+  phApp=app||null;phThread=null;phEl.classList.add('on');S.sim.phoneUntil=phNow()+15;phRender();}
+function phClose(){if(phEl)phEl.classList.remove('on');phApp=null;phThread=null;phCallRes=null;}
+const APPS=[['msg','💬','Mensajes','#2fb36a'],['call','📞','Llamar','#3a86ff'],['news','📰','Noticias','#e2513c'],['red','📸','Fotogram','#c13584'],['bank','🏦','Banco','#2c3a5c'],['citas','💘','Citas','#f15bb5'],['cal','📅','Agenda','#ff8a5b'],['curro','💼','Empleo','#6b6e3c']];
+function phRender(){if(!phEl||!S)return;const P=PH();const n=CH().name;const now=phNow();S.sim.phoneUntil=Math.max(S.sim.phoneUntil||0,now+10);
+  const bat=Math.max(5,100-((S.t/1440)*60|0));let h=`<div class="phf"><div class="phs"><span>${phHM(S.t)}</span><span class="phcam"></span><span>📶 ${bat}%</span></div><div class="phb">`;
+  const back=`<button class="phback" data-ph="home">‹</button>`;
+  const avatar=p=>p&&p.ch&&p.ch.look&&LOOK_SRC[p.ch.look]?`<img class="phav" src="${LOOK_SRC[p.ch.look]}">`:`<span class="phav phave">${p?(p.e||'🙂'):'🙂'}</span>`;
+  if(!phApp){h+=`<div class="phwall"><div class="phclock">${phHM(S.t)}</div><div class="phdate">${WDL[dateOf(S.day).wd]} ${dateOf(S.day).dm} de ${MONTHS[dateOf(S.day).m].toLowerCase()}</div></div><div class="phgrid">`+APPS.map(([k,e,t,c])=>{const un=k==='msg'?Object.values(P.un).reduce((a,b)=>a+b,0):0;return `<button class="phapp" data-ph="${k}"><span style="background:${c}">${e}${un?`<i>${un}</i>`:''}</span><small>${t}</small></button>`;}).join('')+`</div>`;}
+  else if(phApp==='msg'&&!phThread){h+=`<div class="phtop">${back}<b>Mensajes</b></div><div class="phlist">`;
+    const ppl=phPeople().map(p=>{const th=P.th[p.k]||[];return {p,last:th[th.length-1]};}).sort((a,b)=>(b.last?b.last.m:-1)-(a.last?a.last.m:-1));
+    for(const {p,last} of ppl)h+=`<button class="phrow" data-th="${p.k}">${avatar(p)}<span class="phrt"><b>${p.n}</b><small>${last?(last.f==='me'?'Tú: ':'')+last.t.replace(/<[^>]+>/g,'').slice(0,38):'Sin mensajes'}</small></span>${P.un[p.k]?`<i class="phun">${P.un[p.k]}</i>`:last?`<small class="phtm">${phHM(last.m)}</small>`:''}</button>`;
+    h+=`</div>`;}
+  else if(phApp==='msg'&&phThread){const p=(S.people||[]).find(q=>q.k===phThread);P.un[phThread]=0;phBadge();const th=P.th[phThread]||[];
+    h+=`<div class="phtop"><button class="phback" data-ph="msg">‹</button>${avatar(p)}<b>${p?p.n:''}</b><button class="phic" data-callp="${phThread}">📞</button></div><div class="phchat" id="phchat">`;
+    let lastD=null;th.forEach((m,i)=>{const d=Math.floor(m.m/1440);if(d!==lastD){lastD=d;h+=`<div class="phday">${d===S.day?'Hoy':d===S.day-1?'Ayer':'Día '+d}</div>`;}
+      if(m.f==='sys'){if(m.t)h+=`<div class="phday">✓✓ ${m.t}</div>`;}else h+=`<div class="phm ${m.f==='me'?'me':''}">${m.t}<small>${phHM(m.m)}</small></div>`;
+      if(m.open&&i===th.length-1)h+=`<div class="phreps">${phRepOpts(m.k).map((o,oi)=>`<button data-rep="${i}:${oi}">${o[0]}</button>`).join('')}</div>`;});
+    if(!th.length)h+=`<div class="phempty">Aún no os habéis escrito.</div>`;
+    h+=`</div><div class="phcomp">${['👋 ¿Qué tal?','🍻 ¿Quedamos?','❤️ Te echo de menos'].map((t,i)=>`<button data-say="${i}">${t}</button>`).join('')}</div>`;}
+  else if(phApp==='call'){const p=phCallP&&(S.people||[]).find(q=>q.k===phCallP);
+    if(p){h+=`<div class="phcallsc">${avatar(p)}<b>${p.n}</b><small>${phCallRes||'Llamando…'}</small><button class="phhang" data-ph="callend">${phCallRes?'Colgar':'📵'}</button></div>`;}
+    else{h+=`<div class="phtop">${back}<b>Contactos</b></div><div class="phlist">`+phPeople().map(p=>`<button class="phrow" data-callp="${p.k}">${avatar(p)}<span class="phrt"><b>${p.n}</b><small>${p.r||''}</small></span><span class="phtm">📞</span></button>`).join('')+`</div>`;}}
+  else if(phApp==='news'){h+=`<div class="phtop">${back}<b>Noticias del día</b></div><div class="phlist">`+phNews().map(([e,t,s])=>`<div class="phnews"><span>${e}</span><div><b>${t}</b>${s?`<small>${s}</small>`:''}</div></div>`).join('')+`</div>`;}
+  else if(phApp==='red'){h+=`<div class="phtop">${back}<b>Fotogram</b><button class="phic" data-ph="post">➕</button></div><div class="phlist">`;
+    if(!P.feed.length)h+=`<div class="phempty">Todavía no hay publicaciones. Vuelve mañana.</div>`;
+    P.feed.forEach((f,i)=>{const p=f.pk==='me'?null:(S.people||[]).find(q=>q.k===f.pk);const nm=f.pk==='me'?n:(p?p.n:'Alguien');const e=(f.txt.match(/^\S+/)||['📷'])[0];
+      h+=`<div class="phpost"><div class="phph">${f.pk==='me'?avatar({ch:CH()}):avatar(p)}<b>${nm}</b><small>${f.d===S.day?'hoy':'hace '+(S.day-f.d)+' d'}</small></div><div class="phpic">${e}</div><div class="phcap">${f.txt.replace(/^\S+\s*/,'')}</div><button class="phlike${f.liked?' on':''}" data-like="${i}">${f.liked?'❤️':'🤍'} ${f.likes+(f.liked?1:0)}</button></div>`;});
+    h+=`</div>`;}
+  else if(phApp==='bank'){const sal=S.jobless?0:salary();const rent=housingWeekly();const rows=(P.bal||[]).slice(-7);
+    h+=`<div class="phtop">${back}<b>Banco del Barrio</b></div><div class="phlist"><div class="phbal"><small>Saldo</small><b class="${S.money<0?'neg':''}">${fmt(Math.round(S.money))}</b><small>${S.money<0?'Descubierto: el banco cobra comisiones por no tener dinero. Así funciona.':'Disponible'}</small></div>`;
+    h+=`<div class="phkv"><span>💼 Ingreso semanal</span><b>${sal?fmt(sal):'—'}</b></div><div class="phkv"><span>${S.owned?'🏦 Hipoteca':'🏠 Alquiler'} semanal</span><b>${rent?fmt(rent):'—'}</b></div><div class="phkv"><span>🛟 Colchón recomendado</span><b>${fmt(reserveMoney())}</b></div>`;
+    if(rows.length>1){h+=`<div class="phday">Últimos días</div>`;for(let i=rows.length-1;i>0;i--){const d=rows[i][1]-rows[i-1][1];h+=`<div class="phkv"><span>Día ${rows[i][0]}</span><b class="${d<0?'neg':'pos'}">${d>=0?'+':''}${fmt(d)}</b></div>`;}}
+    h+=`</div>`;}
+  h+=`</div><div class="phhome" data-ph="home"></div></div>`;
+  phEl.innerHTML=h;const chat=phEl.querySelector('#phchat');if(chat)chat.scrollTop=chat.scrollHeight;
+  phEl.querySelectorAll('[data-ph]').forEach(b=>b.onclick=()=>{const k=b.dataset.ph;
+    if(k==='home'){if(phApp==='call'&&phCallP){phCallP=null;phCallRes=null;}phApp=null;phThread=null;phRender();return;}
+    if(k==='callend'){phCallP=null;phCallRes=null;phApp='call';phRender();return;}
+    if(k==='post'){phPost();return;}
+    if(k==='citas'){phClose();try{datingApp(false);}catch(e){console.error(e);}return;}
+    if(k==='cal'){phClose();try{openCalendar();}catch(e){console.error(e);}return;}
+    if(k==='curro'){phClose();openMenu('trabajo');return;}
+    phApp=k;phThread=null;phCallP=null;phCallRes=null;phRender();});
+  phEl.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{phThread=b.dataset.th;phRender();});
+  phEl.querySelectorAll('[data-callp]').forEach(b=>b.onclick=()=>{const p=(S.people||[]).find(q=>q.k===b.dataset.callp);if(p)phCall(p);});
+  phEl.querySelectorAll('[data-rep]').forEach(b=>b.onclick=()=>{const [i,oi]=b.dataset.rep.split(':').map(Number);phAnswer(phThread,i,oi);});
+  phEl.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>{const p=(S.people||[]).find(q=>q.k===phThread);if(!p)return;const i=+b.dataset.say;const t=['¿Qué tal?','¿Quedamos?','Te echo de menos'][i];
+    const P2=PH();if(P2.lastSay&&P2.lastSay[p.k]===phNow()>>4){return;}P2.lastSay=P2.lastSay||{};P2.lastSay[p.k]=phNow()>>4;
+    phPush(p.k,{f:'me',t,m:phNow()});p.last=S.day;S.needs.social=Math.min(100,S.needs.social+4);
+    setTimeout(()=>{const k=i===1?'canas':i===2?(phRole(p)==='amor'?'amor':'carino'):'gen';const ans=i===1?(p.rel>40?'¡Venga! ¿Cuándo?':'Uf, ando liad'+pO(p)+'…'):i===2?(p.rel>50?'Y yo a ti 🫶':'Ah… vale 😅'):pickR(['Bien, aquí, sobreviviendo. ¿Y tú?','Liad'+pO(p)+' con el curro. ¿Tú qué tal?','¡Bien! Hacía mucho 🙂']);
+      if(i===2){p.rel=Math.min(100,p.rel+(p.rel>50?3:-1));if(p.love!=null&&['cita','rollo','pareja','convive','casada'].includes(p.stage))p.love=Math.min(100,p.love+2);}else p.rel=Math.min(100,p.rel+2);
+      phIncoming(p,ans,i===1&&p.rel>40?'canas':'gen');},1500+Math.random()*2000);phRender();});
+  phEl.querySelectorAll('[data-like]').forEach(b=>b.onclick=()=>{const f=PH().feed[+b.dataset.like];if(!f||f.liked)return;f.liked=true;const p=(S.people||[]).find(q=>q.k===f.pk);if(p)p.rel=Math.min(100,p.rel+1);phRender();});
+}
+// botón 📱 en la barra lateral
+{const side=document.getElementById('side');if(side&&!document.getElementById('phbtn')){const b=document.createElement('div');b.className='pill glass';b.id='phbtn';b.title='Móvil';b.innerHTML='📱<span class="badge" id="phbadge" style="display:none">0</span>';const mb=document.getElementById('menubtn');(mb?mb.after(b):side.prepend(b));b.onclick=()=>phOpenNow()?phClose():phOpen();}}
+// cada minuto de juego: mensajes nuevos; cada día: red social y saldo
+{const _up2=update;update=function(gm){const d0=S.day;const r=_up2.apply(this,arguments);try{phTick();if(S.day!==d0)phFeedDaily();if(phOpenNow()&&phApp==='call'&&phCallP&&!phCallRes){}
+  if(S.sim.phoneUntil&&phNow()<S.sim.phoneUntil&&!S.sim.work&&!S.sim.use){S.needs.diversion=Math.min(100,S.needs.diversion+.05*gm);S.needs.social=Math.min(100,S.needs.social+.03*gm);}}catch(e){console.error(e);}return r;};}
+// Ana mira el móvil cuando no tiene nada que hacer (y saca el móvil si lo estás usando tú)
+{const _ao=anaOpts;anaOpts=function(){const o=_ao.apply(this,arguments);const s=S.sim;if(!o.act&&s.phoneUntil&&phNow()<s.phoneUntil&&!s.use&&!(s.path&&s.path.length))o.act='phone';return o;};}
+{const _au2=autonomy;autonomy=function(){const s=S.sim,nd=S.needs,now=phNow();
+  if(s.phoneUntil&&now<s.phoneUntil&&!phOpenNow()){if(['hambre','vejiga','energia','higiene'].some(k=>nd[k]<35))s.phoneUntil=0;else return;}
+  if(!phOpenNow()&&Math.random()<.07&&S.t/60>=8&&S.t/60<23.5&&!['hambre','vejiga','energia','higiene'].some(k=>nd[k]<50)&&(nd.diversion<92||nd.social<92)){
+    const P=PH();if(P.usedDay!==S.day){P.usedDay=S.day;P.used=0;}if(P.used<150){const m=10+Math.random()*20;P.used+=m;s.phoneUntil=now+m;
+      if(P.used>=150&&throttled('enganche',3e5))tell(`${CH().name} ha pasado más de dos horas hoy mirando el móvil. Scroll, scroll, scroll.`,'📱');return;}}
+  return _au2.apply(this,arguments);};}
+// también la gente que vive en casa mira el móvil a ratos
+{const _dr2=drawResident;drawResident=function(r){if(r.doing||(r.path&&r.path.length)||r.kind==='kid')return _dr2(r);const near=Math.hypot(r.x-S.sim.x,r.y-S.sim.y)<1.6&&!(S.sim.work>0);
+  const slot=Math.floor(performance.now()/26000+(r.pid||'').length*1.7)%3;if(near||slot!==0)return _dr2(r);
+  const p=r.pid&&S.people.find(q=>q.k===r.pid);if(!p)return _dr2(r);const ch=p.ch||personCh(p);const [u,v]=w2v(r.x,r.y);const [bx,by]=P(u,v,0);const sv=anaRT.phase;anaRT.phase=0;
+  ctx.save();drawAna(bx,by,{ch,shirt:ch.shirt,mood:70,front:r.front!==false,right:!!r.right,pose:'stand',act:'phone'});ctx.restore();anaRT.phase=sv;if(cam.z>0.7)label((r.kind==='partner'?'❤️ ':'')+p.n,bx,by-66,'rgba(255,253,248,.9)','#3b3247',8);};}
+// abrir el móvil también desde la app de citas antigua y con la tecla M
+addEventListener('keydown',e=>{if((e.key==='m'||e.key==='M')&&!/INPUT|TEXTAREA/.test((e.target||{}).tagName||'')){phOpenNow()?phClose():phOpen();}});
+setInterval(()=>{try{phBadge();if(phOpenNow()&&phApp!=='msg')phEl.querySelector('.phs span').textContent=phHM(S.t);}catch(e){}},1000);
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
