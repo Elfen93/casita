@@ -7899,7 +7899,7 @@ function homeTemplate(type){
     o(5,6,'cama',type==='padres'?2:2);
     const pv=type==='padres'?'madre':'mate';
     o(11,6,'cama',3,{priv:pv});o(9,6,'lampara',2,{priv:pv});o(14,6,'ducha',2);o(13,6,'vater',2);o(14,8,'espejo',2);
-    o(5,10,'nevera',2);o(6,10,'fogon',2);o(8,11,'mesa',2);o(10,12,'sofa',2);o(10,10,'tele',2);o(5,12,'silla',2);
+    o(5,10,'nevera',2);o(5,11,'fogon',2);o(8,11,'mesa',2);o(10,12,'sofa',2);o(10,10,'tele',2);o(8,12,'silla',2);
     o(14,12,'cama',type==='padres'?3:2,{priv:pv});o(12,10,type==='padres'?'libros':'guitarra',2,{priv:pv});
     area=[5,6,7,8];sim=[6.5,7.5];mates=type==='padres'?['madre']:['m1','m2'];}
   else if(type==='viejo'){rect(5,6,14,13,1);rect(5,6,10,10,3);door(8,10);rect(10,6,14,10,2);door(11,10);door(9,13);path(9,14,N-1);
@@ -7909,8 +7909,8 @@ function homeTemplate(type){
   else if(type==='bueno'){rect(4,5,15,14,6);rect(4,5,8,10,6);door(6,10);rect(8,5,12,10,6);door(10,10);rect(12,5,15,10,5);door(13,10);door(9,14);path(9,15,N-1);
     for(const [x,y] of [[6,5],[10,5],[4,7],[4,12],[15,12],[14,5],[15,8],[12,14]])win(x,y);for(let x=5;x<=7;x++)for(let y=11;y<=13;y++)fl[I(x,y)]=5;
     o(5,6,'cama',4);o(7,8,'lampara',3);o(9,6,'compu',3);o(11,6,'libros',4);o(13,6,'ducha',4);o(14,6,'vater',3);o(14,9,'espejo',3);
-    o(5,11,'nevera',4);o(6,11,'fogon',4);o(7,13,'mesa',3);o(10,12,'sofa',4);o(12,11,'tele',4);o(14,13,'planta',3);o(11,13,'alfombra',3);o(14,11,'telefono',3);o(5,13,'planta',3);
-    area=[5,6,14,13];sim=[10.5,12.5];}
+    o(5,11,'nevera',4);o(5,12,'fogon',4);o(7,13,'mesa',3);o(10,12,'sofa',4);o(12,11,'tele',4);o(14,13,'planta',3);o(11,13,'alfombra',3);o(14,11,'telefono',3);o(5,13,'planta',3);
+    area=[5,6,14,13];sim=[9.5,12.5];}
   else if(type==='chalet'){rect(3,3,16,12,6);rect(3,3,8,7,6);door(5,7);rect(8,3,12,7,6);door(10,7);rect(12,3,16,7,5);door(14,7);rect(11,7,16,12,5);door(11,9);door(7,12);path(7,13,N-1);
     for(const [x,y] of [[5,3],[10,3],[14,3],[3,5],[3,9],[16,5],[16,10],[9,12],[13,12]])win(x,y);
     o(4,4,'cama',4);o(6,4,'lampara',4);o(9,4,'cama',4);o(11,5,'compu',4);o(13,4,'ducha',4);o(15,4,'vater',4);o(15,6,'espejo',4);
@@ -7928,6 +7928,8 @@ const MATE_JOBS=[['estudiante de Enfermería','estudiante de Enfermería'],['cam
 function newMate(){const ch=randomChar();ch.age=20+(Math.random()*12|0);const p={k:'mate'+(S.pid=(S.pid||100)+1),n:ch.name,g:ch.g,ch,age:ch.age,ideo:pickR(IDEO_ORDER),orient:'ambos',relStyle:'libre',kids:'quiza',boda:'igual',job:'compañera',rel:25,love:0,stage:'conocida',met:'el piso',metDay:S.day,spark:0,e:'🛋️',mate:true,mjob:pickR(MATE_JOBS)[ch.g==='m'?1:0],hid:null};
   p.r=`comparte piso · ${p.mjob}`;S.people=S.people||[];S.people.push(p);return p;}
 // ---------- reglas de construcción ----------
+{const _ap=apply;apply=function(x,y,t=tool,quiet){const r=_ap.apply(this,arguments);if(!r&&!quiet&&t&&HT().build!=='all'&&inb(x,y)){const i=idx(x,y);const own=inArea(x,y)&&!(S.obj[i]&&S.obj[i].priv);const tk=(S.home&&S.home.type)||'casita';
+    if((!own||['wall','fence','door','win','floor'].includes(t.kind))&&throttled('ajeno',2500))toast(['wall','fence','door','win','floor'].includes(t.kind)?`🔒 En ${HOMES[tk].n.toLowerCase()} no se pueden hacer obras: las paredes no son tuyas`:tk==='padres'?'🔒 Eso es de tu madre: solo puedes tocar lo de tu cuarto':tk==='habitacion'?'🔒 Eso es de tus compañeros de piso: solo puedes tocar lo de tu cuarto':'🔒 Eso no es tuyo');}return r;};}
 {const _ca=canApply;canApply=function(x,y,t){if(!_ca(x,y,t))return false;if(HT().build==='all')return true;const k=t.kind;
   if(k==='obj'||k==='move'||k==='rot'||k==='craft')return inArea(x,y)&&!(S.obj[idx(x,y)]&&S.obj[idx(x,y)].priv);
   if(k==='paint'){const a=homeArea();return x>=a[0]-1&&y>=a[1]-1&&x<=a[2]+1&&y<=a[3]+1;}
@@ -9076,6 +9078,7 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 for(const i of findObjs((d,t)=>t==='compu'))withChair(i);
+{if(S&&S.home&&['padres','habitacion','bueno'].includes(S.home.type)){const mv=(a,b)=>{const i=idx(...a),j=idx(...b);if(S.obj[i]&&S.obj[i].t==='fogon'&&!S.obj[j]){S.obj[j]=S.obj[i];S.obj[i]=null;}};if(S.home.type==='bueno')mv([6,11],[5,12]);else{mv([6,10],[5,11]);if(S.obj[idx(5,12)]&&S.obj[idx(5,12)].t==='silla'&&!S.obj[idx(8,12)]){S.obj[idx(8,12)]=S.obj[idx(5,12)];S.obj[idx(5,12)]=null;}}const [x,y]=simCell();if(!walkable(x,y)){S.sim.x=S.home.area[0]+.5;S.sim.y=S.home.area[1]+1.5;}S.sim.path=[];S.sim.stuck=0;}}
 if(!S.track)S.track='oficina';setTrack(S.track);if(!S.ideo)S.ideo='apolitica';if(!S.pol)S.pol={xp:0,inf:0,stages:{},comp:2,red:0};S.pol.stages=S.pol.stages||{};W_();
 if(!S.char)S.char={...DEFCHAR,shirt:(S.sim&&S.sim.shirt)||DEFCHAR.shirt};if(!S.people)initPeople();if(!S.weather)rollWeather();if(!S.today)newToday();storyState();if(!S.story.chap.start&&!firstRun)chapter('start','Una casa con eco',`${S.char.name} vive en esta casita de alquiler y trabaja de ${CAREER[S.career].t.toLowerCase()}. Su historia empieza a contarse hoy.`);
 ensureSimFree();hud();
