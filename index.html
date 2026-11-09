@@ -13476,29 +13476,40 @@ function use3D(o){if(B3D===false)return false;if(S&&S.r3d===false)return false;i
 const RV_SIT=new Set(['sofa','silla','sillon','butaca','sofacama','banco','bancoj','mesacoc']);
 const RV_Z={sofa:8,sofacama:8,sillon:8,butaca:8,silla:9,banco:8,bancoj:8,mesacoc:9};
 function rvPlan(h){// [tipos de objeto, act, pose, minutos, peso]
-  if(h>=23||h<7)return [[['cama','camamat','litera','colchon','sofacama'],'sleep','lie',480,1]];
-  const L=[];const meal=(h>=7&&h<9.5)||(h>=13&&h<15)||(h>=20&&h<22);
-  if(meal){L.push([['fogon','encimera','micro'],'stir','stand',35,3],[['silla','mesacoc'],'eat','sit',30,3]);}
-  L.push([['sofa','sillon','butaca','sofacama'],h>=15?'watch':'book','sit',60,h>=15?4:2],[['tele','consola'],'watch','stand',20,.5],
-    [['planta','flores','huerto'],'water','stand',12,1],[['libros','estant'],'book','stand',15,1],[['telefono'],'phone','stand',20,1],
-    [['lavadora','lavavaj','lavabo'],'work','stand',20,1.5],[['compu','escritorio'],'type','sit',45,1],[['coser','guitarra','piano','tocadisc'],'strum','sit',30,.6]);
+  if(h>=23||h<7){const wake=7*60+Math.random()*50;const until=(h>=23?1440:0)+wake-S.t;return [[['cama','camamat','litera','colchon','sofacama'],'sleep','lie',Math.max(60,until),1,1]];}
+  const L=[];const meal=(h>=7.5&&h<9.5)||(h>=13.5&&h<15)||(h>=20.5&&h<22);
+  if(meal){L.push([['fogon','encimera','micro'],'stir','stand',30,4],[['silla','mesacoc'],'eat','sit',25,4]);}
+  L.push([['sofa','sillon','butaca','sofacama'],h>=15?'watch':'book','sit',50,h>=15?2.2:1.2],[['tele','consola'],'watch','stand',15,.4],
+    [['planta','flores','huerto','monstera','kentia'],'water','stand',12,1.4],[['libros','estant'],'book','stand',15,.8],[['telefono'],'phone','stand',20,1.2],
+    [['lavadora','lavavaj','lavabo','tendedero'],'work','stand',20,1.6],[['compu','escritorio'],'type','sit',40,.6],[['coser','guitarra','piano','tocadisc'],'strum','sit',30,.5],
+    [['nevera','fogon','encimera','mesa','mesacoc'],'work','stand',18,1.3],// limpiar / recoger la cocina
+    [['espejo','espejopie','armario','comoda'],'phone','stand',10,.5]);
+  // a la calle: compra, la vecina, el ambulatorio, el parque… (solo de día)
+  if(h>=9&&h<20)L.push([['_fuera'],'away','walk',60+Math.random()*100,h<13?1.5:.9]);
   return L;}
 function rvBusy(i,me){if(S.sim.use&&S.sim.use.i===i)return true;return (S.res||[]).some(o=>o!==me&&o.doing&&o.doing.i===i||o!==me&&o.plan&&o.plan.i===i);}
+function rvObjs(r,pred){const out=[];for(let i=0;i<N*N;i++){const o=S.obj[i];if(!o||!OBJ[o.t]||!pred(OBJ[o.t],o.t))continue;const pv=o.priv;if(pv&&pv!==r.pid&&!(pv==='mate'&&r.kind==='mate'))continue;out.push(i);}
+  // si tiene cosas propias de ese tipo, prefiere las suyas
+  const own=out.filter(i=>S.obj[i].priv);return own.length?own:out;}
 function rvChoose(r){const h=S.t/60;const home=!(S.sim.work>0);
   const close=r.kind==='guest'||r.kind==='partner';
-  if(close&&(h>=22||h<8))return false;// de noche, con Ana (y a su cama cuando ella se acuesta)
+  if(close&&(h>=22||h<8)&&r.kind!=='mate')return false;// pareja/visita: de noche con Ana (y a su cama cuando ella se acuesta)
   if(home&&Math.random()<(close?.45:.18)&&!(h>=23||h<7))return false;// a veces va a charlar con Ana
-  const opts=[];for(const [types,act,pose,dur,w] of rvPlan(h)){const objs=findObjs((d,t)=>types.includes(t)).filter(i=>!rvBusy(i,r));if(objs.length)opts.push({types,act,pose,dur,w,objs});}
+  const opts=[];for(const [types,act,pose,dur,w,fixed] of rvPlan(h)){if(types[0]==='_fuera'){opts.push({types,act,pose,dur,w,objs:[],fixed:1});continue;}const objs=rvObjs(r,(d,t)=>types.includes(t)).filter(i=>!rvBusy(i,r));if(objs.length)opts.push({types,act,pose,dur,w,objs,fixed});}
   if(!opts.length)return false;let tot=opts.reduce((a,o)=>a+o.w,0),x=Math.random()*tot,o=opts[0];for(const q of opts){x-=q.w;if(x<=0){o=q;break;}}
   const cx=Math.floor(r.x),cy=Math.floor(r.y);
+  if(o.act==='away'){const e=bfs([cx,cy],(x,y)=>x===0||y===0||x===N-1||y===N-1);if(!e)return false;r.path=e;r.plan={away:1,dur:o.dur,why:rvAwayWhy(r)};return true;}
   // el objeto más cercano al que se pueda llegar
   const tgt=new Map();for(const i of o.objs){const ox=i%N,oy=i/N|0;const nb=neighborsOf(i);for(const [a,b] of [[ox+1,oy],[ox-1,oy],[ox,oy+1],[ox,oy-1]])if(walkable(a,b))tgt.set(a+','+b,i);}
   if(!tgt.size)return false;let p=null;if(tgt.has(cx+','+cy))p=[];else p=bfs([cx,cy],(x,y)=>tgt.has(x+','+y));if(!p)return false;
   const end=p.length?p[p.length-1]:[cx,cy];const i=tgt.get(end[0]+','+end[1]);
-  r.path=p;r.plan={i,act:o.act,pose:o.pose,dur:o.dur*(.7+Math.random()*.6),t:S.obj[i].t};return true;}
+  r.path=p;r.plan={i,act:o.act,pose:o.pose,dur:o.fixed?o.dur:o.dur*(.7+Math.random()*.6),t:S.obj[i].t};return true;}
+function rvAwayWhy(r){const p=r.pid&&(S.people||[]).find(q=>q.k===r.pid);const old=p&&(p.age||50)>=55;return pickR(old?['a la compra','al ambulatorio','a casa de una amiga','a misa','al banco a protestar','al mercado','a dar un paseo','a la farmacia','a ver a la vecina']:['a la compra','a dar una vuelta','al gimnasio','a hacer un recado','a ver a un amigo','a la biblioteca','al parque']);}
 {const _ur=updateResidents;updateResidents=function(gm){const list=residents();const now=S.day*1440+S.t;
   for(const r of list){if(r.kind==='kid')continue;
     if(r.doing){if(now<r.doing.until&&S.obj[r.doing.i]&&S.obj[r.doing.i].t===r.doing.t){r.next=99;continue;}if(r.doing.from){r.x=r.doing.from[0];r.y=r.doing.from[1];}r.doing=null;r.next=0;}
+    if(r.away){if(now<r.away.until){r.next=99;continue;}const b=r.away.back;r.away=null;r.x=b[0];r.y=b[1];r.path=[];r.next=4;const p=r.pid&&S.people.find(q=>q.k===r.pid);if(p&&Math.random()<.5&&!(S.sim.work>0)&&throttled('vuelta'+r.pid,3e5))toast(`🚪 ${p.n} ha vuelto`);continue;}
+    if(r.plan&&r.plan.away&&(!r.path||!r.path.length)){const pl=r.plan;r.plan=null;r.away={until:now+pl.dur,back:[r.x,r.y]};const p=r.pid&&S.people.find(q=>q.k===r.pid);if(p&&!(S.sim.work>0)&&throttled('sale'+r.pid,3e5))toast(`🚪 ${p.n} se va ${pl.why}`);r.x=-50;r.y=-50;r.next=99;continue;}
     if(r.plan&&(!r.path||!r.path.length)){const pl=r.plan;r.plan=null;if(S.obj[pl.i]&&S.obj[pl.i].t===pl.t){r.doing={...pl,until:now+pl.dur,from:[r.x,r.y]};r.next=99;
         if(pl.pose==='sit'&&RV_SIT.has(pl.t)){r.x=pl.i%N+.52;r.y=(pl.i/N|0)+.52;}continue;}}
     if((!r.path||!r.path.length)&&!r.plan&&(r.next||0)-gm<=0){if(rvChoose(r))r.next=99;}
@@ -13506,7 +13517,7 @@ function rvChoose(r){const h=S.t/60;const home=!(S.sim.work>0);
   _ur(gm);
   for(const r of list){if(r.plan&&r.next>50)r.next=99;}
 };}
-{const _dr=drawResident;drawResident=function(r){const D=r.doing;if(!D)return _dr(r);
+{const _dr=drawResident;drawResident=function(r){if(r.away)return;const D=r.doing;if(!D)return _dr(r);
   const o=S.obj[D.i];if(!o)return _dr(r);const p=r.pid&&S.people.find(q=>q.k===r.pid);if(!p)return _dr(r);const ch=p.ch||personCh(p);
   if(D.act==='sleep'){const [u,v]=w2v(D.i%N+.5,(D.i/N|0)+.5);const [bx,by]=P(u,v,0);if(cam.z>.6){emoji('💤',bx+Math.sin(performance.now()/700)*2,by-30-((performance.now()/60)%12),9);label(p.n,bx,by-44,'rgba(255,253,248,.9)','#3b3247',8);}return;}
   const ox=D.i%N,oy=D.i/N|0;const [vx,vy]=w2v(ox,oy);let front,right;
@@ -13710,7 +13721,7 @@ function phRender(){if(!phEl||!S)return;const P=PH();const n=CH().name;const now
       if(P.used>=150&&throttled('enganche',3e5))tell(`${CH().name} ha pasado más de dos horas hoy mirando el móvil. Scroll, scroll, scroll.`,'📱');return;}}
   return _au2.apply(this,arguments);};}
 // también la gente que vive en casa mira el móvil a ratos
-{const _dr2=drawResident;drawResident=function(r){if(r.doing||(r.path&&r.path.length)||r.kind==='kid')return _dr2(r);const near=Math.hypot(r.x-S.sim.x,r.y-S.sim.y)<1.6&&!(S.sim.work>0);
+{const _dr2=drawResident;drawResident=function(r){if(r.away)return;if(r.doing||(r.path&&r.path.length)||r.kind==='kid')return _dr2(r);const near=Math.hypot(r.x-S.sim.x,r.y-S.sim.y)<1.6&&!(S.sim.work>0);
   const slot=Math.floor(performance.now()/26000+(r.pid||'').length*1.7)%3;if(near||slot!==0)return _dr2(r);
   const p=r.pid&&S.people.find(q=>q.k===r.pid);if(!p)return _dr2(r);const ch=p.ch||personCh(p);const [u,v]=w2v(r.x,r.y);const [bx,by]=P(u,v,0);const sv=anaRT.phase;anaRT.phase=0;
   ctx.save();drawAna(bx,by,{ch,shirt:ch.shirt,mood:70,front:r.front!==false,right:!!r.right,pose:'stand',act:'phone'});ctx.restore();anaRT.phase=sv;if(cam.z>0.7)label((r.kind==='partner'?'❤️ ':'')+p.n,bx,by-66,'rgba(255,253,248,.9)','#3b3247',8);};}
