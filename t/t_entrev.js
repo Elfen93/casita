@@ -1,0 +1,1 @@
+setTimeout(()=>{try{const out=[];for(const [g,skin,age] of [['m','#6b4423',29],['f','#efc39b',30],['m','#efc39b',50],['x','#c68642',24]]){S=newState('normal');S.char={...randomChar(g),g,skin,age};initPeople();out.push(entrevQ()+' → '+entrevYes().slice(0,40));}document.title='OK '+out.join(' || ');}catch(err){document.title='ERR '+err.message}},300);

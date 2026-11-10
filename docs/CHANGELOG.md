@@ -8,3 +8,4 @@
 - Huelga visible y piquete automático. Gimnasios con escena. Local político con retratos y libros.
 - Horario semanal, visitas, salir desde fuera, reparto de arreglos, biblioteca que devuelve.
 - Salud mental, adicciones, marginalidad, el final, lo colectivo, la jornada, crianza, la casa vivida, menos ruido.
+- Entrevista: las preguntas ilegales dependen de género, edad y piel.

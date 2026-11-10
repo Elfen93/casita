@@ -11893,8 +11893,8 @@ Object.assign(DLG,{
   oferta:{t:()=>'📩 Una oferta',x:()=>{if(!S.offer)makeOffer();const o=S.offer;return `${o.n} le ofrece un puesto de ${L(CAREER[o.career].t).toLowerCase()} por ${fmt(offerPay(o))} el turno (ahora cobra ${fmt(salary())}). ${o.seen>.6?'Dicen que allí el ambiente es malo.':o.seen<.3?'Dicen que allí se está bien.':'Del ambiente no se sabe nada.'}`;},
     o:()=>[{t:'Aceptar',f:()=>{chose('Cambió de empresa');acceptOffer();}},{t:'Enseñársela a su jefe para negociar',s:'Puede salir bien… o marcarla.',f:()=>{chose('Negoció con la oferta');counterOffer();if(S.offer)rejectOffer(true);}},{t:'Quedarse',f:()=>{chose('Rechazó la oferta');rejectOffer(true);tell('Ana dijo que no. Por la gente, por la rutina, por no empezar otra vez de cero.','🏢');}}],
     auto:()=>S.offer&&offerPay(S.offer)>salary()*1.15?0:1},
-  entrevista:{t:()=>'🪑 La entrevista',x:()=>`Por fin una entrevista. Ofrecen ${L(CAREER[0].t).toLowerCase()} con contrato de tres meses, sueldo «según convenio» y «muchas ganas». Le preguntan si tiene hijos y si está sindicada.`,
-    o:()=>[{t:'Decir que sí a todo',f:()=>{S.jobless=false;S.paroWeeks=0;S.career=0;S.rep=55;S.office=null;office();chose('Aceptó lo que había');tell(`Ha dicho que no tiene hijos ni planes de tenerlos y que la política «no va con ella». Empieza el lunes.`,'📝');pushI('apolitica',8,'despido');}},
+  entrevista:{t:()=>'🪑 La entrevista',x:()=>`Por fin una entrevista. Ofrecen ${L(CAREER[0].t).toLowerCase()} con contrato de tres meses, sueldo «según convenio» y «muchas ganas». ${entrevQ()}`,
+    o:()=>[{t:'Decir que sí a todo',f:()=>{S.jobless=false;S.paroWeeks=0;S.career=0;S.rep=55;S.office=null;office();chose('Aceptó lo que había');tell(entrevYes(),'📝');pushI('apolitica',8,'despido');}},
       {t:'Decir la verdad',s:'Esas preguntas son ilegales. Lo saben.',f:()=>{if(Math.random()<.35){S.jobless=false;S.paroWeeks=0;S.career=0;S.rep=55;S.office=null;office();tell('Ha contestado que esas preguntas no se pueden hacer. La entrevistadora ha sonreído: «Por fin alguien con criterio». Empieza el lunes.','📝');ex().exp.win++;}else{tell('Ha contestado que esas preguntas no se pueden hacer. «Ya te llamaremos». No han llamado.','📭');ex().exp.stress++;}chose('Dijo la verdad en la entrevista');}},
       {t:'Levantarse e irse',f:()=>{pushI(LEANL(),10,'despido');chose('Se fue de la entrevista');tell('Se ha levantado a mitad de entrevista. En el ascensor temblaba, pero bajaba con la espalda recta.','🚪');ex().exp.stress++;}}],
     auto:()=>S.money<0?0:1},
@@ -13653,6 +13653,13 @@ const MOM_LOOKS=()=>LOOKS.filter(l=>l.g==='f'&&l.age>=40);
 };}
 // <</LOOKS>>
 // <<B3D>>
+// =================== LA ENTREVISTA: las preguntas ilegales dependen de a quién tienen delante ===================
+function skinDark(c){const s=(c.skin||'#eee').toLowerCase();const m=s.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/);if(!m)return false;const l=(parseInt(m[1],16)*.3+parseInt(m[2],16)*.59+parseInt(m[3],16)*.11);return l<150;}
+function entrevQ(){const c=CH();const g=c.g;const dark=skinDark(c);const age=c.age||27;const qs=[];
+  if(g==='f')qs.push('si tiene hijos o piensa tenerlos');else if(g==='x')qs.push('«qué es exactamente», mirando el formulario');else qs.push(age>=45?'si «aguantará el ritmo» a su edad':'si tiene «cargas familiares»');
+  if(dark)qs.push('de dónde es «de verdad»');qs.push('si está sindicad'+oa());if(g==='m'&&!dark&&age<45)qs.push('si tiene antecedentes');
+  const L=qs.slice(0,3);return 'Le preguntan '+L.slice(0,-1).join(', ')+' y '+L[L.length-1]+'.';}
+function entrevYes(){const c=CH();const g=c.g;const dark=skinDark(c);return g==='f'?`Ha dicho que no tiene hijos ni planes de tenerlos y que la política «no va con ella». Empieza el lunes.`:g==='x'?`Ha contestado a todo con una sonrisa que le ha costado el día. Empieza el lunes.`:dark?`Ha dicho que es «de aquí de toda la vida», que no tiene cargas y que lo del sindicato «ni idea». Empieza el lunes.`:`Ha dicho que no tiene cargas, ni antecedentes, ni sindicato, ni opiniones. Empieza el lunes.`;}
 // ---------- muñecos 3D en lugar del dibujo plano ----------
 let B3D=null;
 function use3D(o){if(B3D===false)return false;if(S&&S.r3d===false)return false;if(typeof C3D==='undefined')return false;if(B3D==null){B3D=C3D.ok();}return B3D&&!o.flat2d;}

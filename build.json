@@ -1,5 +1,6 @@
 {
  "mods": [
+  "entrevista.js",
   "body3d.js",
   "resvida.js",
   "rutina.js",
