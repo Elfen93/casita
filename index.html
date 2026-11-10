@@ -311,6 +311,9 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #strikebar button{border:0;background:#fff;color:#c0262d;font:900 12px Nunito,sans-serif;padding:6px 10px;border-radius:9px;cursor:pointer;white-space:nowrap}
 #strikebar button:disabled{opacity:.6}
 #strikebar.scab button{color:#3b3247}
+#phone .phtabs{display:flex;gap:4px;padding:6px 12px 0}
+#phone .phtabs button{flex:1;border:0;background:#f3eef6;border-radius:9px;padding:7px 0;font:800 11.5px Nunito,sans-serif;color:#5a4e6a;cursor:pointer}
+#phone .phtabs button.on{background:#2c3a5c;color:#fff}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -14378,7 +14381,7 @@ function mtDaily(){const m=MT();const nd=S.needs;let d=0;const why=[];
   if(m.dep&&m.an>=45){m.dep=0;chapter('dep_out','Sale el sol',`${CH().name} ha vuelto a tener un buen día. Y luego otro. ${m.ther&&m.ther.on?'La terapia ha hecho su parte.':'Nadie sabe muy bien por qué, pero se agarra a ello.'}`);toast(`☀️ ${CH().name} levanta cabeza`,true);sfx('level');}
   // cola de la pública
   if(m.wait>0){m.wait--;if(m.wait===0){m.ther={on:true,pub:true,since:S.day};tell(`Por fin le han dado cita en salud mental de la pública. ${Math.round((S.day-m.waitSince)/7)} semanas de espera. Media hora cada mes y medio, pero es alguien que escucha.`,'🧠');}}
-  if(m.ther&&m.ther.on&&!m.ther.pub){const c=hrs(7);if(S.day%7===0){S.money-=c;if(S.money<-300&&Math.random()<.5){m.ther=null;tell(`${CH().name} ha dejado la terapia privada: ${fmt(c)} a la semana no salen.`,'🧠');}}}
+  if(m.ther&&m.ther.on&&!m.ther.pub){const c=hrs(7);if(S.day%7===0){bkAdd('Terapia',-c);if(S.money<-300&&Math.random()<.5){m.ther=null;tell(`${CH().name} ha dejado la terapia privada: ${fmt(c)} a la semana no salen.`,'🧠');}}}
   if(m.sober>0&&m.alcDay!==S.day&&m.droDay!==S.day)m.sober++;
   m.hist.push(Math.round(m.an));if(m.hist.length>60)m.hist.shift();}
 // ---- la depresión se nota: todo cuesta, cae la diversión, el trabajo va peor ----
@@ -14497,7 +14500,7 @@ function mgEvict(who){const m=MG();const nm=CH().name;const md=P_('madre');
   if(inv&&Math.random()<.12&&!S.sick){S.sick=true;S.sickDays=2+(Math.random()*3|0);tell(`Ha pasado la noche a dos grados. Hoy ${nm} tose y le duele todo. No hay cama en la que quedarse.`,'🤒');}
   if(S.rep!=null&&!S.jobless&&Math.random()<.3){S.rep=Math.max(0,S.rep-1.5);if(throttled('calleRep',4e5))tell(`En el trabajo han empezado a notar algo: la ropa, el olor, el cansancio. Nadie pregunta. Alguien ha hecho una broma.`,'🏢');}
   const rep=W_().era==='represion';
-  if(Math.random()<(rep?.12:.05)){const f=Math.round((rep?200:100)*PM());m.fines++;S.money-=f;tell(pickR([`Policía municipal, seis de la mañana: «aquí no se puede dormir». Multa de ${fmt(f)} por la ordenanza de convivencia. A quien no tiene casa, por no tener casa.`,`Limpieza se ha llevado el colchón y una de las bolsas. «Residuos». Dentro iba la documentación.`,`Identificación en el parque. ${fmt(f)} de multa por «acampada». ${nm} no sabe con qué la va a pagar; ellos tampoco, y da igual.`]),'🚔');if(Math.random()<.4){const i=findObjs((dd,t)=>t==='colchon')[0];if(i!=null){S.obj[i]=null;dirty();}}}
+  if(Math.random()<(rep?.12:.05)){const f=Math.round((rep?200:100)*PM());m.fines++;bkAdd('Multa',-f);tell(pickR([`Policía municipal, seis de la mañana: «aquí no se puede dormir». Multa de ${fmt(f)} por la ordenanza de convivencia. A quien no tiene casa, por no tener casa.`,`Limpieza se ha llevado el colchón y una de las bolsas. «Residuos». Dentro iba la documentación.`,`Identificación en el parque. ${fmt(f)} de multa por «acampada». ${nm} no sabe con qué la va a pagar; ellos tampoco, y da igual.`]),'🚔');if(Math.random()<.4){const i=findObjs((dd,t)=>t==='colchon')[0];if(i!=null){S.obj[i]=null;dirty();}}}
   if(Math.random()<.5&&!findObjs((dd,t)=>t==='colchon').length){const i=(7)*N+6;if(!S.obj[i]){S.obj[i]={t:'colchon',q:1,c:30,r:0};dirty();tell(`${nm} ha encontrado otro colchón en un contenedor. Mejor que el otro, casi.`,'🛌');}}
   for(const p of (S.people||[]))if(p.k!=='madre'&&p.rel<80&&Math.random()<.15)p.rel=Math.max(0,p.rel-1);
   try{if(!MT().deal&&Math.random()<.06)mtDealer();}catch(e){}
@@ -14505,7 +14508,7 @@ function mgEvict(who){const m=MG();const nm=CH().name;const md=P_('madre');
   if(d===14&&!S.story.chap.calle14)chapter('calle14','Invisible',`Dos semanas. La gente ya no la mira: la rodea. ${nm} ha visto a conocid${oa()}s cambiar de acera. Lo peor no es el frío. Es ser mueble.`);
   if(d===45&&!S.story.chap.calle45)chapter('calle45','Cronificarse',`Mes y medio. Los de servicios sociales lo llaman «cronificarse», como si fuera algo que uno hace. ${nm} ya no planea mañana. Planea esta noche.`);
   // IMV / renta mínima
-  if(m.imv&&dateOf(S.day).wd===0){const v=Math.round(115*PM());S.money+=v;toast(`🏛️ Ingreso mínimo: ${fmt(v)}`);}
+  if(m.imv&&dateOf(S.day).wd===0){const v=Math.round(115*PM());bkAdd('Ayuda',v);toast(`🏛️ Ingreso mínimo: ${fmt(v)}`);}
   // servicios sociales: si hay nómina, piso; si no, albergue y paciencia
   if(m.ss>=2&&S.day-m.ssSince>=21&&!m.imv){m.imv=true;chapter('imv','El papel',`Después de tres citas, dos certificados de empadronamiento sin domicilio y una espera de semanas, le han aprobado el ingreso mínimo: ${fmt(Math.round(115*PM()))} a la semana. Es menos que el alquiler más barato del barrio. Está diseñado así.`);}
   if(m.ss>=2&&!S.jobless&&S.shifts>=8&&Math.random()<.15){applyHome('habitacion');computeRooms();if(typeof centerOnWorld==='function')centerOnWorld(S.sim.x,S.sim.y);S.money-=Math.round(moveCost('habitacion')*.3);m.calle=null;chapter('techo','Un techo',`La trabajadora social ha conseguido una habitación de un programa de la ONG. Con el sueldo de ${nm} y una fianza reducida. ${d} días en la calle. Una llave en el bolsillo pesa más de lo que parece.`);toast('🔑 Tiene habitación',true);sfx('level');}
@@ -14676,16 +14679,16 @@ function wrSubmit(p,how){const C=LB();const n=CH().name;C.proj=null;
     if(!ok){C.rej=(C.rej||0)+1;try{MT().an-=s.k==='novela'?4:1.5;}catch(e){}tell(s.how==='edit'?pickR([`Respuesta de una editorial sobre «${s.t}»: «no encaja en nuestra línea editorial en este momento». Las otras ${s.k==='novela'?'siete':'dos'} no han contestado. ${C.rej>3?'Van '+C.rej+' noes.':''}`,`Una editorial ha devuelto «${s.t}» con una nota a mano: «tiene algo, pero no». ${n} ha guardado la nota.`,`Correo tipo sobre «${s.t}»: «el gran volumen de manuscritos recibidos…». Lo escribió una becaria que cobra ${fmt(Math.round(600*PM()))} al mes.`]):s.how==='concurso'?`El concurso ya tiene ganador. No es «${s.t}». ${Math.random()<.3?'El ganador es sobrino de alguien del jurado, dicen.':''}`:`«${s.t}»: no lo quieren. Ni han explicado por qué.`,'📭');
       if(s.k==='novela'&&!S.story.chap.rechazo)chapter('rechazo','El cajón',`Nadie quiere «${s.t}». ${n} se ha pasado meses escribiéndola a deshoras y la respuesta es silencio. Publicar es un mercado como cualquier otro: lo que vende, lo que firma alguien conocido, lo que no molesta. ${n} tiene tres opciones: insistir, autopublicar o el cajón. Ninguna paga el alquiler.`);C.proj=null;C.pub.push({...s,how:'cajon'});continue;}
     // sí
-    if(s.how==='edit'){const adv=Math.round((s.k==='novela'?[0,400,900,1800][s.q]:0)*PM());S.money+=adv;C.inc+=adv;C.fama+=1+s.q*.5;C.pub.push({...s,how:'edit',sold:0,adv});C.tx.push(['anticipo',adv,S.day]);chapter('publica'+C.pub.length,'Publicad'+oa(),`Una editorial ${s.k==='novela'?'':'pequeña '}quiere «${s.t}». ${adv?'Anticipo: '+fmt(adv)+', a descontar de derechos (el 8 %). Menos de lo que cobra en un mes de curro.':'Pagan en ejemplares: veinte. Y la presentación la organiza '+n+'.'} Sale dentro de un año. ${n} ha llorado en el baño del trabajo.`);toast('📘 ¡Publican «'+s.t+'»!',true);sfx('level');}
-    else if(s.how==='concurso'){const prize=Math.round([0,150,400,1200][s.q]*PM());S.money+=prize;C.inc+=prize;C.fama+=.8;C.tx.push(['premio',prize,S.day]);tell(`¡«${s.t}» ha ganado el concurso! ${fmt(prize)} y una placa. ${n} ha invitado a todo el mundo a cañas y ya no queda premio.`,'🏆');sfx('level');}
-    else{const pay=Math.round((s.how==='medio'?[0,40,70,120][s.q]:[0,0,30,60][s.q])*PM());S.money+=pay;C.inc+=pay;C.fama+=.5;C.tx.push(['colaboración',pay,S.day]);tell(pay?`Publican «${s.t}». ${fmt(pay)} brutos, factura como autónom${oa()}, a cobrar a 60 días. Pero sale con su nombre.`:`Publican «${s.t}» en la revista. No pagan: «visibilidad». ${n} ha comprado dos ejemplares.`,'📰');}}
+    if(s.how==='edit'){const adv=Math.round((s.k==='novela'?[0,400,900,1800][s.q]:0)*PM());bkAdd('Ingreso',adv);C.inc+=adv;C.fama+=1+s.q*.5;C.pub.push({...s,how:'edit',sold:0,adv});C.tx.push(['anticipo',adv,S.day]);chapter('publica'+C.pub.length,'Publicad'+oa(),`Una editorial ${s.k==='novela'?'':'pequeña '}quiere «${s.t}». ${adv?'Anticipo: '+fmt(adv)+', a descontar de derechos (el 8 %). Menos de lo que cobra en un mes de curro.':'Pagan en ejemplares: veinte. Y la presentación la organiza '+n+'.'} Sale dentro de un año. ${n} ha llorado en el baño del trabajo.`);toast('📘 ¡Publican «'+s.t+'»!',true);sfx('level');}
+    else if(s.how==='concurso'){const prize=Math.round([0,150,400,1200][s.q]*PM());bkAdd('Premio',prize);C.inc+=prize;C.fama+=.8;C.tx.push(['premio',prize,S.day]);tell(`¡«${s.t}» ha ganado el concurso! ${fmt(prize)} y una placa. ${n} ha invitado a todo el mundo a cañas y ya no queda premio.`,'🏆');sfx('level');}
+    else{const pay=Math.round((s.how==='medio'?[0,40,70,120][s.q]:[0,0,30,60][s.q])*PM());bkAdd('Ingreso',pay);C.inc+=pay;C.fama+=.5;C.tx.push(['colaboración',pay,S.day]);tell(pay?`Publican «${s.t}». ${fmt(pay)} brutos, factura como autónom${oa()}, a cobrar a 60 días. Pero sale con su nombre.`:`Publican «${s.t}» en la revista. No pagan: «visibilidad». ${n} ha comprado dos ejemplares.`,'📰');}}
   // ventas lentas de lo publicado
   if(dateOf(S.day).wd===0){for(const p of C.pub){if(p.how==='cajon'||p.how==='blog')continue;let s=0;const lam=(p.how==='edit'?2.5:p.how==='ebook'?.6:.9)*(.3+p.q*.5)*(1+C.fama*.15)*Math.exp(-((S.day-(p.pubDay||S.day))/200));for(let i=0;i<12;i++)if(Math.random()<lam/12)s++;
       if(p.how==='auto'){s=Math.min(s,p.stock-p.sold);p.sold+=s;const v=Math.round(s*9*PM());S.money+=v;C.inc+=v;if(s&&throttled('vauto',3e5))tell(`${n} ha vendido ${s} ejemplar${s>1?'es':''} de «${p.t}» ${pickR(['en el bar','a una compañera','en la presentación del centro social','a su madre, que ya tenía dos'])}. Quedan ${p.stock-p.sold} en el armario.`,'📘');}
       else{p.sold+=s;const roy=p.how==='edit'?Math.round(s*1.4*PM()):Math.round(s*2.1*PM());if(p.how==='edit'){p.roy=(p.roy||0)+roy;if(p.roy>(p.adv||0)){S.money+=roy;C.inc+=roy;}}else{S.money+=roy;C.inc+=roy;}
         if(s&&Math.random()<.2)tell(p.how==='edit'?`Liquidación de derechos de «${p.t}»: ${p.sold} ejemplares. ${p.roy>(p.adv||0)?'Ya cubre el anticipo: '+fmt(roy)+' esta semana.':'Aún no cubre el anticipo. La editorial no debe nada.'}`:`«${p.t}»: ${s} descarga${s>1?'s':''} esta semana. ${fmt(roy)}. Una reseña de una estrella: «muy triste».`,'📱');}}}
   // autónomos: si gana algo regular, Hacienda se acuerda
-  if(C.inc-(C.incTaxed||0)>=600*PM()){const t=Math.round((C.inc-(C.incTaxed||0))*.19);S.money-=t;C.incTaxed=C.inc;tell(`Hacienda: retención del 19 % sobre lo que ha ganado escribiendo o pintando: ${fmt(t)}. Para eso ${n} tuvo que darse de alta como autónom${oa()}, con una cuota que pagaría aunque no vendiera nada.`,'🏛️');}
+  if(C.inc-(C.incTaxed||0)>=600*PM()){const t=Math.round((C.inc-(C.incTaxed||0))*.19);bkAdd('Hacienda',-t);C.incTaxed=C.inc;tell(`Hacienda: retención del 19 % sobre lo que ha ganado escribiendo o pintando: ${fmt(t)}. Para eso ${n} tuvo que darse de alta como autónom${oa()}, con una cuota que pagaría aunque no vendiera nada.`,'🏛️');}
   }catch(e){console.error(e);}return r;};}
 // ---- pintar: el caballete ----
 OBJ.caballete={n:'Caballete',e:'🎨',p:120,h:44,c:'#a0714f',ins:.2,need:{diversion:.4},verb:'Pintando',b:'🎨',decor:1,cat:'estudio'};
@@ -14779,7 +14782,7 @@ Object.assign(OUT,{
     if(x.k==='lumbar'||x.k==='anemia'||x.k==='diab')S.needs.energia=Math.max(0,S.needs.energia-(x.dx?2:4)*x.sev);
     if(x.k==='ansiedad'){try{MT().an-=x.dx?.3:.8;}catch(e){}}
     if(!x.dx&&(x.k==='lumbar'||x.k==='hiper'||x.k==='diab')&&Math.random()<.02*x.sev&&!S.sick){S.sick=2+(Math.random()*4|0);tell({lumbar:`${n} no se puede levantar de la cama. La espalda. Baja de ${S.sick} días; el médico de urgencias le ha dicho que «evite cargar peso». Trabaja cargando peso.`,hiper:`${n} se ha mareado en el trabajo. Le han tomado la tensión en la farmacia: alta. Dos días en casa.`,diab:`${n} se ha desmayado. En urgencias le han pedido una analítica. ${S.sick} días de baja.`}[x.k],'🚑');}
-    if(x.dx&&HP_DEF[x.k].med&&dateOf(S.day).wd===0){const c=Math.round(HP_DEF[x.k].med/8*HW()*(H.mutua?.6:1));S.money-=c;}
+    if(x.dx&&HP_DEF[x.k].med&&dateOf(S.day).wd===0){const c=Math.round(HP_DEF[x.k].med/8*HW()*(H.mutua?.6:1));bkAdd('Farmacia',-c);}
     // mejora o empeora
     if(x.dx){if(x.k==='lumbar'&&(S.fit||0)>50&&Math.random()<.02){H.list.splice(H.list.indexOf(x),1);tell(`La espalda de ${n} ha dejado de doler. Rehabilitación, ejercicio y suerte. Hasta la próxima.`,'🦴');}
       if(x.k==='anemia'&&ovw()>-5&&Math.random()<.04){H.list.splice(H.list.indexOf(x),1);tell(`Analítica: la anemia de ${n} ha remitido. Comer. Era eso.`,'🩸');}
@@ -14790,8 +14793,8 @@ Object.assign(OUT,{
   // cita médica
   if(H.cita&&S.day>=H.cita){H.cita=0;hpVisit();}
   // cuotas
-  if(dateOf(S.day).dm===1){if(H.gymMember){const c=gymFee();S.money-=c;toast(`🏋️ Cuota del gimnasio: ${fmt(c)}`);if(H.gymMonth===0&&Math.random()<.5)tell(`Cuota del gimnasio: ${fmt(c)}. ${n} no ha ido ni un día este mes. El negocio del gimnasio es exactamente ese.`,'🏋️');H.gymMonth=0;}
-    if(H.mutua){const c=hrs(6);S.money-=c;toast(`🏥 Seguro privado: ${fmt(c)}`);}}
+  if(dateOf(S.day).dm===1){if(H.gymMember){const c=gymFee();bkAdd('Gimnasio',-c);toast(`🏋️ Cuota del gimnasio: ${fmt(c)}`);if(H.gymMonth===0&&Math.random()<.5)tell(`Cuota del gimnasio: ${fmt(c)}. ${n} no ha ido ni un día este mes. El negocio del gimnasio es exactamente ese.`,'🏋️');H.gymMonth=0;}
+    if(H.mutua){const c=hrs(6);bkAdd('Médico',-c);toast(`🏥 Seguro privado: ${fmt(c)}`);}}
   }catch(e){console.error(e);}return r;};}
 // ---- el médico ----
 function hpAsk(priv){const H=HP();const n=CH().name;if(H.cita){toast('Ya tiene cita');return;}const wait=priv||H.mutua?1+(Math.random()*2|0):5+(Math.random()*12|0);H.cita=S.day+wait;H.citaPriv=!!(priv||H.mutua);
@@ -15065,7 +15068,7 @@ function solWho(){const ps=(S.people||[]).filter(p=>p.rel>=35&&p.k!=='madre');co
 // ---- vuelve: cuando hace falta, alguien aparece ----
 function solBack(){const s=SOL();if(s.fav<1)return;const n=CH().name;const o=oa();const nd=S.needs;const G=typeof MG==='function'?MG():{};const who=solWho();const union=S.union&&S.union.member;
   // en números rojos: un préstamo sin intereses
-  if(S.money<-50&&!s.loanDay&&who&&s.fav>=1&&Math.random()<.35){const v=Math.round(Math.min(-S.money+40,hrs(40)));S.money+=v;s.owed+=v;s.loanDay=S.day;s.loanWho=who.n;s.fav-=1;tell(`${who.n} se ha enterado de que ${n} va mal de dinero y le ha dejado ${fmt(v)}. «Me lo devuelves cuando puedas, sin prisa». Sin intereses, sin papeles, sin banco. Lo que da la gente cuando la gente ha dado.`,'🤝');toast(`🤝 ${who.n} le deja ${fmt(v)}`,true);return;}
+  if(S.money<-50&&!s.loanDay&&who&&s.fav>=1&&Math.random()<.35){const v=Math.round(Math.min(-S.money+40,hrs(40)));bkAdd('Préstamo',v);s.owed+=v;s.loanDay=S.day;s.loanWho=who.n;s.fav-=1;tell(`${who.n} se ha enterado de que ${n} va mal de dinero y le ha dejado ${fmt(v)}. «Me lo devuelves cuando puedas, sin prisa». Sin intereses, sin papeles, sin banco. Lo que da la gente cuando la gente ha dado.`,'🤝');toast(`🤝 ${who.n} le deja ${fmt(v)}`,true);return;}
   // enferm@: alguien trae comida
   if(S.sick&&who&&nd.hambre<45&&Math.random()<.4&&s.fav>=.5){nd.hambre=Math.min(100,nd.hambre+40);nd.social=Math.min(100,nd.social+15);s.fav-=.5;tell(pickR([`${who.n} ha subido con un táper de lentejas. «No me des las gracias; tú hiciste lo mismo».`,`${who.n} ha venido a hacer la compra para ${n}. Se ha quedado media hora.`,`Mensaje de ${who.n}: «te dejo caldo en la puerta». Estaba.`]),'🤝');return;}
   // en paro: alguien pasa una oferta
@@ -15077,9 +15080,9 @@ function solBack(){const s=SOL();if(s.fav<1)return;const n=CH().name;const o=oa(
   // multa o policía: alguien graba, alguien testifica
   if(S.jail>0&&!s.jailed&&(union||s.fav>=2)){s.jailed=S.day;s.fav-=1;S.jail=Math.max(0,S.jail-Math.min(S.jail,2));tell(`Había gente en la puerta de comisaría. ${union?'El sindicato ha mandado abogada':'Alguien grabó la detención'}. Sale antes y con el expediente más fino.`,'✊');return;}
   // caja de resistencia en huelga
-  if(S.strike&&S.strike.on&&S.strike.join&&dateOf(S.day).wd===0&&s.fav>=1){const v=hrs(12);S.money+=v;s.fav-=.3;toast(`✊ Caja de resistencia: ${fmt(v)}`);return;}}
+  if(S.strike&&S.strike.on&&S.strike.join&&dateOf(S.day).wd===0&&s.fav>=1){const v=hrs(12);bkAdd('Ayuda',v);s.fav-=.3;toast(`✊ Caja de resistencia: ${fmt(v)}`);return;}}
 // devolver lo prestado cuando se puede
-{const _dl2=dailyEvents;dailyEvents=function(){const r=_dl2.apply(this,arguments);try{const s=SOL();if(s.owed>0&&S.money>s.owed+hrs(30)&&Math.random()<.3){S.money-=s.owed;tell(`${CH().name} le ha devuelto a ${s.loanWho||'quien le prestó'} los ${fmt(s.owed)}. Han ido a tomar algo. Ha pagado ${CH().name}.`,'🤝');s.owed=0;s.loanDay=null;solAdd(.5);}
+{const _dl2=dailyEvents;dailyEvents=function(){const r=_dl2.apply(this,arguments);try{const s=SOL();if(s.owed>0&&S.money>s.owed+hrs(30)&&Math.random()<.3){bkAdd('Cuota',-s.owed);tell(`${CH().name} le ha devuelto a ${s.loanWho||'quien le prestó'} los ${fmt(s.owed)}. Han ido a tomar algo. Ha pagado ${CH().name}.`,'🤝');s.owed=0;s.loanDay=null;solAdd(.5);}
   if(S.sofaUntil&&S.day>=S.sofaUntil){S.sofaUntil=null;S.rentMul=1;tell(`Se acabó el mes y medio en el sofá. ${CH().name} se queda en el piso, pagando su parte.`,'🔑');}}catch(e){}return r;};}
 // el barrio organizado también se nota en lo pequeño
 {const _pr=payRent;payRent=function(){if(S.sofaUntil&&S.day<S.sofaUntil)return;return _pr.apply(this,arguments);};}
@@ -15137,7 +15140,7 @@ function kidSickCare(k){const n=CH().name;const m=grandma();const p=liveIn();
   if(p&&partnerHome()){tell(`${k.n} tiene fiebre. Se queda ${p.n}. Esta vez.`,'🤒');p.wear=Math.min(100,(p.wear||0)+2);return;}
   if(m&&Math.random()<.65){m.rel=Math.min(100,m.rel+2);tell(`${k.n} tiene fiebre y ${n} tiene turno. Su madre ha cogido el autobús a las siete para quedarse con ${k.g==='f'?'la niña':'el niño'}. Sin cobrar, como siempre. La conciliación en este país se llama abuela.`,'👩‍🦳');S.needs.social=Math.max(0,S.needs.social-3);return;}
   // Ana falta
-  S.rep=Math.max(0,(S.rep??70)-4);S.money-=Math.round(salary()*.6);S.lastWorkDay=S.day;S.kidAbs=(S.kidAbs||0)+1;
+  S.rep=Math.max(0,(S.rep??70)-4);bkAdd('Críos',-Math.round(salary()*.6));S.lastWorkDay=S.day;S.kidAbs=(S.kidAbs||0)+1;
   tell(`${k.n} tiene fiebre y no hay nadie. ${n} ha llamado al trabajo: «mi hij${k.g==='f'?'a':'o'} está mal». Silencio al otro lado. ${S.kidAbs>=3?'Es la tercera vez; '+(S.office?S.office.n:'la empresa')+' lo tiene apuntado.':'Un día sin cobrar.'}`,'🤒');
   if(S.kidAbs===3)chapter('concilia','Conciliar',`Tres faltas por ${k.n}. En la empresa ya hablan de «compromiso». ${n} no puede elegir entre el trabajo y ${k.g==='f'?'su hija':'su hijo'}; el sistema sí elige por ${oa()==='a'?'ella':'él'}: cada vez que ${k.n} enferma, ${n} se vuelve más despedible. Para quien tiene abuela cerca o dinero para una canguro, esto no existe.`);}
 {const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const ks=kidsAll();if(!ks.length)return r;const n=CH().name;
@@ -15150,11 +15153,11 @@ function kidSickCare(k){const n=CH().name;const m=grandma();const p=liveIn();
     if(k.hap<30&&a>=3&&Math.random()<.08)tell(pickR([`La tutora de ${k.n} ha pedido una reunión. «${k.g==='f'?'La':'El'} notamos distraíd${k.g==='f'?'a':'o'}». ${n} ha pedido permiso para ir. Se lo han dado sin sueldo.`,`${k.n} ha preguntado por qué ${n} nunca está. No había respuesta buena.`,`${k.n} se ha hecho pis en la cama otra vez. El pediatra habla de «ansiedad». Tiene ${a} años.`]),'🧒');
     if(k.hap>=80&&Math.random()<.04)tell(pickR([`${k.n} ha dibujado a ${n}. Con una sonrisa enorme y las manos muy grandes.`,`${k.n} se ha dormido en el sofá encima de ${n}. Nadie se ha movido en una hora.`]),'🧒');
     // cole: septiembre, libros y material (la pública es gratis; lo demás no)
-    const d=dateOf(S.day);if(a>=3&&d.m===8&&d.dm===1){const c=hrs(a>=6?14:8);S.money-=c;tell(`Vuelta al cole de ${k.n}: libros, mochila, uniforme de deporte, la cuota «voluntaria» del AMPA. ${fmt(c)}. La educación es gratuita, dice la ley.`,'🎒');}
+    const d=dateOf(S.day);if(a>=3&&d.m===8&&d.dm===1){const c=hrs(a>=6?14:8);bkAdd('Críos',-c);tell(`Vuelta al cole de ${k.n}: libros, mochila, uniforme de deporte, la cuota «voluntaria» del AMPA. ${fmt(c)}. La educación es gratuita, dice la ley.`,'🎒');}
     if(a===3&&(S.day-k.born)%60===0)chapter('cole_'+k.n,'El cole',`${k.n} empieza el cole. Público, en el barrio: ${W_().mov>=50?'con AMPA que se mueve y comedor becado':'con 28 por clase y una profe de baja sin sustituir'}. A las cinco hay que recogerl${k.g==='f'?'a':'o'}, y ${n} sale a las ${TR().sh[1]}.`);}
   // recoger del cole: quién puede
   const esc=ks.filter(k=>kidAge(k)>=3&&kidAge(k)<12);if(esc.length&&anaWorksToday()&&TR().sh[1]>16.5&&!S.recoger&&dateOf(S.day).wd===1){askDilemma('cr_recoger',{k:esc[0].n});}
-  if(S.recoger==='pagar'&&dateOf(S.day).wd===0){const c=hrs(9)*esc.length;S.money-=c;toast(`🎒 Comedor y extraescolares: ${fmt(c)}`);}
+  if(S.recoger==='pagar'&&dateOf(S.day).wd===0){const c=hrs(9)*esc.length;bkAdd('Críos',-c);toast(`🎒 Comedor y extraescolares: ${fmt(c)}`);}
   if(S.recoger==='madre'&&Math.random()<.03){const m=grandma();if(m){m.rel=Math.max(0,m.rel-1);tell(`Su madre ha ido a recoger a ${esc[0]?esc[0].n:'los niños'} otra vez. Le duele la cadera. No lo dice.`,'👩‍🦳');}else{S.recoger=null;}}
   }catch(e){console.error(e);}return r;};}
 Object.assign(DLG,{cr_recoger:{t:()=>'🎒 ¿Quién recoge?',x:d=>`${d.k} sale del cole a las cinco. ${CH().name} sale del trabajo a las ${TR().sh[1]}. Todos los días.`,
@@ -15200,13 +15203,13 @@ const isWinter=()=>typeof seasonOf==='function'&&seasonOf(S.day)==='inv';
     if(renting()){const fixP=.05+(S.rentStrike?.1:0)+(g.req>=2?.08:0)+(W_().mov>=55?.05:0);if(Math.random()<fixP){g.boiler=0;tell(d>14?`Por fin: el casero ha mandado a un fontanero. ${d} días de ducha fría. Ha descontado cero.`:`El casero ha arreglado el calentador. ${d} días. «Es que el fontanero estaba liado».`,'🚿');}
       else if(d===5||d===15||d===30)tell(pickR([`${n} ha vuelto a escribir al casero por el calentador. Visto. Sin respuesta.`,`El casero: «si quieres lo arreglas tú y me pasas la factura». No dice cuándo la paga.`,`${d} días sin agua caliente. ${n} se ducha en el gimnasio${HP().gymMember?'':', si pudiera pagarlo'}.`]),'🚿');}
     else if(T==='padres'){if(d>=3){g.boiler=0;tell(`El primo de su madre ha cambiado el calentador por ${fmt(hrs(20))} y dos cervezas.`,'🚿');}}
-    else{if(S.money>=hrs(45)&&(d>=2||Math.random()<.5)){g.boiler=0;S.money-=hrs(45);tell(`Calentador nuevo: ${fmt(hrs(45))}. Ser propietari${oa()} es pagar tú lo que antes no pagaba nadie.`,'🚿');}}}
+    else{if(S.money>=hrs(45)&&(d>=2||Math.random()<.5)){g.boiler=0;bkAdd('Arreglos',-hrs(45));tell(`Calentador nuevo: ${fmt(hrs(45))}. Ser propietari${oa()} es pagar tú lo que antes no pagaba nadie.`,'🚿');}}}
   // nevera: la comida se estropea
   if(!g.fridge&&has('nevera')&&Math.random()<.004*(old?1.5:1)){g.fridge=1;S.pantry=0;S.tapers=0;tell(`La nevera ha dejado de enfriar. Lo que había dentro, a la basura. ${S.tapers?'Los tápers también.':''}`,'🧊');}
-  if(g.fridge){S.needs.hambre=Math.max(0,S.needs.hambre-3);if(S.money>=hrs(30)&&Math.random()<.3){g.fridge=0;S.money-=hrs(30);tell(`Nevera arreglada: ${fmt(hrs(30))}${renting()?'. El casero dice que la nevera «no es de la casa»':''}.`,'🧊');}else if(Math.random()<.15)tell(`Sin nevera: comer de lata y comprar cada día, que sale más caro. Ser pobre es caro.`,'🧊');}
+  if(g.fridge){S.needs.hambre=Math.max(0,S.needs.hambre-3);if(S.money>=hrs(30)&&Math.random()<.3){g.fridge=0;bkAdd('Arreglos',-hrs(30));tell(`Nevera arreglada: ${fmt(hrs(30))}${renting()?'. El casero dice que la nevera «no es de la casa»':''}.`,'🧊');}else if(Math.random()<.15)tell(`Sin nevera: comer de lata y comprar cada día, que sale más caro. Ser pobre es caro.`,'🧊');}
   // lavadora: lavandería
   if(!g.wash&&has('lavadora')&&Math.random()<.003){g.wash=1;tell(`La lavadora hace un ruido nuevo y ya no centrifuga.`,'🧺');}
-  if(g.wash){if(dateOf(S.day).wd===0){S.money-=hrs(1.5);toast(`🧺 Lavandería: ${fmt(hrs(1.5))}`);}if(S.money>=hrs(25)&&Math.random()<.25){g.wash=0;S.money-=hrs(25);tell(`Lavadora arreglada: ${fmt(hrs(25))}.`,'🧺');}}
+  if(g.wash){if(dateOf(S.day).wd===0){bkAdd('Otros',-hrs(1.5));toast(`🧺 Lavandería: ${fmt(hrs(1.5))}`);}if(S.money>=hrs(25)&&Math.random()<.25){g.wash=0;bkAdd('Arreglos',-hrs(25));tell(`Lavadora arreglada: ${fmt(hrs(25))}.`,'🧺');}}
   // ---- el casero ----
   if(renting()){
     if(Math.random()<.015){g.visits++;const h=HOMES[T];tell(pickR([`El casero ha entrado «a ver una cosa» con su llave, sin avisar. ${n} estaba en la ducha. «Es mi casa», ha dicho.`,`Visita del casero con una pareja joven: «por si acaso». ${n} vive aquí. De momento.`,`El casero ha venido a «revisar» y ha hecho fotos de todo. ${n} ha preguntado para qué. No ha contestado.`,`Mensaje del casero a las once de la noche: «mañana paso». No ha dicho a qué hora.`]),'🔑');try{MT().an-=1;}catch(e){}S.needs.social=Math.max(0,S.needs.social-4);
@@ -15541,8 +15544,8 @@ Object.assign(OUT,{compra:{n:'Hacer la compra',e:'🛒',dur:60,h:[9,21],why:'lle
     if(S.tapers>0){S.tapers--;S.needs.hambre=Math.min(100,S.needs.hambre+45);cmMeal('taper',.8,'táper en el descanso');if(Math.random()<.15)tell(pickR([`Descanso: táper de ${n} en el micro de la sala. Veinte minutos, el móvil, y vuelta.`,`${n} ha comido el táper de pie, en el almacén. No hay sala.`]),'🥡');}
     else{const menu=hrs(1.3),maq=hrs(.35);const T0=TR();const rancho=['hosteleria','cuidados'].includes(S.track);
       if(rancho){S.needs.hambre=Math.min(100,S.needs.hambre+40);cmMeal('rancho',.55,'comida de personal');if(Math.random()<.1)tell(`Comida de personal: lo que sobra, de pie, en diez minutos.`,'🍽️');}
-      else if(S.money>=menu*3||(S.money>=menu&&Math.random()<.5)){S.money-=menu;S.needs.hambre=Math.min(100,S.needs.hambre+50);S.needs.social=Math.min(100,S.needs.social+6);cmMeal('menu',.7,'menú del día');c.spent+=menu;if(Math.random()<.1)tell(`Menú del día con ${P_('compi')?P_('compi').n:'gente del curro'}: ${fmt(menu)}. Primero, segundo y el café que no está incluido.`,'🍽️');}
-      else if(S.money>=maq){S.money-=maq;S.needs.hambre=Math.min(100,S.needs.hambre+28);cmMeal('maquina',.3,'bocadillo de máquina');if(Math.random()<.2)tell(`Bocadillo de máquina y una lata. ${fmt(maq)}. ${n} se ha prometido hacer tápers.`,'🥪');}
+      else if(S.money>=menu*3||(S.money>=menu&&Math.random()<.5)){bkAdd('Menú',-menu);S.needs.hambre=Math.min(100,S.needs.hambre+50);S.needs.social=Math.min(100,S.needs.social+6);cmMeal('menu',.7,'menú del día');c.spent+=menu;if(Math.random()<.1)tell(`Menú del día con ${P_('compi')?P_('compi').n:'gente del curro'}: ${fmt(menu)}. Primero, segundo y el café que no está incluido.`,'🍽️');}
+      else if(S.money>=maq){bkAdd('Menú',-maq);S.needs.hambre=Math.min(100,S.needs.hambre+28);cmMeal('maquina',.3,'bocadillo de máquina');if(Math.random()<.2)tell(`Bocadillo de máquina y una lata. ${fmt(maq)}. ${n} se ha prometido hacer tápers.`,'🥪');}
       else{S.needs.hambre=Math.min(100,S.needs.hambre+10);cmMeal('maquina',.15,'nada: un café');tell(`Descanso sin comer. ${n} ha dicho que no tenía hambre. Tenía ${fmt(Math.round(S.money))}.`,'☕');}}
     S.needs.energia=Math.min(100,S.needs.energia+4);}catch(e){}return r;};}
 // el viejo «come fuera si hambre<35» ya no hace falta en el trabajo
@@ -15560,6 +15563,66 @@ function cmBlock(){const c=CM();const t=c.today;const row=['des','com','cen'].ma
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{return h.replace('<h3>🫀 Cuerpo</h3>',cmBlock()+'<h3>🫀 Cuerpo</h3>');}catch(e){return h;}};}
 {const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);try{const b=card.querySelector('#cmcompra');if(b)b.onclick=()=>{if(outAvail('compra')){toast('Compra: '+outAvail('compra'));return;}menu.classList.remove('open');doOut('compra');};}catch(e){}};}
 OUT_GROUPS.push(['🛒 Casa',['compra']]);
+// =================== EL BANCO: movimientos de verdad, categorías, deudas, hucha y comisiones ===================
+const BKS=()=>{if(!S.bk)S.bk={log:[],hucha:0,auto:0,fees:0,ctx:null};S.bk.log=S.bk.log||[];return S.bk;};
+let bkCtx=null;function bkAdd(label,v){const p=bkCtx;bkCtx=label;S.money+=v;bkCtx=p;}const withCtx=(fn,label)=>function(){const prev=bkCtx;bkCtx=typeof label==='function'?label.apply(this,arguments):label;try{return fn.apply(this,arguments);}finally{bkCtx=prev;}};
+const BK_CAT={'Nómina':'ingresos','Ingreso':'ingresos','Premio':'ingresos','Ventas':'ingresos','Préstamo':'ingresos','Ayuda':'ingresos','Alquiler':'casa','Hipoteca':'casa','Luz, agua y gas':'casa','Arreglos':'casa','Muebles y obras':'casa','Compra':'comida','Comida':'comida','Menú':'comida','Salida':'ocio','Libros':'ocio','Gimnasio':'cuerpo','Farmacia':'cuerpo','Médico':'cuerpo','Terapia':'cuerpo','Críos':'familia','Cuota':'deudas','Comisión':'deudas','Multa':'deudas','Hacienda':'deudas','Hucha':'ahorro','Otros':'otros'};
+const BK_CATN={ingresos:'Ingresos',casa:'Casa',comida:'Comida',ocio:'Salidas y ocio',cuerpo:'Salud y cuerpo',familia:'Críos',deudas:'Deudas, multas y comisiones',ahorro:'Hucha',otros:'Otros'};
+// el saldo como propiedad con memoria: cada cambio queda apuntado
+function bkInstall(){if(!S||typeof S!=='object')return;const d=Object.getOwnPropertyDescriptor(S,'money');if(d&&d.get)return;let m=S.money||0;
+  Object.defineProperty(S,'money',{enumerable:true,configurable:true,get(){return m;},set(v){if(typeof v!=='number'||!isFinite(v))v=0;const dlt=v-m;m=v;try{if(Math.abs(dlt)>=1){const B=BKS();const c=bkCtx||(dlt>0?'Ingreso':'Otros');const L=B.log;const last=L[L.length-1];if(last&&last[0]===S.day&&Math.abs(S.t-last[1])<3&&last[2]===-Math.round(dlt)){L.pop();}else if(last&&last[0]===S.day&&last[3]===c&&Math.abs(S.t-last[1])<30&&!bkCtx){last[2]+=Math.round(dlt);}else{L.push([S.day,Math.round(S.t),Math.round(dlt),c]);if(L.length>400)L.splice(0,L.length-400);}}}catch(e){}}});}
+{const _up=update;update=function(gm){try{bkInstall();}catch(e){}return _up.apply(this,arguments);};}
+// contextos conocidos
+try{payRent=withCtx(payRent,()=>S.owned?'Hipoteca':'Alquiler');}catch(e){}
+try{payMortgage=withCtx(payMortgage,'Hipoteca');}catch(e){}
+try{payUtilities=withCtx(payUtilities,'Luz, agua y gas');}catch(e){}
+try{finishWork=withCtx(finishWork,()=>S.sim.outingActive?('Salida'):'Nómina');}catch(e){}
+try{outBack=withCtx(outBack,k=>k==='compra'?'Compra':k==='libreria'||k==='mercadillo'?'Libros':k==='terapia'?'Terapia':k==='gimnasio'?'Gimnasio':k==='pillar'||k==='beber'?'Salida':'Salida');}catch(e){}
+try{hacerCompra=withCtx(hacerCompra,'Compra');}catch(e){}
+try{startUse=withCtx(startUse,'Comida');}catch(e){}
+try{execStep=withCtx(execStep,(job,j)=>{const st=job&&job.steps[j];return st&&(st.k==='fix'||st.k==='replace')?'Arreglos':'Muebles y obras';});}catch(e){}
+try{hireFor=withCtx(hireFor,'Arreglos');}catch(e){}
+try{hpVisit=withCtx(hpVisit,'Médico');}catch(e){}
+try{hpAsk=withCtx(hpAsk,'Médico');}catch(e){}
+try{buyHouse=withCtx(buyHouse,'Hipoteca');}catch(e){}
+try{amortize=withCtx(amortize,'Hipoteca');}catch(e){}
+try{arrestAna=withCtx(arrestAna,'Multa');}catch(e){}
+try{wrSubmit=withCtx(wrSubmit,'Libros');}catch(e){}
+try{artSell=withCtx(artSell,'Ventas');}catch(e){}
+try{eduStart=withCtx(eduStart,'Otros');}catch(e){}
+// contextos en los tramos diarios: lo que pasa en dailyEvents ya tiene nombre en el diario, aquí va por tipo
+{const _dl=dailyEvents;dailyEvents=function(){const B=BKS();const prev=bkCtx;bkCtx='Otros';try{return _dl.apply(this,arguments);}finally{bkCtx=prev;}};}
+// comisiones por descubierto, cada lunes
+{const _pr=payRent;payRent=function(){const r=_pr.apply(this,arguments);try{if(S.money<0&&dateOf(S.day).wd===0){const f=Math.round(Math.min(hrs(4),hrs(1)+(-S.money)*.02));const prev=bkCtx;bkCtx='Comisión';S.money-=f;bkCtx=prev;BKS().fees+=f;if(throttled('fee',6e5))toast(`🏦 Comisión por descubierto: ${fmt(f)}`);if(BKS().fees>hrs(20)&&!S.story.chap.comis)chapter('comis','Pagar por no tener',`El banco ya le ha cobrado ${fmt(BKS().fees)} en comisiones por estar en números rojos. Es el único negocio donde te cobran más cuanto menos tienes. La reclamación tarda tres meses; la comisión, tres segundos.`);}}catch(e){}return r;};}
+// hucha: dinero que la IA no toca
+{const _rm=reserveMoney;reserveMoney=function(){return _rm.apply(this,arguments);};}
+function bkHucha(v){const B=BKS();v=Math.round(v);if(v>0){if(S.money<v){toast('No hay tanto en la cuenta');return;}const p=bkCtx;bkCtx='Hucha';S.money-=v;bkCtx=p;B.hucha+=v;toast(`🐷 ${fmt(v)} a la hucha`);}else if(v<0){v=Math.min(-v,B.hucha);const p=bkCtx;bkCtx='Hucha';S.money+=v;bkCtx=p;B.hucha-=v;toast(`🐷 ${fmt(v)} sacados de la hucha`);}}
+{const _pr2=payRent;payRent=function(){const r=_pr2.apply(this,arguments);try{const B=BKS();if(B.auto>0&&S.money>B.auto+reserveMoney()*.5){bkHucha(B.auto);}}catch(e){}return r;};}
+// ---- resumen ----
+function bkMonth(){const B=BKS();const from=S.day-30;const cat={};let inc=0,out=0;for(const [d,t,v,c] of B.log){if(d<from)continue;const k=BK_CAT[c]||'otros';cat[k]=(cat[k]||0)+v;if(v>0)inc+=v;else out-=v;}return {cat,inc,out};}
+function bkDebts(){const L=[];if(S.mort)L.push(['🏦 Hipoteca',S.mort.left,fmt(S.mort.pay)+'/sem · '+(S.mort.rate*100).toFixed(1)+' %']);const cq=(ex().cq||[]).filter(q=>q.k==='cuota');if(cq.length)L.push(['📲 Microcrédito',cq.reduce((a,q)=>a+(q.data.m||0),0),cq.length+' cuotas al 30 %']);const dv=(ex().cq||[]).filter(q=>q.k==='devolver');for(const q of dv){const p=P_(q.data.p);L.push(['🤝 '+(p?p.n:'un amigo'),q.data.m,'sin intereses · día '+q.d]);}
+  if(S.sol&&S.sol.owed)L.push(['🤝 '+(S.sol.loanWho||'alguien'),S.sol.owed,'sin intereses']);if(S.mt&&S.mt.debt)L.push(['🌫️ '+(S.mt.deal?S.mt.deal.n:'…'),S.mt.debt,'no manda recordatorios']);if(S.mg&&S.mg.debt)L.push(['🏠 Alquiler atrasado',S.mg.debt,Math.round(S.mg.wk)+' semanas']);if(S.mg&&S.mg.bankDebt)L.push(['🏦 Deuda tras perder la casa',S.mg.bankDebt,'de por vida']);if(S.money<0)L.push(['🏦 Descubierto',-S.money,'comisión cada lunes']);return L;}
+// ---- la app ----
+{const _pr3=typeof phRender==='function'?phRender:null;}
+let bkTab='resumen';
+{const _ren=phRender;phRender=function(){if(phApp!=='bank')return _ren.apply(this,arguments);try{const ph=document.getElementById('phone');if(!ph)return _ren.apply(this,arguments);const B=BKS();const M=bkMonth();const back=`<button class="phback" data-ph="home">‹</button>`;
+    const sal=S.jobless?0:salary()*TR().days.length;const week=sal-housingWeekly()-(typeof utilEstimate==='function'?utilEstimate():0);const days=S.money>0&&M.out>0?Math.round(S.money/(M.out/30)):null;
+    let h=`<div class="phscreen"><div class="phtop">${back}<b>Banco del Barrio</b></div><div class="phtabs">${[['resumen','Resumen'],['mov','Movimientos'],['deudas','Deudas y hucha']].map(([k,n])=>`<button class="${bkTab===k?'on':''}" data-bkt="${k}">${n}</button>`).join('')}</div><div class="phlist">`;
+    if(bkTab==='resumen'){h+=`<div class="phbal"><small>Saldo</small><b class="${S.money<0?'neg':''}">${fmt(Math.round(S.money))}</b><small>${S.money<0?'En descubierto: comisión cada lunes.':B.hucha?'+ '+fmt(B.hucha)+' en la hucha':'Disponible'}</small></div>`;
+      h+=`<div class="phday">Este mes</div><div class="phkv"><span>⬆️ Entradas</span><b class="pos">+${fmt(M.inc)}</b></div><div class="phkv"><span>⬇️ Salidas</span><b class="neg">−${fmt(M.out)}</b></div><div class="phkv"><span>${M.inc-M.out>=0?'✅ Ahorra':'⚠️ Gasta más de lo que entra'}</span><b class="${M.inc-M.out>=0?'pos':'neg'}">${M.inc-M.out>=0?'+':''}${fmt(M.inc-M.out)}</b></div>`;
+      if(days!=null)h+=`<div class="phkv"><span>⏳ A este ritmo, sin ingresos</span><b>${days>90?'más de 3 meses':days+' días'}</b></div>`;
+      h+=`<div class="phday">En qué se va</div>`;const cats=Object.entries(M.cat).filter(([k,v])=>v<0).sort((a,b)=>a[1]-b[1]);const tot=cats.reduce((a,[,v])=>a-v,0)||1;for(const [k,v] of cats)h+=`<div class="phkv" style="flex-direction:column;align-items:stretch;gap:4px"><div style="display:flex;justify-content:space-between"><span>${BK_CATN[k]||k}</span><b>${fmt(-v)} · ${Math.round(-v/tot*100)} %</b></div><div class="minibars" style="margin:0"><i style="width:${Math.round(-v/tot*100)}%;background:${{casa:'#4a6fa5',comida:'#2e8b57',ocio:'#e9a23b',cuerpo:'#c0392b',familia:'#9b5de5',deudas:'#6b6f78',ahorro:'#f15bb5',otros:'#b0a8bb'}[k]||'#888'}"></i></div></div>`;
+      h+=`<div class="phday">Previsión semanal</div><div class="phkv"><span>💼 Sueldo</span><b>${sal?fmt(sal):'—'}</b></div><div class="phkv"><span>🏠 Casa y suministros</span><b>−${fmt(housingWeekly()+(typeof utilEstimate==='function'?Math.round(utilEstimate()):0))}</b></div><div class="phkv"><span>Queda para vivir</span><b class="${week>=0?'pos':'neg'}">${fmt(week)}</b></div><div class="phkv"><span>🛟 Colchón que conviene</span><b>${fmt(reserveMoney())}</b></div>`;}
+    else if(bkTab==='mov'){const L=B.log.slice(-60).reverse();let lastD=null;if(!L.length)h+=`<div class="phday">Sin movimientos todavía</div>`;for(const [d,t,v,c] of L){if(d!==lastD){const D=dateOf(d);h+=`<div class="phday">${WDS[D.wd]} ${D.dm} ${MONTHS[D.m].slice(0,3).toLowerCase()}</div>`;lastD=d;}h+=`<div class="phkv"><span>${c} <small style="color:#999">${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}</small></span><b class="${v<0?'neg':'pos'}">${v>=0?'+':''}${fmt(v)}</b></div>`;}}
+    else{const D=bkDebts();h+=`<div class="phday">Deudas</div>`;if(!D.length)h+=`<div class="phkv"><span>Sin deudas</span><b>✅</b></div>`;for(const [n,v,s] of D)h+=`<div class="phkv"><span>${n}<br><small style="color:#999">${s}</small></span><b class="neg">${fmt(Math.round(v))}</b></div>`;
+      if(B.fees)h+=`<div class="phkv"><span>Comisiones cobradas en total</span><b class="neg">${fmt(B.fees)}</b></div>`;
+      h+=`<div class="phday">🐷 Hucha (lo que ${CH().name} no se gasta sin querer)</div><div class="phkv"><span>Guardado</span><b>${fmt(B.hucha)}</b></div><div class="phkv" style="gap:6px"><button class="mini" data-hu="50">+${fmt(hrs(5))}</button><button class="mini" data-hu="200">+${fmt(hrs(20))}</button><button class="mini" data-hu="-50">−${fmt(hrs(5))}</button><button class="mini" data-hu="all">Sacar todo</button></div><div class="phkv"><span>Apartar cada semana</span><b><select data-huauto>${[0,2,5,10,20].map(v=>`<option value="${v}" ${B.auto===hrs(v)?'selected':''}>${v?fmt(hrs(v)):'nada'}</option>`).join('')}</select></b></div><div class="phkv"><small style="color:#777">El banco no paga intereses por esto. Nunca los pagó a quien tiene poco.</small></div>`;}
+    h+=`</div><div class="phhome" data-ph="home"></div></div>`;ph.innerHTML=h;
+    ph.querySelectorAll('[data-ph]').forEach(b=>b.onclick=()=>{phApp=null;phThread=null;_ren();});
+    ph.querySelectorAll('[data-bkt]').forEach(b=>b.onclick=()=>{bkTab=b.dataset.bkt;phRender();});
+    ph.querySelectorAll('[data-hu]').forEach(b=>b.onclick=()=>{const k=b.dataset.hu;if(k==='all')bkHucha(-BKS().hucha);else bkHucha(k==='50'?hrs(5):k==='200'?hrs(20):-hrs(5));phRender();});
+    const sa=ph.querySelector('[data-huauto]');if(sa)sa.onchange=()=>{BKS().auto=hrs(+sa.value);};
+  }catch(e){console.error(e);return _ren.apply(this,arguments);}};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
