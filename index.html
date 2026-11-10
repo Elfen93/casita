@@ -13583,7 +13583,7 @@ function use3D(o){if(B3D===false)return false;if(S&&S.r3d===false)return false;i
 const RV_SIT=new Set(['sofa','silla','sillon','butaca','sofacama','banco','bancoj','mesacoc']);
 const RV_Z={sofa:8,sofacama:8,sillon:8,butaca:8,silla:9,banco:8,bancoj:8,mesacoc:9};
 function rvPlan(h){// [tipos de objeto, act, pose, minutos, peso]
-  if(h>=23||h<7){const wake=7*60+Math.random()*50;const until=(h>=23?1440:0)+wake-S.t;return [[['cama','camamat','litera','colchon','sofacama'],'sleep','lie',Math.max(60,until),1,1]];}
+  if(h>=23||h<7){const wake=7*60+Math.random()*50;const until=(h>=23?1440:0)+wake-S.t;return [[['_micama'],'sleep','lie',Math.max(60,until),5,1],[['sofacama','sofa','sillon'],'sleep','lie',Math.max(60,until),.2,1]];}
   const L=[];const meal=(h>=7.5&&h<9.5)||(h>=13.5&&h<15)||(h>=20.5&&h<22);
   if(meal){L.push([['fogon','encimera','micro'],'stir','stand',30,4],[['silla','mesacoc'],'eat','sit',25,4]);}
   L.push([['sofa','sillon','butaca','sofacama'],h>=15?'watch':'book','sit',50,h>=15?2.2:1.2],[['tele','consola'],'watch','stand',15,.4],
@@ -13595,6 +13595,19 @@ function rvPlan(h){// [tipos de objeto, act, pose, minutos, peso]
   if(h>=9&&h<20)L.push([['_fuera'],'away','walk',60+Math.random()*100,h<13?1.5:.9]);
   return L;}
 function rvBusy(i,me){if(S.sim.use&&S.sim.use.i===i)return true;return (S.res||[]).some(o=>o!==me&&o.doing&&o.doing.i===i||o!==me&&o.plan&&o.plan.i===i);}
+// ---- identificador único por objeto (viaja con él al moverlo) ----
+function uidSweep(){if(!S||!S.obj)return;S.nuid=S.nuid||1;for(let i=0;i<N*N;i++){const o=S.obj[i];if(o&&!o._tmp&&!o.uid)o.uid=S.nuid++;}}
+function objByUid(u){if(u==null)return -1;for(let i=0;i<N*N;i++){const o=S.obj[i];if(o&&o.uid===u)return i;}return -1;}
+const BEDS=['cama','camamat','litera','colchon'];
+// la cama de cada residente: la suya por uid; si ya no existe, reclama una libre (no la de Ana ni la de otro)
+function myBed(r){uidSweep();let i=objByUid(r.bedUid);if(i>=0&&BEDS.includes(S.obj[i].t))return i;r.bedUid=null;
+  const taken=new Set((S.res||[]).filter(q=>q!==r&&q.bedUid!=null).map(q=>q.bedUid));const anaBeds=new Set();if(S.anaBedUid!=null){const k=objByUid(S.anaBedUid);if(k>=0)anaBeds.add(k);}
+  if(!anaBeds.size){for(let k=0;k<N*N;k++){const o=S.obj[k];if(o&&BEDS.includes(o.t)&&!o.priv&&typeof inArea==='function'&&S.home&&inArea(k%N,k/N|0))anaBeds.add(k);}}
+  if(!anaBeds.size){const u=S.sim.use;if(u&&BEDS.includes(u.type))anaBeds.add(u.i);else if(S.lastBed!=null)anaBeds.add(S.lastBed);}
+  if(!anaBeds.size){// la más cercana a donde empieza Ana (su cuarto)
+    const A=S.home&&S.home.area;const sx=S.home&&S.home.sim?S.home.sim[0]:(A?(A[0]+A[2])/2+.5:S.sim.x),sy=S.home&&S.home.sim?S.home.sim[1]:(A?(A[1]+A[3])/2+.5:S.sim.y);let best=-1,bd=1e9;for(let k=0;k<N*N;k++){const o=S.obj[k];if(o&&BEDS.includes(o.t)&&!o.priv){const d=Math.hypot(k%N+.5-sx,(k/N|0)+.5-sy);if(d<bd){bd=d;best=k;}}}if(best>=0){anaBeds.add(best);S.anaBedUid=S.obj[best].uid;}}
+  const cands=[];for(let k=0;k<N*N;k++){const o=S.obj[k];if(!o||!BEDS.includes(o.t)||taken.has(o.uid)||anaBeds.has(k))continue;if(o.priv&&o.priv!==r.pid&&!(o.priv==='mate'&&r.kind==='mate'))continue;cands.push(k);}
+  if(!cands.length)return -1;cands.sort((a,b)=>(S.obj[b].priv?1:0)-(S.obj[a].priv?1:0));const k=cands[0];r.bedUid=S.obj[k].uid;return k;}
 function rvObjs(r,pred){const out=[];for(let i=0;i<N*N;i++){const o=S.obj[i];if(!o||!OBJ[o.t]||!pred(OBJ[o.t],o.t))continue;const pv=o.priv;if(pv&&pv!==r.pid&&!(pv==='mate'&&r.kind==='mate'))continue;out.push(i);}
   // si tiene cosas propias de ese tipo, prefiere las suyas
   const own=out.filter(i=>S.obj[i].priv);return own.length?own:out;}
@@ -13602,7 +13615,8 @@ function rvChoose(r){const h=S.t/60;const home=!(S.sim.work>0);
   const close=r.kind==='guest'||r.kind==='partner';
   if(close&&(h>=22||h<8)&&r.kind!=='mate')return false;// pareja/visita: de noche con Ana (y a su cama cuando ella se acuesta)
   if(home&&Math.random()<(close?.45:.18)&&!(h>=23||h<7))return false;// a veces va a charlar con Ana
-  const opts=[];for(const [types,act,pose,dur,w,fixed] of rvPlan(h)){if(types[0]==='_fuera'){opts.push({types,act,pose,dur,w,objs:[],fixed:1});continue;}const objs=rvObjs(r,(d,t)=>types.includes(t)).filter(i=>!rvBusy(i,r));if(objs.length)opts.push({types,act,pose,dur,w,objs,fixed});}
+  const opts=[];for(const [types,act,pose,dur,w,fixed] of rvPlan(h)){if(types[0]==='_fuera'){opts.push({types,act,pose,dur,w,objs:[],fixed:1});continue;}
+    let objs;if(types[0]==='_micama'){const b=myBed(r);objs=b>=0&&!rvBusy(b,r)?[b]:[];}else objs=rvObjs(r,(d,t)=>types.includes(t)).filter(i=>!rvBusy(i,r));if(objs.length)opts.push({types,act,pose,dur,w,objs,fixed});}
   if(!opts.length)return false;let tot=opts.reduce((a,o)=>a+o.w,0),x=Math.random()*tot,o=opts[0];for(const q of opts){x-=q.w;if(x<=0){o=q;break;}}
   const cx=Math.floor(r.x),cy=Math.floor(r.y);
   if(o.act==='away'){const e=bfs([cx,cy],(x,y)=>x===0||y===0||x===N-1||y===N-1);if(!e)return false;r.path=e;r.plan={away:1,dur:o.dur,why:rvAwayWhy(r)};return true;}
@@ -13640,6 +13654,10 @@ function rvAwayWhy(r){const p=r.pid&&(S.people||[]).find(q=>q.k===r.pid);const o
   if(cam.z>0.7)label(p.n,bx,by-(pose==='sit'?54:66),'rgba(255,253,248,.9)','#3b3247',8);};}
 // los dilemas no llegan de madrugada ni mientras duerme: esperan a que se despierte
 {const _dt=dlgTick;dlgTick=function(){const h=S.t/60,u=S.sim&&S.sim.use;const asleep=u&&['cama','camamat','litera','colchon','sofacama'].includes(u.type)&&!u.nap;if(asleep||h<7.5||h>=23.5)return;return _dt.apply(this,arguments);};}
+{const _su9=startUse;startUse=function(){const r=_su9.apply(this,arguments);try{const u=S.sim.use;if(u&&BEDS.includes(u.type)&&!u.nap){S.lastBed=u.i;S.anaBedUid=S.obj[u.i]&&S.obj[u.i].uid;for(const q of S.res||[])if(q.bedUid===S.anaBedUid)q.bedUid=null;}}catch(e){}return r;};}
+// al mudarse: cama de Ana = la de su cuarto; residentes sin cama asignada
+{const _ah=applyHome;applyHome=function(type){const r=_ah.apply(this,arguments);try{uidSweep();S.home.sim=[S.sim.x,S.sim.y];S.anaBedUid=null;S.lastBed=null;for(const q of S.res||[])q.bedUid=null;
+  let best=-1,bd=1e9;for(let k=0;k<N*N;k++){const o=S.obj[k];if(o&&BEDS.includes(o.t)&&!o.priv){const d=Math.hypot(k%N+.5-S.sim.x,(k/N|0)+.5-S.sim.y);if(d<bd){bd=d;best=k;}}}if(best>=0)S.anaBedUid=S.obj[best].uid;}catch(e){console.error(e);}return r;};}
 // ---------- higiene más realista y rutina de ducha que se aprende ----------
 {const base=DECAY.higiene;Object.defineProperty(DECAY,'higiene',{get(){const se=typeof seasonOf==='function'?seasonOf():'pri';
   // de 100 a 40: invierno ~2,3 días, primavera/otoño ~1,8, verano ~1,3 (en casa; trabajando un poco más rápido)
@@ -13665,6 +13683,8 @@ function routineShower(){const s=S.sim;if(s.leaving||s.use||s.target!=null||s.pa
 {const _au=autonomy;autonomy=function(){try{if(routineShower())return;}catch(e){console.error(e);}return _au.apply(this,arguments);};}
 // de noche: si aprieta la vejiga, se levanta a hacer pis en vez de mojar la cama
 {const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim,u=s.use;if(u&&['cama','camamat','litera','colchon','sofacama'].includes(u.type)&&S.needs.vejiga<9&&!s.work){const b=bestObjFor('vejiga');if(b&&b.path){s.use=null;go(b,'vejiga',false);if(throttled('pisnoche',600000))tell(`${CH().name} se levantó medio dormid${oa()} a hacer pis.`,'🚽');}}}catch(e){}return r;};}
+// ducha realista: 10-15 minutos, no una hora
+OBJ.ducha.need.higiene=5;OBJ.banera.need.higiene=3.5;if(OBJ.lavabo&&OBJ.lavabo.need&&OBJ.lavabo.need.higiene)OBJ.lavabo.need.higiene=Math.max(OBJ.lavabo.need.higiene,2.5);
 // =================== EL MÓVIL: mensajes, llamadas, noticias, red social, banco ===================
 const PH=()=>{if(!S.ph)S.ph={th:{},un:{},feed:[],next:0,bal:[],used:0,usedDay:0,posts:0};const p=S.ph;p.th=p.th||{};p.un=p.un||{};p.feed=p.feed||[];p.bal=p.bal||[];return p;};
 const phNow=()=>S.day*1440+S.t;
@@ -13972,7 +13992,7 @@ function actBar(u){if(!actBarEl){actBarEl=document.createElement('div');actBarEl
   if(had){u0.actT=(u0.actT||0)+gm;const a=ACT_DEF(u0.type,u0.act);if(a){for(const k in a[7])S.needs[k]=Math.max(0,Math.min(100,S.needs[k]+a[7][k]*gm));}
     if(u0.actT>=u0.actDur){u0.done1=true;try{actFinish(u0,1);}catch(e){console.error(e);}
       // la comida no termina hasta llenar el estómago; lo demás, sí
-      if(!(['fogon','encimera','nevera'].includes(u0.type)&&S.needs.hambre<70)){s.use=null;s.cmd=false;s.think=0;}else{u0.act=null;u0.goal='hambre';}}
+      if(!(['fogon','encimera','nevera'].includes(u0.type)&&S.needs.hambre<70)){if(SHOWERS.has(u0.type))S.needs.higiene=Math.max(S.needs.higiene,u0.act==='rapida'?85:100);s.use=null;s.cmd=false;s.think=0;}else{u0.act=null;u0.goal='hambre';}}
     else if(Math.random()<gm*.012&&a)popBubble(a[1]);}
   const r=_up3.apply(this,arguments);
   if(had&&!u0.done1&&s.use===null&&!(s.path&&s.path.length)&&s.target==null&&!s.leaving&&!(s.work>0)&&S.obj[u0.i]&&S.obj[u0.i].t===u0.type&&usable(S.obj[u0.i])&&!['vejiga','hambre','energia'].some(n=>S.needs[n]<15)){s.use=u0;}// «ya está lleno» no corta una actividad a medias
@@ -15192,7 +15212,7 @@ function loop(now){
 for(const i of findObjs((d,t)=>t==='compu'))withChair(i);
 {if(S&&S.home&&['padres','habitacion','bueno'].includes(S.home.type)){const mv=(a,b)=>{const i=idx(...a),j=idx(...b);if(S.obj[i]&&S.obj[i].t==='fogon'&&!S.obj[j]){S.obj[j]=S.obj[i];S.obj[i]=null;}};if(S.home.type==='bueno')mv([6,11],[5,12]);else{const want={nevera:[5,10],fogon:[5,11],mesa:[7,11],silla:[8,12],sofa:[9,12],tele:[10,12]};const got={};for(let x=5;x<=10;x++)for(let y=10;y<=12;y++){const i=idx(x,y),q=S.obj[i];if(q&&!q.priv&&want[q.t]&&!got[q.t]){got[q.t]=q;S.obj[i]=null;}}for(const [t,[x,y]] of Object.entries(want)){const i=idx(x,y);if(got[t]&&!S.obj[i]){S.obj[i]=got[t];delete got[t];}}for(const q of Object.values(got)){for(let x=5;x<=10&&q;x++)for(let y=10;y<=12;y++){const i=idx(x,y);if(!S.obj[i]&&!(x===6||x===8&&y<12||y===10&&x>=8||x===10&&y===11||x===7&&y===12)){S.obj[i]=q;break;}}}mv([6,10],[5,11]);{const i=idx(10,10),j=idx(9,10);if(S.obj[i]&&S.obj[i].t==='tele'&&!S.obj[j]){S.obj[j]=S.obj[i];S.obj[i]=null;}}if(S.obj[idx(5,12)]&&S.obj[idx(5,12)].t==='silla'&&!S.obj[idx(8,12)]){S.obj[idx(8,12)]=S.obj[idx(5,12)];S.obj[idx(5,12)]=null;}}for(let i=0;i<N*N;i++){const q=S.obj[i];if(!q||OBJ[q.t].cat==='garden')continue;const x=i%N,y=i/N|0;for(let r=0;r<4;r++){const dx=[0,1,0,-1][r],dy=[-1,0,1,0][r];if(!inb(x+dx,y+dy))continue;const w=S.wall[idx(x+dx,y+dy)];if(w===1||w===3){q.r=r;break;}}}S.res=(S.res||[]).filter(r=>r.kind!=='mate');const [x,y]=simCell();if(!walkable(x,y)){S.sim.x=S.home.area[0]+.5;S.sim.y=S.home.area[1]+1.5;}S.sim.path=[];S.sim.stuck=0;}}
 try{for(const p of S.people||[]){if(p.ch){p.ch.g=personG(p)==='x'?(p.ch.g||'x'):personG(p);fixLook(p.ch,p.ch.g);}}}catch(e){}
-try{lookSweep();}catch(e){}if(!S.track)S.track='oficina';setTrack(S.track);if(!S.ideo)S.ideo='apolitica';if(!S.pol)S.pol={xp:0,inf:0,stages:{},comp:2,red:0};S.pol.stages=S.pol.stages||{};W_();
+try{lookSweep();}catch(e){}try{uidSweep();}catch(e){}if(!S.track)S.track='oficina';setTrack(S.track);if(!S.ideo)S.ideo='apolitica';if(!S.pol)S.pol={xp:0,inf:0,stages:{},comp:2,red:0};S.pol.stages=S.pol.stages||{};W_();
 if(!S.char)S.char={...DEFCHAR,shirt:(S.sim&&S.sim.shirt)||DEFCHAR.shirt};if(!S.people)initPeople();if(!S.weather)rollWeather();if(!S.today)newToday();storyState();if(!S.story.chap.start&&!firstRun)chapter('start','Una casa con eco',`${S.char.name} vive en esta casita de alquiler y trabaja de ${CAREER[S.career].t.toLowerCase()}. Su historia empieza a contarse hoy.`);
 ensureSimFree();hud();
 if(firstRun)setTimeout(()=>chooseDifficulty(false),300);
