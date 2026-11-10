@@ -13,3 +13,4 @@
 - Mis libros: ventana con portadas, autor, reseña, efectos, progreso, elegir qué leer; 16 libros más; reseñas al terminar.
 - Manuales: la habilidad sube mientras se lee; lo ya leído cuenta.
 - Mis libros: botón «Releer» en Leídos (los manuales repasados enseñan menos).
+- Releer da el 100% de la habilidad (de momento).
