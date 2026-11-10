@@ -10,3 +10,4 @@
 - Salud mental, adicciones, marginalidad, el final, lo colectivo, la jornada, crianza, la casa vivida, menos ruido.
 - Entrevista: las preguntas ilegales dependen de género, edad y piel.
 - Género: el colectivo en femenino genérico (juntas, compañeras, todas…) pasa a masculino si el personaje es hombre.
+- Mis libros: ventana con portadas, autor, reseña, efectos, progreso, elegir qué leer; 16 libros más; reseñas al terminar.
