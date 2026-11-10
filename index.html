@@ -14754,7 +14754,7 @@ Object.assign(OUT,{
   // la forma se pierde sola
   if(typeof homeless==='function'&&homeless())H.peso-=.06;
   // apariencia: el cuerpo cambia de talla
-  const ch=S.char;const want=ovw()<=-7?'delgada':ovw()>=9?'ancha':'media';if(ch&&ch.build!==want&&!(ch.build==='delgada'&&want==='media'&&ovw()<-3)&&!(ch.build==='ancha'&&want==='media'&&ovw()>5)){ch.build=want;try{dirty();}catch(e){}tell(want==='ancha'?`${n} ha tenido que comprar pantalones de una talla más. ${phys?'Comer a deshoras en el curro y cenar lo que sea a las once.':'Ocho horas sentad'+oa()+' y la cena delante de la tele.'} No es falta de voluntad; es el horario.`:want==='delgada'?`A ${n} le baila la ropa. ${S.money<0||homeless&&homeless()?'Comer poco no es una dieta cuando no es una elección.':'Ha perdido peso. Le dicen que qué bien, sin preguntar por qué.'}`:`${n} ha vuelto a su talla de siempre.`,'🪞');}
+  const ch=S.char;const o_=ovw();let want=ch?ch.build:'media';if(o_<=-7)want='delgada';else if(o_>=9)want='ancha';else if(ch&&ch.build==='delgada'&&o_>=4)want='media';else if(ch&&ch.build==='ancha'&&o_<=-4)want='media';if(ch&&ch.build!==want){ch.build=want;try{dirty();}catch(e){}tell(want==='ancha'?`${n} ha tenido que comprar pantalones de una talla más. ${phys?'Comer a deshoras en el curro y cenar lo que sea a las once.':'Ocho horas sentad'+oa()+' y la cena delante de la tele.'} No es falta de voluntad; es el horario.`:want==='delgada'?`A ${n} le baila la ropa. ${S.money<0||homeless&&homeless()?'Comer poco no es una dieta cuando no es una elección.':'Ha perdido peso. Le dicen que qué bien, sin preguntar por qué.'}`:`${n} ha vuelto a su talla de siempre.`,'🪞');}
   // avisos de ánimo por el cuerpo
   if(ovw()>=12&&Math.random()<.04){try{MT().an-=1.5;}catch(e){}tell(pickR([`En el trabajo alguien ha hecho un comentario sobre el peso de ${n}. En broma. Siempre es en broma.`,`${n} se ha mirado en el espejo del ascensor y ha apartado la vista.`,`Su madre, por teléfono: «¿te estás cuidando?».`]),'🪞');}
   // problemas de salud: riesgo diario según cuerpo y curro
@@ -15318,6 +15318,22 @@ function vsCandidates(){const pt=partner();const L=[];for(const p of S.people||[
       const others=(S.res||[]).filter(x=>x.kind==='guest');if(others.length>=2)return r;
       inviteHome(p,false);const rr=(S.res||[]).find(x=>x.pid===p.k);if(rr){rr.until=S.day*1440+Math.min(23.5*60,S.t+90+Math.random()*120);}
       tell(pl.role==='pareja'?`${p.n} ha aparecido sin avisar, con ${pickR(['cena para dos','una peli descargada','cara de día largo'])}. Tiene llave, o casi.`:`${p.n} ha llamado al timbre sin avisar: «pasaba por aquí». ${pickR(['Trae cervezas.','Trae un problema que contar.','No trae nada; con eso basta.'])}`,'🚪');toast(`🚪 ${p.n} ha venido a verte`,true);sfx('tap');}}catch(e){console.error(e);}return r;};}
+// =================== QUIÉN PAGA LO QUE SE ROMPE: en casa de tu madre, ella; en piso compartido, a partes; con pareja, a medias ===================
+function shareOf(i){const T=S.home&&S.home.type;const o=i!=null?S.obj[i]:null;const mine=i!=null&&typeof inArea==='function'&&inArea(i%N,i/N|0)&&!(o&&o.priv&&o.priv!=='ana');
+  if(T==='padres')return mine?.5:0;            // su cuarto: a medias si se lo pide; el resto, su madre
+  if(T==='habitacion')return mine?1:1/((HOMES.habitacion.mates||2)+1); // lo común, entre los tres
+  if(T==='calle')return 0;
+  if(liveIn())return .5;
+  return 1;}
+function splitTell(i,paid,share){const T=S.home&&S.home.type;const back=Math.round(paid*(1-share));if(back<=0)return;S.money+=back;const o=i!=null&&S.obj[i];const nm=o&&OBJ[o.t]?OBJ[o.t].n.toLowerCase():'eso';
+  if(T==='padres')tell(share===0?`${nm[0].toUpperCase()+nm.slice(1)}: lo ha pagado su madre. «Es mi casa», ha dicho, y ha sacado la cartera de la pensión.`:`Su madre ha puesto la mitad de ${nm}: ${fmt(back)}. «Para lo tuyo, a medias».`,'👩‍🦳');
+  else if(T==='habitacion')tell(`${nm[0].toUpperCase()+nm.slice(1)}: ${fmt(back)} los han puesto los compañeros de piso${Math.random()<.3?', uno de ellos a regañadientes y «a final de mes»':''}.`,'🚪');
+  else{const p=liveIn();if(p)tell(`${p.n} ha pagado la mitad de ${nm}: ${fmt(back)}.`,'💞');}}
+{const _es=execStep;execStep=function(job,j,byNpc){const st=job&&job.steps[j];const m0=S.money;const r=_es.apply(this,arguments);try{if(st&&(st.k==='fix'||st.k==='replace')&&S.money<m0){const paid=m0-S.money;const sh=shareOf(st.i);if(sh<1)splitTell(st.i,paid,sh);}}catch(e){}return r;};}
+// mano de obra de la cooperativa para arreglos: mismo reparto
+{const _hire=hireFor;hireFor=function(i,kind){const m0=S.money;const r=_hire.apply(this,arguments);try{if(S.money<m0){const sh=shareOf(i);if(sh<1)splitTell(i,m0-S.money,sh);}}catch(e){}return r;};}
+// averías de la casa (calentador, nevera, lavadora) si las paga Ana: mismo reparto
+{const _dl=dailyEvents;dailyEvents=function(){const g=typeof HG==='function'?HG():null;const b0=g?[g.boiler,g.fridge,g.wash]:null;const m0=S.money;const r=_dl.apply(this,arguments);try{if(g&&b0){const fixed=(b0[0]&&!g.boiler)||(b0[1]&&!g.fridge)||(b0[2]&&!g.wash);if(fixed&&S.money<m0-hrs(5)){const sh=shareOf(null);if(sh<1){const T=S.home&&S.home.type;const paid=m0-S.money;const back=Math.round(paid*(1-sh));S.money+=back;tell(T==='padres'?`La avería la ha pagado su madre. ${CH().name} ha intentado poner algo; no le ha dejado.`:T==='habitacion'?`La avería, entre los tres: ${fmt(back)} de vuelta.`:`${liveIn().n} ha puesto la mitad: ${fmt(back)}.`,'🔧');}}}}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
