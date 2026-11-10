@@ -28,6 +28,7 @@ const GW=['misma','arromántica','embarazada','justa','voluntaria','Cajera','fij
 const GSPEC={Jefa:['Jefe','Jefe'],Peona:['Peón','Peone'],Socia:['Socio','Socie'],sola:['solo','sole'],fija:['fijo','fije']};
 function gform(w,g){if(GSPEC[w])return GSPEC[w][g==='m'?0:1];if(w==='Técnica')return g==='m'?'Técnico':'Técnique';if(w==='dueña')return g==='m'?'dueño':'dueñe';if(/ora$/.test(w))return g==='m'?w.slice(0,-1):w.slice(0,-1)+'e';return w.slice(0,-1)+(g==='m'?'o':'e');}
 let GRX=null,GWL=null;
+const _masc=w=>/oras$/.test(w)?w.slice(0,-2)+'es':w==='peonas'?'peones':w==='currantas'?'currantes':w.slice(0,-2)+'os';
 function L(s){
   if(s==null||!S||!S.char)return s;const c=S.char;s=String(s);
   if(c.name!=='Ana')s=s.replace(/(^|[^A-Za-zÁÉÍÓÚáéíóúñÑ])Ana(?![A-Za-zÁÉÍÓÚáéíóúñÑ])/g,(m,a)=>a+c.name);
@@ -36,8 +37,8 @@ function L(s){
      .replace(/no la ascienden/g,'no le ascienden').replace(/(^|[^A-Za-zÁÉÍÓÚáéíóúñÑ])ella(?![A-Za-zÁÉÍÓÚáéíóúñÑ])/g,(m,a)=>a+(c.g==='m'?'él':'elle'))
      .replace(/(^|[^A-Za-zÁÉÍÓÚáéíóúñÑ])([Ll])a (han|ha|habían|hab[ií]a|llam[\wÁÉÍÓÚáéíóúñÑ]*|mir[\wÁÉÍÓÚáéíóúñÑ]*|felicit[\wÁÉÍÓÚáéíóúñÑ]*|despid[\wÁÉÍÓÚáéíóúñÑ]*|contrat[\wÁÉÍÓÚáéíóúñÑ]*|ech[\wÁÉÍÓÚáéíóúñÑ]*|elig[\wÁÉÍÓÚáéíóúñÑ]*|pill[\wÁÉÍÓÚáéíóúñÑ]*|cuid[\wÁÉÍÓÚáéíóúñÑ]*|dej[\wÁÉÍÓÚáéíóúñÑ]*|quier[\wÁÉÍÓÚáéíóúñÑ]*|ayud[\wÁÉÍÓÚáéíóúñÑ]*|esper[\wÁÉÍÓÚáéíóúñÑ]*|acompañ[\wÁÉÍÓÚáéíóúñÑ]*|ascien[\wÁÉÍÓÚáéíóúñÑ]*|readmit[\wÁÉÍÓÚáéíóúñÑ]*|ven |vio |ve |oye|escuch[\wÁÉÍÓÚáéíóúñÑ]*|conoc[\wÁÉÍÓÚáéíóúñÑ]*|salud[\wÁÉÍÓÚáéíóúñÑ]*|abraz[\wÁÉÍÓÚáéíóúñÑ]*|bes[\wÁÉÍÓÚáéíóúñÑ]*|invit[\wÁÉÍÓÚáéíóúñÑ]*|quit[\wÁÉÍÓÚáéíóúñÑ]*|pon[\wÁÉÍÓÚáéíóúñÑ]*|lleva[\wÁÉÍÓÚáéíóúñÑ]*|tienen? |tiene |necesit[\wÁÉÍÓÚáéíóúñÑ]*|avis[\wÁÉÍÓÚáéíóúñÑ]*|prefier[\wÁÉÍÓÚáéíóúñÑ]*|busca[\wÁÉÍÓÚáéíóúñÑ]*|encuentr[\wÁÉÍÓÚáéíóúñÑ]*|sigu[\wÁÉÍÓÚáéíóúñÑ]*|sostien[\wÁÉÍÓÚáéíóúñÑ]*|rodea[\wÁÉÍÓÚáéíóúñÑ]*|apoy[\wÁÉÍÓÚáéíóúñÑ]*|trat[\wÁÉÍÓÚáéíóúñÑ]*|respet[\wÁÉÍÓÚáéíóúñÑ]*|represent[\wÁÉÍÓÚáéíóúñÑ]*)(?![A-Za-zÁÉÍÓÚáéíóúñÑ])/g,(m,a,l,v)=>a+(c.g==='m'?(l==='L'?'Lo':'lo'):(l==='L'?'Le':'le'))+' '+v);}
   if(c.g==='m'){// el colectivo en femenino genérico pasa a masculino cuando el personaje es hombre
-    s=s.replace(/\b([Ll])as (compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|de abajo)\b/g,(m,l,w)=>l+'os '+(w==='de abajo'?w:w.replace(/as$/,'os')))
-     .replace(/\b(compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|unidas|nosotras|juntas)\b/gi,w=>w.slice(0,-2)+(w[w.length-2]==='A'?'OS':'os'))
+    s=s.replace(/\b([Ll])as (compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|de abajo)\b/g,(m,l,w)=>l+'os '+(w==='de abajo'?w:_masc(w)))
+     .replace(/\b(compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|unidas|nosotras|juntas)\b/gi,w=>{const r=_masc(w.toLowerCase());return w===w.toUpperCase()?r.toUpperCase():w[0]===w[0].toUpperCase()?r[0].toUpperCase()+r.slice(1):r;})
      .replace(/\b([Tt])odas\b(?! las\b)/g,(m,t)=>t+'odos').replace(/(?<![Aa] )\b([Ss])olas\b/g,(m,x)=>x+'olos');}
   return s;
 }

@@ -15,3 +15,5 @@
 - Mis libros: botón «Releer» en Leídos (los manuales repasados enseñan menos).
 - Releer da el 100% de la habilidad (de momento).
 - Curro: va al baño cuando le aprieta, café cuando cae la energía (máx. 3), lavado si va sucio; en empresas tóxicas cuentan las veces al baño.
+- Gobierno de consejos/comunas por fases (gobierno.js): vivienda (alquiler ≤22 % de ingresos, sin desahucios, deuda condonada) → trabajo (sin horas extra, asambleas, cargos elegidos, «Propuesta al consejo» en lugar de huelga, comedor) → compra y banco (compra −30 %, Banca Pública sin comisiones, préstamos 1,5 %, fondos/cripto liquidados, escasez semanal, colas). Ventana «Qué ha cambiado». Problemas: sabotaje, bloqueo, apagones, nostalgia.
+- L(): «trabajadoras» → «trabajadores» (no «trabajadoros»); peonas → peones, currantas → currantes.

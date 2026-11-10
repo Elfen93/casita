@@ -200,3 +200,12 @@
 #libros .libinfo small{font-size:11px;color:#8a8294;display:block}
 #libros .libblurb{font-size:11.5px;color:#4a4458;margin:3px 0}
 #libros .libfx{font-size:11px;color:#7a4fa0;margin-bottom:4px}
+#gvsheet{position:fixed;z-index:58;display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,400px);max-height:84vh;overflow:auto;background:rgba(255,253,248,.98);border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:8px;font-family:Nunito,sans-serif}
+#gvsheet.on{display:block}
+#gvsheet .omt{font:900 15px Nunito,sans-serif;color:#3b3247;padding:6px 8px 2px}
+#gvsheet .gvph{display:flex;flex-direction:column;margin:4px 6px;padding:7px 10px;border-radius:10px;background:#f3eef6;opacity:.7}
+#gvsheet .gvph.on{background:#fbe9e7;opacity:1}
+#gvsheet .gvph b{font:900 12.5px Nunito,sans-serif;color:#3b3247}#gvsheet .gvph small{font:700 11px Nunito,sans-serif;color:#6b6078}
+#gvsheet .gvbox{margin:8px 6px;border:1px solid #eee4dc;border-radius:12px;padding:4px 10px}
+#gvsheet .gvr{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed #eee4dc;font:700 12px Nunito,sans-serif;color:#3b3247}
+#gvsheet .gvr:last-child{border:0}#gvsheet .gvr s{color:#a59cae}#gvsheet .gvr b{color:#c0262d}

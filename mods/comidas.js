@@ -5,7 +5,7 @@ const mealSlot=()=>{const h=S.t/60;return h<11?'des':h<17?'com':'cen';};
 const MEAL_N={des:'desayuno',com:'comida',cen:'cena'};
 function cmMeal(kind,q,note){const c=CM();const sl=mealSlot();c.today[sl]={k:kind,q,n:note||kind};c.log.push([S.day,sl,q]);if(c.log.length>60)c.log.shift();}
 // ---- despensa: la compra semanal ----
-const compraCost=()=>Math.round(hrs(7)*(1+(S.kids||[]).length*.35)*(liveIn()?1.4:1));
+const compraCost=()=>Math.round((typeof govFood==='function'?govFood():1)*hrs(7)*(1+(S.kids||[]).length*.35)*(liveIn()?1.4:1));
 function hacerCompra(auto){const c=CM();const cost=compraCost();if(S.money<cost*.5){if(!auto)toast('No llega para la compra');return false;}const pay=Math.min(cost,Math.max(0,S.money));const units=Math.round(14*pay/cost);S.money-=pay;c.desp=Math.min(30,c.desp+units);c.compra=S.day;c.spent+=pay;bumpMoney();
   const n=CH().name;if(pay<cost)tell(`Compra a medias: ${fmt(pay)}. ${n} ha dejado en la estantería lo que no era de marca blanca.`,'🛒');else if(Math.random()<.3)tell(pickR([`Compra de la semana: ${fmt(pay)}. ${n} ha comparado precios por kilo como si fuera un trabajo. Lo es.`,`${fmt(pay)} en el súper. El aceite otra vez más caro. El sueldo, no.`,`La compra: ${fmt(pay)}. Verdura, legumbre, arroz, huevos, pollo de oferta. Lo que da de sí.`]),'🛒');else toast(`🛒 Compra: ${fmt(pay)} · ${c.desp} comidas en la despensa`);return true;}
 Object.assign(OUT,{compra:{n:'Hacer la compra',e:'🛒',dur:60,h:[9,21],why:'llenar la nevera para la semana'}});

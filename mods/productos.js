@@ -4,7 +4,7 @@ const eur=()=>(S.market&&S.market.euribor!=null?S.market.euribor:0.035);
 const infl=()=>{const m=S.market&&S.market.price||1;return Math.max(0,(m-1)*.5+.025);};// inflación anual aproximada
 const ahorroRate=()=>{const b=BP();const promo=b.ahorro.since!=null&&S.day-b.ahorro.since<90;return Math.max(0,promo?eur()-.005:eur()-.022);};
 const depRate=()=>Math.max(.002,eur()+.002);
-const loanRate=()=>Dm().soul?.14:Dm().price>=3.5?.11:.08;
+let loanRate=()=>Dm().soul?.14:Dm().price>=3.5?.11:.08;
 // migrar la cartera automática antigua
 {const _w=investWeekly;investWeekly=function(){try{const b=BP();if(S.inv&&S.inv.v>0){const k=S.pol.invest==='cripto'?'cripto':'fondos';b[k].v+=S.inv.v;b[k].in+=S.inv.in||S.inv.v;S.inv={v:0,in:0,peak:0};}
     // aporta por ideología, a su producto
@@ -36,8 +36,8 @@ function bpLoan(v,months){const b=BP();if(b.loan)return toast('Ya tiene un prés
     h+=`<div class="bksec">Euríbor ${(eur()*100).toFixed(2)} % · inflación ≈ ${(infl()*100).toFixed(1)} %</div>`;
     h+=card('🏦 Cuenta de ahorro «remunerada»',`${(ahorroRate()*100).toFixed(2)} % anual${b.ahorro.since!=null&&S.day-b.ahorro.since<90?' (promo 3 meses)':''} · disponible al momento${ahorroRate()<infl()?' · <span style="color:#c0392b">pierde contra la inflación</span>':''}`,`<div class="bpv">${fmt(Math.round(b.ahorro.v))}</div>`+btns('ahorro',b.ahorro.v>0));
     h+=card('🔒 Depósito a plazo',`${(depRate()*100).toFixed(2)} % · dinero bloqueado · 19 % a Hacienda de lo ganado`,b.dep?`<div class="bpv">${fmt(b.dep.v)} <small>vence en ${Math.max(0,b.dep.until-S.day)} días al ${(b.dep.rate*100).toFixed(2)} %</small></div><div class="bpb"><button class="mini" data-bpbreak="1">Romperlo (−2 %)</button></div>`:`<div class="bpb">${[[20,6],[60,6],[60,12]].map(([x,m])=>`<button class="mini" data-bpdep="${x}" data-m="${m}">${fmt(hrs(x))} · ${m} m</button>`).join('')}</div>`);
-    h+=card('📈 Fondo indexado',`sube a largo plazo, baja cuando hay crisis · 0,5 % de comisión · 19 % de la ganancia a Hacienda`,`<div class="bpv">${fmt(b.fondos.v)} <small>aportado ${fmt(Math.round(b.fondos.in))} · ${b.fondos.in?((b.fondos.v/b.fondos.in-1)*100).toFixed(1)+' %':''}</small></div>`+btns('fondos',b.fondos.v>0));
-    h+=card('🪙 Cripto',`casino con gráfico · 1,5 % de comisión por entrar y por salir`,`<div class="bpv">${fmt(b.cripto.v)} <small>aportado ${fmt(Math.round(b.cripto.in))} · ${b.cripto.in?((b.cripto.v/b.cripto.in-1)*100).toFixed(0)+' %':''}</small></div>`+btns('cripto',b.cripto.v>0));
+    if(!(typeof govBank==='function'&&govBank()))h+=card('📈 Fondo indexado',`sube a largo plazo, baja cuando hay crisis · 0,5 % de comisión · 19 % de la ganancia a Hacienda`,`<div class="bpv">${fmt(b.fondos.v)} <small>aportado ${fmt(Math.round(b.fondos.in))} · ${b.fondos.in?((b.fondos.v/b.fondos.in-1)*100).toFixed(1)+' %':''}</small></div>`+btns('fondos',b.fondos.v>0));
+    if(!(typeof govBank==='function'&&govBank()))h+=card('🪙 Cripto',`casino con gráfico · 1,5 % de comisión por entrar y por salir`,`<div class="bpv">${fmt(b.cripto.v)} <small>aportado ${fmt(Math.round(b.cripto.in))} · ${b.cripto.in?((b.cripto.v/b.cripto.in-1)*100).toFixed(0)+' %':''}</small></div>`+btns('cripto',b.cripto.v>0));
     h+=card('💳 Préstamo personal',b.loan?`${(b.loan.rate*100).toFixed(0)} % · ${b.loan.n} semanas · ${fmt(b.loan.pay)}/sem`:`${(loanRate()*100).toFixed(0)} % · hasta ${fmt(bpLoanMax())}${S.jobless?' · <span style="color:#c0392b">sin nómina, no</span>':''}`,b.loan?`<div class="bpv">${fmt(Math.round(b.loan.left))} <small>pendiente</small></div>`:`<div class="bpb">${[[20,12],[60,12],[150,24]].map(([x,m])=>`<button class="mini" data-bploan="${x}" data-m="${m}" ${S.jobless||hrs(x)>bpLoanMax()?'disabled':''}>${fmt(hrs(x))} · ${m} m</button>`).join('')}</div>`);
     h+=`<div class="bkfoot">Lo que el banco gana con tu dinero no sale en esta pantalla.</div>`;
     ph.innerHTML=bkShell(h);

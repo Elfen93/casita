@@ -377,6 +377,15 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #libros .libinfo small{font-size:11px;color:#8a8294;display:block}
 #libros .libblurb{font-size:11.5px;color:#4a4458;margin:3px 0}
 #libros .libfx{font-size:11px;color:#7a4fa0;margin-bottom:4px}
+#gvsheet{position:fixed;z-index:58;display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,400px);max-height:84vh;overflow:auto;background:rgba(255,253,248,.98);border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:8px;font-family:Nunito,sans-serif}
+#gvsheet.on{display:block}
+#gvsheet .omt{font:900 15px Nunito,sans-serif;color:#3b3247;padding:6px 8px 2px}
+#gvsheet .gvph{display:flex;flex-direction:column;margin:4px 6px;padding:7px 10px;border-radius:10px;background:#f3eef6;opacity:.7}
+#gvsheet .gvph.on{background:#fbe9e7;opacity:1}
+#gvsheet .gvph b{font:900 12.5px Nunito,sans-serif;color:#3b3247}#gvsheet .gvph small{font:700 11px Nunito,sans-serif;color:#6b6078}
+#gvsheet .gvbox{margin:8px 6px;border:1px solid #eee4dc;border-radius:12px;padding:4px 10px}
+#gvsheet .gvr{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed #eee4dc;font:700 12px Nunito,sans-serif;color:#3b3247}
+#gvsheet .gvr:last-child{border:0}#gvsheet .gvr s{color:#a59cae}#gvsheet .gvr b{color:#c0262d}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -4684,6 +4693,7 @@ const GW=['misma','arromántica','embarazada','justa','voluntaria','Cajera','fij
 const GSPEC={Jefa:['Jefe','Jefe'],Peona:['Peón','Peone'],Socia:['Socio','Socie'],sola:['solo','sole'],fija:['fijo','fije']};
 function gform(w,g){if(GSPEC[w])return GSPEC[w][g==='m'?0:1];if(w==='Técnica')return g==='m'?'Técnico':'Técnique';if(w==='dueña')return g==='m'?'dueño':'dueñe';if(/ora$/.test(w))return g==='m'?w.slice(0,-1):w.slice(0,-1)+'e';return w.slice(0,-1)+(g==='m'?'o':'e');}
 let GRX=null,GWL=null;
+const _masc=w=>/oras$/.test(w)?w.slice(0,-2)+'es':w==='peonas'?'peones':w==='currantas'?'currantes':w.slice(0,-2)+'os';
 function L(s){
   if(s==null||!S||!S.char)return s;const c=S.char;s=String(s);
   if(c.name!=='Ana')s=s.replace(/(^|[^A-Za-zÁÉÍÓÚáéíóúñÑ])Ana(?![A-Za-zÁÉÍÓÚáéíóúñÑ])/g,(m,a)=>a+c.name);
@@ -4692,8 +4702,8 @@ function L(s){
      .replace(/no la ascienden/g,'no le ascienden').replace(/(^|[^A-Za-zÁÉÍÓÚáéíóúñÑ])ella(?![A-Za-zÁÉÍÓÚáéíóúñÑ])/g,(m,a)=>a+(c.g==='m'?'él':'elle'))
      .replace(/(^|[^A-Za-zÁÉÍÓÚáéíóúñÑ])([Ll])a (han|ha|habían|hab[ií]a|llam[\wÁÉÍÓÚáéíóúñÑ]*|mir[\wÁÉÍÓÚáéíóúñÑ]*|felicit[\wÁÉÍÓÚáéíóúñÑ]*|despid[\wÁÉÍÓÚáéíóúñÑ]*|contrat[\wÁÉÍÓÚáéíóúñÑ]*|ech[\wÁÉÍÓÚáéíóúñÑ]*|elig[\wÁÉÍÓÚáéíóúñÑ]*|pill[\wÁÉÍÓÚáéíóúñÑ]*|cuid[\wÁÉÍÓÚáéíóúñÑ]*|dej[\wÁÉÍÓÚáéíóúñÑ]*|quier[\wÁÉÍÓÚáéíóúñÑ]*|ayud[\wÁÉÍÓÚáéíóúñÑ]*|esper[\wÁÉÍÓÚáéíóúñÑ]*|acompañ[\wÁÉÍÓÚáéíóúñÑ]*|ascien[\wÁÉÍÓÚáéíóúñÑ]*|readmit[\wÁÉÍÓÚáéíóúñÑ]*|ven |vio |ve |oye|escuch[\wÁÉÍÓÚáéíóúñÑ]*|conoc[\wÁÉÍÓÚáéíóúñÑ]*|salud[\wÁÉÍÓÚáéíóúñÑ]*|abraz[\wÁÉÍÓÚáéíóúñÑ]*|bes[\wÁÉÍÓÚáéíóúñÑ]*|invit[\wÁÉÍÓÚáéíóúñÑ]*|quit[\wÁÉÍÓÚáéíóúñÑ]*|pon[\wÁÉÍÓÚáéíóúñÑ]*|lleva[\wÁÉÍÓÚáéíóúñÑ]*|tienen? |tiene |necesit[\wÁÉÍÓÚáéíóúñÑ]*|avis[\wÁÉÍÓÚáéíóúñÑ]*|prefier[\wÁÉÍÓÚáéíóúñÑ]*|busca[\wÁÉÍÓÚáéíóúñÑ]*|encuentr[\wÁÉÍÓÚáéíóúñÑ]*|sigu[\wÁÉÍÓÚáéíóúñÑ]*|sostien[\wÁÉÍÓÚáéíóúñÑ]*|rodea[\wÁÉÍÓÚáéíóúñÑ]*|apoy[\wÁÉÍÓÚáéíóúñÑ]*|trat[\wÁÉÍÓÚáéíóúñÑ]*|respet[\wÁÉÍÓÚáéíóúñÑ]*|represent[\wÁÉÍÓÚáéíóúñÑ]*)(?![A-Za-zÁÉÍÓÚáéíóúñÑ])/g,(m,a,l,v)=>a+(c.g==='m'?(l==='L'?'Lo':'lo'):(l==='L'?'Le':'le'))+' '+v);}
   if(c.g==='m'){// el colectivo en femenino genérico pasa a masculino cuando el personaje es hombre
-    s=s.replace(/\b([Ll])as (compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|de abajo)\b/g,(m,l,w)=>l+'os '+(w==='de abajo'?w:w.replace(/as$/,'os')))
-     .replace(/\b(compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|unidas|nosotras|juntas)\b/gi,w=>w.slice(0,-2)+(w[w.length-2]==='A'?'OS':'os'))
+    s=s.replace(/\b([Ll])as (compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|de abajo)\b/g,(m,l,w)=>l+'os '+(w==='de abajo'?w:_masc(w)))
+     .replace(/\b(compañeras|vecinas|trabajadoras|cajeras|camareras|limpiadoras|cuidadoras|peonas|obreras|afiliadas|precarias|currantas|unidas|nosotras|juntas)\b/gi,w=>{const r=_masc(w.toLowerCase());return w===w.toUpperCase()?r.toUpperCase():w[0]===w[0].toUpperCase()?r[0].toUpperCase()+r.slice(1):r;})
      .replace(/\b([Tt])odas\b(?! las\b)/g,(m,t)=>t+'odos').replace(/(?<![Aa] )\b([Ss])olas\b/g,(m,x)=>x+'olos');}
   return s;
 }
@@ -15675,7 +15685,7 @@ const mealSlot=()=>{const h=S.t/60;return h<11?'des':h<17?'com':'cen';};
 const MEAL_N={des:'desayuno',com:'comida',cen:'cena'};
 function cmMeal(kind,q,note){const c=CM();const sl=mealSlot();c.today[sl]={k:kind,q,n:note||kind};c.log.push([S.day,sl,q]);if(c.log.length>60)c.log.shift();}
 // ---- despensa: la compra semanal ----
-const compraCost=()=>Math.round(hrs(7)*(1+(S.kids||[]).length*.35)*(liveIn()?1.4:1));
+const compraCost=()=>Math.round((typeof govFood==='function'?govFood():1)*hrs(7)*(1+(S.kids||[]).length*.35)*(liveIn()?1.4:1));
 function hacerCompra(auto){const c=CM();const cost=compraCost();if(S.money<cost*.5){if(!auto)toast('No llega para la compra');return false;}const pay=Math.min(cost,Math.max(0,S.money));const units=Math.round(14*pay/cost);S.money-=pay;c.desp=Math.min(30,c.desp+units);c.compra=S.day;c.spent+=pay;bumpMoney();
   const n=CH().name;if(pay<cost)tell(`Compra a medias: ${fmt(pay)}. ${n} ha dejado en la estantería lo que no era de marca blanca.`,'🛒');else if(Math.random()<.3)tell(pickR([`Compra de la semana: ${fmt(pay)}. ${n} ha comparado precios por kilo como si fuera un trabajo. Lo es.`,`${fmt(pay)} en el súper. El aceite otra vez más caro. El sueldo, no.`,`La compra: ${fmt(pay)}. Verdura, legumbre, arroz, huevos, pollo de oferta. Lo que da de sí.`]),'🛒');else toast(`🛒 Compra: ${fmt(pay)} · ${c.desp} comidas en la despensa`);return true;}
 Object.assign(OUT,{compra:{n:'Hacer la compra',e:'🛒',dur:60,h:[9,21],why:'llenar la nevera para la semana'}});
@@ -15737,7 +15747,7 @@ OUT_GROUPS.push(['🛒 Casa',['compra']]);
   // café: cuando cae la energía, si no se ha pasado ya
   if(nd.energia<38&&h-W.lastCafe>2.2&&W.cafes<3){W.lastCafe=h;W.cafes++;const maq=['obra','hosteleria','cuidados'].includes(S.track)?0:hrs(.12);
     if(maq&&S.money>=maq)bkAdd('Café',-maq);
-    nd.energia=Math.min(100,nd.energia+(W.cafes===1?16:10));nd.social=Math.min(100,nd.social+3);
+    const achi=typeof govLack==='function'&&govLack('café');nd.energia=Math.min(100,nd.energia+(W.cafes===1?16:10)*(achi?.6:1));if(achi&&W.cafes===1&&Math.random()<.3)tell(`No hay café: llevan semanas con achicoria. ${n} dice que sabe a tierra. Lo dice cada día.`,'☕');nd.social=Math.min(100,nd.social+3);
     if(Math.random()<.12)tell(pickR([maq?`Café de máquina, ${fmt(maq)}. Sabe a plástico y a las 11:40.`:`Café en el termo, de pie. El ${W.cafes===1?'primero':'de después'} del día.`,`Café con ${P_('compi')?P_('compi').n:'alguien del turno'}. Cinco minutos de hablar mal del jefe: cunden más que el café.`,`${n} va por el ${['primer','segundo','tercer'][W.cafes-1]} café. El cuerpo pide cama; el contrato, aguantar.`]),'☕');}
   // agua y un respiro cuando la cosa aprieta
   if(nd.energia<12&&W.cafes>=3&&!W.aviso){W.aviso=1;tell(`${n} ya no puede más y aún quedan horas. Mañana, dormir. Hoy, aguantar.`,'😮‍💨');}
@@ -15747,7 +15757,7 @@ OUT_GROUPS.push(['🛒 Casa',['compra']]);
 const BKS=()=>{if(!S.bk)S.bk={log:[],hucha:0,auto:0,fees:0,ctx:null};S.bk.log=S.bk.log||[];return S.bk;};
 let bkCtx=null;function bkAdd(label,v){const p=bkCtx;bkCtx=label;S.money+=v;bkCtx=p;}const withCtx=(fn,label)=>function(){const prev=bkCtx;bkCtx=typeof label==='function'?label.apply(this,arguments):label;try{return fn.apply(this,arguments);}finally{bkCtx=prev;}};
 const BK_CAT={'Nómina':'ingresos','Ingreso':'ingresos','Premio':'ingresos','Ventas':'ingresos','Préstamo':'ingresos','Ayuda':'ingresos','Alquiler':'casa','Hipoteca':'casa','Luz, agua y gas':'casa','Arreglos':'casa','Muebles y obras':'casa','Compra':'comida','Comida':'comida','Menú':'comida','Salida':'ocio','Libros':'ocio','Gimnasio':'cuerpo','Farmacia':'cuerpo','Médico':'cuerpo','Terapia':'cuerpo','Críos':'familia','Cuota':'deudas','Comisión':'deudas','Multa':'deudas','Hacienda':'deudas','Hucha':'ahorro','Otros':'otros'};
-const BANK_N='Banco Atlántico';const BANK_IBAN=()=>{const h=Math.floor(Math.abs(hash((CH().name||'x').length*7+13))*9000)%9000+1000;return 'ES21 0182 4411 '+String(h).padStart(4,'0')+' **** 2714';};
+let BANK_N='Banco Atlántico';const BANK_IBAN=()=>{const h=Math.floor(Math.abs(hash((CH().name||'x').length*7+13))*9000)%9000+1000;return 'ES21 0182 4411 '+String(h).padStart(4,'0')+' **** 2714';};
 const BK_CATN={ingresos:'Ingresos',casa:'Casa',comida:'Comida',ocio:'Salidas y ocio',cuerpo:'Salud y cuerpo',familia:'Críos',deudas:'Deudas, multas y comisiones',ahorro:'Hucha',otros:'Otros'};
 // el saldo como propiedad con memoria: cada cambio queda apuntado
 function bkInstall(){if(!S||typeof S!=='object')return;const d=Object.getOwnPropertyDescriptor(S,'money');if(d&&d.get)return;let m=S.money||0;
@@ -15774,7 +15784,7 @@ try{eduStart=withCtx(eduStart,'Otros');}catch(e){}
 // contextos en los tramos diarios: lo que pasa en dailyEvents ya tiene nombre en el diario, aquí va por tipo
 {const _dl=dailyEvents;dailyEvents=function(){const B=BKS();const prev=bkCtx;bkCtx='Otros';try{return _dl.apply(this,arguments);}finally{bkCtx=prev;}};}
 // comisiones por descubierto, cada lunes
-{const _pr=payRent;payRent=function(){const r=_pr.apply(this,arguments);try{if(S.money<0&&dateOf(S.day).wd===0){const f=Math.round(Math.min(hrs(4),hrs(1)+(-S.money)*.02));const prev=bkCtx;bkCtx='Comisión';S.money-=f;bkCtx=prev;BKS().fees+=f;if(throttled('fee',6e5))toast(`🏦 Comisión por descubierto: ${fmt(f)}`);if(BKS().fees>hrs(20)&&!S.story.chap.comis)chapter('comis','Pagar por no tener',`El banco ya le ha cobrado ${fmt(BKS().fees)} en comisiones por estar en números rojos. Es el único negocio donde te cobran más cuanto menos tienes. La reclamación tarda tres meses; la comisión, tres segundos.`);}}catch(e){}return r;};}
+{const _pr=payRent;payRent=function(){const r=_pr.apply(this,arguments);try{if(S.money<0&&dateOf(S.day).wd===0&&!(typeof govBank==='function'&&govBank())){const f=Math.round(Math.min(hrs(4),hrs(1)+(-S.money)*.02));const prev=bkCtx;bkCtx='Comisión';S.money-=f;bkCtx=prev;BKS().fees+=f;if(throttled('fee',6e5))toast(`🏦 Comisión por descubierto: ${fmt(f)}`);if(BKS().fees>hrs(20)&&!S.story.chap.comis)chapter('comis','Pagar por no tener',`El banco ya le ha cobrado ${fmt(BKS().fees)} en comisiones por estar en números rojos. Es el único negocio donde te cobran más cuanto menos tienes. La reclamación tarda tres meses; la comisión, tres segundos.`);}}catch(e){}return r;};}
 // hucha: dinero que la IA no toca
 {const _rm=reserveMoney;reserveMoney=function(){return _rm.apply(this,arguments);};}
 function bkHucha(v){const B=BKS();v=Math.round(v);if(v>0){if(S.money<v){toast('No hay tanto en la cuenta');return;}const p=bkCtx;bkCtx='Hucha';S.money-=v;bkCtx=p;B.hucha+=v;toast(`🐷 ${fmt(v)} a la hucha`);}else if(v<0){v=Math.min(-v,B.hucha);const p=bkCtx;bkCtx='Hucha';S.money+=v;bkCtx=p;B.hucha-=v;toast(`🐷 ${fmt(v)} sacados de la hucha`);}}
@@ -15819,7 +15829,7 @@ const eur=()=>(S.market&&S.market.euribor!=null?S.market.euribor:0.035);
 const infl=()=>{const m=S.market&&S.market.price||1;return Math.max(0,(m-1)*.5+.025);};// inflación anual aproximada
 const ahorroRate=()=>{const b=BP();const promo=b.ahorro.since!=null&&S.day-b.ahorro.since<90;return Math.max(0,promo?eur()-.005:eur()-.022);};
 const depRate=()=>Math.max(.002,eur()+.002);
-const loanRate=()=>Dm().soul?.14:Dm().price>=3.5?.11:.08;
+let loanRate=()=>Dm().soul?.14:Dm().price>=3.5?.11:.08;
 // migrar la cartera automática antigua
 {const _w=investWeekly;investWeekly=function(){try{const b=BP();if(S.inv&&S.inv.v>0){const k=S.pol.invest==='cripto'?'cripto':'fondos';b[k].v+=S.inv.v;b[k].in+=S.inv.in||S.inv.v;S.inv={v:0,in:0,peak:0};}
     // aporta por ideología, a su producto
@@ -15851,8 +15861,8 @@ function bpLoan(v,months){const b=BP();if(b.loan)return toast('Ya tiene un prés
     h+=`<div class="bksec">Euríbor ${(eur()*100).toFixed(2)} % · inflación ≈ ${(infl()*100).toFixed(1)} %</div>`;
     h+=card('🏦 Cuenta de ahorro «remunerada»',`${(ahorroRate()*100).toFixed(2)} % anual${b.ahorro.since!=null&&S.day-b.ahorro.since<90?' (promo 3 meses)':''} · disponible al momento${ahorroRate()<infl()?' · <span style="color:#c0392b">pierde contra la inflación</span>':''}`,`<div class="bpv">${fmt(Math.round(b.ahorro.v))}</div>`+btns('ahorro',b.ahorro.v>0));
     h+=card('🔒 Depósito a plazo',`${(depRate()*100).toFixed(2)} % · dinero bloqueado · 19 % a Hacienda de lo ganado`,b.dep?`<div class="bpv">${fmt(b.dep.v)} <small>vence en ${Math.max(0,b.dep.until-S.day)} días al ${(b.dep.rate*100).toFixed(2)} %</small></div><div class="bpb"><button class="mini" data-bpbreak="1">Romperlo (−2 %)</button></div>`:`<div class="bpb">${[[20,6],[60,6],[60,12]].map(([x,m])=>`<button class="mini" data-bpdep="${x}" data-m="${m}">${fmt(hrs(x))} · ${m} m</button>`).join('')}</div>`);
-    h+=card('📈 Fondo indexado',`sube a largo plazo, baja cuando hay crisis · 0,5 % de comisión · 19 % de la ganancia a Hacienda`,`<div class="bpv">${fmt(b.fondos.v)} <small>aportado ${fmt(Math.round(b.fondos.in))} · ${b.fondos.in?((b.fondos.v/b.fondos.in-1)*100).toFixed(1)+' %':''}</small></div>`+btns('fondos',b.fondos.v>0));
-    h+=card('🪙 Cripto',`casino con gráfico · 1,5 % de comisión por entrar y por salir`,`<div class="bpv">${fmt(b.cripto.v)} <small>aportado ${fmt(Math.round(b.cripto.in))} · ${b.cripto.in?((b.cripto.v/b.cripto.in-1)*100).toFixed(0)+' %':''}</small></div>`+btns('cripto',b.cripto.v>0));
+    if(!(typeof govBank==='function'&&govBank()))h+=card('📈 Fondo indexado',`sube a largo plazo, baja cuando hay crisis · 0,5 % de comisión · 19 % de la ganancia a Hacienda`,`<div class="bpv">${fmt(b.fondos.v)} <small>aportado ${fmt(Math.round(b.fondos.in))} · ${b.fondos.in?((b.fondos.v/b.fondos.in-1)*100).toFixed(1)+' %':''}</small></div>`+btns('fondos',b.fondos.v>0));
+    if(!(typeof govBank==='function'&&govBank()))h+=card('🪙 Cripto',`casino con gráfico · 1,5 % de comisión por entrar y por salir`,`<div class="bpv">${fmt(b.cripto.v)} <small>aportado ${fmt(Math.round(b.cripto.in))} · ${b.cripto.in?((b.cripto.v/b.cripto.in-1)*100).toFixed(0)+' %':''}</small></div>`+btns('cripto',b.cripto.v>0));
     h+=card('💳 Préstamo personal',b.loan?`${(b.loan.rate*100).toFixed(0)} % · ${b.loan.n} semanas · ${fmt(b.loan.pay)}/sem`:`${(loanRate()*100).toFixed(0)} % · hasta ${fmt(bpLoanMax())}${S.jobless?' · <span style="color:#c0392b">sin nómina, no</span>':''}`,b.loan?`<div class="bpv">${fmt(Math.round(b.loan.left))} <small>pendiente</small></div>`:`<div class="bpb">${[[20,12],[60,12],[150,24]].map(([x,m])=>`<button class="mini" data-bploan="${x}" data-m="${m}" ${S.jobless||hrs(x)>bpLoanMax()?'disabled':''}>${fmt(hrs(x))} · ${m} m</button>`).join('')}</div>`);
     h+=`<div class="bkfoot">Lo que el banco gana con tu dinero no sale en esta pantalla.</div>`;
     ph.innerHTML=bkShell(h);
@@ -15867,6 +15877,101 @@ function bpLoan(v,months){const b=BP();if(b.loan)return toast('Ya tiene un prés
 {const _bd=bkDebts;bkDebts=function(){const L=_bd.apply(this,arguments);try{const b=BP();if(b.loan)L.push(['💳 Préstamo personal',b.loan.left,(b.loan.rate*100).toFixed(0)+' % · '+fmt(b.loan.pay)+'/sem']);}catch(e){}return L;};}
 // el epílogo y el perfil saben lo que hay
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const b=BP();const tot=Math.round(b.ahorro.v+(b.dep?b.dep.v:0)+b.fondos.v+b.cripto.v);if(!tot)return h;return h.replace('<h3>🤝 Red</h3>',`<div class="sub" style="font-size:12px;margin:-6px 0 10px">🏦 Ahorro e inversiones: ${fmt(tot)}${b.loan?' · 💳 préstamo pendiente '+fmt(Math.round(b.loan.left)):''}</div><h3>🤝 Red</h3>`);}catch(e){return h;}};}
+// =================== EL GOBIERNO SE NOTA: consejos y comunas cambian la casa, el curro, la compra y el banco, por fases ===================
+const REV=()=>{const e=W_().era;return e==='consejos'||e==='comunas';};
+const GV=()=>{if(!S.gv)S.gv={since:null,ph:0,pre:null,lack:[],prop:-99,comedor:0,elec:0,ev:0};return S.gv;};
+const GV_PH=[[0,'🏠 Vivienda','Alquiler social y fin de los desahucios'],[5,'🔧 Trabajo','Sin jefe: asambleas, cargos elegidos y revocables, sin horas extra'],[12,'🧺 Compra y banco','Precios regulados, banca pública… y escasez por el bloqueo']];
+function govPh(){const g=GV();if(!REV()||g.since==null)return 0;const d=S.day-g.since;return GV_PH.filter(p=>d>=p[0]).length;}
+function govFood(){return REV()&&govPh()>=3?.7:1;}
+function govBank(){return REV()&&govPh()>=3;}
+function govLack(k){return REV()&&govPh()>=3&&GV().lack.includes(k);}
+function govRentCap(){const inc=S.jobless?hrs(8)*5*.6:salary()*TR().days.length;return Math.max(20,Math.round(inc*.22));}
+// foto de antes: para poder decir «antes pagabas X, ahora Y»
+function govSnap(approx){const g=GV();const k=approx?(W_().era==='comunas'?.15:.35):1;
+  g.pre={rent:Math.round(weeklyRent()/k),pay:Math.round(salary()/(approx?1.12:1)),compra:Math.round(compraCost()),bank:BANK_N,fees:BKS().fees||0};}
+{const _rd=revolutionDaily;revolutionDaily=function(){const was=REV();if(!was&&W_().rev&&W_().rev.left<=1){try{govSnap(false);}catch(e){}}const r=_rd.apply(this,arguments);try{if(!was&&REV())govStart();}catch(e){}return r;};}
+function govStart(){const g=GV();if(g.since!=null)return;g.since=S.day;if(!g.pre)govSnap(true);g.ph=0;govTick();setTimeout(()=>openGov(),1200);}
+// el alquiler, con tope del 22 % de lo que entra
+{const _wr=weeklyRent;weeklyRent=function(){const v=_wr.apply(this,arguments);try{if(REV()&&govPh()>=1&&!S.owned)return Math.min(v,govRentCap());}catch(e){}return v;};}
+// ya no hay desahucios
+if(typeof mgEvict==='function'){const _ev=mgEvict;mgEvict=function(who){if(REV()&&govPh()>=1){const m=MG();m.debt=0;m.wk=0;tell(`Han venido a cobrar lo atrasado y la asamblea de bloque ha dicho que no. Ya no se echa a nadie de su casa.`,'🏠');return;}return _ev.apply(this,arguments);};}
+// el préstamo, a interés de banca pública
+{const _lr=loanRate;loanRate=function(){return govBank()?.015:_lr();};}
+// lo que pasa al entrar en cada fase
+function govTick(){const g=GV();if(!REV())return;const ph=govPh();const n=CH().name;
+  while(g.ph<ph){g.ph++;
+    if(g.ph===1){const m=MG();const deb=m.debt||0;m.debt=0;m.wk=0;
+      tell(`Fase uno: vivienda. El alquiler pasa a ser social: nunca más del 22 % de lo que entra. ${deb?`La deuda del alquiler (${fmt(deb)}) queda condonada. `:''}Los pisos vacíos se reparten en asamblea.`,'🏠');}
+    if(g.ph===2){tell(`Fase dos: trabajo. En ${S.office?S.office.n:'el curro'} ya no manda nadie que no haya votado la plantilla. Se acabaron las horas extra sin cobrar. Los cargos se eligen y se pueden revocar. A cambio: asambleas. Muchas.`,'🔧');}
+    if(g.ph===3){const b=BP();let liq=0;for(const k of ['fondos','cripto']){if(b[k]&&b[k].v>0){liq+=b[k].v;b[k].v=0;b[k].in=0;}}if(liq){b.ahorro.v+=liq;}
+      BANK_N='Banca Pública';
+      tell(`Fase tres: compra y banco. ${g.pre?g.pre.bank:'El banco'} ahora es Banca Pública: sin comisiones, préstamos al 1,5 %.${liq?` Los fondos y la cripto de ${n} se han liquidado a su valor (${fmt(liq)}) y están en la cuenta de ahorro.`:''} Lo básico baja de precio. Pero hay bloqueo: faltarán cosas.`,'🧺');}
+  }
+  if(govPh()>=3)BANK_N='Banca Pública';
+  // el curro sin patrón: aunque cambie de trabajo
+  if(govPh()>=2&&S.office){S.office.tox=Math.min(S.office.tox,.12);S.noOvertime=S.day+9999;}}
+// cada día: fases, escasez, problemas nuevos
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{
+  if(!REV()){if(S.gv&&S.gv.since!=null){S.gv.since=null;S.gv.ph=0;BANK_N='Banco Atlántico';}return r;}
+  const g=GV();if(g.since==null)govStart();govTick();const n=CH().name;
+  // escasez: cambia cada semana
+  if(govPh()>=3&&(S.day-g.since)%7===5){const all=['café','carne','electrónica','medicinas de marca','tabaco','fruta de fuera'];g.lack=all.filter(()=>Math.random()<.3).slice(0,2);if(!g.lack.length)g.lack=[pickR(all)];
+    if(g.lack.includes('electrónica'))S.shortage=Math.max(S.shortage||0,S.day+8);
+    tell(`Esta semana falta: ${g.lack.join(' y ')}. Hay cola en el economato y gente que dice que «antes esto no pasaba». Antes pasaban otras cosas.`,'🧺');}
+  if(OUT.compra){OUT.compra._d=OUT.compra._d||OUT.compra.dur;OUT.compra.dur=govPh()>=3?Math.round(OUT.compra._d*1.5):OUT.compra._d;}
+  // problemas nuevos, de vez en cuando
+  if(Math.random()<.12&&S.day-g.ev>3){g.ev=S.day;const E=[
+    [`Sabotaje: el antiguo dueño de una fábrica del polígono se ha llevado las máquinas a Portugal. La asamblea busca piezas.`,'🏭'],
+    [`El bloqueo: un barco con medicinas lleva dos semanas parado en el puerto. En la tele de fuera lo llaman «presión diplomática».`,'🚢'],
+    [`Un vecino del tercero dice que con el casero vivía mejor. Paga la mitad que antes. Pero lo dice.`,'🙄'],
+    [`Asamblea de barrio de cuatro horas para decidir el horario del centro de salud. Se ha votado. ${n} ha llegado a casa sin voz.`,'🗣️'],
+    [`Han abierto un comedor popular en el bajo donde estaba la sucursal bancaria. Lentejas, pan y cola.`,'🍲'],
+    [`Pintada nueva en la parada del bus: «Ni amos ni colas». Debajo, a boli: «sin colas no hay revolución».`,'🖌️'],
+    [`Apagón de tres horas por la noche: falta combustible. Han salido velas, guitarras y vecinos que no se hablaban.`,'🕯️']];
+    const [t,e]=pickR(E);tell(t,e);if(e==='🕯️'){S.needs.social=Math.min(100,S.needs.social+10);}}
+  // elección de cargos en el curro, cada mes
+  if(govPh()>=2&&!S.jobless&&!TR().self&&S.day-g.elec>=30&&dateOf(S.day).wd===2){g.elec=S.day;const next=CAREER[S.career+1];
+    const p=.15+Math.min(.5,((S.rep??60)-50)/100+(lvl('carisma')||0)*.04);
+    if(next&&Math.random()<p){S.career++;tell(`La asamblea del curro ha elegido a ${n} como ${next.t.toLowerCase()}. Revocable cuando quieran. Cobra lo mismo que los demás más un poco por las horas de reuniones.`,'🗳️');}
+    else tell(`Elección de cargos en el curro. Han salido otras. ${n} ha votado y ha vuelto a su puesto, que es lo normal.`.replace('otras',ga('otras','otros','otres')),'🗳️');}
+}catch(e){console.error(e);}return r;};}
+// asambleas en el curro: alargan el turno pero no se van de vacío
+{const _dp=depart;depart=function(){const r=_dp.apply(this,arguments);try{const s=S.sim;if(REV()&&govPh()>=2&&s.work>0&&!s.outingActive&&Math.random()<.22){s.work+=60;S.needs.social=Math.min(100,S.needs.social+8);setTimeout(()=>{if(Math.random()<.5)tell(pickR([`Hoy hay asamblea de centro antes de empezar: turnos de verano. Una hora más. Se ha aprobado lo que ${CH().name} propuso.`,`Asamblea: hay que repartir el trabajo del compañero de baja. Se reparte. Nadie lo carga solo.`,`Asamblea de una hora para decidir si una hora es demasiado para una asamblea.`]),'✋');},900);}}catch(e){}return r;};}
+// comedor del centro (si sale aprobado): el descanso sale gratis
+{const _up=update;update=function(gm){const s=S.sim;const pre=s.lunch;const r=_up.apply(this,arguments);try{if(GV().comedor&&REV()&&s.lunch===S.day&&pre!==S.day&&!S.tapers){const last=(BKS().log||[]).slice(-1)[0];if(last&&last[3]==='Menú'&&last[0]===S.day)bkAdd('Comedor del centro',-last[2]);}}catch(e){}return r;};}
+// el sindicato: ya no hay patrón contra quien hacer huelga; ahora se lleva una propuesta al consejo
+{const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{if(REV()){
+  if(govPh()>=2){h=h.replace(/<button class="btn[^"]*" id="ustrike"[^>]*>[^<]*<\/button>/,`<button class="btn${S.day-GV().prop>=7?'':' grey'}" id="gvprop">📣 Propuesta al consejo</button>`)
+    .replace(/Para convocar huelga hace falta organización 50 y malestar 35\.[^<]*/,`Sin patrón no hay contra quién hacer huelga. Lo que se quiere cambiar se lleva al consejo: una propuesta por semana. Cuanta más organización, más fácil que salga.`);}
+  h=h.replace('<h3>🌍 El mundo</h3>',`<h3>🌍 El mundo</h3><button class="btn grey" id="gvopen">📜 Qué ha cambiado para ${CH().name}</button>`);}}catch(e){}return h;};}
+document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.closest('#gvprop,#gvopen,#gvclose');if(!t)return;if(t.id==='gvopen')openGov();else if(t.id==='gvclose')closeGov();else govPropose();},true);
+function govPropose(){const g=GV();if(S.day-g.prop<7){toast(`La próxima propuesta, en ${7-(S.day-g.prop)} días`);return;}g.prop=S.day;const o=office();const n=CH().name;
+  const ideas=[['comedor','Comedor en el centro de trabajo',()=>{g.comedor=1;}],['sueldo','Subir lo que se cobra (sale de lo que antes se llevaba la empresa)',()=>{S.payMul=(S.payMul||1)*1.05;}],['org','Una hora a la semana de formación en horario de trabajo',()=>{gainSkill('logica',120);}]].filter(i=>!(i[0]==='comedor'&&g.comedor));
+  const [k,t,f]=pickR(ideas);const p=.35+(o.org||0)/200;
+  if(Math.random()<p){f();o.org=Math.min(100,(o.org||0)+5);tell(`${n} ha llevado al consejo: «${t}». Aprobada.${k==='comedor'?' Desde mañana se come en el centro, sin pagar.':k==='sueldo'?' +5 % para toda la plantilla.':' Los jueves, una hora de aprender cosas.'}`,'📣');sfx('level');}
+  else tell(`${n} ha llevado al consejo: «${t}». Rechazada: este mes la prioridad es el hospital y el transporte. ${n} lo entiende. Lo volverá a traer.`,'📣');
+  if(typeof openMenu==='function')openMenu();}
+// ventana «Qué ha cambiado»
+let gvEl=null;
+function closeGov(){if(gvEl)gvEl.classList.remove('on');}
+function openGov(){if(!REV())return;const g=GV();const d=S.day-g.since;const ph=govPh();const pre=g.pre||{};
+  if(!gvEl){gvEl=document.createElement('div');gvEl.id='gvsheet';document.body.appendChild(gvEl);}
+  const row=(a,b,c)=>`<div class="gvr"><span>${a}</span><span>${b?`<s>${b}</s> → `:''}<b>${c}</b></span></div>`;
+  let h=`<div class="omt">${W_().era==='comunas'?'🏴 La comuna':'🚩 Los consejos'}: qué cambia para ${CH().name}</div><div class="sub" style="padding:0 8px 6px">Día ${d+1} desde que cayó el gobierno. Los cambios llegan por fases.</div>`;
+  for(let i=0;i<GV_PH.length;i++){const [dd,t,x]=GV_PH[i];const on=ph>i;h+=`<div class="gvph${on?' on':''}"><b>${on?'✅':'⏳'} ${t}</b><small>${x}${on?'':` · en ${dd-d} días`}</small></div>`;}
+  h+=`<div class="gvbox">`;
+  if(S.owned)h+=row('🏠 Hipoteca','','reducida al 30 %');
+  else if(S.home&&S.home.type==='padres')h+=row('🏠 Vive con su madre','','sin alquiler');
+  else h+=row('🏠 Alquiler / semana',pre.rent&&ph>=1&&pre.rent>weeklyRent()?fmt(pre.rent):'',ph>=1?fmt(weeklyRent()):'pendiente');
+  h+=row('⚖️ Desahucios',ph>=1?'sí':'',ph>=1?'no':'pendiente');
+  if(!S.jobless&&!TR().self){h+=row('💼 Sueldo / turno',pre.pay&&pre.pay<salary()?fmt(pre.pay):'',fmt(Math.round(salary()*payFactor())));
+    h+=row('⏳ Horas extra sin cobrar',ph>=2?'sí':'',ph>=2?'no':'pendiente');h+=row('👔 Jefe',ph>=2?'sí':'',ph>=2?'cargos elegidos':'pendiente');
+    if(g.comedor)h+=row('🍲 Comedor del centro','','gratis');}
+  h+=row('🧺 Compra semanal',ph>=3&&pre.compra?fmt(pre.compra):'',fmt(compraCost()));
+  h+=row('🏦 Banco',ph>=3?(pre.bank||'Banco Atlántico'):'',ph>=3?'Banca Pública, sin comisiones':'pendiente');
+  if(ph>=3)h+=row('🚫 Esta semana falta','',g.lack.join(', ')||'nada');
+  h+=`</div><div class="sub" style="padding:6px 8px">Lo que cuesta: asambleas largas, colas, bloqueo exterior, sabotajes de quien lo tenía todo, y vecinos que echan de menos lo de antes. Y si el movimiento se apaga, lo ganado se puede perder.</div><div style="padding:6px"><button class="btn" id="gvclose">Entendido</button></div>`;
+  gvEl.innerHTML=h;gvEl.classList.add('on');}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};

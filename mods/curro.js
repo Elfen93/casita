@@ -8,7 +8,7 @@
   // café: cuando cae la energía, si no se ha pasado ya
   if(nd.energia<38&&h-W.lastCafe>2.2&&W.cafes<3){W.lastCafe=h;W.cafes++;const maq=['obra','hosteleria','cuidados'].includes(S.track)?0:hrs(.12);
     if(maq&&S.money>=maq)bkAdd('Café',-maq);
-    nd.energia=Math.min(100,nd.energia+(W.cafes===1?16:10));nd.social=Math.min(100,nd.social+3);
+    const achi=typeof govLack==='function'&&govLack('café');nd.energia=Math.min(100,nd.energia+(W.cafes===1?16:10)*(achi?.6:1));if(achi&&W.cafes===1&&Math.random()<.3)tell(`No hay café: llevan semanas con achicoria. ${n} dice que sabe a tierra. Lo dice cada día.`,'☕');nd.social=Math.min(100,nd.social+3);
     if(Math.random()<.12)tell(pickR([maq?`Café de máquina, ${fmt(maq)}. Sabe a plástico y a las 11:40.`:`Café en el termo, de pie. El ${W.cafes===1?'primero':'de después'} del día.`,`Café con ${P_('compi')?P_('compi').n:'alguien del turno'}. Cinco minutos de hablar mal del jefe: cunden más que el café.`,`${n} va por el ${['primer','segundo','tercer'][W.cafes-1]} café. El cuerpo pide cama; el contrato, aguantar.`]),'☕');}
   // agua y un respiro cuando la cosa aprieta
   if(nd.energia<12&&W.cafes>=3&&!W.aviso){W.aviso=1;tell(`${n} ya no puede más y aún quedan horas. Mañana, dormir. Hoy, aguantar.`,'😮‍💨');}
