@@ -14109,7 +14109,7 @@ const GEST={
       p.rel=Math.max(0,p.rel-8);p.fails=(p.fails||0)+1;bubbleFor(p,'😳');return `${CH().name} se ha lanzado y ${p.n} se ha apartado. Incomodísimo.`;}
     p.love=Math.min(100,p.love+4);S.needs.social=Math.min(100,S.needs.social+8);S.needs.diversion=Math.min(100,S.needs.diversion+6);bubbleFor(p,'💋');popBubble('💕');return null;}},
   cama:{e:'🔥',n:'Ir a la cama',ok:p=>p.k.startsWith('p')&&canLove(p)&&(['rollo','pareja','convive','casada'].includes(p.stage)||(p.stage==='cita'&&(p.love||0)>=55)),run:p=>intimo(p)},
-  hotel:{e:'🏨',n:'Escapada a un hotel',cost:()=>Math.round(55*PM()),ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2),run:p=>escapada(p,'hotel')},
+  hotel:{e:'🏨',n:'Escapada a un hotel',cost:()=>Math.round(9*Math.max(5,90*Dm().pay/8)),ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2),run:p=>escapada(p,'hotel')},
   sucasa:{e:'🔑',n:'Ir a su casa',ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2)&&ownPlace(p),run:p=>escapada(p,'sucasa')},
   discutir:{e:'😠',n:'Discutir',ok:()=>true,run:p=>{p.rel=Math.max(0,p.rel-8);if(p.love!=null)p.love=Math.max(0,p.love-5);p.wear=Math.min(100,(p.wear||0)+6);p.wearWhy='broncas';bubbleFor(p,'😠');popBubble('😠');S.needs.social=Math.max(0,S.needs.social-5);return `${CH().name} y ${p.n} han discutido por ${pickR(['los platos','política','dinero','quién no contesta los mensajes','una tontería que no era una tontería'])}.`;}},
   echar:{e:'🚪',n:'Pedir que se vaya',ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return r&&r.kind==='guest';},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.until=S.day*1440+S.t;r.stay=false;}p.rel=Math.max(0,p.rel-3);return `${p.n} se marcha.`;}},
@@ -14318,6 +14318,8 @@ function cvGreet(){for(const r of S.res||[]){if(r.away||r.kind==='kid'||(r.doing
   if(t==='padres'&&!S.owned){const sind=b.sindicato||0;S.money=before-sind;b.total=sind;toast(sind?`💡 Las facturas las paga su madre · sindicato ${fmt(sind)}`:'💡 Las facturas las paga su madre. Ella se lo recuerda cada vez.',true);}
   else if(t==='habitacion'&&!S.owned){toast(`💡 Su parte de las facturas del piso: ${fmt(b.total)}`,true);}}catch(e){}return r;};}
 // =================== SALUD MENTAL Y ADICCIONES: el desánimo se acumula; se sale con ayuda, no con voluntad ===================
+// precios «de persona»: en horas de salario mínimo, no en «precio del mundo»
+const HW=()=>Math.max(5,90*Dm().pay/8);const hrs=h=>Math.round(h*HW());
 const MT=()=>{if(!S.mt)S.mt={an:70,dep:0,ther:null,wait:0,alc:0,dro:0,tol:0,deal:null,bust:0,sober:0,hist:[]};const m=S.mt;m.hist=m.hist||[];return m;};
 const anLvl=()=>{const a=MT().an;return a>=65?'bien':a>=45?'bajo':a>=25?'hundido':'depresión';};
 const depressed=()=>MT().dep>=1;
@@ -14346,7 +14348,7 @@ function mtDaily(){const m=MT();const nd=S.needs;let d=0;const why=[];
   if(m.dep&&m.an>=45){m.dep=0;chapter('dep_out','Sale el sol',`${CH().name} ha vuelto a tener un buen día. Y luego otro. ${m.ther&&m.ther.on?'La terapia ha hecho su parte.':'Nadie sabe muy bien por qué, pero se agarra a ello.'}`);toast(`☀️ ${CH().name} levanta cabeza`,true);sfx('level');}
   // cola de la pública
   if(m.wait>0){m.wait--;if(m.wait===0){m.ther={on:true,pub:true,since:S.day};tell(`Por fin le han dado cita en salud mental de la pública. ${Math.round((S.day-m.waitSince)/7)} semanas de espera. Media hora cada mes y medio, pero es alguien que escucha.`,'🧠');}}
-  if(m.ther&&m.ther.on&&!m.ther.pub){const c=Math.round(60*PM());if(S.day%7===0){S.money-=c;if(S.money<-300&&Math.random()<.5){m.ther=null;tell(`${CH().name} ha dejado la terapia privada: ${fmt(c)} a la semana no salen.`,'🧠');}}}
+  if(m.ther&&m.ther.on&&!m.ther.pub){const c=hrs(7);if(S.day%7===0){S.money-=c;if(S.money<-300&&Math.random()<.5){m.ther=null;tell(`${CH().name} ha dejado la terapia privada: ${fmt(c)} a la semana no salen.`,'🧠');}}}
   if(m.sober>0&&m.alcDay!==S.day&&m.droDay!==S.day)m.sober++;
   m.hist.push(Math.round(m.an));if(m.hist.length>60)m.hist.shift();}
 // ---- la depresión se nota: todo cuesta, cae la diversión, el trabajo va peor ----
@@ -14362,7 +14364,7 @@ Object.assign(OUT,{
   beber:{n:'Beber en el bar',e:'🍷',dur:150,h:[18,23],why:'olvidarse un rato',req:()=>MT().an<50||MT().alc>=2},
   pillar:{n:'Ir a pillar',e:'💊',dur:40,h:[16,23],why:'lo que sea con tal de no sentir esto',req:()=>!!MT().deal||MT().an<40},
 });
-function outCost2(k){if(k==='terapia')return Math.round(60*PM());if(k==='beber')return Math.round((12+MT().alc*4)*PM());if(k==='pillar')return Math.round((25+MT().tol*6)*PM());return null;}
+function outCost2(k){if(k==='terapia')return hrs(7);if(k==='beber')return Math.round((12+MT().alc*4)*PM());if(k==='pillar')return Math.round((25+MT().tol*6)*PM());return null;}
 {const _oc=outCost;outCost=function(k){const c=outCost2(k);return c!=null?c:_oc.apply(this,arguments);};}
 {const _ob3=outBack;outBack=function(k){const m=MT();const nd=S.needs;const add=(n,v)=>nd[n]=Math.max(0,Math.min(100,nd[n]+v));
   if(k==='terapia'){if(!m.ther||!m.ther.on)m.ther={on:true,pub:false,since:S.day};m.an=Math.min(100,m.an+2.5);add('social',10);m.sess=(m.sess||0)+1;
@@ -14399,7 +14401,7 @@ function mtQuit(){const m=MT();if(m.alc<2&&m.dro<2){toast('No hay nada que dejar
 // ---- UI: Vida → bloque de ánimo ----
 function mtBlock(){const m=MT();const lv=anLvl();const col=lv==='bien'?'#2e8b57':lv==='bajo'?'#e9a23b':'#c0392b';
   let h=`<h3>🧠 Ánimo</h3><div class="minibars"><i style="width:${Math.round(m.an)}%;background:${col}"></i></div><div class="sub" style="font-size:12px"><b>${lv==='bien'?'Bien':lv==='bajo'?'Bajo':lv==='hundido'?'Hundid'+oa():'Depresión'}</b>${m.why&&m.why.length?' · pesa: '+m.why.join(', '):''}</div>`;
-  if(m.ther&&m.ther.on)h+=`<div class="sub" style="font-size:12px">🧠 En terapia ${m.ther.pub?'(pública, una vez al mes y medio)':'(privada, '+fmt(Math.round(60*PM()))+'/semana)'}</div>`;
+  if(m.ther&&m.ther.on)h+=`<div class="sub" style="font-size:12px">🧠 En terapia ${m.ther.pub?'(pública, una vez al mes y medio)':'(privada, '+fmt(hrs(7))+'/semana)'}</div>`;
   else if(m.wait>0)h+=`<div class="sub" style="font-size:12px">⏳ En lista de espera de salud mental: ${m.wait} días</div>`;
   else if(m.an<50)h+=`<button class="btn grey" id="mtpub">🏥 Pedir cita en la pública (gratis, lista de espera)</button>`;
   if(m.alc>=2||m.dro>=2){h+=`<div class="sub" style="font-size:12px;color:#a04a3a">${m.alc>=2?'🍷 Bebe '+(m.alc>=6?'cada día':m.alc>=3?'casi a diario':'de más')+'. ':''}${m.dro>=2?'💊 Consume '+(m.dro>=6?'a diario':m.dro>=3?'cada semana':'a veces')+'. ':''}${m.debt?'Debe '+fmt(m.debt)+' a '+m.deal.n+'. ':''}</div>`;if(!m.quit)h+=`<button class="btn grey" id="mtquit">🌱 Intentar dejarlo</button>`;else h+=`<div class="sub" style="font-size:12px">🌱 Lleva ${S.day-m.quit.since} días intentando dejarlo</div>`;}
@@ -14532,7 +14534,7 @@ const BOOKCAT=[
 ];
 const BK=n=>BOOKCAT.find(b=>b[0]===n);
 // precio en horas de salario mínimo (un libro: 2–3 horas), no en «precio del mundo»
-const HW=()=>Math.max(5,90*Dm().pay/8);const bookPrice=(base,mul=1)=>Math.round(base/12*HW()*2.4*mul);
+const bookPrice=(base,mul=1)=>Math.round(base/12*HW()*2.4*mul);
 BOOKS.length=0;for(const n of ['Una novela negra de kiosko','El arte de cocinar con poco','Poesía de Gloria Fuertes'])BOOKS.push([n,BK(n)[1],BK(n)[2]]); // los que ya tenía en casa
 // manuales de estudio por programa
 function manualFor(k){const P=EDU_PROGS[k];if(!P)return null;return {n:'Manual · '+P.n.replace(/^(FP medio|FP superior|Grado|Curso|Máster) · ?/,'').replace(/ \(.*\)/,''),p:P.cert?18:P.lv==='grado'||P.lv==='master'?48:30};}
@@ -14694,6 +14696,7 @@ ASP.push({id:'novela',c:'vida',e:'📘',t:()=>'Terminar una novela',w:()=>LB().w
 // =================== CUERPO Y SALUD: peso, gimnasio, lo que el trabajo rompe, el médico (público con cola, privado con tarifa) ===================
 const HP=()=>{if(!S.hp){const ch=S.char||{};const f=ch.g==='f';const base={delgada:f?54:63,media:f?64:76,ancha:f?80:92}[ch.build]||(f?64:76);S.hp={base,peso:base,in:0,burn:0,gym:0,gymMonth:0,list:[],cita:0,mutua:false,hist:[],diet:false};}S.hp.list=S.hp.list||[];return S.hp;};
 const ovw=()=>HP().peso-HP().base;
+const gymFee=()=>hrs(HP().gymGood?9:3);
 const hpHas=k=>HP().list.some(x=>x.k===k);
 const HP_DEF={
   hiper:{n:'Hipertensión',e:'🩺',d:'Pastilla diaria de por vida. La tensión no avisa.',med:8,chronic:true},
@@ -14713,7 +14716,7 @@ Object.assign(OUT,{
 });
 {const _oc=outCost;outCost=function(k){if(k==='gimnasio'||k==='calistenia')return 0;return _oc.apply(this,arguments);};}
 {const _ob=outBack;outBack=function(k){const H=HP();const nd=S.needs;const add=(n,v)=>nd[n]=Math.max(0,Math.min(100,nd[n]+v));const n=CH().name;
-  if(k==='gimnasio'){H.gym++;H.gymMonth++;H.burn+=22;S.fit=Math.min(100,(S.fit||0)+6);add('diversion',10);add('energia',-15);add('higiene',-30);add('social',6);if(hpHas('lumbar')&&Math.random()<.3){const x=H.list.find(q=>q.k==='lumbar');x.sev=Math.max(0,x.sev-1);}
+  if(k==='gimnasio'){H.gym++;H.gymMonth++;H.burn+=H.gymGood?26:22;S.fit=Math.min(100,(S.fit||0)+(H.gymGood?7:6));if(H.gymGood)add('higiene',40);add('diversion',10);add('energia',-15);add('higiene',-30);add('social',6);if(hpHas('lumbar')&&Math.random()<.3){const x=H.list.find(q=>q.k==='lumbar');x.sev=Math.max(0,x.sev-1);}
     if(H.gym===1)tell(`Primer día de gimnasio. ${n} no sabe para qué sirve la mitad de las máquinas y le da vergüenza preguntar. Un chaval le ha enseñado la sentadilla sin que se lo pidiera.`,'🏋️');else if(Math.random()<.15)tell(pickR([`Gimnasio a las siete de la mañana: los que entran a las ocho. A las once: los que no trabajan o trabajan de noche.`,`${n} ha subido peso en press de banca. Nadie lo ha visto. Lo sabe ${oa()==='a'?'ella':'él'}.`,`El del gimnasio vende batidos. ${n} ha dicho que no. Tres veces.`,`Hoy ${n} ha ido al gimnasio solo para no estar en casa.`]),'🏋️');return;}
   if(k==='calistenia'){H.burn+=16;S.fit=Math.min(100,(S.fit||0)+4);add('diversion',12);add('energia',-12);add('higiene',-25);add('social',10);if(Math.random()<.2)tell(pickR([`Barras del parque. Hay un señor de sesenta que hace más dominadas que nadie y un chaval que graba vídeos.`,`${n} ha hecho tres dominadas. El mes pasado, una.`,`En las barras no hay cuota ni espejo. Hay gente.`]),'🤸');return;}
   const r=_ob.apply(this,arguments);if(k==='deporte')H.burn+=14;if(k==='beber')H.in+=18;if(k==='amigos'||k==='networking')H.in+=10;return r;};}
@@ -14740,7 +14743,7 @@ Object.assign(OUT,{
     if(x.k==='lumbar'||x.k==='anemia'||x.k==='diab')S.needs.energia=Math.max(0,S.needs.energia-(x.dx?2:4)*x.sev);
     if(x.k==='ansiedad'){try{MT().an-=x.dx?.3:.8;}catch(e){}}
     if(!x.dx&&(x.k==='lumbar'||x.k==='hiper'||x.k==='diab')&&Math.random()<.02*x.sev&&!S.sick){S.sick=2+(Math.random()*4|0);tell({lumbar:`${n} no se puede levantar de la cama. La espalda. Baja de ${S.sick} días; el médico de urgencias le ha dicho que «evite cargar peso». Trabaja cargando peso.`,hiper:`${n} se ha mareado en el trabajo. Le han tomado la tensión en la farmacia: alta. Dos días en casa.`,diab:`${n} se ha desmayado. En urgencias le han pedido una analítica. ${S.sick} días de baja.`}[x.k],'🚑');}
-    if(x.dx&&HP_DEF[x.k].med&&dateOf(S.day).wd===0){const c=Math.round(HP_DEF[x.k].med*PM()*(H.mutua?.6:1));S.money-=c;}
+    if(x.dx&&HP_DEF[x.k].med&&dateOf(S.day).wd===0){const c=Math.round(HP_DEF[x.k].med/8*HW()*(H.mutua?.6:1));S.money-=c;}
     // mejora o empeora
     if(x.dx){if(x.k==='lumbar'&&(S.fit||0)>50&&Math.random()<.02){H.list.splice(H.list.indexOf(x),1);tell(`La espalda de ${n} ha dejado de doler. Rehabilitación, ejercicio y suerte. Hasta la próxima.`,'🦴');}
       if(x.k==='anemia'&&ovw()>-5&&Math.random()<.04){H.list.splice(H.list.indexOf(x),1);tell(`Analítica: la anemia de ${n} ha remitido. Comer. Era eso.`,'🩸');}
@@ -14751,18 +14754,18 @@ Object.assign(OUT,{
   // cita médica
   if(H.cita&&S.day>=H.cita){H.cita=0;hpVisit();}
   // cuotas
-  if(dateOf(S.day).dm===1){if(H.gymMember){const c=Math.round(32*PM());S.money-=c;toast(`🏋️ Cuota del gimnasio: ${fmt(c)}`);if(H.gymMonth===0&&Math.random()<.5)tell(`Cuota del gimnasio: ${fmt(c)}. ${n} no ha ido ni un día este mes. El negocio del gimnasio es exactamente ese.`,'🏋️');H.gymMonth=0;}
-    if(H.mutua){const c=Math.round(48*PM());S.money-=c;toast(`🏥 Seguro privado: ${fmt(c)}`);}}
+  if(dateOf(S.day).dm===1){if(H.gymMember){const c=gymFee();S.money-=c;toast(`🏋️ Cuota del gimnasio: ${fmt(c)}`);if(H.gymMonth===0&&Math.random()<.5)tell(`Cuota del gimnasio: ${fmt(c)}. ${n} no ha ido ni un día este mes. El negocio del gimnasio es exactamente ese.`,'🏋️');H.gymMonth=0;}
+    if(H.mutua){const c=hrs(6);S.money-=c;toast(`🏥 Seguro privado: ${fmt(c)}`);}}
   }catch(e){console.error(e);}return r;};}
 // ---- el médico ----
 function hpAsk(priv){const H=HP();const n=CH().name;if(H.cita){toast('Ya tiene cita');return;}const wait=priv||H.mutua?1+(Math.random()*2|0):5+(Math.random()*12|0);H.cita=S.day+wait;H.citaPriv=!!(priv||H.mutua);
-  tell(priv||H.mutua?`Cita en la privada para ${wait===1?'mañana':'dentro de '+wait+' días'}. ${H.mutua?'La mutua lo cubre.':'Consulta: '+fmt(Math.round(70*PM()))+'.'}`:`Cita en el centro de salud dentro de ${wait} días. «Si empeora, urgencias». ${n} ha mirado el calendario: le toca turno.`,'🩺');}
-function hpVisit(){const H=HP();const n=CH().name;const priv=H.citaPriv;if(priv&&!H.mutua){S.money-=Math.round(70*PM());}
+  tell(priv||H.mutua?`Cita en la privada para ${wait===1?'mañana':'dentro de '+wait+' días'}. ${H.mutua?'La mutua lo cubre.':'Consulta: '+fmt(hrs(8))+'.'}`:`Cita en el centro de salud dentro de ${wait} días. «Si empeora, urgencias». ${n} ha mirado el calendario: le toca turno.`,'🩺');}
+function hpVisit(){const H=HP();const n=CH().name;const priv=H.citaPriv;if(priv&&!H.mutua){S.money-=hrs(8);}
   const found=H.list.filter(x=>!x.dx);S.needs.energia-=5;
-  if(!found.length){tell(priv?`La doctora privada ha pedido analítica completa, ecografía y «revisión en tres meses». ${fmt(Math.round(70*PM()))} para decir que está bien.`:`Siete minutos de consulta. «Está bien. Duerma más». ${n} ha tardado ${H.citaWait||9} días para esto.`,'🩺');return;}
+  if(!found.length){tell(priv?`La doctora privada ha pedido analítica completa, ecografía y «revisión en tres meses». ${fmt(hrs(8))} para decir que está bien.`:`Siete minutos de consulta. «Está bien. Duerma más». ${n} ha tardado ${H.citaWait||9} días para esto.`,'🩺');return;}
   for(const x of found){x.dx=true;const D=HP_DEF[x.k];
     if(x.k==='lumbar'||x.k==='hiper'||x.k==='diab'){S.sick=Math.max(S.sick||0,x.k==='lumbar'?5:2);}
-    tell(`Diagnóstico: ${D.n}. ${D.d}${D.med?' Medicación: '+fmt(Math.round(D.med*PM()))+' a la semana'+(H.mutua?' (la mutua cubre parte)':' con receta de la pública')+'.':''}`,D.e);
+    tell(`Diagnóstico: ${D.n}. ${D.d}${D.med?' Medicación: '+fmt(Math.round(D.med/8*HW()))+' a la semana'+(H.mutua?' (la mutua cubre parte)':' con receta de la pública')+'.':''}`,D.e);
     if(x.k==='diab'||x.k==='hiper')chapter('dx_'+x.k,D.n,`${n} tiene ${D.n.toLowerCase()}. ${x.k==='diab'?'Le han dado una hoja con lo que no puede comer y una pastilla que tomará siempre. La endocrina ha preguntado si cocina en casa. '+n+' ha pensado en el horario y no ha contestado.':'A los '+(S.char.age||30)+'. El médico ha hablado de estrés, de sal, de dormir. No ha hablado de turnos, ni de alquiler, ni de jefes.'} Las enfermedades crónicas tienen clase: las de arriba las revisan cada tres meses; las de abajo, cuando hay cita.`);
     if(x.k==='lumbar'&&!S.jobless&&['obra','super','hosteleria','cuidados'].includes(S.track))tell(`El médico ha escrito «evitar esfuerzos». ${n} le ha preguntado si eso lo firma para la empresa. Se ha reído. No ha dicho que no.`,'🦴');}
   if(priv&&found.length)tell(`En la privada la cita ha sido larga y han pedido pruebas. Lo que en la pública tarda meses, aquí se paga.`,'🏥');}
@@ -14771,21 +14774,22 @@ function hpBlock(){const H=HP();const o=ovw();const st=o<=-9?'bajo peso':o<=-4?'
   let h=`<h3>🫀 Cuerpo</h3><div class="sub" style="font-size:12px">⚖️ ${H.peso.toFixed(1)} kg · ${st} · 🏃 forma ${Math.round(S.fit||0)}/100${H.gymMember?' · 🏋️ socio del gimnasio ('+H.gymMonth+' días este mes)':''}${H.mutua?' · 🏥 seguro privado':''}${H.diet?' · 🥗 cuidando lo que come':''}</div>`;
   if(H.list.length)h+=`<div class="sub" style="font-size:12px;color:#a04a3a">${H.list.map(x=>HP_DEF[x.k].e+' '+(x.dx?HP_DEF[x.k].n:'algo que no está bien ('+(S.day-x.since)+' días)')).join(' · ')}</div>`;
   h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px">`;
-  if(!H.cita)h+=`<button class="btn grey" id="hpcita">🩺 Cita en la pública</button><button class="btn grey" id="hppriv">🏥 Privada (${fmt(Math.round(70*PM()))})</button>`;else h+=`<span class="sub" style="font-size:12px">🩺 cita dentro de ${H.cita-S.day} días</span>`;
-  h+=`<button class="btn grey" id="hpgym">${H.gymMember?'🏋️ Darse de baja del gym':'🏋️ Apuntarse al gimnasio ('+fmt(Math.round(32*PM()))+'/mes)'}</button>`;
-  h+=`<button class="btn grey" id="hpmutua">${H.mutua?'🏥 Quitar el seguro privado':'🏥 Seguro privado ('+fmt(Math.round(48*PM()))+'/mes)'}</button>`;
+  if(!H.cita)h+=`<button class="btn grey" id="hpcita">🩺 Cita en la pública</button><button class="btn grey" id="hppriv">🏥 Privada (${fmt(hrs(8))})</button>`;else h+=`<span class="sub" style="font-size:12px">🩺 cita dentro de ${H.cita-S.day} días</span>`;
+  h+=`<button class="btn grey" id="hpgym">${H.gymMember?'🏋️ Darse de baja del gym':'🏋️ Apuntarse al gimnasio ('+fmt(gymFee())+'/mes)'}</button>`;
+  h+=`<button class="btn grey" id="hpmutua">${H.mutua?'🏥 Quitar el seguro privado':'🏥 Seguro privado ('+fmt(hrs(6))+'/mes)'}</button>`;
   h+=`<button class="btn grey" id="hpdiet">${H.diet?'🥗 Dejar de contar lo que come':'🥗 Cuidar lo que come'}</button></div>`;return h;}
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{return hpBlock()+h;}catch(e){return h;}};}
 {const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);const H=HP();const q=s=>card.querySelector(s);const re=()=>openMenu('vida');
-  const a=q('#hpcita');if(a)a.onclick=()=>{hpAsk(false);re();};const b=q('#hppriv');if(b)b.onclick=()=>{if(S.money<70*PM()){toast('No llega');return;}hpAsk(true);re();};
-  const g=q('#hpgym');if(g)g.onclick=()=>{if(H.gymMember){H.gymMember=false;tell(`${CH().name} se ha dado de baja del gimnasio. Han tardado tres llamadas y un burofax.`,'🏋️');}else{if(S.money<32*PM()){toast('No llega');return;}H.gymMember=true;S.money-=Math.round(32*PM());H.gymMonth=0;tell(`${CH().name} se ha apuntado al gimnasio. Matrícula gratis «solo este mes», permanencia de un año en letra pequeña.`,'🏋️');}re();};
-  const m=q('#hpmutua');if(m)m.onclick=()=>{H.mutua=!H.mutua;if(H.mutua){S.money-=Math.round(48*PM());tell(`Seguro privado contratado. Citas en dos días, pruebas sin cola. ${fmt(Math.round(48*PM()))} al mes que no todo el mundo tiene; por eso la pública tiene la cola que tiene.`,'🏥');}re();};
+  const a=q('#hpcita');if(a)a.onclick=()=>{hpAsk(false);re();};const b=q('#hppriv');if(b)b.onclick=()=>{if(S.money<hrs(8)){toast('No llega');return;}hpAsk(true);re();};
+  const join=good=>{H.gymGood=good;if(S.money<gymFee()){toast('No llega');return;}H.gymMember=true;S.money-=gymFee();H.gymMonth=0;tell(good?`${CH().name} se ha apuntado a un gimnasio bueno: piscina, clases, toallas. ${fmt(gymFee())} al mes, que es lo que separa a quien se cuida de quien no puede.`:`${CH().name} se ha apuntado al gimnasio low cost. ${fmt(gymFee())} al mes, máquinas sin monitor, matrícula «gratis» y permanencia de un año en letra pequeña.`,'🏋️');re();};
+  const g=q('#hpgym');if(g)g.onclick=()=>{if(H.gymMember){H.gymMember=false;tell(`${CH().name} se ha dado de baja del gimnasio. Han tardado tres llamadas y un burofax.`,'🏋️');re();}else join(false);};const g2=q('#hpgym2');if(g2)g2.onclick=()=>join(true);
+  const m=q('#hpmutua');if(m)m.onclick=()=>{H.mutua=!H.mutua;if(H.mutua){S.money-=hrs(6);tell(`Seguro privado contratado. Citas en dos días, pruebas sin cola. ${fmt(hrs(6))} al mes que no todo el mundo tiene; por eso la pública tiene la cola que tiene.`,'🏥');}re();};
   const d=q('#hpdiet');if(d)d.onclick=()=>{H.diet=!H.diet;if(H.diet)tell(`${CH().name} va a intentar comer mejor. Más verdura, menos a deshoras. Cuesta más dinero y más tiempo, que es justo lo que no tiene.`,'🥗');re();};};}
 // la IA: va al médico si lleva semanas mal; al gimnasio si es socia; a las barras si es deportista
 {const _au=autonomy;autonomy=function(){try{const H=HP();const s=S.sim;const h=S.t/60;if(S.autoHome&&!(s.work>0)&&!s.leaving){
     if(!H.cita&&H.list.some(x=>!x.dx&&S.day-x.since>14)&&Math.random()<.02)hpAsk(S.money>1500&&!isLeft());
     if(S.outDay!==S.day&&Math.random()<.03){if(H.gymMember&&!outAvail('gimnasio')&&S.needs.energia>40){doOut('gimnasio');return;}if((T('deportista')||(S.fit||0)<30&&ovw()>8)&&!outAvail('calistenia')&&S.needs.energia>40&&Math.random()<.5){doOut('calistenia');return;}}
-    if(!H.gymMember&&S.autoHome&&(T('deportista')||ovw()>10)&&S.money>400*PM()&&Math.random()<.002){H.gymMember=true;S.money-=Math.round(32*PM());tell(`${CH().name} se ha apuntado al gimnasio. Enero, como todo el mundo.`,'🏋️');}}}catch(e){}return _au.apply(this,arguments);};}
+    if(!H.gymMember&&S.autoHome&&(T('deportista')||ovw()>10)&&S.money>hrs(60)&&Math.random()<.002){H.gymMember=true;S.money-=gymFee();tell(`${CH().name} se ha apuntado al gimnasio. Enero, como todo el mundo.`,'🏋️');}}}catch(e){}return _au.apply(this,arguments);};}
 // perfil: peso en la ficha
 {const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{if(menuTab==='perfil'){const H=HP();const box=card.querySelector('#colbox');if(box&&!card.querySelector('#hpmini')){const d=document.createElement('div');d.id='hpmini';d.className='sub';d.style.cssText='font-size:12px;margin:-4px 0 10px';d.innerHTML=`⚖️ ${H.peso.toFixed(1)} kg · 🏃 forma ${Math.round(S.fit||0)}${H.list.filter(x=>x.dx).length?' · '+H.list.filter(x=>x.dx).map(x=>HP_DEF[x.k].e+' '+HP_DEF[x.k].n).join(', '):''}`;box.before(d);}}}catch(e){}return r;};}
 // =================== SALIDAS NUEVAS EN «VIDA»: todo lo que los módulos añaden a OUT, agrupado ===================
