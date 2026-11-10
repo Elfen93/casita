@@ -9,3 +9,4 @@
 - Horario semanal, visitas, salir desde fuera, reparto de arreglos, biblioteca que devuelve.
 - Salud mental, adicciones, marginalidad, el final, lo colectivo, la jornada, crianza, la casa vivida, menos ruido.
 - Entrevista: las preguntas ilegales dependen de género, edad y piel.
+- Género: el colectivo en femenino genérico (juntas, compañeras, todas…) pasa a masculino si el personaje es hombre.

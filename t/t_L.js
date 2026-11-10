@@ -1,3 +1,1 @@
-setTimeout(()=>{try{S=newState('normal');S.char={...DEFCHAR,name:'Pablo',g:'m'};
-const t=['Empieza de becaria en X.','Ana ahora es técnica.','La han elegido delegada sindical.','Hazte a ti misma','Su jefe la felicitó.','La casa suena distinta.','Ana está cansada y sola.','La administrativa Ana, afiliada, la mira.','no la ascienden','Está embarazada'];
-document.title='OK '+JSON.stringify({l:t.map(L)});}catch(err){document.title='ERR '+err.message}},300);
+setTimeout(()=>{try{S=newState('normal');S.char={...randomChar('m'),g:'m',name:'Oury'};const t=['Juntas somos fuertes. Las compañeras del súper, todas a una. Todas las semanas igual. Ana está cansada y sola. A solas con sus vecinas. Nosotras no nos vamos.'].map(L);S.char.g='f';const f=L('Juntas somos fuertes. Todas a una.');document.title='OK '+t.join('|')+' || f: '+f;}catch(err){document.title='ERR '+err.message}},300);
