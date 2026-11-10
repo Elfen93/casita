@@ -14,3 +14,4 @@
 - Manuales: la habilidad sube mientras se lee; lo ya leído cuenta.
 - Mis libros: botón «Releer» en Leídos (los manuales repasados enseñan menos).
 - Releer da el 100% de la habilidad (de momento).
+- Curro: va al baño cuando le aprieta, café cuando cae la energía (máx. 3), lavado si va sucio; en empresas tóxicas cuentan las veces al baño.
