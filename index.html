@@ -14575,7 +14575,7 @@ curBook=function(){const C=LB();const un=n=>!C.libDone.includes(n);if(C.reading&
 Object.assign(OUT,{
   libreria:{n:'Ir a la librería',e:'📚',dur:60,h:[10,20],why:'mirar lomos, oler papel, gastar lo que no debería'},
   mercadillo:{n:'Mercadillo de libros usados',e:'📦',dur:90,h:[10,14],wd:[0,6],why:'libros a dos duros, subrayados por otra gente'},
-  presta:{n:'Biblioteca: pedir un libro',e:'🏛️',dur:50,h:[9,20],why:'llevarse algo prestado, gratis',req:()=>!LB().lent},
+  presta:{n:'Biblioteca: devolver y pedir',e:'🏛️',dur:50,h:[9,20],why:'devolver lo prestado y llevarse otro, gratis'},
 });
 {const _oc=outCost;outCost=function(k){if(['libreria','mercadillo','presta'].includes(k))return 0;return _oc.apply(this,arguments);};}
 let shopEl=null;function closeShop(){if(shopEl)shopEl.classList.remove('on');}
@@ -14599,14 +14599,16 @@ function openShop(kind){const C=LB();if(!shopEl){shopEl=document.createElement('
   const cl=shopEl.querySelector('[data-close]');if(cl)cl.onclick=closeShop;}
 {const _mo=maybeOuting;maybeOuting=function(){S.outAuto=true;try{return _mo.apply(this,arguments);}finally{S.outAuto=false;}};}
 {const _do=doOut;doOut=function(k){S.outManual=!S.outAuto;return _do.apply(this,arguments);};}
-function autoBuyBook(k){const C=LB();const items=BOOKCAT.filter(b=>!ownsBook(b[0])&&!C.libDone.includes(b[0])&&(k==='presta'||bookPrice(b[4],k==='mercadillo'?.35:1)<Math.max(0,S.money)*.1));if(!items.length)return;const b=pickR(items);
-  if(k==='presta'){if(C.lent)return;C.lent=b[0];C.lentDue=S.day+21;tell(`${CH().name} se ha llevado «${b[0]}» de la biblioteca.`,'🏛️');}else{const p=bookPrice(b[4],k==='mercadillo'?.35:1);S.money-=p;C.own.push(b[0]);C.tx.push(['libro',-p,S.day]);tell(`${CH().name} ha vuelto ${k==='mercadillo'?'del mercadillo':'de la librería'} con «${b[0]}». ${fmt(p)}.`,'📚');}if(!C.reading)C.reading=b[0];}
+function libReturn(){const C=LB();if(!C.lent)return;const n=C.lent;const done=C.libDone.includes(n);C.lent=null;C.lentDue=null;C.renewed=0;if(C.reading===n)C.reading=null;tell(done?`${CH().name} ha devuelto «${n}» a la biblioteca.`:`${CH().name} ha devuelto «${n}» sin terminarlo. ${Math.round((C.lib[n]||0)/BK(n)[1]*100)}% leído; lo demás, otro día.`,'🏛️');}
+function autoBuyBook(k){const C=LB();if(k==='presta'&&C.lent)libReturn();const items=BOOKCAT.filter(b=>!ownsBook(b[0])&&!C.libDone.includes(b[0])&&(k==='presta'||bookPrice(b[4],k==='mercadillo'?.35:1)<Math.max(0,S.money)*.1));if(!items.length)return;const b=pickR(items);
+  if(k==='presta'){C.lent=b[0];C.lentDue=S.day+21;tell(`${CH().name} se ha llevado «${b[0]}» de la biblioteca.`,'🏛️');}else{const p=bookPrice(b[4],k==='mercadillo'?.35:1);S.money-=p;C.own.push(b[0]);C.tx.push(['libro',-p,S.day]);tell(`${CH().name} ha vuelto ${k==='mercadillo'?'del mercadillo':'de la librería'} con «${b[0]}». ${fmt(p)}.`,'📚');}if(!C.reading)C.reading=b[0];}
 {const _ob=outBack;outBack=function(k){if(k==='libreria'||k==='mercadillo'||k==='presta'){S.needs.diversion=Math.min(100,S.needs.diversion+10);
     if(!S.outManual){autoBuyBook(k);return;}
+    if(k==='presta'&&LB().lent)libReturn();
     setTimeout(()=>{try{openShop(k);}catch(e){console.error(e);}},200);return;}
   return _ob.apply(this,arguments);};}
 // devolver el préstamo tarde cuesta
-{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const C=LB();if(C.lent&&C.lentDue&&S.day>C.lentDue&&(S.day-C.lentDue)%7===0){C.lentDue=S.day;tell(`La biblioteca le ha mandado un aviso: «${C.lent}» lleva días de retraso. No hay multa; hay vergüenza, que funciona mejor.`,'🏛️');}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const C=LB();if(C.lent&&C.lentDue&&S.day>=C.lentDue){if(!C.renewed&&!C.libDone.includes(C.lent)){C.renewed=1;C.lentDue=S.day+21;tell(`${CH().name} ha renovado «${C.lent}» desde el móvil: tres semanas más.`,'🏛️');}else{libReturn();}}
   if(S.autoHome&&!curBook()&&!C.lent&&Math.random()<.08&&S.t/60<9){C.autoShop=true;}}catch(e){}return r;};}
 // la IA compra o pide libros si no tiene nada que leer
 {const _au=autonomy;autonomy=function(){try{const C=LB();const s=S.sim;const h=S.t/60;if(S.autoHome&&C.autoShop&&!(s.work>0)&&!s.leaving&&h>=10&&h<19&&S.outDay!==S.day){C.autoShop=false;const k=S.money>60&&Math.random()<.4?'libreria':'presta';if(!outAvail(k)){
