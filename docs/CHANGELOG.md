@@ -11,3 +11,4 @@
 - Entrevista: las preguntas ilegales dependen de género, edad y piel.
 - Género: el colectivo en femenino genérico (juntas, compañeras, todas…) pasa a masculino si el personaje es hombre.
 - Mis libros: ventana con portadas, autor, reseña, efectos, progreso, elegir qué leer; 16 libros más; reseñas al terminar.
+- Manuales: la habilidad sube mientras se lee; lo ya leído cuenta.
