@@ -12101,7 +12101,7 @@ function aspFill(){const A=aspS();A.active=A.active.filter(id=>ASP.some(a=>a.id=
 function aspCheck(){const A=aspS();if(!A.active.length)aspFill();
   for(const id of [...A.active]){const a=ASP.find(x=>x.id===id);if(!a)continue;let ok=false;try{ok=a.ok(A.base[id]);}catch(e){}
     if(ok){A.active=A.active.filter(x=>x!==id);A.done[id]=S.day;A.count=(A.count||0)+1;const gr=Math.round(WP()*a.r*Dm().goal*1.4);S.money+=gr;bumpMoney();unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);
-      tell(`${a.t()}. Lo ha conseguido.`,a.e,'big');toast(`🎯 ${a.t()} · +${fmt(gr)}`,true);sfx('level');aspFill();}}
+      tell(`${a.t()}. Lo ha conseguido.`,a.e,'big');toast(`🎯 ${a.t()}`,true);sfx('level');aspFill();}}
   // abandonar los que ya no tienen sentido
   for(const id of [...A.active]){const a=ASP.find(x=>x.id===id);let w=1;try{w=a.w();}catch(e){}if(w===0&&!a.start){A.active=A.active.filter(x=>x!==id);aspFill();}}}
 function aspDaily(){const A=aspS();A.streak=mood()>62?(A.streak||0)+1:0;if(T('milideas')&&A.active.length&&Math.random()<.05){const id=A.active[Math.random()*A.active.length|0];A.active=A.active.filter(x=>x!==id);aspFill();}}
@@ -14260,6 +14260,9 @@ function eduBlock(){const E=ED();const C=E.cur;let h=`<h3>🎓 Estudios</h3><div
 {const _nw=newToday;newToday=function(){const r=_nw.apply(this,arguments);try{if(S.payMulBase!=null){const m=eduPayMul();const expect=S.payMulBase*m;if(Math.abs((S.payMul||1)-expect)>1e-6){S.payMulBase=(S.payMul||1)/m;}}}catch(e){}return r;};}
 {const _au2=autonomy;autonomy=function(){try{const C=ED().cur;const s=S.sim;if(C&&!s.use&&!(s.path&&s.path.length)&&!(s.work>0)&&!s.leaving){const h=S.t/60;const nd=S.needs;const P=EDU_PROGS[C.k];
   if(h>=9&&h<23&&!['hambre','vejiga','energia','higiene'].some(k=>nd[k]<40)&&Math.random()<(P.place==='online'?.12:.06)&&(C.homeDay!==S.day||Math.random()<.3)){const b=findObjs((d,t)=>t==='escritorio'||t==='compu'||t==='libros');if(b.length){C.homeDay=S.day;enqueue({k:'obj',i:b[0],act:S.obj[b[0]].t==='libros'?'leer':'estudiar'});if(throttled('estudia',6e5))toast(`📚 ${CH().name} se pone a estudiar`);return;}}}}catch(e){}return _au2.apply(this,arguments);};}
+// las aspiraciones y los objetivos no pagan: dan ánimo, no dinero
+{const _ac=aspCheck;aspCheck=function(){const m0=S.money;const r=_ac.apply(this,arguments);if(S.money>m0){const d=S.money-m0;S.money=m0;S.needs.diversion=Math.min(100,S.needs.diversion+25);S.needs.social=Math.min(100,S.needs.social+8);S.glow=S.day*1440+S.t+600;}return r;};}
+{const _ck=checkGoals;checkGoals=function(){const m0=S.money;const r=_ck.apply(this,arguments);if(S.money>m0){S.money=m0;S.needs.diversion=Math.min(100,S.needs.diversion+15);}return r;};}
 // =================== CONVIVENCIA: la gente de casa habla entre sí y con Ana por su cuenta ===================
 const CV_LINES={
   madre:[['¿Has comido?','Sí, mamá.'],['Baja la basura cuando salgas.','Vale…'],['Tu tía pregunta por ti.','Dile que estoy bien.'],['Esto de la luz es un robo.','Ya ves.'],['¿Y esa cara?','Nada, el curro.'],['Te he guardado un táper.','Gracias, mamá ❤️']],
@@ -14746,7 +14749,7 @@ const GOALS = [
 ];
 let unseen=0;
 function checkGoals(){
-  for(const g of GOALS){if(S.goals[g.id])continue;if(g.ok()){S.goals[g.id]=1;const gr=Math.round(g.r*Dm().goal);S.money+=gr;bumpMoney();unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);toast(`🏆 Objetivo: ${g.t} · +${fmt(gr)}`,true);sfx('level');}}
+  for(const g of GOALS){if(S.goals[g.id])continue;if(g.ok()){S.goals[g.id]=1;const gr=Math.round(g.r*Dm().goal);S.money+=gr;bumpMoney();unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);toast(`🏆 Objetivo: ${g.t}`,true);sfx('level');}}
   const b=document.getElementById('badge');b.style.display=unseen?'block':'none';b.textContent=unseen;
 }
 
