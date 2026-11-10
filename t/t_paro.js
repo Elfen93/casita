@@ -1,0 +1,3 @@
+setTimeout(()=>{try{openCreator('soul',false);cre.track='paro';const nm=card.querySelector('#crename');card.querySelector('#creok').click();
+ const st0=[S.jobless,S.office];for(let k=0;k<480*40;k++){update(3);dlgTick();}
+ document.title='OK '+JSON.stringify({st0,jobless:S.jobless,track:S.track,job:S.jobless?'':CAREER[S.career].t,money:Math.round(S.money),log:S.story.log.slice(0,4).map(e=>e.txt.slice(0,160)).concat(S.story.log.filter(e=>/📝|trabajo|empieza/i.test(e.txt)).slice(0,4).map(e=>'d'+e.d+' '+e.txt.slice(0,120))),errs:__errs.slice(0,3)});}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,300)}},300);

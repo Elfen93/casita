@@ -1,0 +1,3 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...randomChar()};initPeople();startTrack('super',true);rollWeather();newToday();storyStart();for(let k=0;k<480*3;k++)update(3);S.t=11*60;S.sim.work=0;menu.classList.remove('open');cam.z=.5;centerOnWorld(N/2,N/2);
+ const t0=performance.now();for(let i=0;i<40;i++)render();const a=(performance.now()-t0)/40;S.entorno=false;const t1=performance.now();for(let i=0;i<40;i++)render();const b=(performance.now()-t1)/40;
+ document.title='OK '+JSON.stringify({withEnt:a.toFixed(1),without:b.toFixed(1)});}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,300)}},300);

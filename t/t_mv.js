@@ -1,0 +1,3 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...DEFCHAR};initPeople();startTrack('oficina',true);S.home={type:'casita',area:[0,0,N-1,N-1],mates:[]};rollWeather();newToday();storyStart();S.money=9000;
+ const r=[];for(const k of ['habitacion','bueno','chalet','padres','viejo']){r.push(k+':'+JSON.stringify(canMove(k))+' -> '+moveHome(k)+' $'+Math.round(S.money)+' objs='+S.obj.filter(Boolean).length+' res='+(S.res||[]).length);for(let i=0;i<480*3;i++)update(3);}
+ S.t=11*60;S.sim.work=0;openMenu('casa');setTimeout(()=>{const d=card.querySelector('details.mud');if(d)d.open=true;document.title='OK '+JSON.stringify({r,errs:__errs.slice(0,3)});},400);}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,400)}},300);

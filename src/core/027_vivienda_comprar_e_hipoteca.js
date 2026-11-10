@@ -1,0 +1,22 @@
+// ---------- vivienda: comprar e hipoteca ----------
+function housePrice(){let imp=0;for(let i=0;i<N*N;i++){const o=S.obj[i];if(o)imp+=OBJ[o.t].p*0.3;imp+=FLOORS[S.floor[i]].p;const w=S.wall[i];imp+=w===1?20:w===2?60:w===3?80:w===4?12:0;}return Math.round((12000+imp*0.6)*Hm().house*(Dm().soul?MK().price:1)/10)*10;}
+const curRate=()=>Dm().soul?(S.market?S.market.euribor:0.035)+0.015:Hm().rate;
+function mortgageOffer(){
+  const H=Hm(),price=housePrice(),down=Math.round(price*H.down),closing=Math.round(price*H.closing),P=price-down,n=H.years*52,rr=curRate()/52;
+  const pay=Math.round(P*rr/(1-Math.pow(1+rr,-n)));const inc=salary()*5;
+  const why=[];if(S.jobless)why.push('no tiene trabajo');if((S.rep??70)<40)why.push('su reputación laboral es baja');if(pay>inc*0.4)why.push('la cuota supera el 40 % de su sueldo');if(S.money<down+closing)why.push(`le faltan ${fmt(down+closing-S.money)} para la entrada y los gastos`);
+  return {price,down,closing,P,n,pay,rate:curRate(),ok:!why.length,why};
+}
+function buyHouse(mode){
+  const o=mortgageOffer();
+  if(mode==='cash'){if(S.money<o.price+o.closing){toast(`Hacen falta ${fmt(o.price+o.closing)} para comprarla al contado`);sfx('bad');return false;}S.money-=o.price+o.closing;S.owned=true;S.mort=null;}
+  else{if(!o.ok){toast('El banco no concede la hipoteca: '+o.why.join(', '));sfx('bad');return false;}S.money-=o.down+o.closing;S.owned=true;S.mort={left:o.P,pay:o.pay,rate:o.rate,weeks:o.n};}
+  S.housePaid=o.price;bumpMoney();sfx('level');setTimeout(()=>chapter('casa','Las llaves',`${CH().name} ha firmado ${mode==='cash'?'y pagado al contado':'la hipoteca'}. La casa ya es suya${mode==='cash'?'':'… y un poco del banco'}. Lo primero que hizo fue quedarse un rato en silencio, mirando las paredes.`),1200);confetti(S.sim.x,S.sim.y,60);toast(`🔑 ¡Ana es propietaria! Adiós al alquiler${S.mort?` · hipoteca de ${fmt(S.mort.left)} a ${(S.mort.rate*100).toFixed(1)} %, ${fmt(S.mort.pay)}/semana`:''}`,true);return true;
+}
+function payMortgage(){
+  const m=S.mort;if(!m)return;const rr=m.rate/52;const int=m.left*rr;const pay=Math.min(m.pay,Math.round(m.left+int));
+  m.left=Math.max(0,m.left+int-pay);m.weeks--;S.money-=pay;bumpMoney();
+  if(m.left<1){S.mort=null;toast('🏦 ¡Hipoteca pagada! La casa es 100 % de Ana 🎉',true);confetti(S.sim.x,S.sim.y,60);}
+  else toast(`🏦 Cuota de la hipoteca: ${fmt(pay)} (quedan ${fmt(m.left)})`,true);
+}
+function amortize(amount){const m=S.mort;if(!m)return;const a=Math.min(amount,m.left,S.money);if(a<=0)return;S.money-=a;m.left-=a;if(m.left<1){S.mort=null;toast('🏦 ¡Hipoteca liquidada!',true);}else{const rr=m.rate/52;m.pay=Math.round(m.left*rr/(1-Math.pow(1+rr,-Math.max(1,m.weeks))));toast(`🏦 Amortizado ${fmt(a)} · nueva cuota ${fmt(m.pay)}/semana`);}bumpMoney();}

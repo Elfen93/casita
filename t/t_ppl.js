@@ -1,0 +1,4 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...DEFCHAR};initPeople();startTrack('super',true);menu.classList.remove('open');
+ const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;background:#f6efe4;z-index:999;display:flex;flex-wrap:wrap;gap:4px;padding:6px;align-content:flex-start';document.body.appendChild(d);
+ for(let i=0;i<24;i++){const p=newPerson('test',i%2===0);const w=document.createElement('div');w.style.cssText='text-align:center;font:700 10px system-ui';const c=document.createElement('canvas');c.width=180;c.height=180;c.style.cssText='width:90px;height:90px;border-radius:50%;position:static';w.appendChild(c);w.appendChild(document.createElement('br'));w.appendChild(document.createTextNode(p.n+' ('+p.g+')'));d.appendChild(w);paintPortrait(c,p.ch,65);}
+ document.title='OK '+JSON.stringify(__errs);}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,300)}},300);

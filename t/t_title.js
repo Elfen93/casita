@@ -1,0 +1,1 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...DEFCHAR,name:'Oury',g:'m'};initPeople();startTrack('super',true);S.home={type:'padres',area:[5,6,7,8],mates:[]};S.day=12;menu.classList.remove('open');showTitle(false);document.title='OK '+speed+JSON.stringify(__errs);}catch(err){document.title='ERR '+err.message}},300);

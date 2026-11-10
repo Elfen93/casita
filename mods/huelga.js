@@ -1,0 +1,17 @@
+// =================== LA HUELGA SE VE: banda roja arriba, cuenta de días, piquete a un toque ===================
+let strikeEl=null;
+function strikeBar(){const st=S.strike;if(!strikeEl){strikeEl=document.createElement('div');strikeEl.id='strikebar';document.body.appendChild(strikeEl);strikeEl.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='piquete'){if(outAvail('piquete'))toast('Piquete: '+outAvail('piquete'));else doOut('piquete');}if(b.dataset.a==='vida'){openMenu('trabajo');}};}
+  if(!st||!st.on){strikeEl.classList.remove('on');return;}
+  const day=S.day-(st.start||S.day)+1;const join=st.join;const h=S.t/60;const can=!outAvail('piquete');
+  const txt=join?`✊ HUELGA · día ${day} de ${st.total||'?'} · ${st.by==='ana'?'la convocó '+CH().name:'con la plantilla'} · sin sueldo${S.sol&&S.sol.fav>=1?' · caja de resistencia':''}`:`🚫 Hay huelga en ${S.office?S.office.n:'el trabajo'} y ${CH().name} va a trabajar · día ${day}`;
+  strikeEl.innerHTML=`<span>${txt}</span>${join?`<button data-a="piquete" ${can?'':'disabled'}>🪧 ${can?'Al piquete':'Piquete 7–11h'}</button>`:`<button data-a="vida">💼 Ver</button>`}`;
+  strikeEl.classList.toggle('scab',!join);strikeEl.classList.add('on');}
+{const _up=update;let _n=0;update=function(gm){const r=_up.apply(this,arguments);try{if((++_n&15)===0)strikeBar();}catch(e){}return r;};}
+{const _fw=typeof callStrike==='function'?callStrike:null;if(_fw)callStrike=function(){const r=_fw.apply(this,arguments);try{strikeBar();if(S.strike&&S.strike.on){sfx('level');toast('✊ ¡Huelga!',true);}}catch(e){}return r;};}
+// el HUD de Ana: estado
+{const _ul=useLabel;useLabel=function(u){try{if(S.strike&&S.strike.on&&S.strike.join&&!(S.sim.work>0)&&dayType(S.day)==='work'&&S.t/60>=SHIFT.start&&S.t/60<SHIFT.end){const r=_ul.apply(this,arguments);return {b:'✊',v:'En huelga · '+(r&&r.v?r.v.toLowerCase():'en casa')};}}catch(e){}return _ul.apply(this,arguments);};}
+// aviso a las 6:45 y al piquete a las 7, sola
+{const _up2=update;update=function(gm){const r=_up2.apply(this,arguments);try{const st=S.strike;if(!st||!st.on||!st.join)return r;const h=S.t/60;const s=S.sim;
+    if(h>=6.7&&h<6.8&&st.warnDay!==S.day){st.warnDay=S.day;toast(`🪧 Piquete a las 7 en la puerta de ${S.office?S.office.n:'la empresa'}. ${CH().name} va.`,true);sfx('tap');}
+    if(h>=7&&h<9.5&&st.goDay!==S.day&&!(s.work>0)&&!s.leaving&&dayType(S.day)==='work'){const why=outAvail('piquete');if(!why){st.goDay=S.day;doOut('piquete');}else if(h>=9.4){st.goDay=S.day;toast('🪧 Hoy no ha ido al piquete: '+why);}}
+  }catch(e){}return r;};}
