@@ -15960,10 +15960,10 @@ function openGov(){if(!REV())return;const g=GV();const d=S.day-g.since;const ph=
   let h=`<div class="omt">${W_().era==='comunas'?'🏴 La comuna':'🚩 Los consejos'}: qué cambia para ${CH().name}</div><div class="sub" style="padding:0 8px 6px">Día ${d+1} desde que cayó el gobierno. Los cambios llegan por fases.</div>`;
   for(let i=0;i<GV_PH.length;i++){const [dd,t,x]=GV_PH[i];const on=ph>i;h+=`<div class="gvph${on?' on':''}"><b>${on?'✅':'⏳'} ${t}</b><small>${x}${on?'':` · en ${dd-d} días`}</small></div>`;}
   h+=`<div class="gvbox">`;
-  if(S.owned)h+=row('🏠 Hipoteca','','reducida al 30 %');
+  if(S.owned)h+=row('🏠 Hipoteca',ph>=1&&S.mort?'':'',S.mort?`${fmt(S.mort.pay)}/sem · ${ph>=3?'0 %':(S.mort.rate*100).toFixed(1)+' %'} · tope 22 %`:'pagada');
   else if(S.home&&S.home.type==='padres')h+=row('🏠 Vive con su madre','','sin alquiler');
   else h+=row('🏠 Alquiler / semana',pre.rent&&ph>=1&&pre.rent>weeklyRent()?fmt(pre.rent):'',ph>=1?fmt(weeklyRent()):'pendiente');
-  h+=row('⚖️ Desahucios',ph>=1?'sí':'',ph>=1?'no':'pendiente');
+  h+=row('⚖️ Desahucios y embargos',ph>=1?'sí':'',ph>=1?'no':'pendiente');h+=row('🔑 Comprar vivienda','sí','no: se pide a la asamblea');
   if(!S.jobless&&!TR().self){h+=row('💼 Sueldo / turno',pre.pay&&pre.pay<salary()?fmt(pre.pay):'',fmt(Math.round(salary()*payFactor())));
     h+=row('⏳ Horas extra sin cobrar',ph>=2?'sí':'',ph>=2?'no':'pendiente');h+=row('👔 Jefe',ph>=2?'sí':'',ph>=2?'cargos elegidos':'pendiente');
     if(g.comedor)h+=row('🍲 Comedor del centro','','gratis');}
@@ -15972,6 +15972,43 @@ function openGov(){if(!REV())return;const g=GV();const d=S.day-g.since;const ph=
   if(ph>=3)h+=row('🚫 Esta semana falta','',g.lack.join(', ')||'nada');
   h+=`</div><div class="sub" style="padding:6px 8px">Lo que cuesta: asambleas largas, colas, bloqueo exterior, sabotajes de quien lo tenía todo, y vecinos que echan de menos lo de antes. Y si el movimiento se apaga, lo ganado se puede perder.</div><div style="padding:6px"><button class="btn" id="gvclose">Entendido</button></div>`;
   gvEl.innerHTML=h;gvEl.classList.add('on');}
+// =================== VIVIENDA CON LOS CONSEJOS: ni se compra ni se vende; se pide y se usa. La hipoteca pasa a la Banca Pública ===================
+const govHH=()=>1+(liveIn()?1:0)+(S.kids||[]).length;
+// la hipoteca: tope del 22 %, congelada si no entra nada, al 0 % con la banca pública
+{const _pm=payMortgage;payMortgage=function(){const m=S.mort;if(!m||!REV()||govPh()<1)return _pm.apply(this,arguments);const g=GV();const n=CH().name;
+  if(govPh()>=3&&m.rate>0){m.rate=0;tell(`La hipoteca de ${n} ha pasado a la Banca Pública: interés cero. Quedan ${fmt(Math.round(m.left))}, que es lo que de verdad costó la casa.`,'🏦');}
+  if(S.jobless){if(!g.mfroz){g.mfroz=1;tell(`Sin trabajo, la cuota de la hipoteca se congela hasta que vuelva a entrar dinero. Nadie pierde su casa por quedarse en paro.`,'🏦');}return;}g.mfroz=0;
+  m.pay=Math.min(Math.round(m.left/Math.max(1,m.weeks))+(m.rate?Math.round(m.left*m.rate/52):0),govRentCap());return _pm.apply(this,arguments);};}
+// los impagos ya no se persiguen
+{const _bw=mgBankWarn;mgBankWarn=function(){if(REV()&&govPh()>=1){const m=MG();m.bank=0;m.debt=0;const g=GV();if(!g.mwarn){g.mwarn=1;tell(`Este mes no ha llegado para la cuota. La asamblea de bloque lo ha apuntado y ya está: nadie viene a cobrar a nadie.`,'🏠');}return;}return _bw.apply(this,arguments);};}
+// comprar: ya no
+{const _mo=mortgageOffer;mortgageOffer=function(){const o=_mo.apply(this,arguments);if(REV()){o.ok=false;o.why=['con los consejos la vivienda no se compra ni se vende'];}return o;};}
+{const _bh=buyHouse;buyHouse=function(mode){if(REV()){toast('La vivienda ya no se compra: se pide a la asamblea');return false;}return _bh.apply(this,arguments);};}
+// mudarse: se pide a la asamblea, se espera, se entra sin fianza
+{const _mc=moveCost;moveCost=function(k){if(REV()&&k!=='padres')return 0;return _mc.apply(this,arguments);};}
+{const _cm=canMove;canMove=function(k){if(REV()&&k!=='padres'&&k!=='calle'){const g=GV();if(k===((S.home&&S.home.type)||'casita'))return {ok:false,why:['ya vive aquí']};return g.grant===k?{ok:true,why:[]}:{ok:false,why:['se pide a la asamblea de vivienda']};}return _cm.apply(this,arguments);};}
+{const _mh=moveHome;moveHome=function(k,auto){const g=GV();if(REV()&&k!=='padres'&&k!=='calle'){if(g.grant!==k){if(!auto)govReq(k);return false;}
+    if(S.owned){S.owned=false;S.mort=null;tell(`La casa donde vivía ${CH().name} pasa a la bolsa común: la usará otra familia. No se vende; se deja.`,'🔑');}
+    const r=_mh.call(this,k,auto);if(r){g.grant=null;g.req=null;}return r;}
+  return _mh.apply(this,arguments);};}
+function govReq(k){const g=GV();const K=HOMES[k];const n=CH().name;const hh=govHH();const t=(S.home&&S.home.type)||'casita';
+  if(g.req&&g.req.k===k){toast(`Ya está pedido: ${K.n}`);return;}
+  if(K.cls>=3&&hh<2){tell(`${n} ha pedido ${K.n.toLowerCase()} en la asamblea de vivienda. Le han dicho que no: hay familias con críos en pisos de una habitación. Tiene razón la asamblea, aunque joda.`,'🏘️');return;}
+  const need=t==='calle'?3:t==='infra'?6:t==='habitacion'&&hh>1?8:20+(K.cls||1)*6;g.req={k,day:S.day,ready:S.day+need};
+  tell(`${n} ha pedido ${K.n.toLowerCase()} en la asamblea de vivienda. Lista de espera: unos ${need} días.${t==='calle'?' Duerme en la calle: va de los primeros.':''}`,'🏘️');if(typeof openMenu==='function'&&menu.classList.contains('open'))openMenu();}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const g=GV();if(REV()&&g.req&&!g.grant&&S.day>=g.req.ready){g.grant=g.req.k;const K=HOMES[g.grant];tell(`La asamblea de vivienda le ha asignado ${K.e} ${K.n.toLowerCase()} a ${CH().name}. Sin fianza, sin agencia, sin casero. Se muda cuando quiera: Casa → Mudarse.`,'🔑');sfx('level');}
+  if(!REV()&&S.gv){S.gv.req=null;S.gv.grant=null;}}catch(e){}return r;};}
+{const _hb=homeBlock;homeBlock=function(){let h=_hb.apply(this,arguments);if(!REV())return h;try{const g=GV();const t=(S.home&&S.home.type)||'casita';
+  let x=`<details class="mud"${g.grant||g.req?' open':''}><summary>🏘️ Pedir vivienda a la asamblea</summary><div class="sub" style="font-size:11.5px">Ya no se compra ni se vende: se pide, se espera turno según lo que necesitáis, y se entra sin fianza. En casa sois ${govHH()}.</div>`;
+  for(const k of HOME_ORDER){if(k===t||k==='calle')continue;const K=HOMES[k];const isG=g.grant===k,isR=g.req&&g.req.k===k;
+    x+=`<div class="hopt"><div><b>${K.e} ${K.n}</b> <small>${k==='padres'?'con su madre':fmt(Math.min(Math.round(K.rent*Dm().rent*(S.rentMul||1)),govRentCap()))+'/sem'}</small><div class="sub" style="font-size:11px">${isG?'✅ Asignada. Cuando quiera.':isR?`⏳ Pedida · faltan ${Math.max(0,g.req.ready-S.day)} días`:K.d}</div></div>${k==='padres'||isG?`<button class="mini" data-move="${k}">Mudarse</button>`:isR?'':`<button class="mini" data-gvreq="${k}">Pedir</button>`}</div>`;}
+  x+='</details>';h=h.replace(/<details class="mud">[\s\S]*<\/details>/,x);}catch(e){}return h;};}
+document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-gvreq]');if(b){ev.stopPropagation();govReq(b.dataset.gvreq);}},true);
+// la ficha de vivienda en Casa: sin botones de comprar
+{const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{if(REV()&&menuTab==='casa'){for(const id of ['#buymort','#buycash']){const b=card.querySelector(id);if(b&&b.parentElement)b.parentElement.remove();}
+  card.querySelectorAll('.kv').forEach(e=>{const s=e.firstElementChild&&e.firstElementChild.textContent;if(s==='Comprar la casa'||s==='Hipoteca')e.remove();});
+  card.querySelectorAll('.sub').forEach(e=>{if(/El banco ahora no la da/.test(e.textContent))e.textContent='🚩 Con los consejos la vivienda no se compra ni se vende. Si necesitas otra, se pide a la asamblea (más abajo).';});
+  if(S.mort){card.querySelectorAll('.kv').forEach(e=>{if(e.firstElementChild&&e.firstElementChild.textContent==='Cuota')e.lastElementChild.textContent=`${fmt(S.mort.pay)}/semana · ${(S.mort.rate*100).toFixed(1)} % · tope 22 % de lo que entra`;});}}}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};

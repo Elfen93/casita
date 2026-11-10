@@ -1,0 +1,11 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...randomChar(),g:'m'};initPeople();applyHome('casita');startTrack('oficina',true);rollWeather();newToday();storyStart();
+ S.owned=true;S.mort={left:90000,pay:900,rate:.05,weeks:1500};const w=W_();w.era='consejos';w.gov='consejos';
+ const out=[];for(let d=0;d<14;d++){S.t=1439;update(1);}const m0=S.money;payMortgage();out.push('pay='+(m0-S.money)+' rate='+S.mort.rate+' cap='+govRentCap());
+ S.jobless=true;const m1=S.money;payMortgage();out.push('jobless paid='+(m1-S.money));S.jobless=false;
+ out.push('buy='+buyHouse('cash'));
+ S.money=-5000;for(let i=0;i<4;i++)mgBankWarn();out.push('mg='+JSON.stringify({b:MG().bank,d:MG().debt}));
+ const hb=homeBlock();out.push('hb gvreq='+(hb.match(/data-gvreq/g)||[]).length);
+ govReq('viejo');out.push('req='+JSON.stringify(GV().req));for(let d=0;d<40&&!GV().grant;d++){S.t=1439;update(1);}out.push('grant='+GV().grant);
+ const mv=moveHome('viejo',false);out.push('moved='+mv+' home='+S.home.type+' owned='+S.owned+' mort='+!!S.mort);
+ document.title='OK '+out.join(' ; ')+' errs='+window.__errs.length+' '+(window.__errs[0]||'');
+}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,300)}},300);
