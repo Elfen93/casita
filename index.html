@@ -14924,6 +14924,16 @@ function objAtScreen(sx,sy){let best=null,bd=-1e9;for(let i=0;i<N*N;i++){const o
     const [u,v]=w2v(x+.5,y+.5);const [bx,by]=P(u,v,0);const px=cam.x+bx*cam.z,py=cam.y+by*cam.z;const h=(OBJ[o.t].h||20)*cam.z;const dx=sx-px,dy=sy-py;
     if(Math.abs(dx)<=TW/2*cam.z*.85&&dy<=TH/2*cam.z&&dy>=-(h+TH/2*cam.z)){const depth=u+v;if(depth>bd){bd=depth;best=i;}}}return best;}
 {const _lt=liveTap;liveTap=function(x,y){try{if(!viewPlace&&!(S.sim.work>0)){const r=resAtScreen(lastPtr[0],lastPtr[1]);if(!r){const i=objAtScreen(lastPtr[0],lastPtr[1]);if(i!=null){const o=S.obj[i];if(usable(o)){openObjMenu(i);sfx('tap');return;}}}}}catch(e){console.error(e);}return _lt.apply(this,arguments);};}
+// =================== OBRAS QUE NO SE PUEDEN HACER: no se desean, y si una falla tres veces se deja ===================
+{const _wf=wantFor;wantFor=function(t,why,urgent){try{if(HT().build!=='all'&&OBJ[t]&&OBJ[t].cat==='garden'){const i=pickSpot(t);if(i==null||!inArea(i%N,i/N|0))return null;}}catch(e){}return _wf.apply(this,arguments);};}
+{const _es=execStep;execStep=function(job,j,byNpc){const st=job&&job.steps[j];const before=st&&st.i;const r=_es.apply(this,arguments);try{if(st&&st.k==='obj'&&!st.done&&before!=null&&st.i==null&&!byNpc){st._nf=(st._nf||0)+1;if(st._nf>=3){const nm=OBJ[st.v]?OBJ[st.v].n.toLowerCase():'eso';S.job=null;S.want=null;S.held=null;S.sim.use=null;S.sim.path=[];S.sim.cmd=false;S.money+=Math.round((OBJ[st.v]?.p||0)*(st.q===4?1.5:1)*.9*PM());bumpMoney();toast(`${CH().name} no encuentra dónde poner ${nm}: lo devuelve a la tienda`);S.noWant=S.noWant||{};S.noWant[st.v]=S.day+20;}}}catch(e){}return r;};}
+{const _wf2=wantFor;wantFor=function(t){try{if(S.noWant&&S.noWant[t]>S.day)return null;}catch(e){}return _wf2.apply(this,arguments);};}
+// una obra con todos los pasos hechos se cierra, no se queda colgada en el HUD
+{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{if(S.job&&nextStep(S.job)<0)finishJob();}catch(e){}return r;};}
+// en casa ajena solo se mueven las sillas propias
+{const _cw=chooseWant;chooseWant=function(){const w=_cw.apply(this,arguments);try{if(w&&w.key==='chairs'&&HT().build!=='all'){w.steps=w.steps.filter(st=>st.from!=null&&inArea(st.from%N,st.from/N|0)&&!(S.obj[st.from]&&S.obj[st.from].priv));if(!w.steps.length)return null;}if(w&&S.noWant&&S.noWant[w.key]>S.day)return null;}catch(e){}return w;};}
+// un paso que no encuentra sitio durante dos horas: se deja
+{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const j=S.job;if(j&&j.who==='ana'){const n=nextStep(j);const st=n>=0?j.steps[n]:null;if(st&&st.i==null&&(st.k==='move'||st.k==='obj')){st._nt=(st._nt||0)+gm;if(st._nt>120){S.noWant=S.noWant||{};S.noWant[j.key]=S.day+15;if(st.k==='obj'&&st.v)S.noWant[st.v]=S.day+20;S.job=null;S.want=null;S.held=null;S.sim.use=null;S.sim.path=[];S.sim.cmd=false;toast(`${CH().name} deja lo de «${j.name.toLowerCase()}»: no hay dónde`);}}}}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
