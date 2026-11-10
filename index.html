@@ -294,6 +294,17 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 .dash b{display:block;font-size:20px;line-height:1.1}
 .dash small{display:block;font-size:10.5px;color:#8a8294;margin-top:3px}
 .fold{float:right;color:#b0a8bb;font-weight:400}
+
+#agenda{position:fixed;z-index:57;display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,380px);max-height:84vh;overflow:auto;background:rgba(255,253,248,.98);border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:8px;font-family:Nunito,sans-serif}
+#agenda.on{display:block}
+#agenda .omt{font:900 14px Nunito,sans-serif;color:#3b3247;padding:6px 8px 4px}
+#agenda .agdays{display:flex;gap:3px;padding:2px 4px 8px}
+#agenda .agdays button{flex:1;border:0;background:#f3eef6;border-radius:9px;padding:6px 0;font:800 11.5px Nunito,sans-serif;color:#5a4e6a;cursor:pointer}
+#agenda .agdays button.on{background:#3b3247;color:#fff}
+#agenda .agrow{display:flex;align-items:center;gap:8px;padding:4px 8px}
+#agenda .agrow.dim{opacity:.55}
+#agenda .agt{width:44px;font:800 12px Nunito,sans-serif;color:#8a8294}
+#agenda select{flex:1;border:1px solid #e3dce8;border-radius:9px;padding:6px 8px;font:700 12.5px Nunito,sans-serif;background:#fff;color:#2b2533}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -15243,6 +15254,45 @@ function leaveNow(){const s=S.sim;const n=CH().name;if(s.outingActive){const k=s
 {const _fw=finishWork;finishWork=function(){const s=S.sim;if(s.outingActive==='_vuelta'){s.outingActive=null;s.work=0;s.dest=null;s.route=null;if(s.exit&&walkable(s.exit[0],s.exit[1])){s.x=s.exit[0]+.5;s.y=s.exit[1]+.5;}ensureSimFree();s.think=0;return;}return _fw.apply(this,arguments);};}
 // la IA también encadena: del curro al gimnasio si es socia, o a la asamblea si toca
 {const _au=autonomy;autonomy=function(){try{const s=S.sim;const h=S.t/60;if(S.autoHome&&awayNow()&&!s.outingActive&&S.lastWorkDay===S.day&&s.work<=35&&S.outDay!==S.day&&Math.random()<.15){const H=typeof HP==='function'?HP():null;const cands=[];if(H&&H.gymMember&&!outAvail('gimnasio'))cands.push('gimnasio');if(S.union&&S.union.member&&!outAvail('sindicato')&&Math.random()<.5)cands.push('sindicato');if(typeof comp==='function'&&comp()>=2&&!outAvail('militancia')&&Math.random()<.4)cands.push('militancia');if(cands.length&&S.needs.energia>30){s.work=0;S.lastWorkDay=S.day;finishWork();doOut(pickR(cands));return;}}}catch(e){}return _au.apply(this,arguments);};}
+// =================== MI SEMANA: un horario como el de la vida real, y Ana lo cumple (si la vida la deja) ===================
+const AG=()=>{if(!S.ag)S.ag={plan:{},done:{},on:true};S.ag.plan=S.ag.plan||{};S.ag.done=S.ag.done||{};return S.ag;};
+const AG_SLOTS=[[7,'7:00'],[9,'9:00'],[11,'11:00'],[13,'13:00'],[15,'15:00'],[17,'17:00'],[18.5,'18:30'],[20,'20:00'],[21.5,'21:30']];
+// qué se puede planear: salidas y cosas de casa (estas necesitan el mueble)
+const AG_ITEMS=[
+  ['gimnasio','🏋️','Gimnasio','out'],['calistenia','🤸','Barras del parque','out'],['deporte','🏃','Salir a correr','out'],['sindicato','✊','Asamblea sindical','out'],['militancia','🏴','Reunión política','out'],['clase','🎓','Ir a clase','out'],['biblioteca','📚','Biblioteca','out'],['amigos','🍻','Quedar con amigos','out'],['terapia','🧠','Terapia','out'],['voluntariado','🤲','Voluntariado','out'],['misa','⛪','Misa y vermú','out'],['libreria','📖','Librería','out'],['mercadillo','📦','Mercadillo','out'],['networking','🥂','Afterwork','out'],
+  ['estudiar','📝','Estudiar en casa','home',['escritorio','libros','compu'],'estudiar'],['escribir','✍️','Escribir','home',['escritorio','compu'],'escribir'],['pintar','🎨','Pintar','home',['caballete'],'pintar'],['leer','📖','Leer','home',['estant','libros','butaca','sofa'],'leer'],['tapers','🥡','Tápers para la semana','home',['fogon'],'tapers'],['limpiar','🧽','Limpiar','home',['fogon','vater','nevera'],'limpiar'],['curso','🎓','Curso online','home',['compu','escritorio'],'curso'],['practicar','🎸','Practicar música','home',['guitarra','piano'],'practicar'],['madre','☎️','Llamar a su madre','home',['telefono'],'madre'],['siesta','😴','Siesta','home',['cama','camamat','sofa'],'siesta'],['peli','🍿','Peli','home',['sofa'],'peli'],['huerto','🥕','Cuidar el huerto','home',['huerto'],'cuidar'],['cuento','🧒','Rato con los críos','kid'],['nada','🛋️','Libre','free']];
+const agItem=k=>AG_ITEMS.find(x=>x[0]===k);
+function agAvail(it){if(it[3]==='out')return !!OUT[it[0]]&&!(OUT[it[0]].req&&!OUT[it[0]].req());if(it[3]==='home')return findObjs((d,t)=>it[4].includes(t)&&ACTV[t]&&ACTV[t].some(a=>a[0]===it[5])).length>0;if(it[3]==='kid')return (S.kids||[]).length>0;return true;}
+// ---- ejecutar ----
+{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const A=AG();if(!A.on)return r;const h=S.t/60;const wd=dateOf(S.day).wd;const s=S.sim;
+    for(const [st,lab] of AG_SLOTS){const key=wd+':'+st;const k=A.plan[key];if(!k||k==='nada')continue;if(h<st||h>st+.75)continue;const dk=S.day+':'+st;if(A.done[dk])continue;
+      const it=agItem(k);if(!it)continue;
+      if(it[3]==='out'){if(s.work>0&&!s.outingActive)continue;/* en el trabajo: no se va a mitad por la agenda */const why=outAvail(k);if(why){if(h>st+.6){A.done[dk]=1;if(throttled('ag'+k,6e5))toast(`🗓️ ${it[2]}: ${why}`);}continue;}A.done[dk]=1;doOut(k);toast(`🗓️ ${it[1]} ${it[2]}`);}
+      else if(it[3]==='home'){if(s.work>0)continue;if(s.use&&s.use.cmd)continue;const objs=findObjs((d,t)=>it[4].includes(t)&&ACTV[t]&&ACTV[t].some(a=>a[0]===it[5])).filter(i=>usable(S.obj[i]));if(!objs.length){A.done[dk]=1;continue;}
+        if(['hambre','vejiga'].some(n=>S.needs[n]<15))continue;A.done[dk]=1;s.queue=[];enqueue({k:'obj',i:objs[0],act:it[5]});toast(`🗓️ ${it[1]} ${it[2]}`);}
+      else if(it[3]==='kid'){if(s.work>0)continue;const rr=(S.res||[]).find(x=>x.kind==='kid'&&!x.away);if(!rr){A.done[dk]=1;continue;}A.done[dk]=1;S.kidAct={r:rr.kid,k:'jugar',m:30,t:0};const cx=Math.floor(rr.x),cy=Math.floor(rr.y);const [sx,sy]=simCell();const p=bfs([sx,sy],(x,y)=>Math.abs(x-cx)+Math.abs(y-cy)<=1&&walkable(x,y));if(p){s.path=p;s.target=null;s.use=null;s.cmd=true;}toast(`🗓️ ${it[1]} ${it[2]}`);}}
+    // limpiar lo viejo
+    if(h<.1)for(const dk in A.done)if(+dk.split(':')[0]<S.day-1)delete A.done[dk];}catch(e){console.error(e);}return r;};}
+// ---- UI: pestaña dentro de Vida ----
+let agEl=null;function closeAg(){if(agEl)agEl.classList.remove('on');}
+function openAg(wd){const A=AG();if(wd==null)wd=A.wd??dateOf(S.day).wd;A.wd=wd;if(!agEl){agEl=document.createElement('div');agEl.id='agenda';document.body.appendChild(agEl);}
+  const T0=TR();const work=!S.jobless&&T0.days.includes(wd);const sh=T0.sh;
+  let h=`<div class="omt">📅 Mi semana <label style="float:right;font-weight:400;font-size:12px"><input type="checkbox" id="agon" ${A.on?'checked':''}> seguirla</label></div><div class="agdays">${WDS.map((d,i)=>`<button class="${i===wd?'on':''}" data-wd="${i}">${d}${Object.keys(A.plan).some(k=>k.startsWith(i+':')&&A.plan[k]!=='nada')?' •':''}</button>`).join('')}</div>`;
+  if(work)h+=`<div class="sub" style="font-size:11.5px;padding:2px 8px 6px">💼 Trabajo de ${sh[0]}:00 a ${sh[1]}:00${typeof ED==='function'&&ED().cur&&EDU_PROGS[ED().cur.k].days.includes(wd)?' · 🎓 clase de '+EDU_PROGS[ED().cur.k].sched[0]+' a '+EDU_PROGS[ED().cur.k].sched[1]:''}</div>`;
+  const items=AG_ITEMS.filter(agAvail);
+  for(const [st,lab] of AG_SLOTS){const key=wd+':'+st;const cur=A.plan[key]||'nada';const inWork=work&&st>=sh[0]-1&&st<sh[1];
+    h+=`<div class="agrow${inWork?' dim':''}"><span class="agt">${lab}</span>${inWork?'<span class="sub" style="font-size:11.5px">trabajo</span>':`<select data-key="${key}">${items.map(it=>`<option value="${it[0]}" ${it[0]===cur?'selected':''}>${it[1]} ${it[2]}</option>`).join('')}</select>`}</div>`;}
+  h+=`<div style="display:flex;gap:6px;padding:8px 6px 2px;flex-wrap:wrap"><button class="btn grey" id="agcopy">Copiar a todos los días laborables</button><button class="btn grey" id="agclear">Vaciar el día</button><button class="btn" id="agclose">Listo</button></div>`;
+  agEl.innerHTML=h;agEl.classList.add('on');
+  agEl.querySelectorAll('[data-wd]').forEach(b=>b.onclick=()=>openAg(+b.dataset.wd));
+  agEl.querySelectorAll('select').forEach(s=>s.onchange=()=>{A.plan[s.dataset.key]=s.value;});
+  agEl.querySelector('#agon').onchange=e=>{A.on=e.target.checked;};
+  agEl.querySelector('#agcopy').onclick=()=>{for(let d=0;d<7;d++){if(d===wd||!T0.days.includes(d)===!T0.days.includes(wd)){for(const [st] of AG_SLOTS)A.plan[d+':'+st]=A.plan[wd+':'+st]||'nada';}}toast('📅 Copiado');openAg(wd);};
+  agEl.querySelector('#agclear').onclick=()=>{for(const [st] of AG_SLOTS)delete A.plan[wd+':'+st];openAg(wd);};
+  agEl.querySelector('#agclose').onclick=closeAg;}
+{const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const A=AG();const wd=dateOf(S.day).wd;const today=AG_SLOTS.map(([st,lab])=>[lab,A.plan[wd+':'+st]]).filter(x=>x[1]&&x[1]!=='nada').map(([lab,k])=>{const it=agItem(k);return it?lab+' '+it[1]:'';}).filter(Boolean);
+    return `<h3>📅 Mi semana</h3><div class="sub" style="font-size:12px">${today.length?'Hoy: '+today.join(' · '):'Hoy no hay nada planeado.'}${A.on?'':' · <b>en pausa</b>'}</div><button class="btn grey" id="agopen">📅 Montar el horario</button>`+h;}catch(e){return h;}};}
+{const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);try{const b=card.querySelector('#agopen');if(b)b.onclick=()=>{menu.classList.remove('open');openAg();};}catch(e){}};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
