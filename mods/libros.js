@@ -26,7 +26,7 @@ curBook=function(){const C=LB();const un=n=>!C.libDone.includes(n);if(C.reading&
 // ---- la librería y la biblioteca: salidas ----
 Object.assign(OUT,{
   libreria:{n:'Ir a la librería',e:'📚',dur:60,h:[10,20],why:'mirar lomos, oler papel, gastar lo que no debería'},
-  mercadillo:{n:'Mercadillo de libros usados',e:'📦',dur:90,h:[10,14],wd:[0,6],why:'libros a dos duros, subrayados por otra gente'},
+  mercadillo:{n:'Mercadillo de libros usados',e:'📦',dur:90,h:[10,14],wd:[5,6],why:'libros a dos duros, subrayados por otra gente'},
   presta:{n:'Biblioteca: devolver y pedir',e:'🏛️',dur:50,h:[9,20],why:'devolver lo prestado y llevarse otro, gratis'},
 });
 {const _oc=outCost;outCost=function(k){if(['libreria','mercadillo','presta'].includes(k))return 0;return _oc.apply(this,arguments);};}

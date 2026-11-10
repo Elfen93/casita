@@ -1,0 +1,5 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...randomChar(),g:'m'};initPeople();applyHome('viejo');startTrack('oficina',true);rollWeather();newToday();storyStart();S.autoHome=true;S.money=2000;S.jobless=true;S.t=18*60;
+ const free=[];for(let i=0;i<N*N;i++){const x=i%N,y=i/N|0;if(!S.obj[i]&&inArea(x,y)&&S.floor[i]&&S.wall[i]===0)free.push(i);}S.obj[free[0]]={t:'estant',q:3,c:100,r:0};dirty();uidSweep();computeRooms();
+ const out=[];for(const [t,i] of [['estant',free[0]],['libros',findObjs((d,tt)=>tt==='libros')[0]],['sofa',findObjs((d,tt)=>tt==='sofa')[0]]]){if(i==null)continue;for(const k in S.needs)S.needs[k]=90;S.sim.use=null;S.sim.path=[];S.sim.queue=[];enqueue({k:'obj',i,act:'leer'});let dur=0,started=false,ended=null;for(let k=0;k<200;k++){update(1);const u=S.sim.use;if(u&&u.i===i){started=true;dur++;}else if(started&&ended==null){ended=k;}}out.push(t+': leyó '+dur+' min; progreso='+JSON.stringify(LB().lib));}
+ document.title='OK '+out.join(' | ');
+}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,300)}},300);

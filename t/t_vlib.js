@@ -1,0 +1,1 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...randomChar(),g:'m'};initPeople();applyHome('viejo');startTrack('oficina',true);rollWeather();newToday();storyStart();openMenu('vida');document.title='OK '+(card.innerText.includes('Mis libros')?'HAY_BOTON':'NO')+' '+window.__errs.length;}catch(err){document.title='ERR '+err.message}},300);
