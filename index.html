@@ -289,6 +289,11 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #final p{font-size:13.5px;line-height:1.5;color:#3b3247;margin:0}
 #final .chaps span{display:inline-block;background:#f3eef6;border-radius:8px;padding:2px 7px;margin:2px 0;font-size:12px}
 #final .fbtns{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.dash{display:flex;gap:6px;margin:2px 0 12px}
+.dash>div{flex:1;background:#fff;border-radius:14px;padding:9px 6px;text-align:center;box-shadow:0 2px 8px rgba(40,30,60,.08)}
+.dash b{display:block;font-size:20px;line-height:1.1}
+.dash small{display:block;font-size:10.5px;color:#8a8294;margin-top:3px}
+.fold{float:right;color:#b0a8bb;font-weight:400}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -14581,8 +14586,12 @@ function openShop(kind){const C=LB();if(!shopEl){shopEl=document.createElement('
     S.money-=p;bumpMoney();C.own.push(n);sfx('buy');toast(`${b[2]} «${n}» · ${fmt(p)}`);C.tx.push(['libro',-p,S.day]);if(!C.reading)C.reading=n;openShop(kind);});
   shopEl.querySelectorAll('[data-man]').forEach(bt=>bt.onclick=()=>{const k=bt.dataset.man;const m=manualFor(k);const p=bookPrice(m.p,mul);if(S.money<p){toast('No llega');sfx('bad');return;}S.money-=p;bumpMoney();C.man.push(k);sfx('buy');tell(`Ha comprado el ${m.n.toLowerCase()}: ${fmt(p)}. Los libros de texto nunca han sido baratos; por eso hay fotocopias.`,'📖');openShop(kind);});
   const cl=shopEl.querySelector('[data-close]');if(cl)cl.onclick=closeShop;}
-{const _ob=outBack;outBack=function(k){if(k==='libreria'||k==='mercadillo'||k==='presta'){const C=LB();S.needs.diversion=Math.min(100,S.needs.diversion+10);
-    if(S.autoHome&&!document.hasFocus&&false){}
+{const _mo=maybeOuting;maybeOuting=function(){S.outAuto=true;try{return _mo.apply(this,arguments);}finally{S.outAuto=false;}};}
+{const _do=doOut;doOut=function(k){S.outManual=!S.outAuto;return _do.apply(this,arguments);};}
+function autoBuyBook(k){const C=LB();const items=BOOKCAT.filter(b=>!ownsBook(b[0])&&!C.libDone.includes(b[0])&&(k==='presta'||bookPrice(b[4],k==='mercadillo'?.35:1)<Math.max(0,S.money)*.1));if(!items.length)return;const b=pickR(items);
+  if(k==='presta'){if(C.lent)return;C.lent=b[0];C.lentDue=S.day+21;tell(`${CH().name} se ha llevado «${b[0]}» de la biblioteca.`,'🏛️');}else{const p=bookPrice(b[4],k==='mercadillo'?.35:1);S.money-=p;C.own.push(b[0]);C.tx.push(['libro',-p,S.day]);tell(`${CH().name} ha vuelto ${k==='mercadillo'?'del mercadillo':'de la librería'} con «${b[0]}». ${fmt(p)}.`,'📚');}if(!C.reading)C.reading=b[0];}
+{const _ob=outBack;outBack=function(k){if(k==='libreria'||k==='mercadillo'||k==='presta'){S.needs.diversion=Math.min(100,S.needs.diversion+10);
+    if(!S.outManual){autoBuyBook(k);return;}
     setTimeout(()=>{try{openShop(k);}catch(e){console.error(e);}},200);return;}
   return _ob.apply(this,arguments);};}
 // devolver el préstamo tarde cuesta
@@ -15187,6 +15196,27 @@ const isWinter=()=>typeof seasonOf==='function'&&seasonOf(S.day)==='inv';
 {const _up=update;update=function(gm){const u=S.sim.use;const h0=S.needs.higiene;const r=_up.apply(this,arguments);try{if(u&&u.cold&&S.sim.use===u){const d=S.needs.higiene-h0;if(d>0)S.needs.higiene=h0+d*.5;S.needs.diversion=Math.max(0,S.needs.diversion-.3*gm);}}catch(e){}return r;};}
 // perfil de casa: estado
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const g=HG();const L=[];if(g.boiler)L.push('🚿 sin agua caliente ('+(S.day-g.boilerSince)+' días)');if(g.fridge)L.push('🧊 nevera rota');if(g.wash)L.push('🧺 lavadora rota');if(S.noRenew)L.push('📨 contrato sin renovar: '+(S.noRenew-S.day)+' días');if(!L.length)return h;return `<h3>🏚️ En casa</h3><div class="sub" style="font-size:12px;color:#a04a3a">${L.join(' · ')}</div>`+h;}catch(e){return h;}};}
+// =================== MENOS RUIDO: avisos con prioridad, diario filtrable, pestañas plegables y tres números grandes ===================
+// ---- toasts: lo flojo no pisa a lo importante ----
+const TOAST_LOW=/^(💭|📅|🧺|🏋️|🏛️|🍻|🎒|🧊|🥡|🌸|🌤️|☕|🧹|🎶|📱|🔁)/;
+{const _toast=toast;toast=function(msg,gold){try{const box=document.getElementById('toasts');if(box&&!gold&&TOAST_LOW.test(String(msg))&&box.children.length>=1)return;}catch(e){}return _toast.apply(this,arguments);};}
+// ---- diario: filtros ----
+const HIST_F={todo:null,imp:/^(🚔|🚑|📨|🧳|🌧️|⚖️|🏛️|💕|🎓|📘|✊|🔑|🚪|🤒|💔|❤️|👶|🎂|📣|🏆|🖼️|🩺|💉|🦴|🫀|🔥|📄|🧭|🏥|🌱|☀️)/,trabajo:/^(💼|📋|⏰|🏢|📈|✂️|✊|💶|📄|⚠️|🚑|🧭|🎓|📚)/,casa:/^(🏠|🏘️|🔑|📨|🚪|🚿|🧊|🧺|🔊|🏚️|🧳|🛏️|🌱|🥕|🔧|📦)/,gente:/^(💞|💕|💋|🫂|💬|☎️|👩‍🦳|🧒|🤝|💔|❤️|👶|🎂|🍽️|🌹|🏨|😠|🍷)/,cuerpo:/^(🫀|🩺|💉|🦴|🖐️|👓|🩸|🤒|🏋️|🤸|🪞|🌧️|☀️|🧠|🍷|💊|🌫️|🥤)/};
+{const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{if(menuTab==='historia'&&!card.querySelector('#histf')){const f=S.histF||'todo';const bar=document.createElement('div');bar.id='histf';bar.style.cssText='display:flex;gap:5px;flex-wrap:wrap;margin:4px 0 8px';
+      for(const [k,lab] of [['todo','Todo'],['imp','⭐ Importante'],['trabajo','💼'],['casa','🏠'],['gente','💞'],['cuerpo','🫀']]){const b=document.createElement('button');b.className='mini'+(k===f?' on':'');b.textContent=lab;b.style.cssText=k===f?'background:#3b3247;color:#fff':'';b.onclick=()=>{S.histF=k;openMenu('historia');};bar.appendChild(b);}
+      const first=card.querySelector('.chaps')||card.querySelector('.dday');if(first)first.before(bar);else card.prepend(bar);
+      if(f!=='todo'){const re=HIST_F[f];let shown=0;card.querySelectorAll('.entry').forEach(e=>{const ic=(e.querySelector('.ic')||{}).textContent||'';if(!re.test(ic))e.style.display='none';else shown++;});card.querySelectorAll('.dday').forEach(d=>{let n=d.nextElementSibling,any=false;while(n&&!n.classList.contains('dday')){if(n.classList.contains('entry')&&n.style.display!=='none')any=true;n=n.nextElementSibling;}if(!any)d.style.display='none';});if(!shown){const s=document.createElement('div');s.className='sub';s.textContent='Nada de esto todavía.';bar.after(s);}}}}catch(e){console.error(e);}return r;};}
+// ---- Vida y Perfil: tres números y secciones plegables ----
+function dashBlock(){const H=typeof HP==='function'?HP():null;const M=typeof MT==='function'?MT():null;const salM=S.jobless?0:Math.round(salary()*TR().days.length*4.3);const rentM=S.owned?(S.mort?Math.round(S.mort.pay*4.3):0):(S.home&&['padres','calle'].includes(S.home.type)?0:Math.round((weeklyRent()-partnerShare(weeklyRent()))*4.3));const utilM=Math.round((typeof utilEstimate==='function'?utilEstimate():hrs(6))*4.3);const net=salM-rentM-utilM;
+  const an=M?Math.round(M.an):null;const anL=an==null?'—':an>=65?'bien':an>=45?'bajo':an>=25?'hundid'+oa():'depresión';const dx=H?H.list.filter(x=>x.dx).length:0;const und=H?H.list.filter(x=>!x.dx).length:0;const sal=dx?dx+' diagn.':und?'algo raro':'bien';
+  const col=v=>v>=65?'#2e8b57':v>=45?'#e9a23b':'#c0392b';
+  return `<div class="dash"><div><b style="color:${net>=0?'#2e8b57':'#c0392b'}">${net>=0?'+':''}${fmt(net)}</b><small>al mes, tras casa y luz</small></div><div><b style="color:${an==null?'#888':col(an)}">${an==null?'—':an}</b><small>ánimo · ${anL}</small></div><div><b style="color:${dx?'#c0392b':und?'#e9a23b':'#2e8b57'}">${H?Math.round(S.fit||0):'—'}</b><small>forma · ${sal}</small></div></div>`;}
+{const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{return dashBlock()+h;}catch(e){return h;}};}
+function foldSections(){try{if(!['vida','perfil'].includes(menuTab))return;const st=S.fold=S.fold||{};const hs=[...card.querySelectorAll('h3')];hs.forEach((h3,i)=>{if(h3.dataset.fold)return;h3.dataset.fold=1;const key=menuTab+':'+h3.textContent.replace(/[^\p{L}]/gu,'').slice(0,14);const open=st[key]!=null?st[key]:(menuTab==='vida'?(i<3||/Salir/.test(h3.textContent)):true);
+      const sib=[];let n=h3.nextElementSibling;while(n&&n.tagName!=='H3'&&n.tagName!=='H2'){sib.push(n);n=n.nextElementSibling;}
+      const apply=o=>{sib.forEach(s=>s.style.display=o?'':'none');h3.style.cursor='pointer';h3.dataset.open=o?1:0;if(!h3.querySelector('.fold'))h3.insertAdjacentHTML('beforeend',' <span class="fold"></span>');h3.querySelector('.fold').textContent=o?'▾':'▸';};
+      apply(open);h3.onclick=e=>{if(e.target.tagName==='BUTTON')return;st[key]=!(h3.dataset.open==='1');apply(st[key]);};});}catch(e){console.error(e);}}
+{const _om2=openMenu;openMenu=function(...a){const r=_om2.apply(this,a);try{foldSections();}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
