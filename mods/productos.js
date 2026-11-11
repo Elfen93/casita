@@ -2,8 +2,8 @@
 const BP=()=>{if(!S.bp)S.bp={ahorro:{v:0,since:null},dep:null,fondos:{v:0,in:0},cripto:{v:0,in:0},loan:null,ev:[]};const b=S.bp;b.ahorro=b.ahorro||{v:0};b.fondos=b.fondos||{v:0,in:0};b.cripto=b.cripto||{v:0,in:0};b.ev=b.ev||[];return b;};
 const eur=()=>(S.market&&S.market.euribor!=null?S.market.euribor:0.035);
 const infl=()=>{const m=S.market&&S.market.price||1;return Math.max(0,(m-1)*.5+.025);};// inflación anual aproximada
-const ahorroRate=()=>{if(typeof govBank==='function'&&govBank())return .02;const b=BP();const promo=b.ahorro.since!=null&&S.day-b.ahorro.since<90;return Math.max(0,promo?eur()-.005:eur()-.022);};
-const depRate=()=>(typeof govBank==='function'&&govBank())?.025:Math.max(.002,eur()+.002);
+const ahorroRate=()=>{if(typeof govBank==='function'&&govBank())return .02;if(typeof bkMode==='function'&&bkMode()==='est')return .015;const b=BP();const promo=b.ahorro.since!=null&&S.day-b.ahorro.since<90;return Math.max(0,promo?eur()-.005:eur()-.022);};
+const depRate=()=>(typeof govBank==='function'&&govBank())?.025:(typeof bkMode==='function'&&bkMode()==='est')?.03:Math.max(.002,eur()+.002);
 let loanRate=()=>Dm().soul?.14:Dm().price>=3.5?.11:.08;
 // migrar la cartera automática antigua
 {const _w=investWeekly;investWeekly=function(){try{const b=BP();if(S.inv&&S.inv.v>0){const k=S.pol.invest==='cripto'?'cripto':'fondos';b[k].v+=S.inv.v;b[k].in+=S.inv.in||S.inv.v;S.inv={v:0,in:0,peak:0};}
