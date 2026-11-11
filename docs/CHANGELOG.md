@@ -48,3 +48,5 @@
 - Con los consejos desaparecen los mensajes y noticias de «ha subido la luz», el casero, despidos, euríbor, bolsa… y salen quejas y noticias propias: colas en el economato, asambleas eternas, apagones por el bloqueo, delegados que se acomodan, mercado negro, comedores, biblioteca hasta medianoche, autobús gratis.
 - La madre puede tener las ideas que tú digas (Gente → Opciones → «De qué pie cojea»); por defecto tira hacia el bloque político del personaje.
 - Visitas: si una invitada se queda clavada en el borde del solar (sin camino), busca otro camino o pasa directamente adentro, cerca de ti.
+- Visitas: no hacen recados ni friegan tu cocina; se sientan en el sofá o una silla, y si no hay, en el borde de la cama.
+- Banca pública de verdad en la app: sin comisión por descubierto, «Préstamo público» al 1,5 % para vivienda, estudios o herramientas, cuenta de ahorro pública a tipo fijo, depósito sin retención, sin fondos ni cripto, oficina del barrio sin cita, y el tipo público en lugar del euríbor.
