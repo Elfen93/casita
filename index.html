@@ -16584,7 +16584,9 @@ const pesoSano=()=>{const ch=S.char||{};const H=HP();return ch.alt?Math.round(22
   const phys=['obra','super','hosteleria','cuidados','reparto'].includes(S.track)&&!S.jobless&&S.lastWorkDay===S.day;
   const bal=P.in-P.dr*.97-(burn*.35)-(phys?5:0)-(P.low>240?10:0)+(H.diet?-6:0);
   let d=Math.max(-.12,Math.min(.12,bal*.004));
-  const goal=H.goalKg||pesoSano();if(Math.abs(bal)<18&&P.in>40){d+=Math.max(-.08,Math.min(.08,(goal-p0)*.012));if(goal>p0&&burn>0)d+=.01;}
+  const goal=H.goalKg||pesoSano();const nut=typeof CM==='function'?CM().nut:60;
+  if(goal>p0+.3&&nut>=55&&P.in>40){d=Math.max(d,0)+Math.min(.13,(goal-p0)*.02)+(burn>0?.02:0);}
+  else if(Math.abs(bal)<18&&P.in>40){d+=Math.max(-.08,Math.min(.08,(goal-p0)*.012));}
   if(typeof homeless==='function'&&homeless())d-=.06;
   H.peso=Math.max(H.base-16,Math.min(H.base+45,p0+d));if(H.hist&&H.hist.length)H.hist[H.hist.length-1]=+H.peso.toFixed(1);
   // la anemia se va si vuelve a su peso y come
