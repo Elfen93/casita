@@ -38,6 +38,7 @@
   "productos.js",
   "gobierno.js",
   "fiscal.js",
-  "ciclos.js"
+  "ciclos.js",
+  "comunidad.js"
  ]
 }

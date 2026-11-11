@@ -221,3 +221,7 @@
 #fsheet .gvr:last-child{border:0}#fsheet .gvr s{color:#a59cae}#fsheet .gvr b{color:#c0262d}
 #fsheet .fst{font:900 12.5px Nunito,sans-serif;color:#3b3247;padding:4px 0 2px}
 #fsheet .gvr b{color:#3b3247}
+
+#utsheet{position:fixed;z-index:58;display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,400px);max-height:84vh;overflow:auto;background:rgba(255,253,248,.98);border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:8px;font-family:Nunito,sans-serif}
+#utsheet.on{display:block}
+#utsheet .omt{font:900 15px Nunito,sans-serif;color:#3b3247;padding:6px 8px 2px}
