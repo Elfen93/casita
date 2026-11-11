@@ -1,10 +1,11 @@
 // =================== LA HUELGA SE VE: banda roja arriba, cuenta de días, piquete a un toque ===================
 let strikeEl=null;
-function strikeBar(){const st=S.strike;if(!strikeEl){strikeEl=document.createElement('div');strikeEl.id='strikebar';document.body.appendChild(strikeEl);strikeEl.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='piquete'){if(outAvail('piquete'))toast('Piquete: '+outAvail('piquete'));else doOut('piquete');}if(b.dataset.a==='vida'){openMenu('trabajo');}};}
+function strikeBar(){const st=S.strike;if(!strikeEl){strikeEl=document.createElement('div');strikeEl.id='strikebar';document.body.appendChild(strikeEl);strikeEl.onclick=e=>{const f=e.target.closest('[data-a="fold"]');if(f&&S.strike){S.strike.mini=S.strike.mini===S.day?-1:S.day;strikeBar();return;}const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='piquete'){if(outAvail('piquete'))toast('Piquete: '+outAvail('piquete'));else doOut('piquete');}if(b.dataset.a==='vida'){openMenu('trabajo');}};}
   if(!st||!st.on){strikeEl.classList.remove('on');return;}
-  const day=S.day-(st.start||S.day)+1;const join=st.join;const h=S.t/60;const can=!outAvail('piquete');
-  const txt=join?`✊ HUELGA · día ${day} de ${st.total||'?'} · ${st.by==='ana'?'la convocó '+CH().name:'con la plantilla'} · sin sueldo${S.sol&&S.sol.fav>=1?' · caja de resistencia':''}`:`🚫 Hay huelga en ${S.office?S.office.n:'el trabajo'} y ${CH().name} va a trabajar · día ${day}`;
-  strikeEl.innerHTML=`<span>${txt}</span>${join?`<button data-a="piquete" ${can?'':'disabled'}>🪧 ${can?'Al piquete':'Piquete 7–11h'}</button>`:`<button data-a="vida">💼 Ver</button>`}`;
+  const day=S.day-(st.start||S.day)+1;const join=st.join;const h=S.t/60;const can=!outAvail('piquete');const pq=join&&h>=6.5&&h<11&&dayType(S.day)==='work';
+  const mini=st.mini===S.day;strikeEl.classList.toggle('mini',mini);
+  const txt=join?`✊ Huelga ${day}/${st.total||'?'}`:`🚫 Hay huelga · día ${day}`;
+  strikeEl.innerHTML=`<span data-a="fold">${txt}${mini?'':join?` · sin sueldo`:` · ${CH().name} va a trabajar`}</span>${!mini&&pq?`<button data-a="piquete" ${can?'':'disabled'}>🪧 ${can?'Al piquete':'Piquete 7–11h'}</button>`:''}${!mini&&!join?`<button data-a="vida">💼</button>`:''}${mini?'':'<b data-a="fold" class="sbx">✕</b>'}`;
   strikeEl.classList.toggle('scab',!join);strikeEl.classList.add('on');}
 {const _up=update;let _n=0;update=function(gm){const r=_up.apply(this,arguments);try{if((++_n&15)===0)strikeBar();}catch(e){}return r;};}
 {const _fw=typeof callStrike==='function'?callStrike:null;if(_fw)callStrike=function(){const r=_fw.apply(this,arguments);try{strikeBar();if(S.strike&&S.strike.on){sfx('level');toast('✊ ¡Huelga!',true);}}catch(e){}return r;};}

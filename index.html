@@ -305,7 +305,7 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #agenda .agrow.dim{opacity:.55}
 #agenda .agt{width:44px;font:800 12px Nunito,sans-serif;color:#8a8294}
 #agenda select{flex:1;border:1px solid #e3dce8;border-radius:9px;padding:6px 8px;font:700 12.5px Nunito,sans-serif;background:#fff;color:#2b2533}
-#strikebar{position:fixed;left:50%;transform:translateX(-50%);top:calc(104px + env(safe-area-inset-top));z-index:9;display:none;align-items:center;gap:8px;max-width:calc(100vw - 24px);background:#c0262d;color:#fff;font:800 12px Nunito,sans-serif;padding:7px 10px 7px 12px;border-radius:12px;box-shadow:0 6px 18px rgba(120,20,30,.35);animation:pop .22s ease}
+#strikebar{position:fixed;left:12px;top:calc(172px + env(safe-area-inset-top));z-index:9;display:none;align-items:center;gap:8px;max-width:calc(100vw - 100px);white-space:nowrap;background:#c0262d;color:#fff;font:800 12px Nunito,sans-serif;padding:7px 10px 7px 12px;border-radius:12px;box-shadow:0 6px 18px rgba(120,20,30,.35);animation:pop .22s ease}
 #strikebar.on{display:flex}
 #strikebar.scab{background:#6b6f78}
 #strikebar button{border:0;background:#fff;color:#c0262d;font:900 12px Nunito,sans-serif;padding:6px 10px;border-radius:9px;cursor:pointer;white-space:nowrap}
@@ -406,6 +406,10 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #fsdlg{position:fixed;z-index:58;display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,400px);max-height:84vh;overflow:auto;background:rgba(255,253,248,.98);border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:8px;font-family:Nunito,sans-serif}
 #fsdlg.on{display:block}
 #fsdlg .omt{font:900 15px Nunito,sans-serif;color:#3b3247;padding:6px 8px 2px}
+
+#strikebar .sbx{opacity:.8;padding:0 2px 0 4px;cursor:pointer}
+#strikebar.mini{padding:5px 10px;font-size:11px;opacity:.92}
+#strikebar span{overflow:hidden;text-overflow:ellipsis}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -15683,11 +15687,12 @@ function polPortrait(y,z,name,kind,T){const w=.9,hgt=18;poly([P(0,y,z),P(0,y+w,z
   }catch(e){console.error(e);}return r;};}
 // =================== LA HUELGA SE VE: banda roja arriba, cuenta de días, piquete a un toque ===================
 let strikeEl=null;
-function strikeBar(){const st=S.strike;if(!strikeEl){strikeEl=document.createElement('div');strikeEl.id='strikebar';document.body.appendChild(strikeEl);strikeEl.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='piquete'){if(outAvail('piquete'))toast('Piquete: '+outAvail('piquete'));else doOut('piquete');}if(b.dataset.a==='vida'){openMenu('trabajo');}};}
+function strikeBar(){const st=S.strike;if(!strikeEl){strikeEl=document.createElement('div');strikeEl.id='strikebar';document.body.appendChild(strikeEl);strikeEl.onclick=e=>{const f=e.target.closest('[data-a="fold"]');if(f&&S.strike){S.strike.mini=S.strike.mini===S.day?-1:S.day;strikeBar();return;}const b=e.target.closest('button');if(!b)return;if(b.dataset.a==='piquete'){if(outAvail('piquete'))toast('Piquete: '+outAvail('piquete'));else doOut('piquete');}if(b.dataset.a==='vida'){openMenu('trabajo');}};}
   if(!st||!st.on){strikeEl.classList.remove('on');return;}
-  const day=S.day-(st.start||S.day)+1;const join=st.join;const h=S.t/60;const can=!outAvail('piquete');
-  const txt=join?`✊ HUELGA · día ${day} de ${st.total||'?'} · ${st.by==='ana'?'la convocó '+CH().name:'con la plantilla'} · sin sueldo${S.sol&&S.sol.fav>=1?' · caja de resistencia':''}`:`🚫 Hay huelga en ${S.office?S.office.n:'el trabajo'} y ${CH().name} va a trabajar · día ${day}`;
-  strikeEl.innerHTML=`<span>${txt}</span>${join?`<button data-a="piquete" ${can?'':'disabled'}>🪧 ${can?'Al piquete':'Piquete 7–11h'}</button>`:`<button data-a="vida">💼 Ver</button>`}`;
+  const day=S.day-(st.start||S.day)+1;const join=st.join;const h=S.t/60;const can=!outAvail('piquete');const pq=join&&h>=6.5&&h<11&&dayType(S.day)==='work';
+  const mini=st.mini===S.day;strikeEl.classList.toggle('mini',mini);
+  const txt=join?`✊ Huelga ${day}/${st.total||'?'}`:`🚫 Hay huelga · día ${day}`;
+  strikeEl.innerHTML=`<span data-a="fold">${txt}${mini?'':join?` · sin sueldo`:` · ${CH().name} va a trabajar`}</span>${!mini&&pq?`<button data-a="piquete" ${can?'':'disabled'}>🪧 ${can?'Al piquete':'Piquete 7–11h'}</button>`:''}${!mini&&!join?`<button data-a="vida">💼</button>`:''}${mini?'':'<b data-a="fold" class="sbx">✕</b>'}`;
   strikeEl.classList.toggle('scab',!join);strikeEl.classList.add('on');}
 {const _up=update;let _n=0;update=function(gm){const r=_up.apply(this,arguments);try{if((++_n&15)===0)strikeBar();}catch(e){}return r;};}
 {const _fw=typeof callStrike==='function'?callStrike:null;if(_fw)callStrike=function(){const r=_fw.apply(this,arguments);try{strikeBar();if(S.strike&&S.strike.on){sfx('level');toast('✊ ¡Huelga!',true);}}catch(e){}return r;};}

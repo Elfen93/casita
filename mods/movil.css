@@ -128,7 +128,7 @@
 #agenda .agrow.dim{opacity:.55}
 #agenda .agt{width:44px;font:800 12px Nunito,sans-serif;color:#8a8294}
 #agenda select{flex:1;border:1px solid #e3dce8;border-radius:9px;padding:6px 8px;font:700 12.5px Nunito,sans-serif;background:#fff;color:#2b2533}
-#strikebar{position:fixed;left:50%;transform:translateX(-50%);top:calc(104px + env(safe-area-inset-top));z-index:9;display:none;align-items:center;gap:8px;max-width:calc(100vw - 24px);background:#c0262d;color:#fff;font:800 12px Nunito,sans-serif;padding:7px 10px 7px 12px;border-radius:12px;box-shadow:0 6px 18px rgba(120,20,30,.35);animation:pop .22s ease}
+#strikebar{position:fixed;left:12px;top:calc(172px + env(safe-area-inset-top));z-index:9;display:none;align-items:center;gap:8px;max-width:calc(100vw - 100px);white-space:nowrap;background:#c0262d;color:#fff;font:800 12px Nunito,sans-serif;padding:7px 10px 7px 12px;border-radius:12px;box-shadow:0 6px 18px rgba(120,20,30,.35);animation:pop .22s ease}
 #strikebar.on{display:flex}
 #strikebar.scab{background:#6b6f78}
 #strikebar button{border:0;background:#fff;color:#c0262d;font:900 12px Nunito,sans-serif;padding:6px 10px;border-radius:9px;cursor:pointer;white-space:nowrap}
@@ -229,3 +229,7 @@
 #fsdlg{position:fixed;z-index:58;display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,400px);max-height:84vh;overflow:auto;background:rgba(255,253,248,.98);border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:8px;font-family:Nunito,sans-serif}
 #fsdlg.on{display:block}
 #fsdlg .omt{font:900 15px Nunito,sans-serif;color:#3b3247;padding:6px 8px 2px}
+
+#strikebar .sbx{opacity:.8;padding:0 2px 0 4px;cursor:pointer}
+#strikebar.mini{padding:5px 10px;font-size:11px;opacity:.92}
+#strikebar span{overflow:hidden;text-overflow:ellipsis}
