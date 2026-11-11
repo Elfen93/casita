@@ -42,6 +42,7 @@
   "comunidad.js",
   "ritmo.js",
   "energia.js",
-  "horario_obras.js"
+  "horario_obras.js",
+  "cocinar.js"
  ]
 }

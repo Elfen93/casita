@@ -28,3 +28,4 @@
 - Energía: fuera de casa ya no gasta como en el trabajo; en el trabajo gasta menos (×1,3); si fuera se queda sin fuerzas vuelve a casa; en casa, por debajo de 14 se va a la cama en vez de caer al suelo; al volver tarde y cansado, directo a dormir.
 - Objetivos y deseos ya no dan dinero: dan ánimo y diversión. «Siguiente puesto» muestra el sueldo real que tendría.
 - Obras contratadas en horario de obra: lunes a viernes de 8 a 18 y sábados de 9 a 14; si se contrata fuera de hora vienen al día siguiente; si les pilla la hora a medias, recogen y siguen donde lo dejaron.
+- Cocinar y comer por separado: mientras cocina no se le quita el hambre; al terminar se sirve el plato y se lo come en la mesa (si hay mesa con silla) o de pie en la cocina.
