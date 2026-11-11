@@ -20,8 +20,10 @@ function openPe(k){const p=(S.people||[]).find(q=>q.k===k);if(!p)return;if(!peEl
   if(acts.includes('date'))h+=B('a:date',PE_LBL.date);h+=B('parque','🌳 Dar un paseo por el parque');if(acts.includes('out'))h+=B('a:out',PE_LBL.out);if(p.k!=='madre'||true)h+=B('visita',p.k==='madre'?'🏡 Ir a verla a su casa':'🏡 Ir a su casa');
   if(acts.includes('home'))h+=B('a:home',PE_LBL.home);if(acts.includes('stay'))h+=B('a:stay',PE_LBL.stay);
   const rest=['flirt','ask','movein','wed','hecho','break'].filter(a=>acts.includes(a));if(rest.length){h+=`</div><div class="pesub">${rom?'La relación':'Algo más'}</div><div class="pegrid">`;for(const a of rest)h+=B('a:'+a,PE_LBL[a]);}
+  if(p.k==='madre'&&typeof IDEOS!=='undefined'){h+=`</div><div class="pesub">De qué pie cojea</div><div class="pegrid" style="flex-direction:row;flex-wrap:wrap">`;for(const k of Object.keys(IDEOS))h+=`<button class="mini${p.ideo===k?' sel':''}" data-pi="${k}">${IDEOS[k].e} ${IDEOS[k].n}</button>`;}
   h+=`</div><div style="padding:8px 6px 2px"><button class="btn" data-pe="close">Cerrar</button></div>`;
   peEl.innerHTML=h;peEl.classList.add('on');
+  peEl.querySelectorAll('[data-pi]').forEach(b=>b.onclick=()=>{p.ideo=b.dataset.pi;toast(`${p.n}: ${IDEOS[p.ideo].e} ${IDEOS[p.ideo].n.toLowerCase()}`);openPe(k);if(typeof openMenu==='function')openMenu('gente');});
   peEl.querySelectorAll('[data-pe]').forEach(b=>b.onclick=()=>{const v=b.dataset.pe;peEl.classList.remove('on');if(v==='close')return;if(v==='msg'){peSend(p);openMenu('gente');return;}
     if(v==='parque'||v==='visita'){peGo(p,v);return;}
     if(v.startsWith('a:')){const btn=card.querySelector(`.pbtn [data-act="${v.slice(2)}"][data-p="${k}"]`);if(btn){btn.dataset.sure=1;btn.click();if(btn.dataset.act==='break'){}}}});}

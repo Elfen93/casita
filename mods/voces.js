@@ -1,9 +1,12 @@
 // =================== VOCES: cada persona piensa a su manera, y lo que se comenta depende del sistema en el que vivís ===================
 const IDEO_DIST=[['apolitica',30],['socialdemocrata',19],['conservadora',18],['liberal',10],['ecologista',7],['marxista',7],['anarquista',4],['libertaria',5]];
 function ideoRand(old){let t=0;const L=IDEO_DIST.map(([k,w])=>[k,w*(old&&k==='conservadora'?1.6:old&&(k==='anarquista'||k==='libertaria')?.4:1)]);for(const x of L)t+=x[1];let r=Math.random()*t;for(const [k,w] of L){r-=w;if(r<=0)return k;}return 'apolitica';}
-{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoRand(p.k==='madre');}}catch(e){}return r;};}
+// la familia se parece: la madre tira hacia el bloque de quien la crió (o al revés)
+const LEFTB=['marxista','anarquista','socialdemocrata','ecologista'];
+function ideoFor(p){if(p.k==='madre'&&S.ideo&&S.ideo!=='apolitica'&&Math.random()<.55){return LEFTB.includes(S.ideo)?pickR(['socialdemocrata','socialdemocrata','marxista','ecologista']):pickR(['conservadora','conservadora','liberal']);}return ideoRand(p.k==='madre');}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoFor(p);}}catch(e){}return r;};}
 // en Gente se ve de qué pie cojea cada cual
-{const _gt=genteTab;genteTab=function(){let h=_gt.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoRand(p.k==='madre');h=h.replace(`<b>${p.n}</b> <small></small>`,`<b>${p.n}</b> <small>${IDEOS[p.ideo].e} ${IDEOS[p.ideo].n.toLowerCase()}</small>`);}}catch(e){}return h;};}
+{const _gt=genteTab;genteTab=function(){let h=_gt.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoFor(p);h=h.replace(`<b>${p.n}</b> <small></small>`,`<b>${p.n}</b> <small>${IDEOS[p.ideo].e} ${IDEOS[p.ideo].n.toLowerCase()}</small>`);}}catch(e){}return h;};}
 // ---- lo que ya no pega con los consejos: se cambia o se calla ----
 const revNow=()=>typeof REV==='function'&&REV();
 const merNow=()=>{const w=W_();return w.gov==='mercado'&&!w.era;};

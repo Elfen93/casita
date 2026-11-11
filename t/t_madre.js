@@ -1,4 +1,4 @@
-setTimeout(()=>{try{S=newState('normal');S.char={...DEFCHAR};initPeople();startTrack('super',true);applyHome('padres');rollWeather();newToday();storyStart();S.autoHome=true;S.t=17*60;
- const tr=[];for(let k=0;k<480*1;k++){update(1);if(k%40===0){const r=(S.res||[]).find(q=>q.pid==='madre');tr.push(r?`${r.x.toFixed(1)},${r.y.toFixed(1)} p${(r.path||[]).length} n${(r.next||0).toFixed(1)}`:'none');}}
- const r=(S.res||[]).find(q=>q.pid==='madre');
- document.title='OK '+JSON.stringify({tr,ana:simCell(),walk:r?walkable(Math.floor(r.x),Math.floor(r.y)):null,room:r?roomId[idx(Math.floor(r.x),Math.floor(r.y))]:null,errs:__errs.slice(0,3)});}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,300)}},300);
+setTimeout(()=>{try{S=newState('normal');S.char={...randomChar(),g:'m'};initPeople();applyHome('viejo');startTrack('oficina',true);rollWeather();newToday();storyStart();
+ openMenu('gente');const m=S.people.find(p=>p.k==='madre');openPe('madre');const b=document.querySelector('#pesheet [data-pi="socialdemocrata"]');b.click();
+ document.title='OK madre='+m.ideo+' errs='+window.__errs.length+' '+(window.__errs[0]||'');
+}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,200)}},300);

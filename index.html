@@ -435,6 +435,8 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #callov.on{display:flex}#callov .cav{width:96px;height:96px;border-radius:50%;background:#7a6fd0;display:flex;align-items:center;justify-content:center;font:900 44px Nunito,sans-serif;animation:pop .4s ease}
 #callov b{font:900 24px Nunito,sans-serif}#callov .cst{font:700 14px Nunito,sans-serif;opacity:.8}
 #callov .cbtn{margin-top:40px;width:64px;height:64px;border-radius:50%;background:#e04848;display:flex;align-items:center;justify-content:center;font-size:28px}
+
+#pesheet .mini.sel{background:#3b3247;color:#fff}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -16484,8 +16486,10 @@ function openPe(k){const p=(S.people||[]).find(q=>q.k===k);if(!p)return;if(!peEl
   if(acts.includes('date'))h+=B('a:date',PE_LBL.date);h+=B('parque','🌳 Dar un paseo por el parque');if(acts.includes('out'))h+=B('a:out',PE_LBL.out);if(p.k!=='madre'||true)h+=B('visita',p.k==='madre'?'🏡 Ir a verla a su casa':'🏡 Ir a su casa');
   if(acts.includes('home'))h+=B('a:home',PE_LBL.home);if(acts.includes('stay'))h+=B('a:stay',PE_LBL.stay);
   const rest=['flirt','ask','movein','wed','hecho','break'].filter(a=>acts.includes(a));if(rest.length){h+=`</div><div class="pesub">${rom?'La relación':'Algo más'}</div><div class="pegrid">`;for(const a of rest)h+=B('a:'+a,PE_LBL[a]);}
+  if(p.k==='madre'&&typeof IDEOS!=='undefined'){h+=`</div><div class="pesub">De qué pie cojea</div><div class="pegrid" style="flex-direction:row;flex-wrap:wrap">`;for(const k of Object.keys(IDEOS))h+=`<button class="mini${p.ideo===k?' sel':''}" data-pi="${k}">${IDEOS[k].e} ${IDEOS[k].n}</button>`;}
   h+=`</div><div style="padding:8px 6px 2px"><button class="btn" data-pe="close">Cerrar</button></div>`;
   peEl.innerHTML=h;peEl.classList.add('on');
+  peEl.querySelectorAll('[data-pi]').forEach(b=>b.onclick=()=>{p.ideo=b.dataset.pi;toast(`${p.n}: ${IDEOS[p.ideo].e} ${IDEOS[p.ideo].n.toLowerCase()}`);openPe(k);if(typeof openMenu==='function')openMenu('gente');});
   peEl.querySelectorAll('[data-pe]').forEach(b=>b.onclick=()=>{const v=b.dataset.pe;peEl.classList.remove('on');if(v==='close')return;if(v==='msg'){peSend(p);openMenu('gente');return;}
     if(v==='parque'||v==='visita'){peGo(p,v);return;}
     if(v.startsWith('a:')){const btn=card.querySelector(`.pbtn [data-act="${v.slice(2)}"][data-p="${k}"]`);if(btn){btn.dataset.sure=1;btn.click();if(btn.dataset.act==='break'){}}}});}
@@ -16567,9 +16571,12 @@ function esperaMul(){const w=W_();const g=w.era||w.gov;return {consejos:.35,comu
 // =================== VOCES: cada persona piensa a su manera, y lo que se comenta depende del sistema en el que vivís ===================
 const IDEO_DIST=[['apolitica',30],['socialdemocrata',19],['conservadora',18],['liberal',10],['ecologista',7],['marxista',7],['anarquista',4],['libertaria',5]];
 function ideoRand(old){let t=0;const L=IDEO_DIST.map(([k,w])=>[k,w*(old&&k==='conservadora'?1.6:old&&(k==='anarquista'||k==='libertaria')?.4:1)]);for(const x of L)t+=x[1];let r=Math.random()*t;for(const [k,w] of L){r-=w;if(r<=0)return k;}return 'apolitica';}
-{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoRand(p.k==='madre');}}catch(e){}return r;};}
+// la familia se parece: la madre tira hacia el bloque de quien la crió (o al revés)
+const LEFTB=['marxista','anarquista','socialdemocrata','ecologista'];
+function ideoFor(p){if(p.k==='madre'&&S.ideo&&S.ideo!=='apolitica'&&Math.random()<.55){return LEFTB.includes(S.ideo)?pickR(['socialdemocrata','socialdemocrata','marxista','ecologista']):pickR(['conservadora','conservadora','liberal']);}return ideoRand(p.k==='madre');}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoFor(p);}}catch(e){}return r;};}
 // en Gente se ve de qué pie cojea cada cual
-{const _gt=genteTab;genteTab=function(){let h=_gt.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoRand(p.k==='madre');h=h.replace(`<b>${p.n}</b> <small></small>`,`<b>${p.n}</b> <small>${IDEOS[p.ideo].e} ${IDEOS[p.ideo].n.toLowerCase()}</small>`);}}catch(e){}return h;};}
+{const _gt=genteTab;genteTab=function(){let h=_gt.apply(this,arguments);try{for(const p of S.people||[]){if(!p.ideo||!IDEOS[p.ideo])p.ideo=ideoFor(p);h=h.replace(`<b>${p.n}</b> <small></small>`,`<b>${p.n}</b> <small>${IDEOS[p.ideo].e} ${IDEOS[p.ideo].n.toLowerCase()}</small>`);}}catch(e){}return h;};}
 // ---- lo que ya no pega con los consejos: se cambia o se calla ----
 const revNow=()=>typeof REV==='function'&&REV();
 const merNow=()=>{const w=W_();return w.gov==='mercado'&&!w.era;};
