@@ -37,6 +37,7 @@
   "banco.js",
   "productos.js",
   "gobierno.js",
-  "fiscal.js"
+  "fiscal.js",
+  "ciclos.js"
  ]
 }
