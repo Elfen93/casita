@@ -6,18 +6,18 @@ const GOVS={progresista:{n:'Gobierno progresista',e:'🌹',fx:'Sube el salario m
   centro:{n:'Gobierno de coalición',e:'⚖️',fx:'Ni fu ni fa'},
   consejos:{n:'Consejos de trabajadoras',e:'🚩',fx:'Autogestión: alquiler social, empresas en manos de quien trabaja · escasez y bloqueo exterior'},
   comunas:{n:'Federación de comunas',e:'🏴',fx:'Asambleas por todas partes, alquileres abolidos, apoyo mutuo · escasez y caos'}};
-const W_=()=>{if(!S.world)S.world={crisis:Dm().soul?45:{facil:10,normal:18,dificil:28,realista:35}[S.diff]||20,mov:10,gov:'centro',elec:120,manif:null,gs:null,era:null};return S.world;};
+const W_=()=>{if(!S.world)S.world={crisis:Dm().soul?45:{facil:10,normal:18,dificil:28,realista:35}[S.diff]||20,mov:10,gov:'centro',elec:300+Math.floor(Math.random()*900),manif:null,gs:null,era:null};return S.world;};
 const dark=()=>W_().crisis>=65;
 function govPay(){const g=W_().gov;return g==='progresista'&&S.career<=1?1.06:g==='conservador'?1.03:g==='consejos'?1.15:1;}
 function worldWeekly(){
   const w=W_(),soul=Dm().soul;
   // crisis
   const base={facil:10,normal:18,dificil:28,realista:35,soul:50}[S.diff]||20;
-  let d=(Math.random()-.5)*(soul?9:4)+(base-w.crisis)*0.05+(w.gov==='austeridad'?2:w.gov==='liberal'?0.5:w.gov==='progresista'?-0.5:0);
+  let d=((Math.random()-.5)*(soul?9:4)+(base-w.crisis)*0.05+(w.gov==='austeridad'?2:w.gov==='liberal'?0.5:w.gov==='progresista'?-0.5:0))*.3;
   if(S.market)d+=(S.market.price-1)*3;if(w.era==='consejos'||w.era==='comunas')d-=1.5;
   w.crisis=Math.max(0,Math.min(100,w.crisis+d));
   // movimiento social
-  w.mov=Math.max(0,Math.min(100,w.mov+(w.crisis-35)/14-0.8+(Math.random()-.5)*2+(w.gov==='austeridad'?1:0)+(w.era==='represion'?-3:0)));
+  w.mov=Math.max(0,Math.min(100,w.mov+((w.crisis-35)/14-0.8+(Math.random()-.5)*2+(w.gov==='austeridad'?1:0)+(w.era==='represion'?-3:0))*.3));
   if(w.era==='represion'&&S.day>w.eraUntil){w.era=null;tell('Se levanta el estado de excepción. Las calles vuelven a ser de quien las pisa.','🕊️');}
   // manifestaciones convocadas
   if(!w.manif&&w.mov>20&&Math.random()<w.mov/(w.era?400:140)){const sat=S.day+((5-dateOf(S.day).wd+7)%7||7);
@@ -42,7 +42,7 @@ function worldWeekly(){
   revolutionCheck();
 }
 function electionCheck(){
-  const w=W_();if(S.day<w.elec||w.era==='consejos'||w.era==='comunas')return;w.elec=S.day+180;
+  const w=W_();if(S.day<w.elec||w.era==='consejos'||w.era==='comunas')return;w.elec=S.day+1460;
   const wts={progresista:25+w.mov*0.3+(w.crisis>60?5:0),conservador:25+(w.crisis>55?10:0),liberal:20+(w.crisis<35?10:0),austeridad:8+(w.crisis>60?18:0),centro:15};
   let tot=0;for(const k in wts)tot+=wts[k];let r=Math.random()*tot,res='centro';for(const k in wts){r-=wts[k];if(r<=0){res=k;break;}}
   const old=w.gov;w.gov=res;const G=GOVS[res],I=ID();
@@ -86,7 +86,7 @@ function revolutionDaily(){
     if(S.track==='negocio'){setTrack('coop');S.career=0;tell('Su tienda ha pasado a ser una cooperativa. Las cuentas ahora se aprueban en asamblea.','🤝');}
     S.pol.coopOK=true;S.noOvertime=S.day+9999;if(S.office)S.office.griev=5;
     chapter('rev2',era==='comunas'?'La comuna':'Todo el poder a los consejos',isI('marxista','anarquista')?`Ha pasado. El gobierno ha caído y las asambleas deciden. ${CH().name} no ha dormido en tres días y no ha sido tan feliz en toda su vida. Lo difícil empieza ahora: hay escasez, bloqueo exterior y mil asambleas por delante.`:isI('libertaria','liberal','conservadora')?`El gobierno ha caído y mandan las asambleas. ${CH().name} tiene miedo: ¿qué pasa ahora con lo que ha ahorrado? Por de pronto, el alquiler ha bajado y en las tiendas faltan cosas.`:`El gobierno ha caído y mandan las asambleas. El alquiler baja, en el trabajo ya no hay jefe… y en las tiendas faltan cosas.`);}
-  else{w.era='represion';w.eraUntil=S.day+60;w.mov=Math.max(5,w.mov-50);w.gov='austeridad';
+  else{w.era='represion';w.eraUntil=S.day+365;w.mov=Math.max(5,w.mov-50);w.gov='austeridad';
     chapter('rev3','La noche más larga',`El gobierno ha decretado el estado de excepción. Hay detenciones, multas y despidos de huelguistas. ${r.leader?`${CH().name} estaba en todas las listas.`:''}`);
     if(r.leader||(isI('marxista','anarquista')&&Math.random()<.4))arrestAna(3+(Math.random()*5|0),'en la huelga general');
     if(isI('marxista','anarquista')&&!TR().self&&Math.random()<.5&&!S.jobless){S.jobless=true;S.paroWeeks=0;tell('Despedida por participar en la huelga. Sin paro.'.replace('Despedida',ga('Despedida','Despedido','Despedide')),'📦');}}

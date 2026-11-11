@@ -39,6 +39,7 @@
   "gobierno.js",
   "fiscal.js",
   "ciclos.js",
-  "comunidad.js"
+  "comunidad.js",
+  "ritmo.js"
  ]
 }

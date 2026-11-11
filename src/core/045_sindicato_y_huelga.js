@@ -1,7 +1,7 @@
 // ---------- sindicato y huelga ----------
 function joinUnion(){if(TR().self){toast('Con negocio propio no hay sindicato que valga');return;}S.union={member:true,since:S.day};chapter('union','El carné',`${CH().name} se ha afiliado al sindicato. Paga su cuota cada mes; a cambio, ya no está sola si vienen mal dadas.`);}
 function leaveUnion(){if(S.union)S.union.member=false;tell(`${CH().name} se ha dado de baja del sindicato.`,'✂️');}
-const unionFee=()=>Math.round(5*PM());
+const unionFee=()=>Math.round(12*PM());
 function grieve(n){if(!S.jobless&&S.office)S.office.griev=Math.min(100,(S.office.griev||0)+n);}
 function strikeReady(){const o=office();return !S.jobless&&!TR().self&&!TR().coop&&S.union&&S.union.member&&o.org>=50&&(o.griev||0)>=35&&!(S.strike&&S.strike.on);}
 function callStrike(byOthers){

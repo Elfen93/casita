@@ -1,11 +1,11 @@
 // ---------- dificultad ----------
 const DIFF={
-  facil:{n:'Fácil',e:'🌱',pay:1,price:1,rent:1,food:0,money:2000,goal:1,xp:1,shifts:1,skillAdd:0,desc:'Sueldos generosos y todo barato: la casa crece en pocos días.'},
-  normal:{n:'Normal',e:'🙂',pay:0.9,price:2,rent:0.8,food:2,money:1000,goal:0.6,xp:0.7,shifts:4,skillAdd:0,desc:'Hay que ahorrar unas semanas para cada mejora; ascender lleva varias semanas.'},
-  dificil:{n:'Difícil',e:'😓',pay:0.8,price:3.5,rent:0.65,food:3,money:500,goal:0.4,xp:0.45,shifts:8,skillAdd:1,desc:'Meses de ahorro para una reforma; cada ascenso pide más habilidad.'},
-  realista:{n:'Realista',e:'🏚️',pay:0.7,price:7,rent:0.45,food:4,money:200,goal:0.25,xp:0.3,shifts:20,skillAdd:1,desc:'Como la vida misma: años de ahorro para ampliar la casa y meses para cada ascenso. Si no mejora sus habilidades, se estanca.'}};
-DIFF.soul={n:'Soul Crusher',e:'💀',pay:0.7,price:7,rent:0.42,food:4,money:100,goal:0.15,xp:0.25,shifts:25,skillAdd:2,soul:true,desc:'Hiperrealista y cruel: precios e intereses que suben sin avisar, despidos, recortes, horas extra sin pagar, ascensos que se llevan otros y averías. Esforzarse no garantiza nada… aunque a veces sale bien: ofertas de otras empresas, negociar con carisma, trabajitos y algo de suerte.'};
-const HOUSE={facil:{util:.8,house:1,down:.1,rate:.02,years:15,closing:.03},normal:{util:1.1,house:2.5,down:.15,rate:.03,years:20,closing:.06},dificil:{util:1.4,house:5,down:.2,rate:.04,years:25,closing:.08},realista:{util:1.7,house:9,down:.2,rate:.045,years:30,closing:.1},soul:{util:1.6,house:10,down:.25,rate:.05,years:30,closing:.12}};
+  facil:{n:'Fácil',e:'🌱',pay:1.35,price:0.85,rent:0.65,food:0,money:2000,goal:1,xp:1,shifts:1,skillAdd:0,desc:'Sueldos generosos y todo barato: la casa crece en pocos días.'},
+  normal:{n:'Normal',e:'🙂',pay:1.15,price:1,rent:0.85,food:2,money:1000,goal:0.6,xp:0.7,shifts:4,skillAdd:0,desc:'Hay que ahorrar unas semanas para cada mejora; ascender lleva varias semanas.'},
+  dificil:{n:'Difícil',e:'😓',pay:1.05,price:1,rent:0.95,food:3,money:500,goal:0.4,xp:0.45,shifts:8,skillAdd:1,desc:'Meses de ahorro para una reforma; cada ascenso pide más habilidad.'},
+  realista:{n:'Realista',e:'🏚️',pay:1,price:1,rent:1,food:4,money:200,goal:0.25,xp:0.3,shifts:20,skillAdd:1,desc:'Como la vida misma: años de ahorro para ampliar la casa y meses para cada ascenso. Si no mejora sus habilidades, se estanca.'}};
+DIFF.soul={n:'Soul Crusher',e:'💀',pay:1,price:1,rent:1.05,food:4,money:100,goal:0.15,xp:0.25,shifts:25,skillAdd:2,soul:true,desc:'Hiperrealista y cruel: precios e intereses que suben sin avisar, despidos, recortes, horas extra sin pagar, ascensos que se llevan otros y averías. Esforzarse no garantiza nada… aunque a veces sale bien: ofertas de otras empresas, negociar con carisma, trabajitos y algo de suerte.'};
+const HOUSE={facil:{util:.8,house:6,down:.1,rate:.02,years:15,closing:.03},normal:{util:1.1,house:8,down:.15,rate:.03,years:20,closing:.06},dificil:{util:1.4,house:9,down:.2,rate:.04,years:25,closing:.08},realista:{util:1.7,house:10,down:.2,rate:.045,years:30,closing:.1},soul:{util:1.6,house:11,down:.25,rate:.05,years:30,closing:.12}};
 const Hm=()=>HOUSE[(S&&S.diff)||'facil'];
 const DIFF_ORDER=['facil','normal','dificil','realista','soul'];
 const Dm=()=>DIFF[(S&&S.diff)||'facil'];

@@ -4621,12 +4621,12 @@ let CAREER = [
 
 // ---------- dificultad ----------
 const DIFF={
-  facil:{n:'Fácil',e:'🌱',pay:1,price:1,rent:1,food:0,money:2000,goal:1,xp:1,shifts:1,skillAdd:0,desc:'Sueldos generosos y todo barato: la casa crece en pocos días.'},
-  normal:{n:'Normal',e:'🙂',pay:0.9,price:2,rent:0.8,food:2,money:1000,goal:0.6,xp:0.7,shifts:4,skillAdd:0,desc:'Hay que ahorrar unas semanas para cada mejora; ascender lleva varias semanas.'},
-  dificil:{n:'Difícil',e:'😓',pay:0.8,price:3.5,rent:0.65,food:3,money:500,goal:0.4,xp:0.45,shifts:8,skillAdd:1,desc:'Meses de ahorro para una reforma; cada ascenso pide más habilidad.'},
-  realista:{n:'Realista',e:'🏚️',pay:0.7,price:7,rent:0.45,food:4,money:200,goal:0.25,xp:0.3,shifts:20,skillAdd:1,desc:'Como la vida misma: años de ahorro para ampliar la casa y meses para cada ascenso. Si no mejora sus habilidades, se estanca.'}};
-DIFF.soul={n:'Soul Crusher',e:'💀',pay:0.7,price:7,rent:0.42,food:4,money:100,goal:0.15,xp:0.25,shifts:25,skillAdd:2,soul:true,desc:'Hiperrealista y cruel: precios e intereses que suben sin avisar, despidos, recortes, horas extra sin pagar, ascensos que se llevan otros y averías. Esforzarse no garantiza nada… aunque a veces sale bien: ofertas de otras empresas, negociar con carisma, trabajitos y algo de suerte.'};
-const HOUSE={facil:{util:.8,house:1,down:.1,rate:.02,years:15,closing:.03},normal:{util:1.1,house:2.5,down:.15,rate:.03,years:20,closing:.06},dificil:{util:1.4,house:5,down:.2,rate:.04,years:25,closing:.08},realista:{util:1.7,house:9,down:.2,rate:.045,years:30,closing:.1},soul:{util:1.6,house:10,down:.25,rate:.05,years:30,closing:.12}};
+  facil:{n:'Fácil',e:'🌱',pay:1.35,price:0.85,rent:0.65,food:0,money:2000,goal:1,xp:1,shifts:1,skillAdd:0,desc:'Sueldos generosos y todo barato: la casa crece en pocos días.'},
+  normal:{n:'Normal',e:'🙂',pay:1.15,price:1,rent:0.85,food:2,money:1000,goal:0.6,xp:0.7,shifts:4,skillAdd:0,desc:'Hay que ahorrar unas semanas para cada mejora; ascender lleva varias semanas.'},
+  dificil:{n:'Difícil',e:'😓',pay:1.05,price:1,rent:0.95,food:3,money:500,goal:0.4,xp:0.45,shifts:8,skillAdd:1,desc:'Meses de ahorro para una reforma; cada ascenso pide más habilidad.'},
+  realista:{n:'Realista',e:'🏚️',pay:1,price:1,rent:1,food:4,money:200,goal:0.25,xp:0.3,shifts:20,skillAdd:1,desc:'Como la vida misma: años de ahorro para ampliar la casa y meses para cada ascenso. Si no mejora sus habilidades, se estanca.'}};
+DIFF.soul={n:'Soul Crusher',e:'💀',pay:1,price:1,rent:1.05,food:4,money:100,goal:0.15,xp:0.25,shifts:25,skillAdd:2,soul:true,desc:'Hiperrealista y cruel: precios e intereses que suben sin avisar, despidos, recortes, horas extra sin pagar, ascensos que se llevan otros y averías. Esforzarse no garantiza nada… aunque a veces sale bien: ofertas de otras empresas, negociar con carisma, trabajitos y algo de suerte.'};
+const HOUSE={facil:{util:.8,house:6,down:.1,rate:.02,years:15,closing:.03},normal:{util:1.1,house:8,down:.15,rate:.03,years:20,closing:.06},dificil:{util:1.4,house:9,down:.2,rate:.04,years:25,closing:.08},realista:{util:1.7,house:10,down:.2,rate:.045,years:30,closing:.1},soul:{util:1.6,house:11,down:.25,rate:.05,years:30,closing:.12}};
 const Hm=()=>HOUSE[(S&&S.diff)||'facil'];
 const DIFF_ORDER=['facil','normal','dificil','realista','soul'];
 const Dm=()=>DIFF[(S&&S.diff)||'facil'];
@@ -4785,7 +4785,7 @@ const inb=(x,y)=>x>=0&&y>=0&&x<N&&y<N;
 const isBlockWall=w=>w===1||w===3||w===4;
 const isRoomWall=w=>w===1||w===2||w===3;
 const walkable=(x,y)=>inb(x,y)&&!isBlockWall(S.wall[idx(x,y)])&&!S.obj[idx(x,y)]&&!FLOORS[S.floor[idx(x,y)]].water;
-const fmt=n=>'§ '+Math.round(n).toLocaleString('es-ES');
+const fmt=n=>Math.round(n).toLocaleString('es-ES')+' €';
 function shade(hex,f){let r,g,b;if(hex[0]==='#'){const n=parseInt(hex.slice(1),16);r=n>>16;g=(n>>8)&255;b=n&255;}else{const m=hex.match(/[\d.]+/g);if(!m)return hex;[r,g,b]=m.map(Number);if(m.length>3)return `rgba(${Math.min(255,r*f|0)},${Math.min(255,g*f|0)},${Math.min(255,b*f|0)},${m[3]})`;}r=Math.min(255,r*f|0);g=Math.min(255,g*f|0);b=Math.min(255,b*f|0);return `rgb(${r},${g},${b})`;}
 const toastSeen=new Map();
 function toast(msg,gold){
@@ -7168,19 +7168,19 @@ function drawGardenObj(o,i,tt){
 
 // =================== SOCIEDAD: profesiones, ideologías, actividades, sindicato y mundo ===================
 // ---------- profesiones ----------
-const L_OF=[{t:'Becaria',pay:120,req:{}},{t:'Ayudante',pay:170,req:{shifts:3}},{t:'Técnica',pay:230,req:{shifts:6,logica:2}},{t:'Especialista',pay:310,req:{shifts:10,logica:3,carisma:2}},{t:'Coordinadora',pay:400,req:{shifts:15,logica:5,carisma:4}},{t:'Directora',pay:520,req:{shifts:22,logica:7,carisma:6}}];
+const L_OF=[{t:'Becaria',pay:32,req:{}},{t:'Ayudante',pay:66,req:{shifts:3}},{t:'Técnica',pay:78,req:{shifts:6,logica:2}},{t:'Especialista',pay:95,req:{shifts:10,logica:3,carisma:2}},{t:'Coordinadora',pay:115,req:{shifts:15,logica:5,carisma:4}},{t:'Directora',pay:170,req:{shifts:22,logica:7,carisma:6}}];
 const TRACKS={
   oficina:{n:'Oficina',e:'🏢',sh:[9,17],days:[0,1,2,3,4],levels:L_OF,tox:[.35,.8],org:1,lay:1,cos:['Grupo Ofimax','Consultora Nébula','Logística Pardo','Soluciones Tándem','Mercantil Vega','Kappa Gestión'],d:'Horario fijo y ascensos por lógica y carisma. Ambiente variable.'},
-  super:{n:'Supermercado',e:'🛒',sh:[8,16],days:[1,2,3,4,5],levels:[{t:'Cajera',pay:118,req:{}},{t:'Cajera fija',pay:132,req:{shifts:5}},{t:'Encargada de sección',pay:150,req:{shifts:12,carisma:3}},{t:'Jefa de tienda',pay:230,req:{shifts:20,carisma:5,logica:3}},{t:'Gerente de zona',pay:330,req:{shifts:30,logica:6,carisma:6}}],tox:[.4,.85],org:1.6,lay:.8,cos:['SuperPronto','Mercado Hogar','Cestabuena','Hiper Ribera'],d:'Se entra sin experiencia. Mucha plantilla: es más fácil organizarse. Martes a sábado.'},
-  hosteleria:{n:'Hostelería',e:'🍽️',sh:[15,23],days:[2,3,4,5,6],levels:[{t:'Camarera',pay:112,req:{}},{t:'Camarera fija',pay:128,req:{shifts:6}},{t:'Cocinera',pay:165,req:{shifts:10,cocina:4}},{t:'Jefa de cocina',pay:260,req:{shifts:20,cocina:7,carisma:3}}],tox:[.5,.95],org:.7,lay:1.3,over:1.6,tips:true,cos:['Bar Manolo','Taberna El Puerto','Restaurante La Brasa','Café Central'],d:'Propinas, horas extra y fines de semana. De miércoles a domingo, de tarde.'},
-  obra:{n:'Construcción',e:'🏗️',sh:[7,15],days:[0,1,2,3,4],levels:[{t:'Peona',pay:125,req:{}},{t:'Oficial de segunda',pay:155,req:{shifts:6,alba:3}},{t:'Oficial de primera',pay:205,req:{shifts:14,alba:5,carp:3}},{t:'Encargada de obra',pay:300,req:{shifts:24,alba:7,carisma:4}}],tox:[.4,.85],org:1.2,lay:1.3,risk:.025,cos:['Construcciones Pardo','Obras y Reformas Sur','Grupo Ladrillo'],d:'Madrugar, cansancio y riesgo de accidente. Albañilería y carpintería suben de nivel.'},
-  cuidados:{n:'Cuidados y sanidad',e:'🩺',sh:[7,15],days:[0,1,2,3,4],levels:[{t:'Auxiliar de cuidados',pay:122,req:{}},{t:'Técnica en cuidados',pay:150,req:{shifts:8,carisma:3}},{t:'Enfermera',pay:260,req:{shifts:16,logica:5}},{t:'Supervisora',pay:360,req:{shifts:26,logica:7,carisma:5}}],tox:[.35,.8],org:1.3,lay:.6,burn:1.25,cos:['Residencia Los Olivos','Clínica San Rafael','Ayuda a Domicilio Sol'],d:'Trabajo que agota pero da sentido. Pocas veces echan a nadie.'},
-  tech:{n:'Tecnología',e:'💻',sh:[10,18],days:[0,1,2,3,4],levels:[{t:'Programadora junior',pay:170,req:{logica:4}},{t:'Programadora',pay:250,req:{shifts:8,logica:6}},{t:'Programadora senior',pay:350,req:{shifts:18,logica:8}},{t:'Jefa de equipo',pay:470,req:{shifts:26,logica:9,carisma:5}}],tox:[.3,.75],org:.5,lay:1.1,offers:2,needs:'compu',cos:['Datanova','Nébula Labs','Pixelfactory','Kappa Digital'],d:'Buen sueldo y muchas ofertas, pero despidos masivos cuando hay crisis. Hace falta lógica 4 y ordenador.'},
-  funcion:{n:'Función pública',e:'🏛️',sh:[8,15],days:[0,1,2,3,4],levels:[{t:'Auxiliar administrativa',pay:150,req:{}},{t:'Administrativa',pay:185,req:{shifts:20}},{t:'Técnica de la administración',pay:250,req:{shifts:40,logica:6}},{t:'Jefa de servicio',pay:330,req:{shifts:60,logica:8,carisma:5}}],tox:[.2,.55],org:1,lay:0,opos:true,cos:['Ayuntamiento','Delegación de Hacienda','Consejería de Empleo'],d:'Plaza fija: no te pueden despedir. Solo se entra aprobando oposiciones.'},
-  reparto:{n:'Reparto (rider)',e:'🛵',sh:[17,23],days:[3,4,5,6,0,1],levels:[{t:'Rider',pay:105,req:{}},{t:'Rider veterana',pay:120,req:{shifts:25}}],tox:[.5,.9],org:.6,lay:0,gig:true,auto:true,risk:.03,cos:['Rápido Go','Comidas Ya','Pedalea'],d:'Falsa autónoma: cobra por pedido, paga su cuota, sin paro ni bajas. La lluvia paga más… y es más peligrosa.'},
-  arte:{n:'Música en directo',e:'🎸',sh:[20,24],days:[3,4,5],levels:[{t:'Artista de bares',pay:70,req:{musica:4}},{t:'Artista con agenda',pay:140,req:{shifts:20,musica:6}},{t:'Artista de culto',pay:260,req:{shifts:45,musica:9,carisma:5}}],tox:[.2,.6],org:.4,lay:0,gig:true,auto:true,cos:['Sala El Sótano','La Cueva','Bar Tremendo'],d:'Ingresos imprevisibles. Hace falta música 4.'},
-  negocio:{n:'Negocio propio',e:'🏪',sh:[9,19],days:[0,1,2,3,4,5],levels:[{t:'Autónoma con tienda',pay:150,req:{}},{t:'Empresaria',pay:300,req:{shifts:40,logica:5,carisma:5}},{t:'Empresaria de éxito',pay:520,req:{shifts:90,logica:7,carisma:7}}],tox:[.5,.5],org:0,lay:0,self:true,auto:true,cos:['tu tienda'],d:'Sin jefes y sin horario de salida. Hay que invertir capital; si van mal las cuentas, cierras.'},
-  coop:{n:'Cooperativa',e:'🤝',sh:[9,16],days:[0,1,2,3,4],levels:[{t:'Socia trabajadora',pay:165,req:{}},{t:'Socia coordinadora',pay:210,req:{shifts:20,carisma:5}}],tox:[.1,.2],org:3,lay:0,coop:true,cos:['Cooperativa La Colmena','Cooperativa Arcadia'],d:'Se reparte lo que se gana y se decide en asamblea. Depende de cómo vaya la economía.'}};
+  super:{n:'Supermercado',e:'🛒',sh:[8,16],days:[1,2,3,4,5],levels:[{t:'Cajera',pay:66,req:{}},{t:'Cajera fija',pay:70,req:{shifts:5}},{t:'Encargada de sección',pay:80,req:{shifts:12,carisma:3}},{t:'Jefa de tienda',pay:98,req:{shifts:20,carisma:5,logica:3}},{t:'Gerente de zona',pay:135,req:{shifts:30,logica:6,carisma:6}}],tox:[.4,.85],org:1.6,lay:.8,cos:['SuperPronto','Mercado Hogar','Cestabuena','Hiper Ribera'],d:'Se entra sin experiencia. Mucha plantilla: es más fácil organizarse. Martes a sábado.'},
+  hosteleria:{n:'Hostelería',e:'🍽️',sh:[15,23],days:[2,3,4,5,6],levels:[{t:'Camarera',pay:65,req:{}},{t:'Camarera fija',pay:68,req:{shifts:6}},{t:'Cocinera',pay:75,req:{shifts:10,cocina:4}},{t:'Jefa de cocina',pay:98,req:{shifts:20,cocina:7,carisma:3}}],tox:[.5,.95],org:.7,lay:1.3,over:1.6,tips:true,cos:['Bar Manolo','Taberna El Puerto','Restaurante La Brasa','Café Central'],d:'Propinas, horas extra y fines de semana. De miércoles a domingo, de tarde.'},
+  obra:{n:'Construcción',e:'🏗️',sh:[7,15],days:[0,1,2,3,4],levels:[{t:'Peona',pay:70,req:{}},{t:'Oficial de segunda',pay:78,req:{shifts:6,alba:3}},{t:'Oficial de primera',pay:88,req:{shifts:14,alba:5,carp:3}},{t:'Encargada de obra',pay:112,req:{shifts:24,alba:7,carisma:4}}],tox:[.4,.85],org:1.2,lay:1.3,risk:.025,cos:['Construcciones Pardo','Obras y Reformas Sur','Grupo Ladrillo'],d:'Madrugar, cansancio y riesgo de accidente. Albañilería y carpintería suben de nivel.'},
+  cuidados:{n:'Cuidados y sanidad',e:'🩺',sh:[7,15],days:[0,1,2,3,4],levels:[{t:'Auxiliar de cuidados',pay:66,req:{}},{t:'Técnica en cuidados',pay:72,req:{shifts:8,carisma:3}},{t:'Enfermera',pay:98,req:{shifts:16,logica:5}},{t:'Supervisora',pay:118,req:{shifts:26,logica:7,carisma:5}}],tox:[.35,.8],org:1.3,lay:.6,burn:1.25,cos:['Residencia Los Olivos','Clínica San Rafael','Ayuda a Domicilio Sol'],d:'Trabajo que agota pero da sentido. Pocas veces echan a nadie.'},
+  tech:{n:'Tecnología',e:'💻',sh:[10,18],days:[0,1,2,3,4],levels:[{t:'Programadora junior',pay:80,req:{logica:4}},{t:'Programadora',pay:105,req:{shifts:8,logica:6}},{t:'Programadora senior',pay:128,req:{shifts:18,logica:8}},{t:'Jefa de equipo',pay:160,req:{shifts:26,logica:9,carisma:5}}],tox:[.3,.75],org:.5,lay:1.1,offers:2,needs:'compu',cos:['Datanova','Nébula Labs','Pixelfactory','Kappa Digital'],d:'Buen sueldo y muchas ofertas, pero despidos masivos cuando hay crisis. Hace falta lógica 4 y ordenador.'},
+  funcion:{n:'Función pública',e:'🏛️',sh:[8,15],days:[0,1,2,3,4],levels:[{t:'Auxiliar administrativa',pay:72,req:{}},{t:'Administrativa',pay:82,req:{shifts:20}},{t:'Técnica de la administración',pay:104,req:{shifts:40,logica:6}},{t:'Jefa de servicio',pay:130,req:{shifts:60,logica:8,carisma:5}}],tox:[.2,.55],org:1,lay:0,opos:true,cos:['Ayuntamiento','Delegación de Hacienda','Consejería de Empleo'],d:'Plaza fija: no te pueden despedir. Solo se entra aprobando oposiciones.'},
+  reparto:{n:'Reparto (rider)',e:'🛵',sh:[17,23],days:[3,4,5,6,0,1],levels:[{t:'Rider',pay:60,req:{}},{t:'Rider veterana',pay:68,req:{shifts:25}}],tox:[.5,.9],org:.6,lay:0,gig:true,auto:true,risk:.03,cos:['Rápido Go','Comidas Ya','Pedalea'],d:'Falsa autónoma: cobra por pedido, paga su cuota, sin paro ni bajas. La lluvia paga más… y es más peligrosa.'},
+  arte:{n:'Música en directo',e:'🎸',sh:[20,24],days:[3,4,5],levels:[{t:'Artista de bares',pay:40,req:{musica:4}},{t:'Artista con agenda',pay:80,req:{shifts:20,musica:6}},{t:'Artista de culto',pay:160,req:{shifts:45,musica:9,carisma:5}}],tox:[.2,.6],org:.4,lay:0,gig:true,auto:true,cos:['Sala El Sótano','La Cueva','Bar Tremendo'],d:'Ingresos imprevisibles. Hace falta música 4.'},
+  negocio:{n:'Negocio propio',e:'🏪',sh:[9,19],days:[0,1,2,3,4,5],levels:[{t:'Autónoma con tienda',pay:75,req:{}},{t:'Empresaria',pay:140,req:{shifts:40,logica:5,carisma:5}},{t:'Empresaria de éxito',pay:260,req:{shifts:90,logica:7,carisma:7}}],tox:[.5,.5],org:0,lay:0,self:true,auto:true,cos:['tu tienda'],d:'Sin jefes y sin horario de salida. Hay que invertir capital; si van mal las cuentas, cierras.'},
+  coop:{n:'Cooperativa',e:'🤝',sh:[9,16],days:[0,1,2,3,4],levels:[{t:'Socia trabajadora',pay:72,req:{}},{t:'Socia coordinadora',pay:85,req:{shifts:20,carisma:5}}],tox:[.1,.2],org:3,lay:0,coop:true,cos:['Cooperativa La Colmena','Cooperativa Arcadia'],d:'Se reparte lo que se gana y se decide en asamblea. Depende de cómo vaya la economía.'}};
 const TRK_ORDER=['oficina','super','hosteleria','obra','cuidados','tech','funcion','reparto','arte','negocio','coop'];
 const TR=()=>TRACKS[(S&&S.track)||'oficina'];
 function daysLabel(){const d=[...TR().days].sort((a,b)=>a-b);const run=d.length>=3&&d.every((v,i)=>i===0||v===d[i-1]+1);return run?`${WDS[d[0]]}–${WDS[d[d.length-1]]}`:d.length>=5?'6 días':d.map(x=>WDS[x]).join(' ');}
@@ -7365,7 +7365,7 @@ const manifFits=m=>!m||!m.side||m.side.includes(S.ideo);
 // ---------- sindicato y huelga ----------
 function joinUnion(){if(TR().self){toast('Con negocio propio no hay sindicato que valga');return;}S.union={member:true,since:S.day};chapter('union','El carné',`${CH().name} se ha afiliado al sindicato. Paga su cuota cada mes; a cambio, ya no está sola si vienen mal dadas.`);}
 function leaveUnion(){if(S.union)S.union.member=false;tell(`${CH().name} se ha dado de baja del sindicato.`,'✂️');}
-const unionFee=()=>Math.round(5*PM());
+const unionFee=()=>Math.round(12*PM());
 function grieve(n){if(!S.jobless&&S.office)S.office.griev=Math.min(100,(S.office.griev||0)+n);}
 function strikeReady(){const o=office();return !S.jobless&&!TR().self&&!TR().coop&&S.union&&S.union.member&&o.org>=50&&(o.griev||0)>=35&&!(S.strike&&S.strike.on);}
 function callStrike(byOthers){
@@ -7416,18 +7416,18 @@ const GOVS={progresista:{n:'Gobierno progresista',e:'🌹',fx:'Sube el salario m
   centro:{n:'Gobierno de coalición',e:'⚖️',fx:'Ni fu ni fa'},
   consejos:{n:'Consejos de trabajadoras',e:'🚩',fx:'Autogestión: alquiler social, empresas en manos de quien trabaja · escasez y bloqueo exterior'},
   comunas:{n:'Federación de comunas',e:'🏴',fx:'Asambleas por todas partes, alquileres abolidos, apoyo mutuo · escasez y caos'}};
-const W_=()=>{if(!S.world)S.world={crisis:Dm().soul?45:{facil:10,normal:18,dificil:28,realista:35}[S.diff]||20,mov:10,gov:'centro',elec:120,manif:null,gs:null,era:null};return S.world;};
+const W_=()=>{if(!S.world)S.world={crisis:Dm().soul?45:{facil:10,normal:18,dificil:28,realista:35}[S.diff]||20,mov:10,gov:'centro',elec:300+Math.floor(Math.random()*900),manif:null,gs:null,era:null};return S.world;};
 const dark=()=>W_().crisis>=65;
 function govPay(){const g=W_().gov;return g==='progresista'&&S.career<=1?1.06:g==='conservador'?1.03:g==='consejos'?1.15:1;}
 function worldWeekly(){
   const w=W_(),soul=Dm().soul;
   // crisis
   const base={facil:10,normal:18,dificil:28,realista:35,soul:50}[S.diff]||20;
-  let d=(Math.random()-.5)*(soul?9:4)+(base-w.crisis)*0.05+(w.gov==='austeridad'?2:w.gov==='liberal'?0.5:w.gov==='progresista'?-0.5:0);
+  let d=((Math.random()-.5)*(soul?9:4)+(base-w.crisis)*0.05+(w.gov==='austeridad'?2:w.gov==='liberal'?0.5:w.gov==='progresista'?-0.5:0))*.3;
   if(S.market)d+=(S.market.price-1)*3;if(w.era==='consejos'||w.era==='comunas')d-=1.5;
   w.crisis=Math.max(0,Math.min(100,w.crisis+d));
   // movimiento social
-  w.mov=Math.max(0,Math.min(100,w.mov+(w.crisis-35)/14-0.8+(Math.random()-.5)*2+(w.gov==='austeridad'?1:0)+(w.era==='represion'?-3:0)));
+  w.mov=Math.max(0,Math.min(100,w.mov+((w.crisis-35)/14-0.8+(Math.random()-.5)*2+(w.gov==='austeridad'?1:0)+(w.era==='represion'?-3:0))*.3));
   if(w.era==='represion'&&S.day>w.eraUntil){w.era=null;tell('Se levanta el estado de excepción. Las calles vuelven a ser de quien las pisa.','🕊️');}
   // manifestaciones convocadas
   if(!w.manif&&w.mov>20&&Math.random()<w.mov/(w.era?400:140)){const sat=S.day+((5-dateOf(S.day).wd+7)%7||7);
@@ -7452,7 +7452,7 @@ function worldWeekly(){
   revolutionCheck();
 }
 function electionCheck(){
-  const w=W_();if(S.day<w.elec||w.era==='consejos'||w.era==='comunas')return;w.elec=S.day+180;
+  const w=W_();if(S.day<w.elec||w.era==='consejos'||w.era==='comunas')return;w.elec=S.day+1460;
   const wts={progresista:25+w.mov*0.3+(w.crisis>60?5:0),conservador:25+(w.crisis>55?10:0),liberal:20+(w.crisis<35?10:0),austeridad:8+(w.crisis>60?18:0),centro:15};
   let tot=0;for(const k in wts)tot+=wts[k];let r=Math.random()*tot,res='centro';for(const k in wts){r-=wts[k];if(r<=0){res=k;break;}}
   const old=w.gov;w.gov=res;const G=GOVS[res],I=ID();
@@ -7496,7 +7496,7 @@ function revolutionDaily(){
     if(S.track==='negocio'){setTrack('coop');S.career=0;tell('Su tienda ha pasado a ser una cooperativa. Las cuentas ahora se aprueban en asamblea.','🤝');}
     S.pol.coopOK=true;S.noOvertime=S.day+9999;if(S.office)S.office.griev=5;
     chapter('rev2',era==='comunas'?'La comuna':'Todo el poder a los consejos',isI('marxista','anarquista')?`Ha pasado. El gobierno ha caído y las asambleas deciden. ${CH().name} no ha dormido en tres días y no ha sido tan feliz en toda su vida. Lo difícil empieza ahora: hay escasez, bloqueo exterior y mil asambleas por delante.`:isI('libertaria','liberal','conservadora')?`El gobierno ha caído y mandan las asambleas. ${CH().name} tiene miedo: ¿qué pasa ahora con lo que ha ahorrado? Por de pronto, el alquiler ha bajado y en las tiendas faltan cosas.`:`El gobierno ha caído y mandan las asambleas. El alquiler baja, en el trabajo ya no hay jefe… y en las tiendas faltan cosas.`);}
-  else{w.era='represion';w.eraUntil=S.day+60;w.mov=Math.max(5,w.mov-50);w.gov='austeridad';
+  else{w.era='represion';w.eraUntil=S.day+365;w.mov=Math.max(5,w.mov-50);w.gov='austeridad';
     chapter('rev3','La noche más larga',`El gobierno ha decretado el estado de excepción. Hay detenciones, multas y despidos de huelguistas. ${r.leader?`${CH().name} estaba en todas las listas.`:''}`);
     if(r.leader||(isI('marxista','anarquista')&&Math.random()<.4))arrestAna(3+(Math.random()*5|0),'en la huelga general');
     if(isI('marxista','anarquista')&&!TR().self&&Math.random()<.5&&!S.jobless){S.jobless=true;S.paroWeeks=0;tell('Despedida por participar en la huelga. Sin paro.'.replace('Despedida',ga('Despedida','Despedido','Despedide')),'📦');}}
@@ -12264,12 +12264,12 @@ function aspBlock(){const A=aspS();aspFill();let h=`<h3>🎯 Lo que ${CH().name}
 // =================== VIVIENDA: de la habitación compartida al chalet ===================
 const HOMES={
   padres:{n:'En casa de su madre',e:'👩‍🦳',rent:45,build:'objs',buy:false,need:0,cls:0,d:'Su cuarto de siempre. No paga alquiler, solo pone algo para la compra. Cero intimidad, mucha compañía.',start:'vuelve a vivir en casa de su madre, en el cuarto de cuando era adolescente'},
-  infra:{n:'Bajo interior',e:'🏚️',rent:105,build:'objs',buy:false,need:0,cls:1,damp:true,d:'Un cuarto sin luz con humedades. El casero no arregla nada y no hay contrato. Lo más barato que hay.',start:'acaba de meterse en un bajo interior sin contrato, con moho en las esquinas'},
-  habitacion:{n:'Habitación en piso compartido',e:'🚪',rent:150,build:'objs',buy:false,need:0,cls:1,mates:2,d:'Una habitación para ella y el resto a compartir con dos desconocidos: cocina, baño y turnos de limpieza.',start:'acaba de alquilar una habitación en un piso compartido con dos desconocidos'},
-  viejo:{n:'Piso viejo de alquiler',e:'🏢',rent:270,build:'objs',buy:true,price:9000,need:2.4,cls:2,d:'Un piso pequeño de los setenta: muebles cansados, ventanas que no cierran bien. Es suyo por dentro.',start:'acaba de alquilar un piso viejo de los setenta, pequeño y con muebles cansados'},
-  casita:{n:'Casita con terreno',e:'🏡',rent:350,build:'all',buy:true,price:12000,need:2.6,cls:2,d:'Una casita pequeña con mucho terreno alrededor para ampliar, construir y plantar.',start:'acaba de mudarse a una casita de alquiler con lo justo: una cama, una nevera, una ducha y un váter'},
-  bueno:{n:'Piso cómodo céntrico',e:'🏙️',rent:640,build:'objs',buy:true,price:26000,need:2.8,cls:3,d:'Tres habitaciones, buenos muebles, calefacción que funciona y portero. Caro, cómodo y lejos de los problemas.',start:'acaba de mudarse a un piso cómodo en el centro, con calefacción y portero'},
-  chalet:{n:'Chalet con piscina',e:'🏊',rent:1350,build:'all',buy:true,price:60000,need:3,cls:4,d:'Casa grande con jardín, piscina y barbacoa. Para quien puede permitírselo.',start:'acaba de instalarse en un chalet con jardín y piscina'}};
+  infra:{n:'Bajo interior',e:'🏚️',rent:95,build:'objs',buy:false,need:0,cls:1,damp:true,d:'Un cuarto sin luz con humedades. El casero no arregla nada y no hay contrato. Lo más barato que hay.',start:'acaba de meterse en un bajo interior sin contrato, con moho en las esquinas'},
+  habitacion:{n:'Habitación en piso compartido',e:'🚪',rent:105,build:'objs',buy:false,need:0,cls:1,mates:2,d:'Una habitación para ella y el resto a compartir con dos desconocidos: cocina, baño y turnos de limpieza.',start:'acaba de alquilar una habitación en un piso compartido con dos desconocidos'},
+  viejo:{n:'Piso viejo de alquiler',e:'🏢',rent:185,build:'objs',buy:true,price:9000,need:2.4,cls:2,d:'Un piso pequeño de los setenta: muebles cansados, ventanas que no cierran bien. Es suyo por dentro.',start:'acaba de alquilar un piso viejo de los setenta, pequeño y con muebles cansados'},
+  casita:{n:'Casita con terreno',e:'🏡',rent:200,build:'all',buy:true,price:12000,need:2.6,cls:2,d:'Una casita pequeña con mucho terreno alrededor para ampliar, construir y plantar.',start:'acaba de mudarse a una casita de alquiler con lo justo: una cama, una nevera, una ducha y un váter'},
+  bueno:{n:'Piso cómodo céntrico',e:'🏙️',rent:300,build:'objs',buy:true,price:26000,need:2.8,cls:3,d:'Tres habitaciones, buenos muebles, calefacción que funciona y portero. Caro, cómodo y lejos de los problemas.',start:'acaba de mudarse a un piso cómodo en el centro, con calefacción y portero'},
+  chalet:{n:'Chalet con piscina',e:'🏊',rent:470,build:'all',buy:true,price:60000,need:3,cls:4,d:'Casa grande con jardín, piscina y barbacoa. Para quien puede permitírselo.',start:'acaba de instalarse en un chalet con jardín y piscina'}};
 const HOME_ORDER=['padres','infra','habitacion','viejo','casita','bueno','chalet'];
 const HT=()=>HOMES[(S&&S.home&&S.home.type)||'casita'];
 const homeArea=()=>(S&&S.home&&S.home.area)||[0,0,N-1,N-1];
@@ -12405,7 +12405,7 @@ function homeBlock(){const t=(S.home&&S.home.type)||'casita',H=HT();let h=`<h3>$
   const ms=((S.home&&S.home.mates)||[]).map(k=>(S.people||[]).find(p=>p.k===k)).filter(Boolean);if(ms.length)h+=`<div class="kv"><span>🛋️ Vive con</span><span>${ms.map(p=>p.n+(p.mjob?' ('+p.mjob+')':'')).join(', ')}</span></div>`;
   h+=`<details class="mud"><summary>🔑 Mudarse a otro sitio</summary>`;
   for(const k of HOME_ORDER){if(k===t)continue;const K=HOMES[k],cm=canMove(k),r=Math.round(K.rent*Dm().rent*(Dm().soul?MK().price:1));
-    h+=`<div class="hopt"><div><b>${K.e} ${K.n}</b> <small>${k==='padres'?'§ '+r+'/sem para la compra':fmt(r)+'/sem'} · entrada ${fmt(moveCost(k))}</small><div class="sub" style="font-size:11px">${K.d}</div>${cm.ok?(cm.aval?'<div class="sub" style="font-size:11px">🤝 Necesita que su madre la avale</div>'.replace('la avale',ga('la avale','lo avale','le avale')):''):`<div class="sub" style="font-size:11px;color:#c0392b">✗ ${cm.why.join(' · ')}</div>`}</div><button class="mini"${cm.ok?'':' disabled'} data-move="${k}">Mudarse</button></div>`;}
+    h+=`<div class="hopt"><div><b>${K.e} ${K.n}</b> <small>${k==='padres'?fmt(r)+'/sem para la compra':fmt(r)+'/sem'} · entrada ${fmt(moveCost(k))}</small><div class="sub" style="font-size:11px">${K.d}</div>${cm.ok?(cm.aval?'<div class="sub" style="font-size:11px">🤝 Necesita que su madre la avale</div>'.replace('la avale',ga('la avale','lo avale','le avale')):''):`<div class="sub" style="font-size:11px;color:#c0392b">✗ ${cm.why.join(' · ')}</div>`}</div><button class="mini"${cm.ok?'':' disabled'} data-move="${k}">Mudarse</button></div>`;}
   h+=`</details>`;return h;}
 function bindHome(){card.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>{const k=b.dataset.move;const K=HOMES[k];if(!b.dataset.sure){b.dataset.sure=1;b.textContent='¿Seguro? Se pierde la casa actual';return;}if(moveHome(k,false)){menu.classList.remove('open');toast(`${K.e} ${CH().name} se muda: ${K.n}`,true);}});}
 
@@ -14460,7 +14460,7 @@ function cvGreet(){for(const r of S.res||[]){if(r.away||r.kind==='kid'||(r.doing
   else if(t==='habitacion'&&!S.owned){toast(`💡 Su parte de las facturas del piso: ${fmt(b.total)}`,true);}}catch(e){}return r;};}
 // =================== SALUD MENTAL Y ADICCIONES: el desánimo se acumula; se sale con ayuda, no con voluntad ===================
 // precios «de persona»: en horas de salario mínimo, no en «precio del mundo»
-const HW=()=>Math.max(5,90*Dm().pay/8);const hrs=h=>Math.round(h*HW());
+const HW=()=>7.6*Dm().pay;const hrs=h=>Math.round(h*HW());
 const MT=()=>{if(!S.mt)S.mt={an:70,dep:0,ther:null,wait:0,alc:0,dro:0,tol:0,deal:null,bust:0,sober:0,hist:[]};const m=S.mt;m.hist=m.hist||[];return m;};
 const anLvl=()=>{const a=MT().an;return a>=65?'bien':a>=45?'bajo':a>=25?'hundido':'depresión';};
 const depressed=()=>MT().dep>=1;
@@ -16035,8 +16035,8 @@ document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.clos
   card.querySelectorAll('.sub').forEach(e=>{if(/El banco ahora no la da/.test(e.textContent))e.textContent='🚩 Con los consejos la vivienda no se compra ni se vende. Si necesitas otra, se pide a la asamblea (más abajo).';});
   if(S.mort){card.querySelectorAll('.kv').forEach(e=>{if(e.firstElementChild&&e.firstElementChild.textContent==='Cuota')e.lastElementChild.textContent=`${fmt(S.mort.pay)}/semana · ${(S.mort.rate*100).toFixed(1)} % · tope 22 % de lo que entra`;});}}}catch(e){}return r;};}
 // =================== IMPUESTOS DE VERDAD: nómina bruta/neta, IRPF por tramos, IVA, IBI, declaración y «tu año fiscal» ===================
-// Modelo España 2026 simplificado. Se calcula en euros anuales y se traduce a § del juego: 1 hora de salario mínimo (HW) ↔ 8,22 €.
-const FS_SMI=17094,FS_EUR=()=>8.22/HW();
+// Modelo España 2026 simplificado. La moneda del juego es el euro.
+const FS_SMI=17094,FS_EUR=()=>1;
 const FS_REF={k:'centro',tr:[[12450,.19],[20200,.24],[35200,.30],[60000,.37],[300000,.45],[1e12,.47]],ssw:.065,sse:.315,min:5550,smiTo:FS_SMI,iva:{sup:.04,red:.10,gen:.21},ah:[[6000,.19],[50000,.21],[200000,.23],[300000,.27],[1e12,.30]],ibi:1,soc:.15,hold:.0125,
   gana:'Nadie en especial: es el sistema tal como está.',pierde:'Quien vive de su sueldo paga por nómina y por IVA; quien vive de rentas, bastante menos.'};
 const FS_GOV={centro:FS_REF,
@@ -16111,7 +16111,7 @@ let fsEl=null;
 function closeFs(){if(fsEl)fsEl.classList.remove('on');}
 function openFs(){const f=FS();const P=FSP();const G=GOVS[W_().gov]||{};const n=CH().name;if(!fsEl){fsEl=document.createElement('div');fsEl.id='fsheet';document.body.appendChild(fsEl);}
   const row=(a,b,cls)=>`<div class="gvr"><span>${a}</span><b${cls?` style="color:${cls}"`:''}>${b}</b></div>`;const F=v=>fmt(Math.round(v));const pc=v=>(v*100).toFixed(1).replace('.',',')+' %';
-  let h=`<div class="omt">🧾 Nómina e impuestos de ${n}</div><div class="sub" style="padding:0 8px 6px">${G.e||''} ${G.n||''}. Las cifras están en § del juego; por dentro se calcula con euros de verdad (tramos de 2026).</div>`;
+  let h=`<div class="omt">🧾 Nómina e impuestos de ${n}</div><div class="sub" style="padding:0 8px 6px">${G.e||''} ${G.n||''}. Tramos y cotizaciones de 2026.</div>`;
   const sl=f.last;
   if(sl){h+=`<div class="gvbox"><div class="fst">Último turno (día ${sl.day})</div>`;
     h+=row('🏭 Valor que produjo',F(sl.valor),'#2e8b57');h+=row('💼 Lo que le cuesta a la empresa',F(sl.coste));if(sl.emp>0)h+=row('  · cotización de la empresa',F(sl.emp));
@@ -16216,7 +16216,7 @@ const cyS=()=>CYS[cyKey()]||CYS.centro;
 {const _sr=strikeReady;strikeReady=function(){if(W_().gov==='mercado'&&!W_().era)return false;return _sr.apply(this,arguments);};}
 // la gente que lo apoya hace que las medidas aguanten
 const cyHold=()=>{const w=W_();return Math.min(.92,.35+w.mov/220+(S.union&&S.union.member?.08:0)+((S.pol&&S.pol.inf)||0)/400+((office().org||0)>50?.05:0));};
-function cyGov(k,why,e){const w=W_();const old=w.gov;w.gov=k;w.elec=S.day+180;S.rentCap=k==='progresista'&&!S.owned;const G=GOVS[k];chapter('gov'+k+S.day,G.n,why);toast(`${G.e} ${G.n}`,true);}
+function cyGov(k,why,e){const w=W_();const old=w.gov;w.gov=k;w.elec=S.day+1460;S.rentCap=k==='progresista'&&!S.owned;const G=GOVS[k];chapter('gov'+k+S.day,G.n,why);toast(`${G.e} ${G.n}`,true);}
 function cyLayoff(p,why){if(S.jobless||TR().self||TR().coop||S.track==='funcion'||Math.random()>p)return false;S.jobless=true;S.paroWeeks=S.shifts>=30?12:6;tell(`${why} A ${CH().name} le ha tocado: despido. ${S.paroWeeks} semanas de paro.`,'📦');return true;}
 // cada lunes: el auge da, la tensión crece, las señales avisan
 {const _ww=worldWeekly;worldWeekly=function(){const r=_ww.apply(this,arguments);try{cyWeek();}catch(e){console.error(e);}return r;};}
@@ -16232,12 +16232,12 @@ function cyWeek(){const c=CY(),w=W_(),k=cyKey(),s=cyS(),n=CH().name;
   else{c.ext=Math.min(95,c.ext+.6);}
   // la tensión
   let v=s.v;if(k==='austeridad')v+=w.crisis/40;if(k==='progresista')v+=Math.max(0,(w.mov-40)/40)+Math.max(0,(40-w.crisis)/40);if(k==='consejos'||k==='comunas')v+=Math.max(0,(60-w.mov)/30);
-  c.ten=Math.min(100,c.ten+v*(.8+Math.random()*.4));
+  c.ten=Math.min(100,c.ten+v*.12*(.8+Math.random()*.4));
   // señales
   const th=[35,65,85];while(c.sig<3&&c.ten>=th[c.sig]){tell(s.sig[c.sig],c.sig===2?'⚠️':'📈');c.sig++;}
   if(c.ten>=100)cyCrisis();}
 // el estallido de cada sistema
-function cyCrisis(){const c=CY(),w=W_(),k=cyKey(),n=CH().name;const later=(f,ms)=>later(()=>{if(cyKey()===k)f();},ms);c.ph='crisis';c.until=S.day+42;c.crises++;c.ten=0;const B=BP?BP():null;
+function cyCrisis(){const c=CY(),w=W_(),k=cyKey(),n=CH().name;const later=(f,ms)=>later(()=>{if(cyKey()===k)f();},ms);c.ph='crisis';c.until=S.day+300;c.crises++;c.ten=0;const B=BP?BP():null;
   if(k==='liberal'||k==='conservador'||k==='centro'){
     c.hp*=.68;w.crisis=Math.min(100,w.crisis+32);w.mov=Math.min(100,w.mov+10);if(B){B.fondos.v=Math.round(B.fondos.v*.62);B.cripto.v=Math.round(B.cripto.v*.4);}c.ext=Math.min(100,c.ext+40);
     chapter('crisis'+S.day,'La burbuja',`Ha estallado. Los bancos dejan de prestar, las obras se paran y las empresas despiden en cadena. ${S.owned&&S.mort?`El piso de ${n} vale ahora menos de lo que debe.`:'Los pisos bajan, pero nadie tiene con qué comprarlos.'} En la tele, el rescate a la banca: miles de millones, sin condiciones.`);
@@ -16356,6 +16356,13 @@ document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.clos
 {const _pu=payUtilities;payUtilities=function(){const u=UT();if(!u||u.k!=='vivienda')return _pu.apply(this,arguments);const m0=S.money;const r=_pu.apply(this,arguments);const paid=m0-S.money;if(paid>0)bkAdd('Comunidad',Math.round(paid*.25));return r;};}
 {const _gf=govFood;govFood=function(){const u=UT();return _gf()*(u&&u.k==='integral'?.85:1);};}
 if(typeof BK_CAT!=='undefined')BK_CAT['Comunidad']='familia';
+// =================== RITMO REAL DE LA POLÍTICA: la influencia se gana en años, no en semanas ===================
+// La influencia y la experiencia política suben más despacio, y tienen un techo según el tiempo que se lleva militando y la edad.
+{const _dl=dailyEvents;dailyEvents=function(){const p=S.pol||{};const i0=p.inf||0,x0=p.xp||0;const r=_dl.apply(this,arguments);try{const P=S.pol;if(!P)return r;const R=S.ritmo=S.ritmo||{};
+  if(R.start==null&&((P.inf||0)>0||(P.xp||0)>0||(S.union&&S.union.member)))R.start=S.day;
+  const di=(P.inf||0)-i0,dx=(P.xp||0)-x0;if(di>0)P.inf=i0+di*.3;if(dx>0)P.xp=x0+dx*.45;
+  const yrs=R.start==null?0:(S.day-R.start)/365;const age=(S.char&&S.char.age)||30;
+  const cap=Math.min(100,12+yrs*22-(age<23?8:0));if(P.inf>cap)P.inf=cap;}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
@@ -16789,7 +16796,7 @@ const GOALS = [
   {id:'promo',t:'Consigue un ascenso',r:200,ok:()=>S.career>=1},
   {id:'big',t:'Casa de 100 m² o más',r:300,ok:()=>{computeRooms();return rooms.reduce((a,r)=>a+r.cells.length,0)*4>=100;}},
   {id:'star5',t:'Consigue una habitación de ★★★★★',r:400,ok:()=>{computeRooms();return rooms.some(r=>r.stars>=5);}},
-  {id:'value',t:'Casa valorada en § 10.000',r:500,ok:()=>houseValue()>=10000},
+  {id:'value',t:'Casa valorada en 100.000 €',r:500,ok:()=>houseValue()>=100000},
   {id:'diy',t:'Ana monta o construye algo ella sola',r:100,ok:()=>S.stats.diy>=1},
   {id:'hire',t:'Contrata a alguien de la cooperativa',r:100,ok:()=>S.stats.hired>=1},
   {id:'craft1',t:'Ana fabrica su primer mueble en el banco',r:150,ok:()=>(S.stats.crafted||0)>=1},

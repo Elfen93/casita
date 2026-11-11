@@ -22,7 +22,7 @@ const cyS=()=>CYS[cyKey()]||CYS.centro;
 {const _sr=strikeReady;strikeReady=function(){if(W_().gov==='mercado'&&!W_().era)return false;return _sr.apply(this,arguments);};}
 // la gente que lo apoya hace que las medidas aguanten
 const cyHold=()=>{const w=W_();return Math.min(.92,.35+w.mov/220+(S.union&&S.union.member?.08:0)+((S.pol&&S.pol.inf)||0)/400+((office().org||0)>50?.05:0));};
-function cyGov(k,why,e){const w=W_();const old=w.gov;w.gov=k;w.elec=S.day+180;S.rentCap=k==='progresista'&&!S.owned;const G=GOVS[k];chapter('gov'+k+S.day,G.n,why);toast(`${G.e} ${G.n}`,true);}
+function cyGov(k,why,e){const w=W_();const old=w.gov;w.gov=k;w.elec=S.day+1460;S.rentCap=k==='progresista'&&!S.owned;const G=GOVS[k];chapter('gov'+k+S.day,G.n,why);toast(`${G.e} ${G.n}`,true);}
 function cyLayoff(p,why){if(S.jobless||TR().self||TR().coop||S.track==='funcion'||Math.random()>p)return false;S.jobless=true;S.paroWeeks=S.shifts>=30?12:6;tell(`${why} A ${CH().name} le ha tocado: despido. ${S.paroWeeks} semanas de paro.`,'📦');return true;}
 // cada lunes: el auge da, la tensión crece, las señales avisan
 {const _ww=worldWeekly;worldWeekly=function(){const r=_ww.apply(this,arguments);try{cyWeek();}catch(e){console.error(e);}return r;};}
@@ -38,12 +38,12 @@ function cyWeek(){const c=CY(),w=W_(),k=cyKey(),s=cyS(),n=CH().name;
   else{c.ext=Math.min(95,c.ext+.6);}
   // la tensión
   let v=s.v;if(k==='austeridad')v+=w.crisis/40;if(k==='progresista')v+=Math.max(0,(w.mov-40)/40)+Math.max(0,(40-w.crisis)/40);if(k==='consejos'||k==='comunas')v+=Math.max(0,(60-w.mov)/30);
-  c.ten=Math.min(100,c.ten+v*(.8+Math.random()*.4));
+  c.ten=Math.min(100,c.ten+v*.12*(.8+Math.random()*.4));
   // señales
   const th=[35,65,85];while(c.sig<3&&c.ten>=th[c.sig]){tell(s.sig[c.sig],c.sig===2?'⚠️':'📈');c.sig++;}
   if(c.ten>=100)cyCrisis();}
 // el estallido de cada sistema
-function cyCrisis(){const c=CY(),w=W_(),k=cyKey(),n=CH().name;const later=(f,ms)=>later(()=>{if(cyKey()===k)f();},ms);c.ph='crisis';c.until=S.day+42;c.crises++;c.ten=0;const B=BP?BP():null;
+function cyCrisis(){const c=CY(),w=W_(),k=cyKey(),n=CH().name;const later=(f,ms)=>later(()=>{if(cyKey()===k)f();},ms);c.ph='crisis';c.until=S.day+300;c.crises++;c.ten=0;const B=BP?BP():null;
   if(k==='liberal'||k==='conservador'||k==='centro'){
     c.hp*=.68;w.crisis=Math.min(100,w.crisis+32);w.mov=Math.min(100,w.mov+10);if(B){B.fondos.v=Math.round(B.fondos.v*.62);B.cripto.v=Math.round(B.cripto.v*.4);}c.ext=Math.min(100,c.ext+40);
     chapter('crisis'+S.day,'La burbuja',`Ha estallado. Los bancos dejan de prestar, las obras se paran y las empresas despiden en cadena. ${S.owned&&S.mort?`El piso de ${n} vale ahora menos de lo que debe.`:'Los pisos bajan, pero nadie tiene con qué comprarlos.'} En la tele, el rescate a la banca: miles de millones, sin condiciones.`);

@@ -1,6 +1,6 @@
 // =================== IMPUESTOS DE VERDAD: nómina bruta/neta, IRPF por tramos, IVA, IBI, declaración y «tu año fiscal» ===================
-// Modelo España 2026 simplificado. Se calcula en euros anuales y se traduce a § del juego: 1 hora de salario mínimo (HW) ↔ 8,22 €.
-const FS_SMI=17094,FS_EUR=()=>8.22/HW();
+// Modelo España 2026 simplificado. La moneda del juego es el euro.
+const FS_SMI=17094,FS_EUR=()=>1;
 const FS_REF={k:'centro',tr:[[12450,.19],[20200,.24],[35200,.30],[60000,.37],[300000,.45],[1e12,.47]],ssw:.065,sse:.315,min:5550,smiTo:FS_SMI,iva:{sup:.04,red:.10,gen:.21},ah:[[6000,.19],[50000,.21],[200000,.23],[300000,.27],[1e12,.30]],ibi:1,soc:.15,hold:.0125,
   gana:'Nadie en especial: es el sistema tal como está.',pierde:'Quien vive de su sueldo paga por nómina y por IVA; quien vive de rentas, bastante menos.'};
 const FS_GOV={centro:FS_REF,
@@ -75,7 +75,7 @@ let fsEl=null;
 function closeFs(){if(fsEl)fsEl.classList.remove('on');}
 function openFs(){const f=FS();const P=FSP();const G=GOVS[W_().gov]||{};const n=CH().name;if(!fsEl){fsEl=document.createElement('div');fsEl.id='fsheet';document.body.appendChild(fsEl);}
   const row=(a,b,cls)=>`<div class="gvr"><span>${a}</span><b${cls?` style="color:${cls}"`:''}>${b}</b></div>`;const F=v=>fmt(Math.round(v));const pc=v=>(v*100).toFixed(1).replace('.',',')+' %';
-  let h=`<div class="omt">🧾 Nómina e impuestos de ${n}</div><div class="sub" style="padding:0 8px 6px">${G.e||''} ${G.n||''}. Las cifras están en § del juego; por dentro se calcula con euros de verdad (tramos de 2026).</div>`;
+  let h=`<div class="omt">🧾 Nómina e impuestos de ${n}</div><div class="sub" style="padding:0 8px 6px">${G.e||''} ${G.n||''}. Tramos y cotizaciones de 2026.</div>`;
   const sl=f.last;
   if(sl){h+=`<div class="gvbox"><div class="fst">Último turno (día ${sl.day})</div>`;
     h+=row('🏭 Valor que produjo',F(sl.valor),'#2e8b57');h+=row('💼 Lo que le cuesta a la empresa',F(sl.coste));if(sl.emp>0)h+=row('  · cotización de la empresa',F(sl.emp));

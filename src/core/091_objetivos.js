@@ -14,7 +14,7 @@ const GOALS = [
   {id:'promo',t:'Consigue un ascenso',r:200,ok:()=>S.career>=1},
   {id:'big',t:'Casa de 100 m² o más',r:300,ok:()=>{computeRooms();return rooms.reduce((a,r)=>a+r.cells.length,0)*4>=100;}},
   {id:'star5',t:'Consigue una habitación de ★★★★★',r:400,ok:()=>{computeRooms();return rooms.some(r=>r.stars>=5);}},
-  {id:'value',t:'Casa valorada en § 10.000',r:500,ok:()=>houseValue()>=10000},
+  {id:'value',t:'Casa valorada en 100.000 €',r:500,ok:()=>houseValue()>=100000},
   {id:'diy',t:'Ana monta o construye algo ella sola',r:100,ok:()=>S.stats.diy>=1},
   {id:'hire',t:'Contrata a alguien de la cooperativa',r:100,ok:()=>S.stats.hired>=1},
   {id:'craft1',t:'Ana fabrica su primer mueble en el banco',r:150,ok:()=>(S.stats.crafted||0)>=1},

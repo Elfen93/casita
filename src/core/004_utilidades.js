@@ -4,7 +4,7 @@ const inb=(x,y)=>x>=0&&y>=0&&x<N&&y<N;
 const isBlockWall=w=>w===1||w===3||w===4;
 const isRoomWall=w=>w===1||w===2||w===3;
 const walkable=(x,y)=>inb(x,y)&&!isBlockWall(S.wall[idx(x,y)])&&!S.obj[idx(x,y)]&&!FLOORS[S.floor[idx(x,y)]].water;
-const fmt=n=>'§ '+Math.round(n).toLocaleString('es-ES');
+const fmt=n=>Math.round(n).toLocaleString('es-ES')+' €';
 function shade(hex,f){let r,g,b;if(hex[0]==='#'){const n=parseInt(hex.slice(1),16);r=n>>16;g=(n>>8)&255;b=n&255;}else{const m=hex.match(/[\d.]+/g);if(!m)return hex;[r,g,b]=m.map(Number);if(m.length>3)return `rgba(${Math.min(255,r*f|0)},${Math.min(255,g*f|0)},${Math.min(255,b*f|0)},${m[3]})`;}r=Math.min(255,r*f|0);g=Math.min(255,g*f|0);b=Math.min(255,b*f|0);return `rgb(${r},${g},${b})`;}
 const toastSeen=new Map();
 function toast(msg,gold){

@@ -1,6 +1,6 @@
 // =================== SALUD MENTAL Y ADICCIONES: el desánimo se acumula; se sale con ayuda, no con voluntad ===================
 // precios «de persona»: en horas de salario mínimo, no en «precio del mundo»
-const HW=()=>Math.max(5,90*Dm().pay/8);const hrs=h=>Math.round(h*HW());
+const HW=()=>7.6*Dm().pay;const hrs=h=>Math.round(h*HW());
 const MT=()=>{if(!S.mt)S.mt={an:70,dep:0,ther:null,wait:0,alc:0,dro:0,tol:0,deal:null,bust:0,sober:0,hist:[]};const m=S.mt;m.hist=m.hist||[];return m;};
 const anLvl=()=>{const a=MT().an;return a>=65?'bien':a>=45?'bajo':a>=25?'hundido':'depresión';};
 const depressed=()=>MT().dep>=1;
