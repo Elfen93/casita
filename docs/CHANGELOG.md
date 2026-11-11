@@ -39,3 +39,4 @@
 - «Ir a su casa»: entra en un portal del barrio (no pasea por el parque) y al volver te escribe un mensaje.
 - Peso: se mide todo lo que come (también el plato y los tápers); comiendo tres veces el cuerpo va hacia su peso sano o hacia el objetivo que fijes (Vida → Cuerpo → 🎯), unos 2–3 kg al mes; saltarse comidas baja, picar y salir sube; la anemia se va al recuperar peso.
 - Listas de espera (médico y salud mental) según el gobierno: consejos ×0,35, comunas ×0,45, socialismo de mercado ×0,5, progresista ×0,75, conservador ×1,3, liberal ×1,4, austeridad ×1,8.
+- Los deseos guardados de antes que ya no encajan (piscina en alquiler, etc.) se olvidan solos.

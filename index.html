@@ -16496,6 +16496,9 @@ function wantOK(w){if(!w)return false;const own=S.owned;const all=HT().build==='
   if(!need&&w.kind!=='fix'){const pr=jobPrice(w);const tot=pr.mat+(w.kind==='buy'?pr.labor*0:0);if(tot>0&&sp<tot*2)return false;}
   return true;}
 {const _cw=chooseWant;chooseWant=function(){for(let k=0;k<6;k++){const w=_cw.apply(this,arguments);if(wantOK(w))return w;if(!w)return null;}return null;};}
+// un deseo que ya no tiene sentido (guardado de antes) se olvida
+{const _pt=planTick;planTick=function(){try{if(S.want&&S.want.kind!=='fix'&&!wantOK(S.want)){S.want=null;S.wantDay=-1;}if(S.job&&S.job.key==='pool'&&!S.job.steps.some(s=>s.done)&&!wantOK(S.job)){S.job=null;}}catch(e){}return _pt.apply(this,arguments);};}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{if(S.want&&S.want.kind!=='fix'&&!wantOK(S.want)){S.want=null;S.wantDay=-1;}}catch(e){}return r;};}
 // =================== QUE SE VEA: llamar llama, ligar liga, y siempre sabes cómo ha ido ===================
 let sfxEl=null,sfxT=0;
 function sfxCard(icon,title,line,ok,p,b){if(!sfxEl){sfxEl=document.createElement('div');sfxEl.id='sfxcard';document.body.appendChild(sfxEl);sfxEl.onclick=()=>sfxEl.classList.remove('on');}
