@@ -39,9 +39,9 @@ function bkRender(){const ph=document.getElementById('phone');if(!ph)return;cons
     if(!b.loan){const mx=bpLoanMax();h+=`<div class="bk3card"><div class="bk3t">💳 ${M.loan} <small>${M.loanSub} · ${(loanRate()*100).toFixed(1).replace('.0','')} % · hasta ${fmt(mx)}</small></div>${mx?`<div class="bk3c">${[[.25,12],[.5,12],[1,24]].map(([f,mo])=>`<button data-bka="ln-${f}-${mo}">${fmt(Math.round(mx*f))} · ${mo} m</button>`).join('')}</div>`:'<small class="bk3n">Sin nómina no hay préstamo.</small>'}</div>`;}}
   // pintar y conectar
   const html=bkShell(h);const T=document.createElement('div');T.innerHTML=html;const nb=T.firstElementChild;ph.querySelector('.phf')?ph.querySelector('.phf').replaceWith(nb):(ph.innerHTML=html);
-  ph.querySelectorAll('[data-bkt]').forEach(x=>x.onclick=()=>{bkTab=x.dataset.bkt;if(bkTab==='prod')bkTab='ahorro';bkRender();});
+  ph.querySelectorAll('[data-bkt]').forEach(x=>x.onclick=()=>{bkTab=x.dataset.bkt;if(bkTab==='prod')bkTab='ahorro';bkForce=true;phRender();const nb=ph.querySelector('.bkbody');if(nb)nb.scrollTop=0;});
   ph.querySelectorAll('[data-ph]').forEach(x=>x.onclick=()=>{phApp=x.dataset.ph==='home'?null:x.dataset.ph;phRender();});
-  ph.querySelectorAll('[data-pay]').forEach(x=>x.onclick=()=>{const d=payList()[+x.dataset.pay];if(!d)return;const a=x.dataset.amt;payDebt(d,a==='all'?d.v:a==='half'?Math.ceil(d.v/2):50);bkRender();});
+  ph.querySelectorAll('[data-pay]').forEach(x=>x.onclick=()=>{const d=payList()[+x.dataset.pay];if(!d)return;const a=x.dataset.amt;payDebt(d,a==='all'?d.v:a==='half'?Math.ceil(d.v/2):50);bkForce=true;phRender();});
   ph.querySelectorAll('[data-bka]').forEach(x=>x.onclick=()=>{const a=x.dataset.bka;const P=a.split(/(?<=[a-z])(?=[+-])|-/);
     if(a.startsWith('hu')){const k=a.slice(2);bkHucha(k==='-all'?-B.hucha:k==='+5'?hrs(5):k==='+20'?hrs(20):-hrs(5));}
     else if(a.startsWith('ah')){const k=a.slice(2);bpMove('ahorro',k==='-all'?-b.ahorro.v:k==='+10'?hrs(10):k==='+40'?hrs(40):-hrs(10));}
@@ -50,5 +50,8 @@ function bkRender(){const ph=document.getElementById('phone');if(!ph)return;cons
     else if(a.startsWith('fo')){const k=a.slice(2);bpMove('fondos',k==='-all'?-b.fondos.v:k==='+10'?hrs(10):hrs(40));}
     else if(a.startsWith('cr')){const k=a.slice(2);bpMove('cripto',k==='-all'?-b.cripto.v:hrs(10));}
     else if(a.startsWith('ln-')){const [,f,mo]=a.split('-');bpLoan(Math.round(bpLoanMax()*(+f)),+mo);}
-    bkRender();});}
-{const _pr=phRender;phRender=function(){if(phApp==='bank'&&S){try{return bkRender();}catch(e){console.error(e);}}return _pr.apply(this,arguments);};}
+    bkForce=true;phRender();});}
+let bkSig='',bkForce=false;
+function bkSigNow(){const b=BP(),B=BKS();return [bkTab,bkMode(),Math.round(S.money),B.hucha,Math.round(b.ahorro.v),b.auto||0,b.dep?b.dep.v+'/'+b.dep.until:'',Math.round(b.fondos.v),Math.round(b.cripto.v),b.loan?b.loan.left:'',payList().map(d=>Math.round(d.v)).join(','),B.log.length,S.day].join('|');}
+{const _pr=phRender;phRender=function(){if(phApp==='bank'&&S){try{const ph=document.getElementById('phone');const sg=bkSigNow();if(!bkForce&&sg===bkSig&&ph&&ph.querySelector('.bk3card,.bk3bal,.bk3r'))return;bkSig=sg;bkForce=false;
+  const old=ph&&ph.querySelector('.bkbody');const st=old?old.scrollTop:0;bkRender();const nb=ph&&ph.querySelector('.bkbody');if(nb&&st)nb.scrollTop=st;return;}catch(e){console.error(e);}}bkSig='';return _pr.apply(this,arguments);};}
