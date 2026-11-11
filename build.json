@@ -41,6 +41,7 @@
   "ciclos.js",
   "comunidad.js",
   "ritmo.js",
-  "energia.js"
+  "energia.js",
+  "horario_obras.js"
  ]
 }

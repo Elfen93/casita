@@ -16372,6 +16372,16 @@ if(typeof BK_CAT!=='undefined')BK_CAT['Comunidad']='familia';
 }catch(e){}return r;};}
 // al volver tarde y cansado, directo a dormir
 {const _fw=finishWork;finishWork=function(){const was=S.sim.outingActive;const r=_fw.apply(this,arguments);try{const h=S.t/60;if(S.needs.energia<25&&(h>=21||h<5||S.needs.energia<15)){S.sim.use=null;enqueue({k:'need',need:'energia'});}}catch(e){}return r;};}
+// =================== LAS OBRAS EN HORARIO DE OBRA: de lunes a viernes de 8 a 18, sábados de 9 a 14 ===================
+function obraHora(){const wd=dateOf(S.day).wd,h=S.t/60;if(festivo&&festivo(S.day))return false;return (wd<=4&&h>=8&&h<18)||(wd===5&&h>=9&&h<14);}
+function obraVuelve(){const wd=dateOf(S.day).wd,h=S.t/60;if(wd<=4&&h<8)return 'hoy a las 8';if(wd===4&&h>=18)return 'el sábado a las 9';if(wd<=3)return 'mañana a las 8';if(wd===5&&h<9)return 'hoy a las 9';return 'el lunes a las 8';}
+{const _sb=spawnBuilder;spawnBuilder=function(){if(!obraHora()){if(S.job)S.job.waitBuilder=true;toast(`👷 La cooperativa vendrá ${obraVuelve()}`);return true;}return _sb.apply(this,arguments);};}
+{const _un=updateNPC;updateNPC=function(gm){const n=S.npc;const job=S.job;
+  if(n&&n.state!=='leaving'&&job&&job.who==='builder'&&n.work&&!obraHora()&&S.t/60>=18.5&&S.t/60<23.9){const st=job.steps[n.work.j];if(st)st.prog=n.work.t;n.work=null;}
+  if(n&&n.state!=='leaving'&&job&&job.who==='builder'&&!n.work&&!obraHora()){job.waitBuilder=true;tell(`${n.name} recoge las herramientas: «hasta ${obraVuelve()}».`,'👷');npcLeave();return _un.apply(this,arguments);}
+  if(!S.npc&&job&&job.who==='builder'&&job.waitBuilder&&obraHora()){job.waitBuilder=false;_sb0();}
+  const r=_un.apply(this,arguments);try{const m=S.npc;if(m&&m.work&&m.work.t===0&&S.job){const st=S.job.steps[m.work.j];if(st&&st.prog){m.work.t=st.prog;st.prog=0;}}}catch(e){}return r;};}
+const _sb0=()=>{try{const f=spawnBuilder;f();}catch(e){}};
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
@@ -16815,7 +16825,7 @@ const GOALS = [
 ];
 let unseen=0;
 function checkGoals(){
-  for(const g of GOALS){if(S.goals[g.id])continue;if(g.ok()){S.goals[g.id]=1;const gr=Math.round(g.r*Dm().goal);S.money+=gr;bumpMoney();unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);toast(`🏆 Objetivo: ${g.t}`,true);sfx('level');}}
+  for(const g of GOALS){if(S.goals[g.id])continue;if(g.ok()){S.goals[g.id]=1;S.needs.diversion=Math.min(100,S.needs.diversion+15);if(typeof MT==='function')MT().an=Math.min(100,MT().an+4);unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);toast(`🏆 Objetivo: ${g.t}`,true);sfx('level');}}
   const b=document.getElementById('badge');b.style.display=unseen?'block':'none';b.textContent=unseen;
 }
 
@@ -17096,7 +17106,7 @@ function openMenu(tab){card.onscroll=null;
   else if(menuTab==='trabajo'){
     h+=trackBlock();
     h+=`<div class="career"><div class="ttl">💼 ${S.jobless?'En paro':c.t} · ${fmt(salary())}/turno</div><div class="req">${daysLabel()} ${SHIFT.start}:00–${SHIFT.end}:00 · reputación ${S.rep??70}/100 · 🏖️ ${S.vac||0} días libres</div>`;
-    if(next){h+=`<div class="req">Siguiente: <b>${next.t}</b> (${fmt(next.pay)})</div><div class="req">`;
+    if(next){h+=`<div class="req">Siguiente: <b>${next.t}</b> (${fmt(Math.round(next.pay*Dm().pay*(S.payMul||1)))}/turno)</div><div class="req">`;
       const rq=reqOf(next);const parts=[];if(rq.shifts)parts.push(`<span class="${tShifts()>=rq.shifts?'ok':'no'}">${tShifts()}/${rq.shifts} turnos${rq.fast?` <s style="opacity:.5">${rq.baseShifts}</s> ⚡`:''}</span>`);
       for(const [k,e,nm] of SKILLS)if(rq[k])parts.push(`<span class="${lvl(k)>=rq[k]?'ok':'no'}">${e} ${nm} ${lvl(k)}/${rq[k]}</span>`);
       h+=parts.join(' · ')+'</div>';}

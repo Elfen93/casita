@@ -24,7 +24,7 @@ const GOALS = [
 ];
 let unseen=0;
 function checkGoals(){
-  for(const g of GOALS){if(S.goals[g.id])continue;if(g.ok()){S.goals[g.id]=1;const gr=Math.round(g.r*Dm().goal);S.money+=gr;bumpMoney();unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);toast(`🏆 Objetivo: ${g.t}`,true);sfx('level');}}
+  for(const g of GOALS){if(S.goals[g.id])continue;if(g.ok()){S.goals[g.id]=1;S.needs.diversion=Math.min(100,S.needs.diversion+15);if(typeof MT==='function')MT().an=Math.min(100,MT().an+4);unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);toast(`🏆 Objetivo: ${g.t}`,true);sfx('level');}}
   const b=document.getElementById('badge');b.style.display=unseen?'block':'none';b.textContent=unseen;
 }
 

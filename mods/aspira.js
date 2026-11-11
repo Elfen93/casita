@@ -62,7 +62,7 @@ function aspFill(){const A=aspS();A.active=A.active.filter(id=>ASP.some(a=>a.id=
     A.active.push(pick.id);A.base[pick.id]=pick.start?pick.start():null;}}
 function aspCheck(){const A=aspS();if(!A.active.length)aspFill();
   for(const id of [...A.active]){const a=ASP.find(x=>x.id===id);if(!a)continue;let ok=false;try{ok=a.ok(A.base[id]);}catch(e){}
-    if(ok){A.active=A.active.filter(x=>x!==id);A.done[id]=S.day;A.count=(A.count||0)+1;const gr=Math.round(WP()*a.r*Dm().goal*1.4);S.money+=gr;bumpMoney();unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);
+    if(ok){A.active=A.active.filter(x=>x!==id);A.done[id]=S.day;A.count=(A.count||0)+1;S.needs.diversion=Math.min(100,S.needs.diversion+25);if(typeof MT==='function')MT().an=Math.min(100,MT().an+8);unseen++;if(!S.sim.work)confetti(S.sim.x,S.sim.y,50);
       tell(`${a.t()}. Lo ha conseguido.`,a.e,'big');toast(`🎯 ${a.t()}`,true);sfx('level');aspFill();}}
   // abandonar los que ya no tienen sentido
   for(const id of [...A.active]){const a=ASP.find(x=>x.id===id);let w=1;try{w=a.w();}catch(e){}if(w===0&&!a.start){A.active=A.active.filter(x=>x!==id);aspFill();}}}
@@ -70,8 +70,8 @@ function aspDaily(){const A=aspS();A.streak=mood()>62?(A.streak||0)+1:0;if(T('mi
 // contadores que usan las aspiraciones
 {const _go=goOut;goOut=function(k){if(k==='amigos'){S.stats=S.stats||{};S.stats.outAmigos=(S.stats.outAmigos||0)+1;}return _go.apply(this,arguments);};}
 function aspBlock(){const A=aspS();aspFill();let h=`<h3>🎯 Lo que ${CH().name} quiere ahora</h3><div class="sub" style="font-size:11.5px;margin-bottom:4px">Salen de su carácter, sus ideas y su vida. Cuando cumple una, aparece otra.</div>`;
-  for(const id of A.active){const a=ASP.find(x=>x.id===id);if(!a)continue;h+=`<div class="goal"><span>${a.e}</span><span>${a.t()}</span><span class="r">+${fmt(Math.round(WP()*a.r*Dm().goal*1.4))}</span></div>`;}
+  for(const id of A.active){const a=ASP.find(x=>x.id===id);if(!a)continue;h+=`<div class="goal"><span>${a.e}</span><span>${a.t()}</span><span class="r">😊 ánimo</span></div>`;}
   const n=A.count||0;if(n)h+=`<div class="sub" style="font-size:11.5px">✅ ${n} cumplida${n>1?'s':''} hasta ahora.</div>`;
   const house=GOALS.filter(g=>!S.goals[g.id]).slice(0,3);
-  if(house.length)h+=`<h3>🏠 Ideas para la casa</h3>`+house.map(g=>`<div class="goal"><span>⬜</span><span>${g.t}</span><span class="r">+${fmt(Math.round(g.r*Dm().goal))}</span></div>`).join('')+`<div class="sub" style="font-size:11.5px">${GOALS.filter(g=>S.goals[g.id]).length} de ${GOALS.length} hechas.</div>`;
+  if(house.length)h+=`<h3>🏠 Ideas para la casa</h3>`+house.map(g=>`<div class="goal"><span>⬜</span><span>${g.t}</span><span class="r">😊</span></div>`).join('')+`<div class="sub" style="font-size:11.5px">${GOALS.filter(g=>S.goals[g.id]).length} de ${GOALS.length} hechas.</div>`;
   return h;}

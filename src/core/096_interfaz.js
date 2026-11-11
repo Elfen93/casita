@@ -52,7 +52,7 @@ function openMenu(tab){card.onscroll=null;
   else if(menuTab==='trabajo'){
     h+=trackBlock();
     h+=`<div class="career"><div class="ttl">💼 ${S.jobless?'En paro':c.t} · ${fmt(salary())}/turno</div><div class="req">${daysLabel()} ${SHIFT.start}:00–${SHIFT.end}:00 · reputación ${S.rep??70}/100 · 🏖️ ${S.vac||0} días libres</div>`;
-    if(next){h+=`<div class="req">Siguiente: <b>${next.t}</b> (${fmt(next.pay)})</div><div class="req">`;
+    if(next){h+=`<div class="req">Siguiente: <b>${next.t}</b> (${fmt(Math.round(next.pay*Dm().pay*(S.payMul||1)))}/turno)</div><div class="req">`;
       const rq=reqOf(next);const parts=[];if(rq.shifts)parts.push(`<span class="${tShifts()>=rq.shifts?'ok':'no'}">${tShifts()}/${rq.shifts} turnos${rq.fast?` <s style="opacity:.5">${rq.baseShifts}</s> ⚡`:''}</span>`);
       for(const [k,e,nm] of SKILLS)if(rq[k])parts.push(`<span class="${lvl(k)>=rq[k]?'ok':'no'}">${e} ${nm} ${lvl(k)}/${rq[k]}</span>`);
       h+=parts.join(' · ')+'</div>';}
