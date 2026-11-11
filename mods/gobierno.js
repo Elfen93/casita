@@ -30,7 +30,7 @@ function govTick(){const g=GV();if(!REV())return;const ph=govPh();const n=CH().n
   }
   if(govPh()>=3)BANK_N='Banca Pública';
   // el curro sin patrón: aunque cambie de trabajo
-  if(govPh()>=2&&S.office){S.office.tox=Math.min(S.office.tox,.12);S.noOvertime=S.day+9999;}}
+  if(govPh()>=2&&S.office){S.office.tox=Math.min(S.office.tox,.12);S.noOvertime=S.day+9999;S.rep=Math.max(S.rep??70,55);}}
 // cada día: fases, escasez, problemas nuevos
 {const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{
   if(!REV()){if(S.gv&&S.gv.since!=null){S.gv.since=null;S.gv.ph=0;BANK_N='Banco Atlántico';}return r;}

@@ -233,3 +233,16 @@
 #strikebar .sbx{opacity:.8;padding:0 2px 0 4px;cursor:pointer}
 #strikebar.mini{padding:5px 10px;font-size:11px;opacity:.92}
 #strikebar span{overflow:hidden;text-overflow:ellipsis}
+
+.bk-pub .bkhead{background:linear-gradient(135deg,#b3262d,#7e1a20)!important}.bk-pub .bklogo span{color:#b3262d}
+.bk-est .bkhead{background:linear-gradient(135deg,#c8102e,#e2a500)!important}.bk-est .bklogo span{color:#c8102e}
+.bkpubnote{margin:6px 8px;padding:8px 10px;border-radius:10px;background:#fbe9e7;color:#7e1a20;font:700 11.5px Nunito,sans-serif}
+
+#pesheet{position:fixed;z-index:58;display:none;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,400px);max-height:84vh;overflow:auto;background:rgba(255,253,248,.98);border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:8px;font-family:Nunito,sans-serif}
+#pesheet.on{display:block}
+#pesheet .omt{font:900 15px Nunito,sans-serif;color:#3b3247;padding:6px 8px 2px}
+.pbtn .mini:not(.pmenu){display:none}
+#pesheet .pegrid{display:flex;flex-direction:column;gap:6px;padding:2px 6px}
+#pesheet .pegrid .btn{text-align:left}
+#pesheet .pesub{font:900 11px Nunito,sans-serif;color:#8a8294;text-transform:uppercase;letter-spacing:.05em;padding:10px 8px 4px}
+#gvsheet,#fsheet,#utsheet,#fsdlg,#pesheet,#libros{background:#fffdf8!important}

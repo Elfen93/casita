@@ -43,6 +43,8 @@
   "ritmo.js",
   "energia.js",
   "horario_obras.js",
-  "cocinar.js"
+  "cocinar.js",
+  "fregar.js",
+  "gente_menu.js"
  ]
 }

@@ -29,3 +29,8 @@
 - Objetivos y deseos ya no dan dinero: dan ánimo y diversión. «Siguiente puesto» muestra el sueldo real que tendría.
 - Obras contratadas en horario de obra: lunes a viernes de 8 a 18 y sábados de 9 a 14; si se contrata fuera de hora vienen al día siguiente; si les pilla la hora a medias, recogen y siguen donde lo dejaron.
 - Cocinar y comer por separado: mientras cocina no se le quita el hambre; al terminar se sirve el plato y se lo come en la mesa (si hay mesa con silla) o de pie en la cocina.
+- Fregar: cocinar deja platos sucios (se ven en el fregadero); nuevo mueble Fregadero (150 €); se puede fregar también en la encimera o, a malas, en el lavabo, y el lavavajillas se pone en un momento; con 8 o más no se cocina hasta fregar; friega sola si hay 4+; con compañeros de piso, notas en la nevera; si se acumula, la cocina huele.
+- Banco: nombre, colores y aviso según el sistema (Banca Pública con los consejos, Banco Estatal de Desarrollo con socialismo de mercado), recalculado siempre; ahorro y depósito con tipos fijos en la banca pública.
+- Visitas: también amigos con buena relación (no solo los íntimos); si pasan y no estás, te escriben y vuelven cuando llegas.
+- Gente: botón «💬 Opciones» con menú claro: mensaje, llamar, paseo por el parque, tomar algo, ir a su casa, invitar a casa, quedarse a dormir, cita, ligar, pedir salir, vivir juntos, casarse, romper.
+- Con los consejos la reputación ante el jefe ya no cuenta (cargos elegidos); ventanas opacas.

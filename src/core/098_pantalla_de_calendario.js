@@ -15,7 +15,7 @@ function renderCal(){
   h+=`<h3>💼 Trabajo de Ana</h3>`;
   h+=`<div class="kv"><span>Horario</span><span>${daysLabel()}, ${SHIFT.start}:00–${SHIFT.end}:00</span></div>`;
   h+=`<div class="kv"><span>Hoy</span><span>${DAYICON[dayType(S.day)]} ${festivo(S.day)||DAYNAME[dayType(S.day)]}${dayType(S.day)==='work'?(S.lastWorkDay===S.day?' · ya fue':' · le toca ir'):''}</span></div>`;
-  h+=`<div class="kv"><span>Reputación</span><span>${S.rep??70}/100 ${(S.rep??70)>=50?'👍':'⚠️ (no la ascienden)'}</span></div>`;
+  h+=(typeof REV==='function'&&REV()&&govPh()>=2)?`<div class="kv"><span>Reputación</span><span>no cuenta: los cargos se eligen en asamblea</span></div>`:`<div class="kv"><span>Reputación</span><span>${S.rep??70}/100 ${(S.rep??70)>=50?'👍':'⚠️ (no la ascienden)'}</span></div>`;
   h+=`<div class="kv"><span>Faltas</span><span>${S.absences||0}</span></div>`;
   h+=`<div class="kv"><span>Días de vacaciones</span><span>🏖️ ${S.vac||0} disponibles</span></div>`;
   h+=`<div class="kv"><span>Próximo festivo</span><span>${nf}</span></div>`;
