@@ -45,6 +45,7 @@
   "horario_obras.js",
   "cocinar.js",
   "fregar.js",
-  "gente_menu.js"
+  "gente_menu.js",
+  "deseos.js"
  ]
 }

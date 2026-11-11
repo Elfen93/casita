@@ -1,0 +1,1 @@
+setTimeout(()=>{try{document.title='OK '+Object.entries(FLOORS).filter(([k,f])=>f.water).map(([k,f])=>k+':'+f.n+':'+f.p).join(' ')+' | '+jobPrice.toString().slice(0,80);}catch(err){document.title='ERR '+err.message}},300);

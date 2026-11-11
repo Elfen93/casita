@@ -34,3 +34,4 @@
 - Visitas: también amigos con buena relación (no solo los íntimos); si pasan y no estás, te escriben y vuelven cuando llegas.
 - Gente: botón «💬 Opciones» con menú claro: mensaje, llamar, paseo por el parque, tomar algo, ir a su casa, invitar a casa, quedarse a dormir, cita, ligar, pedir salir, vivir juntos, casarse, romper.
 - Con los consejos la reputación ante el jefe ya no cuenta (cargos elegidos); ventanas opacas.
+- Deseos realistas: la piscina solo si es casa propia con terreno y sobran 25.000 € (y cuesta ~3.000 € por casilla); en alquiler no se quieren obras, ventanas, jardín ni bañeras; lo que no es necesidad solo se quiere si sobra el doble de lo que cuesta.
