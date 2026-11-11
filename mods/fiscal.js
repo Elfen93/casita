@@ -35,11 +35,12 @@ function fsGrossYr(netShift){const k=Math.round(netShift)+'|'+(S.kids||[]).lengt
 function fsSlip(netRef){const A=fsGrossYr(netRef);const P=FSP();const t=fsTax(A,P);const n=fsShiftsYr(),E=FS_EUR();const g=A/n/E;
   const ss=t.ss/n/E,irpf=t.irpf/n/E,emp=g*P.sse,neto=g-ss-irpf;return {bruto:g,ss,irpf,neto,emp,coste:g+emp,valor:(g+emp)*2.4,ret:t.irpf/A,ssr:t.ss/A,A};}
 // el sueldo neto que llega depende del gobierno
-{const _pf=payFactor;payFactor=function(){const f=_pf.apply(this,arguments);try{if(S.jobless||TR().self)return f;const base=salary()*f;if(!(base>0))return f;const s=fsSlip(base);return f*s.neto/base;}catch(e){return f;}};}
+{const _pf=payFactor;payFactor=function(){const f=_pf.apply(this,arguments);try{if(S.jobless||TR().self||TR().auto)return f;const base=salary()*f;if(!(base>0))return f;const s=fsSlip(base);return f*(S.fs&&S.fs.negro?s.bruto*.92:s.neto)/base;}catch(e){return f;}};}
 // cada turno: la nómina, y lo que va al año fiscal
-{const _fw=finishWork;finishWork=function(){const s0=S.shifts,m0=S.money;const self=TR().self;let pre=null;try{if(!S.jobless&&!self){const f=FS();const base=salary()*(_fsBase());pre=fsSlip(base);}}catch(e){}
+{const _fw=finishWork;finishWork=function(){const s0=S.shifts,m0=S.money;const self=TR().self;let pre=null;try{if(!S.jobless&&!self&&!TR().auto){const f=FS();const base=salary()*(_fsBase());pre=fsSlip(base);}}catch(e){}
   const r=_fw.apply(this,arguments);
-  try{if(pre&&S.shifts>s0){const got=S.money-m0;const k=pre.neto>0?Math.max(0,got)/pre.neto:1;const y=FS().yr;const sl={};for(const q of ['bruto','ss','irpf','neto','emp','coste','valor'])sl[q]=pre[q]*k;sl.ret=pre.ret;sl.ssr=pre.ssr;sl.day=S.day;sl.gov=W_().gov;S.fs.last=sl;
+  try{if(!pre&&S.shifts>s0&&TR().auto){FS().yr.aut=(FS().yr.aut||0)+Math.max(0,S.money-m0);}if(pre&&S.fs.negro&&S.shifts>s0){const y=FS().yr;const got=Math.max(0,S.money-m0);S.fs.last={bruto:got,ss:0,irpf:0,neto:got,emp:0,coste:got,valor:got*2.6,ret:0,ssr:0,day:S.day,gov:W_().gov,negro:true};y.negro=(y.negro||0)+1;S.fs.negroTot=(S.fs.negroTot||0)+1;y.valor+=got*2.6;pre=null;}
+  if(pre&&S.shifts>s0){const got=S.money-m0;const k=pre.neto>0?Math.max(0,got)/pre.neto:1;const y=FS().yr;const sl={};for(const q of ['bruto','ss','irpf','neto','emp','coste','valor'])sl[q]=pre[q]*k;sl.ret=pre.ret;sl.ssr=pre.ssr;sl.day=S.day;sl.gov=W_().gov;S.fs.last=sl;
     y.bruto+=sl.bruto;y.ss+=sl.ss;y.irpf+=sl.irpf;y.neto+=sl.neto;y.emp+=sl.emp;y.valor+=sl.valor;y.shifts++;}}catch(e){}return r;};}
 function _fsBase(){let f=1;try{const g=govPay();f=g;}catch(e){}return f;}
 // IVA: los básicos cambian de precio con el gobierno; el resto se apunta
@@ -57,9 +58,9 @@ function fsIvaOf(ctx,v,P){const c=BK_CAT[ctx]||'otros';if(['ingresos','ahorro','
   if(d.year!==f.yr.y){f.prev={...f.yr,done:false,gov:W_().gov};f.yr={y:d.year,bruto:0,ss:0,irpf:0,neto:0,emp:0,valor:0,iva:0,ibi:0,sind:0,shifts:0};
     if(f.prev.bruto>0)tell(`Año fiscal cerrado. ${n} ganó ${fmt(Math.round(f.prev.bruto))} brutos y le llegaron ${fmt(Math.round(f.prev.neto))}. La declaración, en abril.`,'🧾');}
   // la renta: abril
-  if(f.prev&&!f.prev.done&&d.m>=3){f.prev.done=true;if(f.prev.bruto>0)fsDeclara(f.prev);}
+  if(f.prev&&!f.prev.done&&d.m>=3){f.prev.done=true;if(f.prev.bruto>0||(f.prev.aut||0)>0)fsDeclara(f.prev);}
 }catch(e){console.error(e);}return r;};}
-function fsDeclara(p){const E=FS_EUR();const A=p.bruto*E;const P=FS_GOV[p.gov]||FSP();const sind=p.sind*E;const t=fsTax(A,P,sind);const real=t.irpf/E;const res=Math.round(real-p.irpf);const n=CH().name;
+function fsDeclara(p){const E=FS_EUR();const A=(p.bruto+Math.max(0,(p.aut||0)-(p.cuota||0)))*E;const P=FS_GOV[p.gov]||FSP();const sind=p.sind*E;const t=fsTax(A,P,sind);const real=t.irpf/E;const res=Math.round(real-p.irpf);const n=CH().name;
   const why=[];if(p.shifts<fsShiftsYr()*.85)why.push('no trabajó el año entero y le retuvieron como si sí');if(sind>0)why.push(`la cuota del sindicato (${fmt(Math.round(p.sind))}) desgrava`);if((S.kids||[]).length)why.push('los críos rebajan la cuota');
   S.fs.decl={y:p.y,real:Math.round(real),ret:Math.round(p.irpf),res,day:S.day};
   if(P.caja){tell(`Este año no hay declaración: la caja común se liquida sola en asamblea. ${n} ha ido a mirar en qué se gastó: hospital, comedores y el autobús nuevo.`,'🧾');return;}
@@ -96,3 +97,62 @@ function openFs(){const f=FS();const P=FSP();const G=GOVS[W_().gov]||{};const n=
   fsEl.innerHTML=h;fsEl.classList.add('on');}
 document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.closest('#fsopen,#fsclose');if(!t)return;if(t.id==='fsopen')openFs();else closeFs();},true);
 {const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{h=h.replace('<h3>🌍 El mundo</h3>',`<h3>🌍 El mundo</h3><button class="btn grey" id="fsopen">🧾 Nómina e impuestos</button>`);}catch(e){}return h;};}
+
+// =================== TRABAJO EN NEGRO ===================
+const fsDlgEl=()=>{let e=document.getElementById('fsdlg');if(!e){e=document.createElement('div');e.id='fsdlg';document.body.appendChild(e);}return e;};
+function fsAsk(title,txt,opts){const e=fsDlgEl();e.innerHTML=`<div class="omt">${title}</div><div class="sub" style="padding:4px 8px 8px;font-size:13px">${txt}</div><div style="display:flex;flex-direction:column;gap:6px;padding:4px 6px">${opts.map((o,i)=>`<button class="btn${i?' grey':''}" data-fsd="${i}">${o[0]}</button>`).join('')}</div>`;e.classList.add('on');e.querySelectorAll('[data-fsd]').forEach(b=>b.onclick=()=>{e.classList.remove('on');opts[+b.dataset.fsd][1]();if(typeof openMenu==='function'&&menu.classList.contains('open'))openMenu();});}
+function fsNegroOK(){const w=W_();return !S.jobless&&!TR().self&&!TR().auto&&!TR().coop&&S.track!=='funcion'&&w.era!=='consejos'&&w.era!=='comunas';}
+function fsNegroStop(why){const f=FS();if(!f.negro)return;f.negro=false;tell(why,'📄');}
+{const _ww=worldWeekly;worldWeekly=function(){const r=_ww.apply(this,arguments);try{fsNegroWeek();fsAutWeek();}catch(e){console.error(e);}return r;};}
+function fsNegroWeek(){const f=FS();const w=W_();const n=CH().name;const jefe=S.office?S.office.n:'la empresa';
+  if(f.negro&&!fsNegroOK()){fsNegroStop('Se acabó cobrar en negro.');return;}
+  // la oferta
+  if(!f.negro&&fsNegroOK()&&S.day-(f.negroAsk||-99)>40){const sec=['hosteleria','obra','cuidados','super'].includes(S.track)?.09:.03;if(Math.random()<sec*(1+TOX())*(w.crisis>55?1.5:1)){f.negroAsk=S.day;
+    fsAsk('💶 «Te lo pago en mano»',`En ${jefe} te proponen dejar de tener contrato y cobrar en negro. «Te llevas más limpio y nos ahorramos papeles.» Más dinero cada semana; pero sin Seguridad Social: sin paro si te echan, sin baja si te pasa algo, y esos días no cuentan para la pensión.`,
+      [['Aceptar: cobrar en B',()=>{f.negro=true;f.negroSince=S.day;tell(`${n} cobra en negro desde hoy. El sobre llega los viernes. Oficialmente, no trabaja en ningún sitio.`,'💶');}],
+       ['No: quiero contrato',()=>{if(Math.random()<.25+TOX()*.3){S.rep=Math.max(0,(S.rep??60)-5);tell(`${n} ha dicho que no. El encargado lo ha apuntado. «Hay cola de gente que diría que sí.»`,'😒');}else tell(`${n} ha dicho que no. Por esta vez, no ha pasado nada.`,'📄');}]]);}}
+  if(!f.negro)return;
+  // inspección de trabajo
+  const pIns={progresista:.06,mercado:.05,austeridad:.02,conservador:.015,liberal:.01}[w.gov]||.03;
+  if(Math.random()<pIns){if(Math.random()<.55){f.negro=false;tell(`Inspección de trabajo en ${jefe}. A la empresa le cae una multa y tiene que dar de alta a todo el mundo. ${n} vuelve a tener contrato. Al encargado no le ha hecho gracia.`,'🕵️');}
+    else{f.negro=false;S.jobless=true;S.paroWeeks=0;tell(`Inspección de trabajo. La empresa paga la multa y despide a quien estaba en negro, «para evitar problemas». ${n} se va a la calle sin paro: oficialmente nunca trabajó allí.`,'🕵️');}}}
+// si echan a alguien que estaba en negro: sin paro
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const f=FS();if(f.negro&&S.jobless){f.negro=false;if(S.paroWeeks>0){S.paroWeeks=0;tell(`Sin contrato no hay paro. ${CH().name} ha ido al SEPE: «no consta ninguna relación laboral». ${f.negroSince?Math.round((S.day-f.negroSince)/7)+' semanas trabajadas que no existen.':''}`,'📄');}}
+  if(f.negro&&S.sick>0&&!f.negroSick){f.negroSick=1;tell(`Sin contrato, la baja no existe. ${CH().name} no cobra los días que no puede ir. Y si fue en el trabajo, «se cayó en casa».`,'🩹');}if(!S.sick)f.negroSick=0;}catch(e){}return r;};}
+function fsPedirAlta(){const f=FS();const o=office();const n=CH().name;const p=.35+(o.org||0)/200+(S.union&&S.union.member?.15:0);
+  if(Math.random()<p){f.negro=false;tell(`${n} ha pedido el alta. ${S.union&&S.union.member?'Con el delegado sindical delante, ':''}la empresa ha cedido: vuelve a tener contrato.`,'📄');}
+  else if(Math.random()<.4){f.negro=false;S.jobless=true;S.paroWeeks=0;tell(`${n} ha pedido el alta. Al día siguiente ya no la necesitaban. Sin contrato, ni despido ni paro.`.replace('no la necesitaban',ga('no la necesitaban','no lo necesitaban','no le necesitaban')),'📦');}
+  else tell(`${n} ha pedido el alta. «Ya veremos», dice el encargado. Sigue en negro.`,'📄');
+  if(typeof openMenu==='function')openMenu();}
+// =================== AUTÓNOMOS: cuota por tramos de rendimiento ===================
+const FS_CUOTA=[[670,200],[900,220],[1166,260],[1300,291],[1700,294],[1850,350],[2030,370],[2330,390],[2760,415],[3190,440],[3620,465],[4050,490],[6000,530],[1e9,590]];
+function fsCuotaEur(rendMes){for(const [lim,c] of FS_CUOTA)if(rendMes<=lim)return c;return 590;}
+function fsAut(){const f=FS();f.au=f.au||{alta:false,since:null,hist:[],lastInc:0,warned:0};return f.au;}
+function fsAutRendMes(){const a=fsAut();const E=FS_EUR();let v=0;if(TR().auto&&!S.jobless&&!TR().self)v+=salary()*(TR().days||[]).length*4.3;else if(TR().self&&S.biz)v+=Math.max(0,(S.biz.last||0))*4.3;
+  const fl=a.hist.filter(x=>x[0]>S.day-90).reduce((s,x)=>s+x[1],0)/3;return (v+fl)*E;}
+function fsCuota(){const a=fsAut();const w=W_();if(w.era==='consejos'||w.era==='comunas')return 0;const E=FS_EUR();let c=fsCuotaEur(fsAutRendMes());if(a.since!=null&&S.day-a.since<365)c=80;if(w.gov==='mercado')c*=.7;return Math.round(c/E);}
+function fsAutWeek(){const a=fsAut();const n=CH().name;
+  // lo que entra por escribir o pintar
+  try{const C=LB();const inc=C.inc||0;if(inc>a.lastInc){a.hist.push([S.day,inc-a.lastInc]);a.lastInc=inc;}a.hist=a.hist.filter(x=>x[0]>S.day-365);}catch(e){}
+  // el reparto y el negocio son autónomos desde el principio
+  if((TR().auto||TR().self)&&!S.jobless&&!a.alta){a.alta=true;a.since=S.day;tell(`${n} se ha dado de alta como autónoma. El primer año, tarifa plana: 80 € al mes. Luego, según lo que gane.`.replace('autónoma',ga('autónoma','autónomo','autónome')),'📑');}
+  // si gana con regularidad escribiendo o pintando: toca alta
+  const fl=a.hist.reduce((s,x)=>s+x[1],0)*FS_EUR();
+  if(!a.alta&&fl>=FS_SMI*.5&&S.day-a.warned>60){a.warned=S.day;
+    fsAsk('📑 Ya no es un hobby',`Lo que ${n} gana escribiendo o pintando ya es habitual. Hacienda y la Seguridad Social consideran que es una actividad: toca darse de alta como autónoma y pagar cuota cada mes (el primer año, tarifa plana de 80 €).`.replace('autónoma',ga('autónoma','autónomo','autónome')),
+      [['Darse de alta',()=>{a.alta=true;a.since=S.day;tell(`${n} ya es autónoma. Factura, IVA trimestral y cuota. Bienvenida a la burocracia.`.replace('autónoma',ga('autónoma','autónomo','autónome')).replace('Bienvenida',ga('Bienvenida','Bienvenido','Bienvenide')),'📑');}],
+       ['Seguir sin alta (y cruzar los dedos)',()=>{a.sin=S.day;tell(`${n} sigue cobrando sin estar de alta. Si llega una inspección, habrá que pagar las cuotas atrasadas y una multa.`,'🤞');}]]);}
+  if(!a.alta&&a.sin&&Math.random()<.015){const atr=Math.round(fsCuotaEur(fl/12)*Math.min(12,Math.round((S.day-a.sin)/30))/FS_EUR());const multa=Math.round(atr*.5);bkAdd('Hacienda',-(atr+multa));a.alta=true;a.since=S.day-400;a.sin=null;tell(`Inspección: ${n} tenía ingresos sin estar de alta. Cuotas atrasadas (${fmt(atr)}) y multa (${fmt(multa)}). Ahora, de alta y sin tarifa plana.`,'🕵️');}
+  // la baja como autónoma si deja de haber actividad
+  if(a.alta&&!TR().auto&&!TR().self&&fl<FS_SMI*.2){a.alta=false;tell(`${n} se ha dado de baja como autónoma: ya no le compensa.`.replace('autónoma',ga('autónoma','autónomo','autónome')),'📑');}
+  // la cuota, el día 1 de cada mes (se cobra en el lunes que cae en la primera semana)
+  const d=dateOf(S.day);if(a.alta&&d.dm<=7&&a.paid!==d.m){a.paid=d.m;const c=fsCuota();if(c>0){bkAdd('Cuota autónomos',-c);const y=FS().yr;y.cuota=(y.cuota||0)+c;y.ss+=c;}}
+  // la vieja cuota simbólica del núcleo se devuelve: ahora va por tramos
+  if(TR().auto&&!S.jobless)S.money+=Math.round(4*PM());}
+if(typeof BK_CAT!=='undefined')BK_CAT['Cuota autónomos']='deudas';
+// en la ventana: negro y autónomos
+{const _of=openFs;openFs=function(){_of.apply(this,arguments);try{const f=FS();const a=fsAut();const n=CH().name;let x='';
+  if(f.negro)x+=`<div class="gvbox" style="border-color:#c0392b"><div class="fst">💶 Cobrando en negro</div><div class="sub" style="font-size:11.5px">Desde el día ${f.negroSince}. Sin Seguridad Social: sin paro, sin baja, y ${f.negroTot||0} turnos que no cuentan para la pensión.</div><button class="btn grey" id="fsalta">📄 Pedir que me den de alta</button></div>`;
+  else if(f.negroTot)x+=`<div class="sub" style="font-size:11px;padding:2px 8px">${f.negroTot} turnos trabajados en negro: no cuentan para la pensión.</div>`;
+  if(a.alta){const c=fsCuota();x+=`<div class="gvbox"><div class="fst">📑 Autónoma</div>`.replace('Autónoma',ga('Autónoma','Autónomo','Autónome'))+`<div class="gvr"><span>Rendimiento estimado</span><b>${Math.round(fsAutRendMes())} €/mes</b></div><div class="gvr"><span>Cuota a la Seguridad Social</span><b style="color:#c0392b">${fmt(c)}/mes${a.since!=null&&S.day-a.since<365?' (tarifa plana)':''}</b></div><div class="sub" style="font-size:11px">Por tramos: gana poco y paga mucho en proporción (200 € al mes por debajo de 670 €); gana mucho y paga como mucho 590 €. El IRPF de lo que gane se liquida en la renta.</div></div>`;}
+  if(x){const box=fsEl.querySelector('#fsclose');box.parentElement.insertAdjacentHTML('beforebegin',x);const b=fsEl.querySelector('#fsalta');if(b)b.onclick=()=>{fsPedirAlta();openFs();};}}catch(e){console.error(e);}};}

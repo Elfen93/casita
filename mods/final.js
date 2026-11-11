@@ -3,7 +3,7 @@ function finalData(){const c=CH();const n=c.name;const age=c.age||27;const yrs=M
   const E=typeof ED==='function'?ED():{lv:'eso',done:[],certs:[]};const M=typeof MT==='function'?MT():{an:60,dep:0,alc:0,dro:0};const H=typeof HP==='function'?HP():{list:[],peso:0,base:0};const G=typeof MG==='function'?MG():{};const L=typeof LB==='function'?LB():{pub:[],obras:[],inc:0,own:[]};
   const pt=partner();const md=P_('madre');const kids=S.kids||[];const friends=(S.people||[]).filter(p=>p.rel>=55&&!p.k.startsWith('p')&&p.k!=='madre').length;
   const homeK=(S.home&&S.home.type)||'casita';const owned=!!S.owned;const mort=S.mort;const salW=S.jobless?0:salary()*TR().days.length;const rentW=homeK==='padres'||homeK==='calle'?0:weeklyRent();
-  const sav=S.money;const coti=S.shifts||0;// turnos cotizados
+  const sav=S.money;const coti=Math.max(0,(S.shifts||0)-((S.fs&&S.fs.negroTot)||0));// turnos cotizados
   const union=!!(S.union&&S.union.member);const mov=W_().mov||0;const comp_=typeof comp==='function'?comp():0;
   return {n,age,yrs,tr,lvlJob,E,M,H,G,L,pt,md,kids,friends,homeK,owned,mort,salW,rentW,sav,coti,union,mov,comp:comp_,chaps:Object.values(storyState().chap).sort((a,b)=>a.n-b.n)};}
 function finalText(){const D=finalData();const {n}=D;const o=oa();const el=o==='a'?'ella':o==='o'?'él':'elle';const mm=Math.max(1,Math.round(D.yrs*12));const yrs=D.yrs<1?`${mm} mes${mm>1?'es':''}`:`${D.yrs.toFixed(1)} años`;const sec=[];
