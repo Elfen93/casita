@@ -1,9 +1,10 @@
+const mknob=(a,b,z,col='#e9c46a')=>{if(lvis(0,1)){const [x,y]=LP(a,b,z);circ(x,y,1.3,col);}};
 // =================== FREGAR: cocinar ensucia; los platos se acumulan; se friega en el fregadero (o donde se pueda) ===================
 OBJ.fregadero={n:'Fregadero',e:'🚰',p:150,h:25,c:'#dfe3e6',ins:.06,decor:1,cat:'cocina',need:{},pas:'para fregar los platos'};
 if(OBJ.lavavaj&&!OBJ.lavavaj.need)OBJ.lavavaj.need={};
 if(typeof MUEB_NEW!=='undefined')MUEB_NEW.push('fregadero');if(typeof OBJ_ZONES!=='undefined')OBJ_ZONES.fregadero=['cocina'];if(typeof GROUP!=='undefined')GROUP.fregadero='cocina';if(typeof CRAFT!=='undefined')CRAFT.fregadero=['font',1,5];if(typeof BACKD!=='undefined')BACKD.fregadero=.06;
-MDRAW.fregadero=(o,i,tt,u)=>{const cab=Q(o,'#ece6d8'),top=o.q===4?'#efece6':'#c9c3b8';
-  lp(.04,.1,.96,.92,0,22,cab);lp(.02,.06,.98,.95,22,25,top);lfB(.08,.48,.921,3,19,shade(cab,.95));lfB(.52,.92,.921,3,19,shade(cab,.95));knob(.44,.922,15,'#9aa5ad');knob(.56,.922,15,'#9aa5ad');
+MDRAW.fregadero=(o,i,tt,u)=>{const cab=O_COL(o,'#ece6d8'),top=o.q===4?'#efece6':'#c9c3b8';
+  lp(.04,.1,.96,.92,0,22,cab);lp(.02,.06,.98,.95,22,25,top);lfB(.08,.48,.921,3,19,shade(cab,.95));lfB(.52,.92,.921,3,19,shade(cab,.95));mknob(.44,.922,15,'#9aa5ad');mknob(.56,.922,15,'#9aa5ad');
   ltop(.2,.25,.8,.75,25.2,'#a9b3ba');ltop(.24,.29,.76,.71,24.6,'#8d979e');
   lp(.47,.12,.53,.18,25,38,'#b8c2c8');lp(.47,.12,.53,.36,36,39,'#b8c2c8');
   const n=Math.min(6,Math.round(S.sucios||0));for(let k=0;k<n;k++){const [x,y]=LP(.35+(k%3)*.13,.4+(k>2?.16:0),26+k*.6);circ(x,y,2.4,'#f4f1ea');}};

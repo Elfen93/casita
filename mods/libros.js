@@ -137,7 +137,7 @@ function wrSubmit(p,how){const C=LB();const n=CH().name;C.proj=null;
 OBJ.caballete={n:'Caballete',e:'🎨',p:120,h:44,c:'#a0714f',ins:.2,need:{diversion:.4},verb:'Pintando',b:'🎨',decor:1,cat:'estudio'};
 if(typeof MUEB_NEW!=='undefined')MUEB_NEW.push('caballete');if(typeof OBJ_ZONES!=='undefined')OBJ_ZONES.caballete=['estudio','salon','dormitorio','taller','libre'];if(typeof GROUP!=='undefined')GROUP.caballete='ocio';if(typeof CRAFT!=='undefined')CRAFT.caballete=['carp',0,3];if(typeof ONOBJ!=='undefined')ONOBJ.add('caballete');
 ACTV.caballete=[['pintar','🎨','Pintar',120,null,0,2,{diversion:.06,energia:-.03},'pintar'],['vender','🛍️','Vender cuadros',2,null,0,0,{},'vender']];
-MDRAW.caballete=(o,i,tt,u,anaOn)=>{const w=Q(o,'#a0714f');lp(.18,.5,.22,.54,0,42,w);lp(.78,.5,.82,.54,0,42,w);lp(.48,.78,.52,.82,0,36,w);lp(.2,.5,.8,.52,22,24,w);
+MDRAW.caballete=(o,i,tt,u,anaOn)=>{const w=O_COL(o,'#a0714f');lp(.18,.5,.22,.54,0,42,w);lp(.78,.5,.82,.54,0,42,w);lp(.48,.78,.52,.82,0,36,w);lp(.2,.5,.8,.52,22,24,w);
   const C=(typeof LB==='function')?LB():null;const cur=C&&C.cur_art;const pr=cur?Math.min(1,cur.h/cur.need):0;const [a,b]=LP(.5,.5,0);
   poly([LP(.24,.48,24),LP(.76,.48,24),LP(.76,.48,42),LP(.24,.48,42)],'#f1ece0');if(pr>0){const cols=['#c9524a','#5a7fb0','#d8a640','#5f9a5a','#8b5e8b'];const r=seedRng('cu'+(cur.t||''));const k=Math.ceil(pr*5);for(let j=0;j<k;j++){const x0=.27+r()*.4,z0=26+r()*12;poly([LP(x0,.479,z0),LP(x0+.08+r()*.1,.479,z0),LP(x0+.08+r()*.1,.479,z0+3+r()*5),LP(x0,.479,z0+3+r()*5)],cols[j%5]);}}
   lp(.26,.44,.74,.5,0,1.5,'#6e4e38');};

@@ -41,3 +41,4 @@
 - Listas de espera (médico y salud mental) según el gobierno: consejos ×0,35, comunas ×0,45, socialismo de mercado ×0,5, progresista ×0,75, conservador ×1,3, liberal ×1,4, austeridad ×1,8.
 - Los deseos guardados de antes que ya no encajan (piscina en alquiler, etc.) se olvidan solos.
 - Fregadero: ya no se usa «para divertirse» ni se friega sin platos sucios (avisa «No hay nada que fregar»); tocarlo friega directamente.
+- Arreglado: el fregadero (y el caballete) no se dibujaban ni se podían colocar por un error de dibujo.
