@@ -16061,6 +16061,11 @@ document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.clos
   card.querySelectorAll('.kv').forEach(e=>{const s=e.firstElementChild&&e.firstElementChild.textContent;if(s==='Comprar la casa'||s==='Hipoteca')e.remove();});
   card.querySelectorAll('.sub').forEach(e=>{if(/El banco ahora no la da/.test(e.textContent))e.textContent='🚩 Con los consejos la vivienda no se compra ni se vende. Si necesitas otra, se pide a la asamblea (más abajo).';});
   if(S.mort){card.querySelectorAll('.kv').forEach(e=>{if(e.firstElementChild&&e.firstElementChild.textContent==='Cuota')e.lastElementChild.textContent=`${fmt(S.mort.pay)}/semana · ${(S.mort.rate*100).toFixed(1)} % · tope 22 % de lo que entra`;});}}}catch(e){}return r;};}
+// con los consejos (o el socialismo de mercado) no hay patrón contra quien hacer huelga: se acaban las huelgas
+const noStrikes=()=>{const w=W_();return (REV()&&govPh()>=2)||(w.gov==='mercado'&&!w.era);};
+{const _cs=callStrike;callStrike=function(byOthers){if(noStrikes()){if(!byOthers)toast(REV()?'Ya no hay patrón: lo que se quiera cambiar, al consejo':'El sindicato oficial no convoca huelgas');return;}return _cs.apply(this,arguments);};}
+{const _ww=worldWeekly;worldWeekly=function(){const r=_ww.apply(this,arguments);try{const w=W_();if(noStrikes()){if(w.gsDay){w.gsDay=null;}if(w.manif&&REV()&&Math.random()<.7)w.manif=null;if(S.office)S.office.griev=Math.min(S.office.griev||0,10);}}catch(e){}return r;};}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{if(noStrikes()&&S.strike&&S.strike.on){S.strike.on=false;S.strike.left=0;tell(REV()?'La huelga se desconvoca: ahora la plantilla decide en asamblea, y lo que se pedía se ha llevado al consejo.':'La huelga se desconvoca: el sindicato oficial ha llegado a un acuerdo con la dirección.','📣');}}catch(e){}return r;};}
 // =================== IMPUESTOS DE VERDAD: nómina bruta/neta, IRPF por tramos, IVA, IBI, declaración y «tu año fiscal» ===================
 // Modelo España 2026 simplificado. La moneda del juego es el euro.
 const FS_SMI=17094,FS_EUR=()=>1;

@@ -42,3 +42,4 @@
 - Los deseos guardados de antes que ya no encajan (piscina en alquiler, etc.) se olvidan solos.
 - Fregadero: ya no se usa «para divertirse» ni se friega sin platos sucios (avisa «No hay nada que fregar»); tocarlo friega directamente.
 - Arreglado: el fregadero (y el caballete) no se dibujaban ni se podían colocar por un error de dibujo.
+- Con los consejos (desde la fase de trabajo) y con socialismo de mercado se acaban las huelgas: no se convocan en el curro ni huelgas generales, la que hubiera se desconvoca, el malestar baja y hay muchas menos manifestaciones.
