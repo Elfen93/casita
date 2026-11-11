@@ -49,7 +49,7 @@ function update(gm){
   if(S.t>=1440){S.t-=1440;writeDiary();S.day++;rollWeather();dailyEvents();gardenDaily();peopleDaily();newToday();birthdayCheck();milestones();jobStory();dailySociety();socialDaily();conexDaily();seasonDaily();try{aspDaily();}catch(e){}S.distract=Math.random()<0.35?0.4+Math.random()*0.7:0;const d=dateOf(S.day),dt=dayType(S.day);toast(`📅 ${WDL[d.wd]} ${d.dm} de ${MONTHS[d.m]} · ${DAYICON[dt]} ${festivo(S.day)||DAYNAME[dt]}`);if(S.t>=8*60&&d.wd===0)payRent();}
   updateNPC(gm);updateResidents(gm);
   if(s.work>0){
-    const mult={hambre:1.1,energia:1.7*(TR().burn||1)*(S.track==='obra'?1.2:1),higiene:1.3,vejiga:0.4,diversion:1.6,social:0.3};
+    const mult=s.outingActive?{hambre:1,energia:1,higiene:1,vejiga:0.6,diversion:0.6,social:0.5}:{hambre:1.1,energia:1.3*(TR().burn||1)*(S.track==='obra'?1.15:1),higiene:1.3,vejiga:0.4,diversion:1.6,social:0.3};
     for(const [n] of NEEDS)nd[n]=Math.max(3,nd[n]-DECAY[n]*mult[n]*gm);
     if(!s.outingActive){const xm=isI('liberal')?1.2:1;gainSkill('logica',gm*0.015*xm);gainSkill('carisma',gm*0.01*xm);if(S.track==='obra')gainSkill('alba',gm*0.02);if(S.track==='hosteleria')gainSkill('cocina',gm*0.015);if(S.track==='arte')gainSkill('musica',gm*0.02);if(S.track==='tech')gainSkill('logica',gm*0.01);} // la experiencia en el trabajo también enseña
     if(!s.outingActive&&nd.hambre<35&&!s.ateAtWork){s.ateAtWork=true;const c=Math.round(mealOutCost()*0.7);nd.hambre=Math.min(100,nd.hambre+55);S.money-=c;}

@@ -6341,7 +6341,7 @@ function update(gm){
   if(S.t>=1440){S.t-=1440;writeDiary();S.day++;rollWeather();dailyEvents();gardenDaily();peopleDaily();newToday();birthdayCheck();milestones();jobStory();dailySociety();socialDaily();conexDaily();seasonDaily();try{aspDaily();}catch(e){}S.distract=Math.random()<0.35?0.4+Math.random()*0.7:0;const d=dateOf(S.day),dt=dayType(S.day);toast(`📅 ${WDL[d.wd]} ${d.dm} de ${MONTHS[d.m]} · ${DAYICON[dt]} ${festivo(S.day)||DAYNAME[dt]}`);if(S.t>=8*60&&d.wd===0)payRent();}
   updateNPC(gm);updateResidents(gm);
   if(s.work>0){
-    const mult={hambre:1.1,energia:1.7*(TR().burn||1)*(S.track==='obra'?1.2:1),higiene:1.3,vejiga:0.4,diversion:1.6,social:0.3};
+    const mult=s.outingActive?{hambre:1,energia:1,higiene:1,vejiga:0.6,diversion:0.6,social:0.5}:{hambre:1.1,energia:1.3*(TR().burn||1)*(S.track==='obra'?1.15:1),higiene:1.3,vejiga:0.4,diversion:1.6,social:0.3};
     for(const [n] of NEEDS)nd[n]=Math.max(3,nd[n]-DECAY[n]*mult[n]*gm);
     if(!s.outingActive){const xm=isI('liberal')?1.2:1;gainSkill('logica',gm*0.015*xm);gainSkill('carisma',gm*0.01*xm);if(S.track==='obra')gainSkill('alba',gm*0.02);if(S.track==='hosteleria')gainSkill('cocina',gm*0.015);if(S.track==='arte')gainSkill('musica',gm*0.02);if(S.track==='tech')gainSkill('logica',gm*0.01);} // la experiencia en el trabajo también enseña
     if(!s.outingActive&&nd.hambre<35&&!s.ateAtWork){s.ateAtWork=true;const c=Math.round(mealOutCost()*0.7);nd.hambre=Math.min(100,nd.hambre+55);S.money-=c;}
@@ -16363,6 +16363,15 @@ if(typeof BK_CAT!=='undefined')BK_CAT['Comunidad']='familia';
   const di=(P.inf||0)-i0,dx=(P.xp||0)-x0;if(di>0)P.inf=i0+di*.3;if(dx>0)P.xp=x0+dx*.45;
   const yrs=R.start==null?0:(S.day-R.start)/365;const age=(S.char&&S.char.age)||30;
   const cap=Math.min(100,12+yrs*22-(age<23?8:0));if(P.inf>cap)P.inf=cap;}catch(e){}return r;};}
+// =================== ENERGÍA CON SENTIDO: nadie se duerme en la acera; si no puede más, vuelve a casa y se mete en la cama ===================
+{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim,nd=S.needs;const E=S.en=S.en||{};const n=CH().name;
+  // fuera: si está reventado, se vuelve antes
+  if(s.work>0&&s.outingActive&&s.outingActive!=='calabozo'&&nd.energia<12&&E.cut!==s.outingActive+S.day){E.cut=s.outingActive+S.day;s.work=Math.min(s.work,25);toast(`😴 ${n} está reventado: se vuelve a casa`.replace('reventado',ga('reventada','reventado','reventade')));}
+  // en casa: con poca energía, a la cama antes de caer redondo
+  if(!(s.work>0)&&!s.leaving&&nd.energia<14&&!(s.use&&(bedUse(s.use)||s.use.type==='_suelo'))&&S.t-(E.bed||-99)>20){const q=s.queue||[];if(!q.some(x=>x.need==='energia')){E.bed=S.t;s.use=null;s.path=[];enqueue({k:'need',need:'energia'});}}
+}catch(e){}return r;};}
+// al volver tarde y cansado, directo a dormir
+{const _fw=finishWork;finishWork=function(){const was=S.sim.outingActive;const r=_fw.apply(this,arguments);try{const h=S.t/60;if(S.needs.energia<25&&(h>=21||h<5||S.needs.energia<15)){S.sim.use=null;enqueue({k:'need',need:'energia'});}}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
