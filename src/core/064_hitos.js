@@ -23,7 +23,7 @@ const BEATS={
   eco(){const t=TM();const c=t.choices;if(!c.length)return;tell(`Ana repasa estos dos meses: ${c.slice(-3).map(x=>x.toLowerCase()).join('; ')}. ${pickR(['No sabe si volvería a hacer lo mismo.','Lo volvería a hacer.','Cada cosa le ha costado algo.'])}`,'🪞');},
   epilogo(){const t=TM();const dm=Math.round(S.money)-t.money0;const same=S.track===t.track0&&S.career===t.career0&&!S.jobless&&!t.jobless0;
     const near=[...(S.people||[])].filter(p=>p.stage!=='ex').sort((a,b)=>closeTo(b)-closeTo(a)).slice(0,2).map(p=>p.n);
-    let x=`Han pasado dos meses. ${dm>=0?'Tiene '+fmt(dm)+' más que al empezar':'Tiene '+fmt(-dm)+' menos que al empezar'}. `;
+    let x=`Han pasado dos meses. ${typeof patrimonioTxt==='function'?patrimonioTxt(t,dm):(dm>=0?'Tiene '+fmt(dm)+' más que al empezar':'Tiene '+fmt(-dm)+' menos que al empezar')}. `;
     x+=S.jobless?'Está sin trabajo. ':same?`Sigue de ${L(CAREER[S.career].t).toLowerCase()} en ${office().n}. `:`Ahora es ${L(CAREER[S.career].t).toLowerCase()}${S.office?' en '+office().n:''}. `;
     if(S.ideo!==t.ideo0)x+=`Ya no piensa como antes: se siente ${IDEOS[S.ideo].n.toLowerCase()}. `;
     if(near.length)x+=`Si algo se tuerce, llamará a ${near.join(' o a ')}. `;

@@ -11917,7 +11917,7 @@ const BEATS={
   eco(){const t=TM();const c=t.choices;if(!c.length)return;tell(`Ana repasa estos dos meses: ${c.slice(-3).map(x=>x.toLowerCase()).join('; ')}. ${pickR(['No sabe si volvería a hacer lo mismo.','Lo volvería a hacer.','Cada cosa le ha costado algo.'])}`,'🪞');},
   epilogo(){const t=TM();const dm=Math.round(S.money)-t.money0;const same=S.track===t.track0&&S.career===t.career0&&!S.jobless&&!t.jobless0;
     const near=[...(S.people||[])].filter(p=>p.stage!=='ex').sort((a,b)=>closeTo(b)-closeTo(a)).slice(0,2).map(p=>p.n);
-    let x=`Han pasado dos meses. ${dm>=0?'Tiene '+fmt(dm)+' más que al empezar':'Tiene '+fmt(-dm)+' menos que al empezar'}. `;
+    let x=`Han pasado dos meses. ${typeof patrimonioTxt==='function'?patrimonioTxt(t,dm):(dm>=0?'Tiene '+fmt(dm)+' más que al empezar':'Tiene '+fmt(-dm)+' menos que al empezar')}. `;
     x+=S.jobless?'Está sin trabajo. ':same?`Sigue de ${L(CAREER[S.career].t).toLowerCase()} en ${office().n}. `:`Ahora es ${L(CAREER[S.career].t).toLowerCase()}${S.office?' en '+office().n:''}. `;
     if(S.ideo!==t.ideo0)x+=`Ya no piensa como antes: se siente ${IDEOS[S.ideo].n.toLowerCase()}. `;
     if(near.length)x+=`Si algo se tuerce, llamará a ${near.join(' o a ')}. `;
@@ -16758,6 +16758,18 @@ let bkSig='',bkForce=false;
 function bkSigNow(){const b=BP(),B=BKS();return [bkTab,bkMode(),Math.round(S.money),B.hucha,Math.round(b.ahorro.v),b.auto||0,b.dep?b.dep.v+'/'+b.dep.until:'',Math.round(b.fondos.v),Math.round(b.cripto.v),b.loan?b.loan.left:'',payList().map(d=>Math.round(d.v)).join(','),B.log.length,S.day].join('|');}
 {const _pr=phRender;phRender=function(){if(phApp==='bank'&&S){try{const ph=document.getElementById('phone');const sg=bkSigNow();if(!bkForce&&sg===bkSig&&ph&&ph.querySelector('.bk3card,.bk3bal,.bk3r'))return;bkSig=sg;bkForce=false;
   const old=ph&&ph.querySelector('.bkbody');const st=old?old.scrollTop:0;bkRender();const nb=ph&&ph.querySelector('.bkbody');if(nb&&st)nb.scrollTop=st;return;}catch(e){console.error(e);}}bkSig='';return _pr.apply(this,arguments);};}
+// =================== LO QUE SE TIENE NO ES SOLO LO DE LA CUENTA: ahorro, casa y muebles cuentan ===================
+function ahorros(){try{const b=BP(),B=BKS();return Math.round((B.hucha||0)+(b.ahorro.v||0)+(b.dep?b.dep.v:0)+(b.fondos.v||0)+(b.cripto.v||0));}catch(e){return 0;}}
+function deudasTot(){try{return Math.round(bkDebts().reduce((a,d)=>a+(d[1]||0),0));}catch(e){return 0;}}
+function casaVal(){try{return Math.round(houseValue()*.6);}catch(e){return 0;}} // lo que vale lo hecho y comprado (usado, no nuevo)
+function patriSnap(t){t.sav0=ahorros();t.hv0=casaVal();t.deb0=deudasTot();t.own0=!!S.owned;}
+{const _ns=newSeason;newSeason=function(){const t=_ns.apply(this,arguments);try{patriSnap(t);}catch(e){}return t;};}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const t=TM();if(t&&t.hv0==null)patriSnap(t);}catch(e){}return r;};}
+function patrimonioTxt(t,dm){const ds=ahorros()-(t.sav0||0),dh=casaVal()-(t.hv0??casaVal()),dd=deudasTot()-(t.deb0||0);const tot=dm+ds+dh-dd;
+  const parts=[];parts.push(`en la cuenta ${dm>=0?'+':'−'}${fmt(Math.abs(dm))}`);if(ds)parts.push(`ahorrado ${ds>0?'+':'−'}${fmt(Math.abs(ds))}`);if(dh)parts.push(`${dh>0?'invertido en la casa':'casa'} ${dh>0?'+':'−'}${fmt(Math.abs(dh))}`);if(dd)parts.push(`deudas ${dd>0?'+':'−'}${fmt(Math.abs(dd))}`);
+  return `${tot>=0?'Es '+fmt(tot)+' más rico que hace dos meses':'Es '+fmt(-tot)+' más pobre que hace dos meses'} (${parts.join(', ')})`.replace('rico',ga('rica','rico','rique')).replace('pobre','pobre');}
+// en Vida: una línea de patrimonio
+{const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{const tot=Math.round(S.money)+ahorros()+casaVal()-deudasTot();h=h.replace('<h3>🤝 Red</h3>',`<div class="sub" style="font-size:12px;margin:-6px 0 10px">🧱 <b>Patrimonio: ${fmt(tot)}</b> · cuenta ${fmt(Math.round(S.money))} + ahorro ${fmt(ahorros())} + lo hecho en casa ${fmt(casaVal())}${deudasTot()?' − deudas '+fmt(deudasTot()):''}</div><h3>🤝 Red</h3>`);}catch(e){}return h;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};

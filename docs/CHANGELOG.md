@@ -58,3 +58,4 @@
 - Banco: ya no parpadea (solo se redibuja si cambia algo) y conserva la posición al desplazarse.
 - Anemia: se quita en las partidas que la tenían; ya solo aparece si se come mal (no solo por pesar poco) y se va cuando la nutrición es decente.
 - Peso: por debajo del objetivo y comiendo bien (nutrición 55+), gana de verdad (~1 kg a la semana, algo más yendo al gimnasio); el gimnasio ya no le resta lo que gana comiendo.
+- Patrimonio: el resumen de temporada cuenta cuenta + ahorro + lo hecho y comprado en casa − deudas («Es 378 € más rico… (en la cuenta −252 €, invertido en la casa +630 €)»); en Vida, línea de patrimonio.
