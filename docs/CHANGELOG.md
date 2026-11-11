@@ -35,3 +35,7 @@
 - Gente: botón «💬 Opciones» con menú claro: mensaje, llamar, paseo por el parque, tomar algo, ir a su casa, invitar a casa, quedarse a dormir, cita, ligar, pedir salir, vivir juntos, casarse, romper.
 - Con los consejos la reputación ante el jefe ya no cuenta (cargos elegidos); ventanas opacas.
 - Deseos realistas: la piscina solo si es casa propia con terreno y sobran 25.000 € (y cuesta ~3.000 € por casilla); en alquiler no se quieren obras, ventanas, jardín ni bañeras; lo que no es necesidad solo se quiere si sobra el doble de lo que cuesta.
+- Interacciones visibles: llamar abre la pantalla de llamada (llamando… / en llamada) y puede no cogerlo (horas raras, poca confianza); ligar, pedir salir, invitar y mensajes muestran una tarjeta con el resultado y cómo cambian relación, amor y etapa.
+- «Ir a su casa»: entra en un portal del barrio (no pasea por el parque) y al volver te escribe un mensaje.
+- Peso: se mide todo lo que come (también el plato y los tápers); comiendo tres veces el cuerpo va hacia su peso sano o hacia el objetivo que fijes (Vida → Cuerpo → 🎯), unos 2–3 kg al mes; saltarse comidas baja, picar y salir sube; la anemia se va al recuperar peso.
+- Listas de espera (médico y salud mental) según el gobierno: consejos ×0,35, comunas ×0,45, socialismo de mercado ×0,5, progresista ×0,75, conservador ×1,3, liberal ×1,4, austeridad ×1,8.

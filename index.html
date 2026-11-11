@@ -423,6 +423,18 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #pesheet .pegrid .btn{text-align:left}
 #pesheet .pesub{font:900 11px Nunito,sans-serif;color:#8a8294;text-transform:uppercase;letter-spacing:.05em;padding:10px 8px 4px}
 #gvsheet,#fsheet,#utsheet,#fsdlg,#pesheet,#libros{background:#fffdf8!important}
+#sfxcard{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(200px + env(safe-area-inset-bottom));z-index:60;width:min(92vw,380px);background:#fffdf8;border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.3);padding:10px 12px;font-family:Nunito,sans-serif;opacity:0;pointer-events:none;transition:all .25s ease;border-left:6px solid #9a90a8}
+#sfxcard.on{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#sfxcard.ok{border-left-color:#2e8b57}#sfxcard.ko{border-left-color:#c0392b}
+#sfxcard .sfxh{display:flex;gap:10px;align-items:center}#sfxcard .sfxi{font-size:28px}
+#sfxcard b{font:900 14px Nunito,sans-serif;color:#3b3247}#sfxcard .sfxl{font:700 12px Nunito,sans-serif;color:#6b6078;margin-top:2px}
+#sfxcard .sfxbar{display:flex;align-items:center;gap:8px;margin-top:6px;font:800 11.5px Nunito,sans-serif;color:#5a4e6a}#sfxcard .sfxbar span{width:84px}#sfxcard .sfxbar .bar{flex:1;height:7px;background:#eee8f1;border-radius:5px;overflow:hidden}#sfxcard .sfxbar .bar i{display:block;height:100%}
+#sfxcard .sfxbar b{font-size:11.5px;min-width:58px;text-align:right}#sfxcard .up{color:#2e8b57}#sfxcard .dn{color:#c0392b}
+#sfxcard .sfxst{margin-top:6px;font:800 11.5px Nunito,sans-serif;color:#7a4fa0}
+#callov{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(180deg,#2c2a3a,#14131c);color:#fff;font-family:Nunito,sans-serif}
+#callov.on{display:flex}#callov .cav{width:96px;height:96px;border-radius:50%;background:#7a6fd0;display:flex;align-items:center;justify-content:center;font:900 44px Nunito,sans-serif;animation:pop .4s ease}
+#callov b{font:900 24px Nunito,sans-serif}#callov .cst{font:700 14px Nunito,sans-serif;opacity:.8}
+#callov .cbtn{margin-top:40px;width:64px;height:64px;border-radius:50%;background:#e04848;display:flex;align-items:center;justify-content:center;font-size:28px}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -16484,6 +16496,60 @@ function wantOK(w){if(!w)return false;const own=S.owned;const all=HT().build==='
   if(!need&&w.kind!=='fix'){const pr=jobPrice(w);const tot=pr.mat+(w.kind==='buy'?pr.labor*0:0);if(tot>0&&sp<tot*2)return false;}
   return true;}
 {const _cw=chooseWant;chooseWant=function(){for(let k=0;k<6;k++){const w=_cw.apply(this,arguments);if(wantOK(w))return w;if(!w)return null;}return null;};}
+// =================== QUE SE VEA: llamar llama, ligar liga, y siempre sabes cómo ha ido ===================
+let sfxEl=null,sfxT=0;
+function sfxCard(icon,title,line,ok,p,b){if(!sfxEl){sfxEl=document.createElement('div');sfxEl.id='sfxcard';document.body.appendChild(sfxEl);sfxEl.onclick=()=>sfxEl.classList.remove('on');}
+  let bars='';if(p&&b){const r1=Math.round(p.rel||0),r0=Math.round(b.rel||0);const d=r1-r0;bars+=`<div class="sfxbar"><span>🤝 Relación</span><div class="bar"><i style="width:${r1}%;background:#7a6fd0"></i></div><b class="${d>0?'up':d<0?'dn':''}">${r1}${d?` (${d>0?'+':''}${d})`:''}</b></div>`;
+    if(b.love!=null&&p.love!=null&&(['cita','rollo','pareja','convive','casada'].includes(p.stage)||Math.round(p.love)!==Math.round(b.love))){const l1=Math.round(p.love),dl=l1-Math.round(b.love);bars+=`<div class="sfxbar"><span>💗 Amor</span><div class="bar"><i style="width:${l1}%;background:#e88aa8"></i></div><b class="${dl>0?'up':dl<0?'dn':''}">${l1}${dl?` (${dl>0?'+':''}${dl})`:''}</b></div>`;}
+    if(b.stage!==p.stage&&typeof STAGE!=='undefined')bars+=`<div class="sfxst">${STAGE[b.stage]||b.stage} → <b>${STAGE[p.stage]||p.stage}</b></div>`;}
+  sfxEl.className='on '+(ok===true?'ok':ok===false?'ko':'');sfxEl.innerHTML=`<div class="sfxh"><span class="sfxi">${icon}</span><div><b>${title}</b><div class="sfxl">${line}</div></div></div>${bars}`;
+  clearTimeout(sfxT);sfxT=setTimeout(()=>sfxEl.classList.remove('on'),5200);sfx(ok===false?'bad':'tap');}
+const sxSnap=p=>({rel:p.rel,love:p.love,stage:p.stage});
+// ---------- la llamada: pantalla de llamada, contesta o no, y resultado ----------
+let callEl=null;
+function callScreen(p,txt){if(!callEl){callEl=document.createElement('div');callEl.id='callov';document.body.appendChild(callEl);}
+  callEl.innerHTML=`<div class="cav">${(p.n||'?')[0]}</div><b>${p.n}</b><div class="cst">${txt}</div><div class="cbtn">📞</div>`;callEl.classList.add('on');}
+{const _cp=callP;callP=function(p){if(!p||S.sim.work>0)return _cp.apply(this,arguments);const n=CH().name;const h=S.t/60;
+  if(S.callBusy)return;S.callBusy=true;menu.classList.remove('open');popBubble('📱');callScreen(p,'Llamando…');
+  let pick=.85;if(h<9||h>=23.5)pick=.35;if((p.rel||0)<20)pick-=.3;if(p.stage==='ex')pick=.2;if(S.sim.outingActive)pick=.9;
+  const ok=Math.random()<pick;
+  setTimeout(()=>{if(!ok){callEl.classList.remove('on');S.callBusy=false;tell(`${n} ha llamado a ${p.n}. No lo ha cogido.${h>=23||h<8?' Normal, a estas horas.':''}`,'📵');sfxCard('📵',`${p.n} no lo coge`,h>=23||h<8?'Son horas raras para llamar. Prueba mañana o mándale un mensaje.':(p.rel||0)<20?'Todavía no hay tanta confianza. Un mensaje es menos invasivo.':'Estará liada. Seguro que devuelve la llamada.'.replace('liada',p.g==='m'?'liado':'liada'),false);return;}
+    let s=0;callScreen(p,'En llamada · 0:00');const iv=setInterval(()=>{s+=7;if(callEl)callEl.querySelector('.cst').textContent=`En llamada · ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;},300);
+    setTimeout(()=>{clearInterval(iv);callEl.classList.remove('on');S.callBusy=false;const b=sxSnap(p);_cp.call(this,p);
+      const top=pickR([`Han estado ${8+(Math.random()*30|0)} minutos hablando de ${pickR(['nada y de todo','el curro','la familia','lo caro que está todo','una serie','planes para el finde'])}.`,`${p.n} se ha alegrado de la llamada.`,`Se han reído un rato. Hacía falta.`]);
+      sfxCard('📞',`Llamada con ${p.n}`,top,true,p,b);},1900);},1500);};}
+// ---------- ligar, pedir salir, invitar, mensaje: siempre con resultado ----------
+{const _fl=flirt;flirt=function(p){const b=sxSnap(p);const r=_fl.apply(this,arguments);try{const ok=p.stage!==b.stage||r===true;sfxCard(ok?'💘':'🙈',ok?`¡A ${p.n} le ha gustado!`:`${p.n} no está por la labor`,ok?'Ha habido chispa. Quedáis para una cita.':(p.rel||0)<40?'Hace falta más confianza antes de intentarlo.':'Esta vez no ha salido. A veces simplemente no hay química.',ok,p,b);}catch(e){}return r;};}
+{const _ao=askOut;askOut=function(p){const b=sxSnap(p);const r=_ao.apply(this,arguments);try{if(p.stage!==b.stage)sfxCard('❤️',`¡${p.n} ha dicho que sí!`,'Ahora sois pareja.',true,p,b);else if((b.love||0)>=60)sfxCard('💔',`${p.n} no quiere ir más allá`,'Por ahora prefiere seguir como estáis.',false,p,b);else sfxCard('⏳','Aún es pronto',`Necesitáis conoceros más (amor ${Math.round(b.love||0)}/60). Citas, llamadas, tiempo juntos.`,null,p,b);}catch(e){}return r;};}
+{const _ih=inviteHome;inviteHome=function(p,stay){const b=sxSnap(p);const r=_ih.apply(this,arguments);try{const here=(S.res||[]).some(x=>x.pid===p.k);sfxCard(stay?'🌙':'🏠',here?(stay?`${p.n} se queda esta noche`:`${p.n} viene a casa`):`${p.n} no puede venir`,here?'Ya está de camino. Tócale cuando llegue para hacer cosas juntos.':'Hoy no le viene bien. Prueba otro día.',here,p,b);}catch(e){}return r;};}
+if(typeof peSend==='function'){const _ps=peSend;peSend=function(p){const b=sxSnap(p);const was=(S.pmsg||{})[p.k];_ps.apply(this,arguments);if(was!==S.day)sfxCard('💬',`Mensaje a ${p.n}`,pickR(['Te contesta con tres audios.','Responde enseguida, con un emoji.','Tarda, pero contesta: «¡qué alegría!».']),true,p,b);};}
+// ---------- ir a su casa: se va a un portal, y luego te escribe ----------
+{const _d=destOf;destOf=function(k){if(k==='visita'){const p=(S.people||[]).find(q=>q.k===S.outWith);return p&&p.k==='madre'?'casaV':pickR(['casaV','casa2']);}return _d.apply(this,arguments);};}
+{const _ob=outBack;outBack=function(k){const p=(k==='visita'||k==='parque')?(S.people||[]).find(q=>q.k===S.outWith):null;const b=p?sxSnap(p):null;const r=_ob.apply(this,arguments);
+  try{if(p){sfxCard(k==='visita'?'🏡':'🌳',k==='visita'?`Tarde en casa de ${p.n}`:`Paseo con ${p.n}`,'Ha ido bien.',true,p,b);
+    setTimeout(()=>tell(`📱 ${p.n}: «${pickR(['Gracias por venir, me ha encantado 😊','A ver si repetimos pronto','Llegaste bien a casa?','Qué bien lo hemos pasado'])}»`,'💬'),2500);}}catch(e){}return r;};}
+{const _go=doOut;doOut=function(k){const r=_go.apply(this,arguments);try{if((k==='visita'||k==='parque')&&S.outWith){const p=(S.people||[]).find(q=>q.k===S.outWith);if(p)toast(k==='visita'?`🏡 ${CH().name} va a casa de ${p.n}`:`🌳 ${CH().name} ha quedado con ${p.n} en el parque`,true);}}catch(e){}return r;};}
+// =================== PESO CON SENTIDO: comer bien mantiene; el cuerpo tiende a su peso; se puede fijar un objetivo ===================
+const pesoSano=()=>{const ch=S.char||{};const H=HP();return ch.alt?Math.round(22*(ch.alt/100)**2):H.base;};
+// medir lo que entra y lo que se gasta por la vía del hambre, con todo incluido (plato, tápers, salidas)
+{const _up=update;update=function(gm){const h0=S.needs.hambre;const r=_up.apply(this,arguments);try{const d=S.needs.hambre-h0;const P=S.pz=S.pz||{in:0,dr:0,low:0};if(d>0)P.in+=d;else P.dr-=d;if(S.needs.hambre<20)P.low+=gm;}catch(e){}return r;};}
+{const _dl=dailyEvents;dailyEvents=function(){const H=HP();const p0=H.peso;const burn=H.burn||0;const r=_dl.apply(this,arguments);try{const P=S.pz||{in:0,dr:0,low:0};S.pz={in:0,dr:0,low:0};
+  const phys=['obra','super','hosteleria','cuidados','reparto'].includes(S.track)&&!S.jobless&&S.lastWorkDay===S.day;
+  const bal=P.in-P.dr*.97-(burn*.35)-(phys?5:0)-(P.low>240?10:0)+(H.diet?-6:0);
+  let d=Math.max(-.12,Math.min(.12,bal*.004));
+  const goal=H.goalKg||pesoSano();if(Math.abs(bal)<18&&P.in>40){d+=Math.max(-.08,Math.min(.08,(goal-p0)*.012));if(goal>p0&&burn>0)d+=.01;}
+  if(typeof homeless==='function'&&homeless())d-=.06;
+  H.peso=Math.max(H.base-16,Math.min(H.base+45,p0+d));if(H.hist&&H.hist.length)H.hist[H.hist.length-1]=+H.peso.toFixed(1);
+  // la anemia se va si vuelve a su peso y come
+  if(H.peso>=pesoSano()-5)H.list=(H.list||[]).filter(x=>!(x.k==='anemia'&&!x.dx&&P.in>60));}catch(e){console.error(e);}return r;};}
+// objetivo de peso en el bloque de Cuerpo
+{const _hb=hpBlock;hpBlock=function(){let h=_hb.apply(this,arguments);try{const H=HP();const g=H.goalKg||pesoSano();h=h.replace('<h3>🫀 Cuerpo</h3>',`<h3>🫀 Cuerpo</h3><div class="kv"><span>🎯 Peso objetivo</span><span><button class="mini" data-pg="-1">−</button> <b>${g} kg</b> <button class="mini" data-pg="1">+</button></span></div><div class="sub" style="font-size:11px">Comiendo tres veces al día, el cuerpo va acercándose a este peso poco a poco (unos kilos al mes). Saltarse comidas lo baja; picar y salir mucho lo sube. Peso sano para su altura: ${pesoSano()} kg.</div>`);}catch(e){}return h;};}
+document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-pg]');if(!b)return;ev.stopPropagation();const H=HP();const s=pesoSano();H.goalKg=Math.max(s-12,Math.min(s+15,(H.goalKg||s)+(+b.dataset.pg)));if(typeof openMenu==='function')openMenu();},true);
+// listas de espera según el gobierno
+function esperaMul(){const w=W_();const g=w.era||w.gov;return {consejos:.35,comunas:.45,mercado:.5,progresista:.75,centro:1,conservador:1.3,liberal:1.4,austeridad:1.8}[g]||1;}
+{const _ha=hpAsk;hpAsk=function(priv){const H=HP();const had=H.cita;const r=_ha.apply(this,arguments);try{if(!had&&H.cita&&!H.citaPriv){const w=H.cita-S.day;H.cita=S.day+Math.max(1,Math.round(w*esperaMul()));}}catch(e){}return r;};}
+{const _dl2=dailyEvents;dailyEvents=function(){const r=_dl2.apply(this,arguments);try{const H=HP();if(H.cita&&!H.citaPriv&&!H.citaAdj){H.citaAdj=1;const w=H.cita-S.day;H.cita=S.day+Math.max(1,Math.round(w*esperaMul()));}if(!H.cita)H.citaAdj=0;
+  const m=typeof MT==='function'?MT():null;if(m&&m.wait>0&&!m.waitAdj){m.waitAdj=1;m.wait=Math.max(3,Math.round(m.wait*esperaMul()));}if(m&&!m.wait)m.waitAdj=0;}catch(e){}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};

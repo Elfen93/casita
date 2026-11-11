@@ -46,6 +46,8 @@
   "cocinar.js",
   "fregar.js",
   "gente_menu.js",
-  "deseos.js"
+  "deseos.js",
+  "social_fx.js",
+  "peso.js"
  ]
 }
