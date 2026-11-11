@@ -1,0 +1,1 @@
+setTimeout(()=>{try{document.title='OK '+Object.entries(PLACES).map(([k,p])=>k+':'+(p.r||'').toString()).join(' ')+' | SC '+Object.keys(SCENES).join(',');}catch(err){document.title='ERR '+err.message}},300);
