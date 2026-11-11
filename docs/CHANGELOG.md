@@ -53,3 +53,4 @@
 - Pintar paredes (y poner puertas y ventanas): ahora basta con tocar la cara de la pared; antes había que acertar en la casilla de su base y casi nunca funcionaba.
 - Si alguien te escribe para venir y estás en casa, el personaje contesta «claro, sube» solo y la visita viene.
 - Ducha y bañera: se desnuda para ducharse; censura pixelada por defecto, que se quita en Ajustes («🚿 Censura en la ducha»).
+- Banco: en Deudas, «Pagar ahora» (todo, mitad o 50 €) a la familia y amigos, alquiler atrasado, al camello y el préstamo; la madre sale como «Mamá». En Productos, ahorro automático cada lunes (con colchón mínimo).

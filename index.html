@@ -437,6 +437,12 @@ details.tracks{margin-top:6px}details.tracks summary{font-weight:900;font-size:1
 #callov .cbtn{margin-top:40px;width:64px;height:64px;border-radius:50%;background:#e04848;display:flex;align-items:center;justify-content:center;font-size:28px}
 
 #pesheet .mini.sel{background:#3b3247;color:#fff}
+.bkpay{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #eef0f4;font:700 12px Nunito,sans-serif}
+.bkpay span:first-child{display:flex;flex-direction:column}.bkpay small{color:#8a8f9c}
+.bkpay button,.bkauto button{border:0;border-radius:8px;padding:5px 8px;margin-left:4px;background:#1f3c88;color:#fff;font:800 11px Nunito,sans-serif}
+.bk-pub .bkpay button,.bk-pub .bkauto button{background:#b3262d}
+.bkauto{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed #e3e6ee;font:800 12px Nunito,sans-serif}
+.bkautos{display:block;color:#8a8f9c;font:700 10.5px Nunito,sans-serif;margin-top:3px}
 /*<</PHCSS>>*/</style>
 </head>
 <body>
@@ -16645,6 +16651,27 @@ function mosaico(cx,cy,w,h,skin){const c=2.6;for(let y=0;y<h;y+=c)for(let x=0;x<
   try{if(S.censura!==false&&o.pose!=='lie'){const sit=o.pose==='sit';const fem=(C.g||'f')!=='m';ctx.save();mosaico(bx,by-(sit?16:24),11,9,skin);if(fem)mosaico(bx,by-(sit?28:37),11,6,skin);ctx.restore();}}catch(e){}
   return top;};}
 {const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{const sb=card.querySelector('#soundbtn');if(sb&&!card.querySelector('#censbtn')){const b=document.createElement('button');b.className=sb.className;b.id='censbtn';b.textContent=S.censura===false?'🚿 Censura en la ducha: no':'🚿 Censura en la ducha: sí';b.onclick=()=>{S.censura=S.censura===false?true:false;save();openMenu('ajustes');};(card.querySelector('#r3dbtn')||sb).after(b);}}catch(e){}return r;};}
+// =================== BANCO: pagar deudas desde la app y ahorro automático cada semana ===================
+const dName=p=>p?(p.k==='madre'?'Mamá':p.n):'un amigo';
+{const _bd=bkDebts;bkDebts=function(){const L=_bd.apply(this,arguments);try{for(const d of L){const m=d[0].match(/^🤝 (.+)$/);if(m){const p=(S.people||[]).find(q=>q.n===m[1]&&q.k==='madre');if(p)d[0]='🤝 Mamá';}}
+  const M=MG&&MG();if(M&&M.debt>0)L.push(['🏠 Alquiler atrasado',M.debt,'si se acumula, burofax y demanda']);const mt=typeof MT==='function'?MT():null;if(mt&&mt.debt>0)L.push(['💊 Al camello',mt.debt,'no es de los que esperan']);}catch(e){}return L;};}
+function payList(){const L=[];for(const q of (ex().cq||[]).filter(q=>q.k==='devolver')){const p=P_(q.data.p);L.push({id:'dv',q,n:dName(p),e:'🤝',v:q.data.m,p});}
+  const M=typeof MG==='function'?MG():null;if(M&&M.debt>0)L.push({id:'rent',n:'Alquiler atrasado',e:'🏠',v:M.debt});const mt=typeof MT==='function'?MT():null;if(mt&&mt.debt>0)L.push({id:'dealer',n:'El camello',e:'💊',v:mt.debt});
+  const b=typeof BP==='function'?BP():null;if(b&&b.loan&&b.loan.left>0)L.push({id:'loan',n:'Préstamo personal',e:'💳',v:b.loan.left,b});return L;}
+function payDebt(d,amt){amt=Math.round(Math.min(amt,d.v));if(amt<=0)return;if(S.money<amt){toast('No hay tanto en la cuenta');return;}const n=CH().name;
+  if(d.id==='dv'){bkAdd('Devolución',-amt);d.q.data.m-=amt;if(d.p){d.p.rel=Math.min(100,(d.p.rel||0)+(d.q.data.m<=0?6:2));}if(d.q.data.m<=0){ex().cq=ex().cq.filter(x=>x!==d.q);tell(`${n} le ha devuelto a ${d.n==='Mamá'?'su madre':d.n} todo lo que le debía. ${d.n==='Mamá'?'«No hacía falta, hijo», dice. Y se le nota contenta.'.replace('hijo',ga('hija','hijo','hije')):'Cuentas claras.'}`,'🤝');}else tell(`${n} le devuelve ${fmt(amt)} a ${d.n==='Mamá'?'su madre':d.n}. Quedan ${fmt(d.q.data.m)}.`,'🤝');}
+  else if(d.id==='rent'){bkAdd('Alquiler',-amt);const M=MG();M.debt-=amt;if(M.debt<=0){M.debt=0;M.wk=0;tell(`${n} se ha puesto al día con el alquiler. Una carta menos que temer.`,'🏠');}}
+  else if(d.id==='dealer'){bkAdd('Otros',-amt);const m=MT();m.debt-=amt;if(m.debt<=0){m.debt=0;tell(`${n} ha saldado lo que debía. Mejor no deberle nada a nadie así.`,'💊');}}
+  else if(d.id==='loan'){bkAdd('Préstamo',-amt);d.b.loan.left-=amt;if(d.b.loan.left<=0){d.b.loan=null;tell(`${n} ha amortizado el préstamo entero. Sin intereses que pagar.`,'💳');}}
+  sfx('tap');phRender();}
+// ahorro automático: cada lunes, una cantidad fija a la cuenta de ahorro (si hay colchón)
+{const _ww=worldWeekly;worldWeekly=function(){const r=_ww.apply(this,arguments);try{const b=BP();const a=b.auto||0;if(a>0){const v=Math.min(a,Math.max(0,S.money-hrs(15)));if(v>=1){bpMove('ahorro',v);b.autoTot=(b.autoTot||0)+v;}else if(throttled('autoah',6e5))tell('Este lunes no ha habido para el ahorro automático: no queda colchón en la cuenta.','🐷');}}catch(e){}return r;};}
+// dibujar
+{const _pr=phRender;phRender=function(){const r=_pr.apply(this,arguments);try{if(phApp!=='bank')return r;const ph=document.getElementById('phone');const body=ph&&ph.querySelector('.bkbody');if(!body)return r;
+  if(bkTab==='deudas'){const L=payList();if(L.length){let h=`<div class="bksec">Pagar ahora</div>`;L.forEach((d,i)=>{h+=`<div class="bkpay"><span>${d.e} <b>${d.n}</b><small>${fmt(Math.round(d.v))}</small></span><span><button data-pay="${i}" data-amt="all">Todo</button><button data-pay="${i}" data-amt="half">Mitad</button><button data-pay="${i}" data-amt="50">50 €</button></span></div>`;});body.insertAdjacentHTML('beforeend',h);
+      body.querySelectorAll('[data-pay]').forEach(b=>b.onclick=()=>{const d=payList()[+b.dataset.pay];if(!d)return;const a=b.dataset.amt;payDebt(d,a==='all'?d.v:a==='half'?Math.ceil(d.v/2):50);});}}
+  if(bkTab==='prod'){const b=BP();const cards=[...body.querySelectorAll('.bpcard')];const c=cards.find(x=>/Cuenta de ahorro/.test(x.textContent));if(c&&!c.querySelector('.bkauto')){c.insertAdjacentHTML('beforeend',`<div class="bkauto"><span>🔁 Cada lunes, automático</span><span><button data-au="-10">−</button><b>${fmt(b.auto||0)}/sem</b><button data-au="10">+</button></span></div><small class="bkautos">${b.auto?`Lleva ahorrados ${fmt(Math.round(b.autoTot||0))} así. Solo aparta si queda un colchón de ${fmt(hrs(15))}.`:'Elige cuánto apartar cada semana sin pensarlo.'}</small>`);
+      c.querySelectorAll('[data-au]').forEach(x=>x.onclick=()=>{b.auto=Math.max(0,(b.auto||0)+(+x.dataset.au));phRender();});}}}catch(e){console.error(e);}return r;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
