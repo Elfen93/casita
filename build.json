@@ -48,6 +48,7 @@
   "gente_menu.js",
   "deseos.js",
   "social_fx.js",
-  "peso.js"
+  "peso.js",
+  "voces.js"
  ]
 }

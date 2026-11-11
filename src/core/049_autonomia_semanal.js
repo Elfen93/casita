@@ -42,5 +42,5 @@ function datingApp(auto){const L=LIFE();if(L.orient==='nadie'){toast('A Ana no l
 // conocer gente al salir
 function maybeMeet(k){const where={amigos:'unas cañas',militancia:'una reunión',networking:'un afterwork',sindicato:'la asamblea',voluntariado:'el voluntariado',deporte:'el parque',manifestacion:'la manifestación',biblioteca:'la biblioteca',misa:'la parroquia'}[k];if(!where)return;
   if(Math.random()>.18)return;const L=LIFE();const rom=L.orient!=='nadie'&&L.rel!=='soltera'&&!partner()&&Math.random()<.6;const p=newPerson(where,rom);
-  if(['militancia','manifestacion','sindicato'].includes(k)&&S.ideo!=='apolitica')p.ideo=S.ideo;p.rel+=10;
+  if(['militancia','manifestacion','sindicato'].includes(k)&&S.ideo!=='apolitica'&&(!p.ideo||p.ideo==='apolitica')&&Math.random()<.3)p.ideo=S.ideo;p.rel+=10;
   tell(`En ${where} ha conocido a ${p.n}, ${roleTxt(p)}.${rom&&canLove(p)?' Hubo miradas.':''}`,'👋');}
