@@ -50,6 +50,7 @@
   "social_fx.js",
   "peso.js",
   "voces.js",
-  "invitados.js"
+  "invitados.js",
+  "pintar.js"
  ]
 }

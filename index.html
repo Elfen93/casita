@@ -16630,6 +16630,11 @@ VOZ.comunas=VOZ.consejos;
 // una visita no hace recados ni friega tu cocina: se sienta, charla, mira el móvil; sin sillas, en el borde de la cama
 {const _rc=rvChoose;rvChoose=function(r){if(r.kind!=='guest')return _rc.apply(this,arguments);const _p=rvPlan;rvPlan=function(h){if(h>=23||h<7)return _p(h);return [[['sofa','sillon','butaca','sofacama'],'watch','sit',45,3],[['silla','mesacoc','banco','bancoj'],'phone','sit',30,2],[['cama','camamat','colchon','litera'],'book','sit',35,1.4],[['tele','consola'],'watch','stand',15,.4],[['libros','estant'],'book','stand',12,.6]];};try{return _rc.apply(this,arguments);}finally{rvPlan=_p;}};}
 RV_SIT.add('cama');RV_SIT.add('camamat');RV_SIT.add('colchon');
+// =================== PINTAR (Y PUERTAS Y VENTANAS): tocar la cara de la pared sirve, no hace falta acertar en su base ===================
+{const _stc=screenToCell;screenToCell=function(sx,sy){const c=_stc(sx,sy);try{if(mode!=='live'&&tool&&['paint','door','win','window'].includes(tool.kind)){const [x,y]=c;if(inb(x,y)&&S.wall[idx(x,y)]>0)return c;
+  let best=null,bd=1e9;for(let dx=-4;dx<=4;dx++)for(let dy=-4;dy<=4;dy++){const X=x+dx,Y=y+dy;if(!inb(X,Y))continue;const i=idx(X,Y);if(!(S.wall[i]>0))continue;const [px,py]=obCC(X,Y);const h=(S.wall[i]===4?18:WALL_H)*cam.z,w=TW*cam.z*.5;
+    if(Math.abs(sx-px)<=w&&sy<=py+TH*cam.z*.5&&sy>=py-h-TH*cam.z*.4){const d=-py+Math.abs(sx-px)*.05;if(d<bd){bd=d;best=[X,Y];}}}
+  if(best)return best;}}catch(e){}return c;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
