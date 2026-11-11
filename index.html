@@ -16618,6 +16618,13 @@ VOZ.comunas=VOZ.consejos;
 // ---- las noticias del móvil ----
 {const _pn=phNews;phNews=function(){const L=_pn.apply(this,arguments);try{if(revNow()){const keep=L.filter(x=>!CAPI_RX.test((x[1]||'')+' '+(x[2]||'')));const extra=[['🏛️',pickR(['El consejo de distrito aprueba abrir tres comedores más','Revocados dos delegados de transporte por no rendir cuentas','La asamblea de energía raciona la calefacción de madrugada']),''],['🚢',pickR(['El bloqueo retiene un barco con medicamentos','Acuerdo con varios puertos para traer combustible','Faltan piezas para los tractores; se fabrican en el taller del barrio']),''],['🗣️',pickR(REV_QUEJAS),'']];return extra.concat(keep).slice(0,6);}
   if(merNow()){return [['⭐',pickR(MER_QUEJAS),''],...L].slice(0,6);}}catch(e){}return L;};}
+// =================== QUE LAS VISITAS ENTREN: si se quedan clavadas fuera, pasan adentro ===================
+{const _ur=updateResidents;updateResidents=function(gm){const r0=_ur.apply(this,arguments);try{for(const r of S.res||[]){if(r.kind!=='guest'||r.doing)continue;const cx=Math.floor(r.x),cy=Math.floor(r.y);const k=cx+','+cy;
+    if(r.lastC!==k){r.lastC=k;r.still=0;continue;}if(r.path&&r.path.length){r.still=0;continue;}r.still=(r.still||0)+gm;
+    const inside=inb(cx,cy)&&roomId[idx(cx,cy)]>=0;if(r.still<12||inside)continue;
+    // buscar sitio dentro, cerca de la jugadora si está en casa
+    const [ax,ay]=simCell();let best=null,bd=1e9;for(let i=0;i<N*N;i++){const x=i%N,y=i/N|0;if(!walkable(x,y)||roomId[i]<0)continue;if((S.res||[]).some(o=>o!==r&&Math.floor(o.x)===x&&Math.floor(o.y)===y))continue;const d=Math.hypot(x-ax,y-ay)+(x===ax&&y===ay?50:0);if(d<bd){bd=d;best=[x,y];}}
+    if(best){const p=bfs([cx,cy],(x,y)=>x===best[0]&&y===best[1]);if(p&&p.length){r.path=p;}else{r.x=best[0]+.5;r.y=best[1]+.5;r.path=[];}r.still=0;}}}catch(e){}return r0;};}
 // <</B3D>>
 // ---------- planes de Ana: deseos, compras y obras ----------
 const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};

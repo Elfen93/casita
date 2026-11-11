@@ -49,6 +49,7 @@
   "deseos.js",
   "social_fx.js",
   "peso.js",
-  "voces.js"
+  "voces.js",
+  "invitados.js"
  ]
 }

@@ -47,3 +47,4 @@
 - Lo que te escriben depende de su ideología y del gobierno (la madre conservadora con los consejos: «esto no va a durar»; el amigo anarquista: «ojo con los delegados»…).
 - Con los consejos desaparecen los mensajes y noticias de «ha subido la luz», el casero, despidos, euríbor, bolsa… y salen quejas y noticias propias: colas en el economato, asambleas eternas, apagones por el bloqueo, delegados que se acomodan, mercado negro, comedores, biblioteca hasta medianoche, autobús gratis.
 - La madre puede tener las ideas que tú digas (Gente → Opciones → «De qué pie cojea»); por defecto tira hacia el bloque político del personaje.
+- Visitas: si una invitada se queda clavada en el borde del solar (sin camino), busca otro camino o pasa directamente adentro, cerca de ti.
