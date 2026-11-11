@@ -36,6 +36,7 @@
   "curro.js",
   "banco.js",
   "productos.js",
-  "gobierno.js"
+  "gobierno.js",
+  "fiscal.js"
  ]
 }
