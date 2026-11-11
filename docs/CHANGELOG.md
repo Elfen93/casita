@@ -52,3 +52,4 @@
 - Banca pública de verdad en la app: sin comisión por descubierto, «Préstamo público» al 1,5 % para vivienda, estudios o herramientas, cuenta de ahorro pública a tipo fijo, depósito sin retención, sin fondos ni cripto, oficina del barrio sin cita, y el tipo público en lugar del euríbor.
 - Pintar paredes (y poner puertas y ventanas): ahora basta con tocar la cara de la pared; antes había que acertar en la casilla de su base y casi nunca funcionaba.
 - Si alguien te escribe para venir y estás en casa, el personaje contesta «claro, sube» solo y la visita viene.
+- Ducha y bañera: se desnuda para ducharse; censura pixelada por defecto, que se quita en Ajustes («🚿 Censura en la ducha»).
