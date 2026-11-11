@@ -1,6 +1,6 @@
 // =================== FREGAR: cocinar ensucia; los platos se acumulan; se friega en el fregadero (o donde se pueda) ===================
-OBJ.fregadero={n:'Fregadero',e:'🚰',p:150,h:25,c:'#dfe3e6',ins:.06,decor:1,cat:'cocina',need:{diversion:.001},pas:'para fregar los platos'};
-if(OBJ.lavavaj&&!OBJ.lavavaj.need)OBJ.lavavaj.need={diversion:.001};
+OBJ.fregadero={n:'Fregadero',e:'🚰',p:150,h:25,c:'#dfe3e6',ins:.06,decor:1,cat:'cocina',need:{},pas:'para fregar los platos'};
+if(OBJ.lavavaj&&!OBJ.lavavaj.need)OBJ.lavavaj.need={};
 if(typeof MUEB_NEW!=='undefined')MUEB_NEW.push('fregadero');if(typeof OBJ_ZONES!=='undefined')OBJ_ZONES.fregadero=['cocina'];if(typeof GROUP!=='undefined')GROUP.fregadero='cocina';if(typeof CRAFT!=='undefined')CRAFT.fregadero=['font',1,5];if(typeof BACKD!=='undefined')BACKD.fregadero=.06;
 MDRAW.fregadero=(o,i,tt,u)=>{const cab=Q(o,'#ece6d8'),top=o.q===4?'#efece6':'#c9c3b8';
   lp(.04,.1,.96,.92,0,22,cab);lp(.02,.06,.98,.95,22,25,top);lfB(.08,.48,.921,3,19,shade(cab,.95));lfB(.52,.92,.921,3,19,shade(cab,.95));knob(.44,.922,15,'#9aa5ad');knob(.56,.922,15,'#9aa5ad');
@@ -25,3 +25,8 @@ function fregarDonde(){const f=findObjs((d,t)=>t==='lavavaj').concat(findObjs((d
   if(sc>=12&&Math.random()<.3){S.needs.higiene=Math.max(0,S.needs.higiene-8);tell(`La cocina huele. Hay platos desde hace días y alguna mosca.`,'🪰');}}catch(e){}return r;};}
 {let _last=0;const _up2=update;update=function(gm){const r=_up2.apply(this,arguments);try{const s=S.sim;if(S.autoHome&&(S.sucios||0)>=4&&!s.use&&!(s.work>0)&&!s.leaving&&!s.path.length&&!(s.queue&&s.queue.length)&&S.needs.energia>30&&S.t-_last>180&&S.t/60>8&&S.t/60<22){_last=S.t;const j=fregarDonde();if(j!=null)enqueue({k:'obj',i:j,act:S.obj[j].t==='lavavaj'?'poner':'fregar'});}}catch(e){}return r;};}
 {const _ul=useLabel;useLabel=function(u){try{if(u&&(u.act==='fregar'||(u.act==='poner'&&u.type==='lavavaj')))return {b:'🧽',v:u.type==='lavavaj'?'Poniendo el lavavajillas':u.type==='lavabo'?'Fregando en el lavabo, como puede':'Fregando los platos'};}catch(e){}return _ul.apply(this,arguments);};}
+
+{const _su=startUse;startUse=function(){const s=S.sim;const i=s.target;const o=i!=null&&S.obj[i];const want=s.nextAct;
+  if(o&&(o.t==='fregadero'||o.t==='lavavaj')){if((S.sucios||0)<.5){s.target=null;s.nextAct=null;s.cmd=false;toast('🧽 No hay nada que fregar');return;}if(!want)s.nextAct=o.t==='lavavaj'?'poner':'fregar';}
+  if(o&&(o.t==='encimera'||o.t==='lavabo')&&want==='fregar'&&(S.sucios||0)<.5){s.target=null;s.nextAct=null;s.cmd=false;toast('🧽 No hay nada que fregar');return;}
+  return _su.apply(this,arguments);};}
