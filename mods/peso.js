@@ -19,3 +19,7 @@ function esperaMul(){const w=W_();const g=w.era||w.gov;return {consejos:.35,comu
 {const _ha=hpAsk;hpAsk=function(priv){const H=HP();const had=H.cita;const r=_ha.apply(this,arguments);try{if(!had&&H.cita&&!H.citaPriv){const w=H.cita-S.day;H.cita=S.day+Math.max(1,Math.round(w*esperaMul()));}}catch(e){}return r;};}
 {const _dl2=dailyEvents;dailyEvents=function(){const r=_dl2.apply(this,arguments);try{const H=HP();if(H.cita&&!H.citaPriv&&!H.citaAdj){H.citaAdj=1;const w=H.cita-S.day;H.cita=S.day+Math.max(1,Math.round(w*esperaMul()));}if(!H.cita)H.citaAdj=0;
   const m=typeof MT==='function'?MT():null;if(m&&m.wait>0&&!m.waitAdj){m.waitAdj=1;m.wait=Math.max(3,Math.round(m.wait*esperaMul()));}if(m&&!m.wait)m.waitAdj=0;}catch(e){}return r;};}
+// la anemia depende de comer, no solo del peso: si se come decente, se va (y no vuelve a aparecer)
+{const _dl3=dailyEvents;dailyEvents=function(){const r=_dl3.apply(this,arguments);try{const H=HP();const c=typeof CM==='function'?CM():null;const nut=c?c.nut:60;const n=CH().name;
+  if(!S.fixAnemia){S.fixAnemia=1;if((H.list||[]).some(x=>x.k==='anemia')){H.list=H.list.filter(x=>x.k!=='anemia');tell(`Analítica nueva: la anemia de ${n} ya no aparece. Con lo que come ahora, los niveles están bien.`,'🩸');}}
+  const a=(H.list||[]).find(x=>x.k==='anemia');if(a){if(S.day-(a.since||S.day)<=1&&nut>=45){H.list=H.list.filter(x=>x!==a);}else if(nut>=50&&Math.random()<(a.dx?.2:.1)){H.list=H.list.filter(x=>x!==a);tell(`${n} ya no tiene anemia: lleva semanas comiendo como es debido.`,'🩸');}}}catch(e){}return r;};}
