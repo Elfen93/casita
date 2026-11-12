@@ -58,6 +58,7 @@
   "patrimonio.js",
   "aula.js",
   "poblacion.js",
-  "servicios.js"
+  "servicios.js",
+  "hogares.js"
  ]
 }
