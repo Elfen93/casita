@@ -157,7 +157,11 @@
     "h_wei": {"n": "Los Zhou", "edificio": "c_tejar", "cls": 2, "tipo": "familia", "d": "Viven encima de la tienda, con la persiana como despertador. El local es de un propietario que nunca viene.", "miembros": ["wei", "mei", "lin", "hao"]},
     "h_pili": {"n": "Casa de Pili", "edificio": "c_noria", "cls": 1, "tipo": "sola", "d": "Una casa, un huerto y un gallinero de dos gallinas. Los de la inmobiliaria llaman cada mes; ella cuelga cada mes.", "miembros": ["pili"]},
     "h_olga": {"n": "Los Aranda", "edificio": "c_fragua", "cls": 3, "tipo": "familia", "d": "Hipoteca a treinta años y un piso heredado que la ayuda a pagarla. Desde fuera parece un barrio mejor.", "miembros": ["olga", "julio", "alvaro"]},
-    "h_rosi": {"n": "Los Tejero", "edificio": "c_huerta", "cls": 2, "tipo": "pareja", "d": "Cincuenta años casados y una discusión pendiente. La casa está pagada, la pensión no.", "miembros": ["rosi", "fermin"]}
+    "h_rosi": {"n": "Los Tejero", "edificio": "c_huerta", "cls": 2, "tipo": "pareja", "d": "Cincuenta años casados y una discusión pendiente. La casa está pagada, la pensión no.", "miembros": ["rosi", "fermin"]},
+    "h_begona": {"n": "El 4.º A", "edificio": "b_canal", "puerta": "4.º A", "cls": 2, "tipo": "sola", "d": "Un piso con las cajas de la mudanza aún apiladas, porque la plaza se la dieron en otra ciudad. Corrige en la mesa del comedor.", "miembros": ["begona"]},
+    "h_mercedes": {"n": "El 5.º B", "edificio": "b_olivo", "puerta": "5.º B", "cls": 1, "tipo": "sola", "d": "Quinto sin ascensor, por la escalera que huele a sopa. Tiene la llave del colegio colgada junto a la de casa.", "miembros": ["mercedes"]},
+    "h_quino": {"n": "El 3.º A", "edificio": "b_fuente", "puerta": "3.º A", "cls": 2, "tipo": "sola", "d": "Un piso con una estantería más grande que el sofá. Los exámenes sin corregir ocupan la mesa de la cocina.", "miembros": ["quino"]},
+    "h_luis": {"n": "El 5.º B", "edificio": "b_fuente", "puerta": "5.º B", "cls": 3, "tipo": "sola", "d": "Piso amplio con vistas a la plaza y un crucifijo en la entrada. Siempre hay café hecho.", "miembros": ["luis"]}
   },
 
   "vecinos": [
@@ -495,7 +499,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Tiene una libreta donde apunta lo que hace cada vecino del portal. Le gusta el colegio y no los lunes. Quiere un perro, y a su madre le ha dicho que no es para tanto.",
-      "lazos": [["nuria", "madre"], ["marisa", "abuela"], ["anselmo", "abuelo"], ["pablo", "hermano"]]
+      "lazos": [["nuria", "madre"], ["marisa", "abuela"], ["anselmo", "abuelo"], ["pablo", "hermano"]],
+      "centro": "colegio"
     },
     {
       "id": "pablo",
@@ -511,7 +516,8 @@
       "trabajo": null,
       "estudia": "instituto",
       "historia": "Dibuja en los márgenes de los cuadernos y le riñen por ello. Comparte cuarto con su abuelo y con sus ronquidos. Quiere un sitio propio, aunque sea un armario con puerta.",
-      "lazos": [["nuria", "madre"], ["marisa", "abuela"], ["anselmo", "abuelo"], ["alba", "hermana"]]
+      "lazos": [["nuria", "madre"], ["marisa", "abuela"], ["anselmo", "abuelo"], ["alba", "hermana"]],
+      "centro": "instituto"
     },
     {
       "id": "julian",
@@ -543,7 +549,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Ayuda a su hermano con los zapatos y a su madre con las cuentas. Come en el cole porque la beca de comedor lo permite. Quiere ser médica o, si no, camarera de avión.",
-      "lazos": [["yolanda", "madre"], ["hugo", "hermano"]]
+      "lazos": [["yolanda", "madre"], ["hugo", "hermano"]],
+      "centro": "colegio"
     },
     {
       "id": "hugo",
@@ -559,7 +566,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Va a infantil por la mañana y a casa de la vecina por la tarde, porque su madre sale a limpiar otra vez. Le gustan los camiones de basura. Quiere que su madre le acompañe a clase por una vez.",
-      "lazos": [["yolanda", "madre"], ["naiara", "hermana"]]
+      "lazos": [["yolanda", "madre"], ["naiara", "hermana"]],
+      "centro": "colegio"
     },
     {
       "id": "lola",
@@ -591,7 +599,8 @@
       "trabajo": null,
       "estudia": "instituto",
       "historia": "Es el delantero de un equipo que no existe todavía. Le pesa que su padre llegue a casa sin hablar. Quiere cambiar de zapatillas y que no sean las del hermano de nadie.",
-      "lazos": [["nacho", "padre"], ["lola", "madre"], ["sara", "hermana"], ["lucas", "hermano"]]
+      "lazos": [["nacho", "padre"], ["lola", "madre"], ["sara", "hermana"], ["lucas", "hermano"]],
+      "centro": "instituto"
     },
     {
       "id": "sara",
@@ -607,7 +616,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Aprendió a leer antes de que se lo pidieran y ya lee los carteles de las obras. Duerme en la litera de abajo, con Lucas encima. Quiere que su padre le enseñe a poner un ladrillo.",
-      "lazos": [["nacho", "padre"], ["lola", "madre"], ["iker", "hermano"], ["lucas", "hermano"]]
+      "lazos": [["nacho", "padre"], ["lola", "madre"], ["iker", "hermano"], ["lucas", "hermano"]],
+      "centro": "colegio"
     },
     {
       "id": "lucas",
@@ -623,7 +633,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Entró en infantil en septiembre y llora menos de lo que llora su abuela. Se acuerda del olor de la obra en el abrigo de su padre. Quiere que le suban a hombros.",
-      "lazos": [["nacho", "padre"], ["lola", "madre"], ["iker", "hermano"], ["sara", "hermana"]]
+      "lazos": [["nacho", "padre"], ["lola", "madre"], ["iker", "hermano"], ["sara", "hermana"]],
+      "centro": "colegio"
     },
     {
       "id": "mei",
@@ -655,7 +666,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Traduce las facturas de sus padres desde los siete. En clase la llaman por el nombre equivocado y ella ya no corrige. Quiere ir de excursión sin llevar la caja de repuesto.",
-      "lazos": [["wei", "padre"], ["mei", "madre"], ["hao", "hermano"]]
+      "lazos": [["wei", "padre"], ["mei", "madre"], ["hao", "hermano"]],
+      "centro": "concertado"
     },
     {
       "id": "hao",
@@ -671,7 +683,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Va a la guarde por la mañana y a la tienda por la tarde, con el abuelo en videollamada. Habla dos idiomas y a veces los mezcla. Quiere el helado del congelador, el de arriba.",
-      "lazos": [["wei", "padre"], ["mei", "madre"], ["lin", "hermana"]]
+      "lazos": [["wei", "padre"], ["mei", "madre"], ["lin", "hermana"]],
+      "centro": "concertado"
     },
     {
       "id": "adrian",
@@ -687,7 +700,8 @@
       "trabajo": null,
       "estudia": "instituto",
       "historia": "Se ha leído los folletos que su padre guarda en el sótano. Discute con él por deporte y con su madre por cansancio. Quiere irse de casa y que lo entiendan cuando lo haga.",
-      "lazos": [["carmen", "madre"], ["sergio", "padre"], ["julia", "hermana"]]
+      "lazos": [["carmen", "madre"], ["sergio", "padre"], ["julia", "hermana"]],
+      "centro": "concertado"
     },
     {
       "id": "julia",
@@ -703,7 +717,8 @@
       "trabajo": null,
       "estudia": "instituto",
       "historia": "Cena sola con la tele cuando sus padres llegan tarde. Tiene la mejor letra de la clase y la peor siesta. Quiere que sus padres coman con ella un día entre semana.",
-      "lazos": [["carmen", "madre"], ["sergio", "padre"], ["adrian", "hermano"]]
+      "lazos": [["carmen", "madre"], ["sergio", "padre"], ["adrian", "hermano"]],
+      "centro": "concertado"
     },
     {
       "id": "samira",
@@ -735,7 +750,8 @@
       "trabajo": null,
       "estudia": "instituto",
       "historia": "Saca notas altas y se las guarda para que no se las envidien. Ayuda a su padre con las facturas y a su madre con el idioma. Quiere estudiar derecho y ser abogada de las de verdad.",
-      "lazos": [["hassan", "padre"], ["samira", "madre"], ["bilal", "hermano"], ["amina", "hermana"]]
+      "lazos": [["hassan", "padre"], ["samira", "madre"], ["bilal", "hermano"], ["amina", "hermana"]],
+      "centro": "instituto"
     },
     {
       "id": "bilal",
@@ -751,7 +767,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Le falta una uña del pie por un balón de reglamento. Está harto de las humedades del cuarto y del olor. Quiere una habitación seca y un balón nuevo, en ese orden.",
-      "lazos": [["hassan", "padre"], ["samira", "madre"], ["yasmina", "hermana"], ["amina", "hermana"]]
+      "lazos": [["hassan", "padre"], ["samira", "madre"], ["yasmina", "hermana"], ["amina", "hermana"]],
+      "centro": "colegio"
     },
     {
       "id": "amina",
@@ -767,7 +784,8 @@
       "trabajo": null,
       "estudia": "cole",
       "historia": "Es la única que ha nacido aquí y la única con papeles sin esfuerzo. Pregunta por qué su padre no puede comer con ellos los domingos. Quiere una casa con jardín, como la del dibujo.",
-      "lazos": [["hassan", "padre"], ["samira", "madre"], ["yasmina", "hermana"], ["bilal", "hermano"]]
+      "lazos": [["hassan", "padre"], ["samira", "madre"], ["yasmina", "hermana"], ["bilal", "hermano"]],
+      "centro": "colegio"
     },
     {
       "id": "julio",
@@ -847,7 +865,8 @@
       "trabajo": null,
       "estudia": "instituto",
       "historia": "Se crio entre asambleas, con la cuna en un rincón. Ahora no va a ninguna y presume de ello. Quiere que sus padres se enteren de que no es una niña.",
-      "lazos": [["toni", "padre"], ["gloria", "madre"]]
+      "lazos": [["toni", "padre"], ["gloria", "madre"]],
+      "centro": "instituto"
     },
     {
       "id": "tamara",
@@ -896,6 +915,70 @@
       "estudia": null,
       "historia": "Nació con la prestación de su madre y la preocupación de su padre. Duerme poco y llora cuando hay números rojos en el móvil. Quiere teta, brazos y una guardería con plaza.",
       "lazos": [["tamara", "madre"], ["joel", "padre"]]
+    },
+    {
+      "id": "begona",
+      "n": "Begoña",
+      "g": "f",
+      "edad": 41,
+      "oficio": ["maestra", "maestro"],
+      "ideo": "socialdemocrata",
+      "d": "Tutora de tercero. Tiene veintiocho nombres que aprenderse y once familias que atender.",
+      "donde": [["colegio", 8.5, 15, [0, 1, 2, 3, 4]], ["biblioteca", 17, 19, [2]]],
+      "hogar": "h_begona",
+      "rol": "vive sola",
+      "trabajo": {"lugar": "colegio", "puesto": ["maestra", "maestro"], "h": [8.5, 15], "dias": [0, 1, 2, 3, 4]},
+      "estudia": null,
+      "historia": "Interina durante nueve años, con la plaza ganada a la tercera. Lleva en el bolso un paquete de pañuelos y la lista de los que no han traído el almuerzo. Quiere que le den una hora para preparar clase sin que nadie le cuente que es vocacional.",
+      "lazos": [["alba", "amiga"]]
+    },
+    {
+      "id": "mercedes",
+      "n": "Mercedes",
+      "g": "f",
+      "edad": 57,
+      "oficio": ["conserje", "conserje"],
+      "ideo": "apolitica",
+      "d": "Abre la verja a las ocho y sabe quién llega tarde y por qué.",
+      "donde": [["colegio", 8, 17, [0, 1, 2, 3, 4]], ["parque", 17.5, 19, [0, 1, 2, 3, 4]]],
+      "hogar": "h_mercedes",
+      "rol": "vive sola",
+      "trabajo": {"lugar": "colegio", "puesto": ["conserje", "conserje"], "h": [8, 17], "dias": [0, 1, 2, 3, 4]},
+      "estudia": null,
+      "historia": "Lleva dieciocho años en el colegio, con tres contratas distintas y la misma llave. Arregla el timbre con una horquilla y recuerda el nombre de todas las criaturas. Quiere que alguien se acuerde de ponerle un sustituto cuando enferme.",
+      "lazos": [["pili", "amiga"]]
+    },
+    {
+      "id": "quino",
+      "n": "Quino",
+      "g": "m",
+      "edad": 38,
+      "oficio": ["profesor", "profesora"],
+      "ideo": "ecologista",
+      "d": "Da Lengua a cuatro cursos y se sabe los apodos de todos.",
+      "donde": [["instituto", 8, 15, [0, 1, 2, 3, 4]], ["ateneo", 19, 21, [3]]],
+      "hogar": "h_quino",
+      "rol": "vive solo",
+      "trabajo": {"lugar": "instituto", "puesto": ["profesora", "profesor"], "h": [8, 15], "dias": [0, 1, 2, 3, 4]},
+      "estudia": null,
+      "historia": "Hace de tutor de un grupo de treinta y de psicólogo de media docena. Corrige en el tren y en el sofá, con la serie puesta. Quiere una clase con menos de veinticinco y un recreo sin guardia.",
+      "lazos": []
+    },
+    {
+      "id": "luis",
+      "n": "Luis",
+      "g": "m",
+      "edad": 52,
+      "oficio": ["profesor", "profesora"],
+      "ideo": "conservadora",
+      "d": "Da Matemáticas y Religión, según lo que falte ese año.",
+      "donde": [["concertado", 8.5, 15, [0, 1, 2, 3, 4]], ["parroquia", 10, 12, [6]]],
+      "hogar": "h_luis",
+      "rol": "vive solo",
+      "trabajo": {"lugar": "concertado", "puesto": ["profesora", "profesor"], "h": [8.5, 15], "dias": [0, 1, 2, 3, 4]},
+      "estudia": null,
+      "historia": "Lleva veintidós años en el mismo centro y cobra el concierto, no la nómina de la pública. Cree en lo que enseña y en que la cuota es «voluntaria». Quiere que no le pregunten de dónde sale el dinero de las excursiones.",
+      "lazos": []
     }
   ]
 }
