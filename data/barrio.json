@@ -1,0 +1,20 @@
+{
+  "_": "El mapa del barrio (mods/barrio.js). edificios: dónde está cada edificio del censo (personas.edificios) · r rectángulo [x0,y0,x1,y1] en casillas, como r de lugares · rotulo nombre corto para el mapa · c color de la fachada · roof color del tejado (casas) · det un detalle que se dibuja (local, huerto, parra, patio, adosada). suelo: placas de terreno que se suman al barrio de siempre [x0,y0,x1,y1]. calles: franjas de asfalto con su nombre. arboles: [x,y].",
+
+  "edificios": {
+    "b_fuente": {"r": [-10, 38.4, -3, 43.4], "rotulo": "Plaza de la Fuente, 3", "c": "#cfd9de"},
+    "b_olivo": {"r": [0, 38.4, 7, 43.4], "rotulo": "Calle Olivo, 12", "c": "#c08460"},
+    "b_canal": {"r": [10, 38.4, 17, 43.4], "rotulo": "Calle del Canal, 40", "c": "#dccaa8"},
+    "c_pozo": {"r": [21, 39.2, 24.4, 42.6], "rotulo": "Calle del Pozo, 2", "c": "#e9d6b8", "roof": "#a5533e", "det": "patio"},
+    "c_tejar": {"r": [27, 39.2, 30.4, 42.6], "rotulo": "Camino del Tejar, 9", "c": "#e6c9b0", "roof": "#8a4b3a", "det": "local"},
+    "c_noria": {"r": [33, 39.2, 36.4, 42.6], "rotulo": "Calle Noria, 15", "c": "#efe3c8", "roof": "#b5654a", "det": "huerto"},
+    "c_fragua": {"r": [39, 39.2, 42.4, 42.6], "rotulo": "Calle Fragua, 4", "c": "#d8dde0", "roof": "#6f5a52", "det": "adosada"},
+    "c_huerta": {"r": [46, 39.2, 49.4, 42.6], "rotulo": "Calle Huerta, 7", "c": "#f0dcc0", "roof": "#9a5a40", "det": "parra"}
+  },
+
+  "suelo": [[42.5, -14, 56, 34], [-14, 34, 56, 51]],
+
+  "calles": [{"n": "Calle Mayor", "r": [-14, 33.2, 56, 37.2]}, {"n": "Calle del Río", "r": [42.6, -14, 44, 33.2]}, {"n": "Calle de la Fuente", "r": [-14, 45.4, 56, 49.4]}],
+
+  "arboles": [[-12, 44.6], [-6, 44.6], [4, 44.6], [8.5, 44.6], [19, 44.6], [25.5, 44.6], [31.5, 44.6], [38, 44.6], [44, 44.6], [50, 44.6], [-12, 38.8], [18.6, 39.4], [25.6, 39.4], [31.6, 39.4], [37.6, 39.4], [44, 39.4], [51, 39.4]]
+}
