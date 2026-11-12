@@ -84,7 +84,37 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  {nuevo('viejo');const s=S.sim,bar=cdHome(),q=cmSnap(bar,60,88);ok(q,'no hay acera en 60,88');if(q){ok(cmIr(null,[bar,q.p[0],q.p[1]]),'cmIr a un punto');let llego=false;for(let i=0;i<3000&&!llego;i++){step(.25);const f=s.work>0?cmFase():null;if(f&&f.k==='dentro')llego=true;}
    ok(llego,'no llegó al punto de la acera');const p=cmPos();ok(p&&!p.esc&&p.b===bar&&Number.isFinite(p.x),'en el punto: sin posición');R();
    ok(cmFicha&&true,'');cmVolver();ok(s.work>0&&s.dest==='_casa','volver a casa no arranca');let fin=false;for(let i=0;i<3000&&s.work>0;i++){step(.25);if(i%60===0)R();}ok(s.work<=0&&!s.dest&&!s.tr&&!s.irPt,'no termina en casa');}
-  nuevo('viejo');const s2=S.sim;ok(cmIr('super'),'ir al super');for(let i=0;i<400&&!(s2.work>0&&cmFase().f>.3);i++)step(.25);let f=cmFase();if(f&&f.k==='ida'){const f0=f.f;cmVolver();ok(s2.work>0,'dar la vuelta a mitad de camino');const p0=cmPos();ok(p0&&Number.isFinite(p0.x),'dando la vuelta: sin posición');for(let i=0;i<3000&&s2.work>0;i++)step(.25);ok(s2.work<=0,'no vuelve tras darse la vuelta');info.vuelta=[f0];}}
+  nuevo('viejo');const s2=S.sim;ok(cmIr('super'),'ir al super');let f=null;for(let i=0;i<2000;i++){f=s2.work>0?cmFase():null;if(f&&f.k==='ida'&&f.f>.3)break;step(.1);}
+  ok(f&&f.k==='ida'&&f.f>.3,'no se llega a mitad de la ida (determinista)');if(f&&f.k==='ida'){const f0=f.f;cmVolver();ok(s2.work>0,'dar la vuelta a mitad de camino');const p0=cmPos();ok(p0&&Number.isFinite(p0.x),'dando la vuelta: sin posición');for(let i=0;i<3000&&s2.work>0;i++)step(.25);ok(s2.work<=0,'no vuelve tras darse la vuelta');info.vuelta=[f0];}}
+ // 9. redirigir mientras anda: otro edificio desde mitad de camino, la acera, y encadenar una salida
+ {nuevo('viejo');const s=S.sim,bar=cdHome();S.t=11*60;ok(cmIr('super'),'ir al super');let f=null;for(let i=0;i<2000;i++){f=s.work>0?cmFase():null;if(f&&f.k==='ida'&&f.f>.3)break;step(.1);}
+  ok(f&&f.k==='ida','redirigir: no está andando');const d0=cmDesde();ok(d0&&Array.isArray(d0),'sin punto de la calle desde donde redirigir');
+  const otro=['biblioteca','bar','parque','coop'].find(k=>cdBarrioDe(k)===bar&&cmDest(k)!=='super'&&!cmCierra(k,10));ok(otro,'sin otro edificio en el barrio');
+  const x0=cmPos();ok(cmIr(otro),'redirigir a '+otro+' andando');ok(s.dest===otro&&s.outingActive==='ir','el destino no cambia a '+otro+' ('+s.dest+')');
+  const x1=cmPos();ok(x1&&Math.hypot(x1.x-x0.x,x1.y-x0.y)<3,'al redirigir salta '+(x1&&Math.hypot(x1.x-x0.x,x1.y-x0.y)));let llego=null;for(let i=0;i<4000;i++){step(.25);const g=s.work>0?cmFase():null;if(g&&g.k==='dentro'){llego=cmPos();break;}}
+  ok(llego&&llego.id===cmDest(otro),'no llega al nuevo destino');
+  // a la acera desde mitad de camino de vuelta
+  const q=cmSnap(bar,60,88);for(let i=0;i<4000;i++){const g=s.work>0?cmFase():null;if(g&&g.k==='dentro'&&(s.work-s.tr.b)>3){s.work=s.tr.b+.5;}step(.25);const h=cmFase();if(h&&h.k==='vuelta'&&h.f>.3)break;}
+  const hv=cmFase();ok(hv&&hv.k==='vuelta','no está volviendo');if(q&&hv&&hv.k==='vuelta'){ok(cmIr(null,[bar,q.p[0],q.p[1]]),'a la acera desde la vuelta');ok(s.dest==='_punto','dest _punto');for(let i=0;i<4000&&s.work>0;i++)step(.25);ok(s.work<=0,'no termina');}
+  info.redirige=[otro];}
+ {nuevo('viejo');const s=S.sim;S.t=19*60;const dia=dateOf(S.day).wd;ok(cmIr('bar'),'ir al bar');for(let i=0;i<4000;i++){step(.25);const g=s.work>0?cmFase():null;if(g&&g.k==='dentro')break;}
+  ok(cmFase()&&cmFase().k==='dentro','no está en el bar');S.outAuto=false;
+  // encadenar: del bar al súper sin pasar por casa (sale el lunes: el súper abre)
+  ok(!outAvail('compra')||outAvail('compra'),'');const sp=(OUT.compra&&destOf('compra'));ok(sp==='super','la compra no va al súper ('+sp+')');
+  const sale=awayNow()&&OUT.compra;if(sale){const r=outAvail('compra');ok(!r,'compra no disponible desde el bar: '+r);if(!r){doOut('compra');ok(S.sim.dest==='super'&&S.sim.tr&&S.sim.tr.from==='bar','encadenar: no sale de la puerta del bar ('+S.sim.dest+','+(S.sim.tr&&S.sim.tr.from)+')');let ll=false;for(let i=0;i<4000;i++){step(.25);const g=S.sim.work>0?cmFase():null;if(g&&g.k==='dentro'){ll=true;break;}}ok(ll,'no llega al súper encadenando');}}
+  info.encadena=1;}
+ // 10. cerrado a la hora de llegada: el súper un domingo no sale y avisa; otro día sí
+ {nuevo('viejo');const s=S.sim;S.day=1;while(dateOf(S.day).wd!==6||festivo(S.day)&&false)S.day++;S.t=11*60;S.free=false;const m=[];const tt=toast;toast=function(x){m.push(String(x));};
+  try{const why=outAvail('compra');ok(why&&/dom/.test(why),'compra en domingo: '+why);ok(!cmIr('super')&&s.work<=0,'cmIr al súper cerrado debería no salir');ok(m.some(x=>/s[uú]per cierra los domingos/i.test(x)),'sin aviso «El súper cierra los domingos»: '+m.join('|'));
+   S.day++;while(festivo(S.day)||dateOf(S.day).wd!==5)S.day++;S.t=11*60;ok(!outAvail('compra'),'compra un sábado: '+outAvail('compra'));
+   S.t=22*60;ok(outAvail('compra'),'compra a las 22:00 debería estar cerrada');}finally{toast=tt;}
+  info.cerrado=m.slice(0,1);}
+ // 11. «Ver casa» con ella fuera: tocar un lugar abre su ficha y no la mueve
+ {nuevo('viejo');const s=S.sim,bar=cdHome();S.t=11*60;ok(cmIr('bar'),'ir al bar');for(let i=0;i<4000;i++){step(.25);const g=s.work>0?cmFase():null;if(g&&g.k==='dentro')break;}
+  viewPlace=false;placeAuto=false;cam.z=.5;const a=cmPos(),dest0=s.dest;cmFrame(bar);const t=bmTargets().find(z=>z.id==='parque'||z.id==='coop'||z.id==='biblioteca');
+  if(t){cam.x=W/2-t.cx+cam.x;cam.y=H/2-t.cy+cam.y;const t2=bmTargets().find(z=>z.id===t.id);menu.classList.remove('open');lastPtr=[t2.cx,t2.cy];liveTap(-9,-9);ok(menu.classList.contains('open')&&card.innerHTML.length>50,'tocar un lugar en «Ver casa» no abre su ficha');ok(s.dest===dest0,'tocar un lugar la mueve');menu.classList.remove('open');}
+  info.verCasa=t?t.id:'ninguno';}
+
  console.error=oe;
  document.title=(bad.length||__errs.length?'ERR ':'OK ')+JSON.stringify({bad:[...new Set(bad)].slice(0,12),nbad:bad.length,errs:__errs.slice(0,3),info});
 }catch(err){document.title='ERR '+err.message+' '+(err.stack||'').slice(0,500)}},300);

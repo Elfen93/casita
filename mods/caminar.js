@@ -41,6 +41,9 @@ function cmRuta(a,b){const key=(Array.isArray(a)?a.join(','):a)+'>'+(Array.isArr
   return CMR[key]=R;}
 function cmRuta0(a,b){const E=CDX().enlaces;
   const pa=Array.isArray(a)?null:cmPuertaPts(a),pb=Array.isArray(b)?null:cmPuertaPts(b);
+  if(Array.isArray(a)&&!Array.isArray(b)&&pb&&cdBarrioDe(b)!==a[0]){ // desde un punto de la calle a otro barrio: hasta la puerta más cómoda de aquí y de allí en transporte
+    let best=null;for(const d of cmDoors(a[0])){if(!cdPuerta(d)||cdBarrioDe(d)!==a[0])continue;const R1=cmRuta(a,d),R2=cmRuta(d,b);if(!R1||!R2)continue;const m=R1.min+R2.min;if(!best||m<best.m)best={m,R1,R2};}
+    if(!best)return null;return {min:best.m,h:best.R2.h,precio:best.R2.precio,legs:best.R1.legs.concat(best.R2.legs)};}
   if(Array.isArray(a)||Array.isArray(b)){ // un punto de la calle: solo dentro del barrio
     const ba=Array.isArray(a)?a[0]:cdBarrioDe(a),bb=Array.isArray(b)?b[0]:cdBarrioDe(b);if(ba!==bb)return null;
     const A=Array.isArray(a)?[a[1],a[2]]:a,B=Array.isArray(b)?[b[1],b[2]]:b,ax=cmEje(ba,A,B);if(!ax)return null;
@@ -143,15 +146,15 @@ function cmPlanGente(bar,h,wd){const out=[],C=DATA.personas||{},H=C.hogares||{};
     for(const e of evs){const pl=e[0];if(!pl||pl==='fuera'||!cdPuerta(pl)||!pbDia(e[3],wd))continue;if(hb!==bar&&cdBarrioDe(pl)!==bar)continue;
       const a=e[1],b=e[2];if(typeof a!=='number'||typeof b!=='number')continue;
       const R=cmRuta(ho,pl),R2=cmRuta(pl,ho);if(!R||!R2||!(R.min>0))continue;const m=R.min/60,m2=R2.min/60;
-      if(h>=a-m&&h<a)out.push({v,R,f:(h-(a-m))/m,t:e[4]==='t'});
-      else if(h>=b&&h<b+m2)out.push({v,R:R2,f:(h-b)/m2,t:e[4]==='t'});}}
+      if(h>=a-m-.1&&h<a+.08)out.push({v,R,f:(h-(a-m))/m,t:e[4]==='t'});   // sale por su puerta un momento antes y entra en la del sitio un momento después
+      else if(h>=b-.08&&h<b+m2+.1)out.push({v,R:R2,f:(h-b)/m2,t:e[4]==='t'});}}
   return out;}
 function cmGente(bar,tt,night){const items=[],h=S.t/60,wd=dateOf(S.day).wd,key=Math.floor(S.t)+'|'+S.day+'|'+bar+'|'+cmHome();
   if(CW.gk!==key){CW.gk=key;try{CW.gl=cmPlanGente(bar,h,wd);}catch(e){console.error('gente',e);CW.gl=[];}}
   const [vx,vy,vw,vh]=[0,0,W,H],vis=(x,y)=>{const [u,v]=cmW2V(x,y),[px,py]=P(u,v),sx=cam.x+px*cam.z,sy=cam.y+py*cam.z;return sx>-30&&sx<vw+30&&sy>-90&&sy<vh+50;};
   for(const q of CW.gl){const {i,lf}=cmEnRuta(q.R,q.f),l=q.R.legs[i];if(l.b!==bar||l.k==='viaje')continue;
     const p=l.k==='pie'?cmAlong(l.pts,lf):{x:l.p[0],y:l.p[1],dx:0,dy:-1};if(!vis(p.x,p.y))continue;const [u,v]=cmW2V(p.x,p.y);
-    items.push({d:u+v,f:()=>cmFigura(p.x,p.y,p.dx,p.dy,cmChOf(q.v),{walk:l.k==='pie',ph:tt*8+q.v.id.length,name:q.v.n,edad:q.v.edad,rot:{hogar:q.v.hogar,trab:false}})});}
+    items.push({d:u+v,f:()=>cmFigura(p.x,p.y,p.dx,p.dy,cmChOf(q.v),{walk:l.k==='pie'&&q.f>.001&&q.f<.999,ph:tt*8+q.v.id.length,name:q.v.n,edad:q.v.edad,rot:{hogar:q.v.hogar,trab:false}})});}
   // paseantes sin nombre: unos por cada tramo de calle, de ida y vuelta a su ritmo (menos de noche)
   if(h>=6.5&&h<23.5){const SP=15;
     for(const q of cmPlanPaseos(bar)){if(h>=21&&q.k%2)continue;const m=q.d/SP,per=2*m+8,u0=(S.t+q.ph*per)%per;let pts=q.f,f,walk=true;
@@ -209,10 +212,12 @@ function cmFit(r,front){const x0=r[0],x1=r[2],y0=r[1],y1=r[3]+(front||0),pts=[];
   let a=1e9,b=-1e9,c=1e9,d=-1e9;for(const [x,y] of pts){a=Math.min(a,x);b=Math.max(b,x);c=Math.min(c,y);d=Math.max(d,y);}
   const top=W<700?150:120,bot=W<700?190:160,avH=Math.max(200,H-top-bot),avW=W-24,z=Math.max(.4,Math.min(1.5,Math.min(avW/(b-a),avH/(d-c))*.95));
   return {px:(a+b)/2,py:(c+d)/2,ax:W/2,ay:top+avH/2,z,x:W/2-(a+b)/2*z,y:top+avH/2-(c+d)/2*z};}
+// la escala de la calle es la de los interiores (la referencia es el bar: una figura de pie mide unos 30 px en 420×860)
+function cmZCalle(){const k=W+'x'+H;if(CW.zk===k&&CW.zc)return CW.zc;let z=.8;try{const r=cdRect('bar');if(r){cmFrame(cdBarrioDe('bar'));z=cmFit(r,CMSW+1.2).z;}}catch(e){}CW.zk=k;return CW.zc=Math.max(.55,Math.min(1.2,z));}
 // a dónde mira la cámara: un punto del plano (px,py) que va al ancla de pantalla (ax,ay), a escala z
 function cmObjetivo(pos){cmFrame(pos.b);
   if(pos.k==='dentro'&&pos.esc&&rot===0){const r=cdRect(cmMid(pos.id));if(r)return cmFit(r,CMSW+1.2);}
-  const z=.52,[u,v]=cmW2V(pos.x,pos.y),[px,py]=P(u,v),ax=W/2,ay=H*.46;return {px,py,ax,ay,z,x:ax-px*z,y:ay-py*z};}
+  const z=cmZCalle(),[u,v]=cmW2V(pos.x,pos.y),[px,py]=P(u,v),ax=W/2,ay=H*.46;return {px,py,ax,ay,z,x:ax-px*z,y:ay-py*z};}
 function cmCamTick(dt){if(BM.on||mode!=='live'||!viewPlace)return;const pos=cmPos();if(!pos){CW.camBar=null;CW.zPrev=null;return;}if(ptrs.size)return;
   const T=cmObjetivo(pos);
   if(CW.camBar!==pos.b){const prev=CW.camBar;CW.camBar=pos.b;if(prev!=null||pos.b!==cmHome()){cam.x=T.x;cam.y=T.y;cam.z=T.z;CW.zPrev=T.z;CW.zGoal=null;return;}}   // otro barrio: el rótulo del viaje tapa el salto
@@ -236,6 +241,19 @@ function cmCamTick(dt){if(BM.on||mode!=='live'||!viewPlace)return;const pos=cmPo
     return f.k==='vuelta'?cmT('titulo_vuelta'):cmT('titulo_ida',{lugar:s.dest==='_punto'?cmT('paseo_calle',{calle:''}).trim():placeName(s.dest)});}
   return _st.apply(this,arguments);};}
 // ---------------- salir, ir, volver: el viaje usa los minutos que dice cdTrayecto ----------------
+// desde dónde sale ahora: la puerta (id) o el punto [barrio,x,y] del eje de la calle por el que va; null si va en transporte
+function cmDesde(){const s=S.sim,f=cmFase();if(!f)return null;
+  if(f.k==='dentro')return s.dest==='_punto'&&s.irPt?s.irPt.slice():cmDest(s.dest);
+  const p=cmPos();if(!p||!p.vis||p.viaje||!p.leg||p.leg.k!=='pie')return null;
+  const q=cmSnap(p.b,p.x,p.y);if(q){const r=cmRuta([p.b,Math.round(q.p[0]*10)/10,Math.round(q.p[1]*10)/10],'casa');if(r)return [p.b,Math.round(q.p[0]*10)/10,Math.round(q.p[1]*10)/10];}
+  return p.b===cmHome()?'casa':null;}
+// ¿estará abierto cuando llegue? devuelve null (sí) o la frase «el súper cierra los domingos»
+function cmCierra(dest,min){try{const id=cmDest(dest);if(!id||id==='_ride'||id==='_punto')return null;const p=cdLug(id);if(!p||!p.abre)return null;
+  const t=S.t+(min||0),day=S.day+Math.floor(t/1440),h=(t%1440)/60,r=bmAhora(id,day,h);if(!r||r.on)return null;
+  const el=cmT('el_'+id)||(DATA.caminar.el&&DATA.caminar.el[id])||bmName(id),wd=bmDiaEf(day),ab=p.abre,dias=cmT('dias_plural')?DATA.caminar.dias_plural:['lunes','martes','miércoles','jueves','viernes','sábados','domingos'];
+    if(!ab.some(f=>f[2].includes(wd)))return cmT('cierra_dia',{lugar:el,dia:festivo(day)?cmT('festivos'):dias[wd]});
+    const b=r.abre;return cmT('cerrado_hora',{lugar:el,cuando:b?(b.o===0?'a las ':b.o===1?'mañana a las ':'el '+DATA.reglas.dias[b.wd].toLowerCase()+' a las ')+bmH(b.h):''});}catch(e){return null;}}
+const cmCap=t=>t?t.charAt(0).toUpperCase()+t.slice(1):t;
 const cmIrMin=()=>(DATA.caminar&&DATA.caminar.ir_min)||45;
 const cmCasaMin=d=>{try{if(!d||d==='_ride')return 30;return cmMinDe('casa',cmDest(d));}catch(e){return 30;}};
 // el margen para salir a la hora: el trayecto y una hora de margen (lo que tarda en dejar lo que hace, salir de casa y llegar con tiempo)
@@ -253,18 +271,18 @@ function cmDefine(s,dest,stay,from){const fin=dest==='_punto'&&s.irPt?s.irPt:cmD
 {const _fw=finishWork;finishWork=function(){const r=_fw.apply(this,arguments);const s=S.sim;if(!(s.work>0)){s.tr=null;s.irA=null;s.irPt=null;}return r;};}
 {const _do=destOf;destOf=function(k){if(k==='ir'){const s=S.sim;return s.irPt?'_punto':(s.irA||'parque');}return _do.apply(this,arguments);};}
 // salir de un sitio a otro sin pasar por casa (encadenar.js): el trayecto sale de la puerta de donde estaba
-{const _do=doOut;doOut=function(k){const s=S.sim,was=awayNow()&&s.dest&&!s.irPt?cmDest(s.dest):null,f=awayNow()?cmFase():null;
-  if(awayNow()&&OUT[k]&&f&&f.k!=='dentro'){toast(`${CH().name} está de camino: que llegue antes`);return;}
+{const _do=doOut;doOut=function(k){const s=S.sim,f=awayNow()?cmFase():null,was=f&&OUT[k]&&s.dest&&s.dest!=='_ride'&&s.dest!=='comisaria'?cmDesde():null;
+  if(awayNow()&&OUT[k]&&f&&(f.k!=='dentro'&&(!s.outingActive||!was))){toast(cmT('ir_transporte',{n:CH().name}));return;}
   const r=_do.apply(this,arguments);
   try{if(was&&s.work>0&&s.outingActive===k&&OUT[k]){const dur=s.work,t0=Math.min(20,dur/3);if(s.dest&&s.dest!=='_ride')cmDefine(s,s.dest,Math.max(5,dur-2*t0),was);}}catch(e){console.error(e);}
   return r;};}
 // qué había antes de «irse ya»: lo guarda leaveNow para saber desde dónde vuelve
-{const _ln=leaveNow;leaveNow=function(){const s=S.sim;CW.prev={dest:s.dest,f:s.work>0?cmFase():null,tr:s.tr,pt:s.irPt};return _ln.apply(this,arguments);};}
+{const _ln=leaveNow;leaveNow=function(){const s=S.sim;CW.prev={dest:s.dest,f:s.work>0?cmFase():null,tr:s.tr,pt:s.irPt,desde:s.work>0&&s.dest!=='_ride'?cmDesde():null};return _ln.apply(this,arguments);};}
 function cmIrCasa(){const s=S.sim,p=CW.prev||{},f=p.f;CW.prev=null;
   if(!p.dest||p.dest==='_ride'||p.dest==='comisaria'){s.work=1;s.awayTotal=1;s.outingActive='_vuelta';s.dest=null;toast(cmT('vuelve_toast'));return;}
   s.outingActive='_vuelta';s.irA=null;s.irPt=p.pt||null;
   if(f&&f.k==='ida'){ // se da la vuelta por donde iba
-    if((p.tr&&p.tr.from)!=='casa'&&p.tr){s.dest='_casa';const b=cmMinDe(p.tr.from,'casa');s.tr={a:0,b,from:p.tr.from,pg:[]};s.work=b;s.awayTotal=b;toast(cmT('vuelve_toast'));return;}
+    if(((p.tr&&p.tr.from)!=='casa'&&p.tr)||(p.desde&&p.desde!=='casa')){s.dest='_casa';const fr=p.desde||p.tr.from,b=cmMinDe(fr,'casa');s.tr={a:0,b,from:fr,pg:[]};s.work=b;s.awayTotal=b;toast(cmT('vuelve_toast'));return;}
     const b=Math.max(1,Math.round(f.el));s.dest=p.dest;s.tr={a:0,b,from:'casa',turn:f.f,fin:p.pt?p.pt:cmDest(p.dest),pg:[]};s.work=b;s.awayTotal=b;toast(cmT('vuelve_toast'));return;}
   if(f&&f.k==='vuelta'){s.dest=p.dest;s.tr=p.tr;s.work=Math.max(1,p.tr?p.tr.b*(1-f.f):1);s.awayTotal=s.work;return;}
   const fin=p.pt?p.pt:cmDest(p.dest),b=cmMinDe(fin,'casa');s.dest='_casa';s.tr={a:0,b,from:fin,pg:[]};s.work=b;s.awayTotal=b;toast(cmT('vuelve_toast'));}
@@ -276,13 +294,16 @@ function cmVolver(){const s=S.sim;if(!(s.work>0)||s.jail||s.dest==='_ride'||s.ou
 function cmIr(id,pt){const s=S.sim;if(BM.obs||s.jail)return false;if(!pt&&!(cmDest(id)&&cdPuerta(cmDest(id)))){toast(cmT('ir_no'));return false;}
   if(pt&&cmBar()!==pt[0]){toast(cmT('ir_no'));return false;}
   const dest=pt?'_punto':id;
-  if(s.work>0){const f=cmFase(),here=s.dest;if(!f||f.k!=='dentro'||s.dest==='_ride'||s.outingActive==='calabozo'){toast(cmT('ir_cerrado',{n:CH().name}));return false;}
-    if(!pt&&(here===id||cmDest(here)===id)){toast(cmT('ir_ya',{n:CH().name}));return false;}
-    const from=s.dest==='_punto'?[s.irPt[0],s.irPt[1],s.irPt[2]]:cmDest(s.dest);
-    if(!leaveNow())return false;
+  if(s.work>0){const f=cmFase(),here=s.dest,k=s.outingActive;if(!f||s.dest==='_ride'||k==='calabozo'||(f.k!=='dentro'&&!k)){toast(cmT('ir_cerrado',{n:CH().name}));return false;}
+    if(!pt&&f.k!=='vuelta'&&(here===id||cmDest(here)===id)&&!(f.k==='ida'&&s.tr&&s.tr.from!=='casa')){toast(cmT('ir_ya',{n:CH().name}));return false;}
+    const from=cmDesde();if(!from){toast(cmT('ir_transporte',{n:CH().name}));return false;}
+    const fin=pt||cmDest(id),R=cmRuta(from,fin);if(!R){toast(cmT('ir_no'));return false;}
+    if(!pt){const c=cmCierra(id,Math.max(1,Math.round(R.min)));if(c){toast(cmCap(c));return false;}}
+    if(f.k==='dentro'||!(k==='ir'||k==='_vuelta')){if(!leaveNow())return false;}
     s.use=null;s.target=null;s.path=[];s.leaving=false;s.outing=null;s.irA=pt?null:id;s.irPt=pt||null;s.dest=dest;s.route=null;s.outingActive='ir';s.think=0;
     cmDefine(s,dest,cmIrMin(),from);
     toast(pt?cmT('ir_punto_toast'):cmT('ir_toast',{lugar:placeName(id)}));return true;}
+  if(!pt){const c=cmCierra(id,cmMinDe('casa',cmDest(id)));if(c){toast(cmCap(c));return false;}}
   s.irA=pt?null:id;s.irPt=pt||null;goOut('ir');return true;}
 // ---------------- el tiempo: billetes y llegada ----------------
 const cmBK=()=>{if(typeof BK_CAT!=='undefined'&&!BK_CAT['Transporte'])BK_CAT['Transporte']='otros';};cmBK();
@@ -297,15 +318,24 @@ function cmTick(){const s=S.sim;if(!(s.work>0)||!s.dest)return;const f=cmFase();
 function cmFicha(id){const bar=cmBar(),pb=BM.b;BM.b=bar;BM.bx=null;try{return bmFicha(id);}finally{BM.b=pb;BM.bx=null;}}
 function cmSnap(bar,x,y){let best=null;for(const c of CDX().barrios[bar].calles){const hor=cdHor(c),p=hor?[Math.max(c.a[0],Math.min(c.b[0],x)),c.a[1]]:[c.a[0],Math.max(c.a[1],Math.min(c.b[1],y))],d=hor?Math.abs(y-c.a[1]):Math.abs(x-c.a[0]);
     if(d<=c.w/2+CMSW+3&&(!best||d<best.d))best={p,c,d};}return best;}
-function cmToque(sx,sy){const bar=cmBar(),v=typeof vcHit==='function'?vcHit(sx,sy):null;if(v){sfx('tap');vcOpen(v);return true;}
+function cmToque(sx,sy,soloFicha){const bar=cmBar(),v=typeof vcHit==='function'?vcHit(sx,sy):null;if(v){sfx('tap');vcOpen(v);return true;}
   const pb=BM.b;BM.b=bar;BM.bx=null;cmFrame(bar);let t=null;try{t=bmAt(sx,sy);}finally{BM.b=pb;BM.bx=null;}
   if(t){sfx('tap');cmFicha(t.id);return true;}
+  if(soloFicha)return false;
   const [u,vv]=screenToView(sx,sy),[x,y]=v2w(u,vv),wx=x+CMF[0],wy=y+CMF[1],q=cmSnap(bar,wx,wy);
   if(q){sfx('tap');cmIr(null,[bar,Math.round(q.p[0]*10)/10,Math.round(q.p[1]*10)/10]);return true;}
   return false;}
+// una salida a un sitio cerrado cuando llegue no sale (aviso) y la automatización busca otro momento
+{const _oa=outAvail;outAvail=function(k){const r=_oa.apply(this,arguments);if(r||!OUT[k]||['amigos','visita','piquete','manifestacion','calabozo'].includes(k))return r;
+  try{const d=destOf(k),from=awayNow()?cmDesde():'casa',c=cmCierra(d,cmMinDe(from||'casa',cmDest(d)));if(c)return c;}catch(e){}return r;};}
+{const _do=destOf;destOf=function(k){const d0=_do.apply(this,arguments);
+  const m={compra:'super',pedir:'super',beber:'bar',presta:'biblioteca'};if(m[k])return m[k];
+  if(k==='amigos'){try{const l=['bar','parque','sala'],f=S.sim.work>0?cmDesde():'casa';if(cmCierra(d0,cmMinDe(f||'casa',cmDest(d0)))){const o=l.find(x=>!cmCierra(x,cmMinDe(f||'casa',cmDest(x))));if(o)return o;}}catch(e){}}return d0;};}
 {const _sa=sceneAct;sceneAct=function(){const s=S.sim;if(s.outingActive==='ir'&&s.work>0&&!BM.on){const p=PLACES[cmMid(s.dest)]||PLACES[s.dest];return ((p&&p.outs)||[])[0]||'visita';}return _sa.apply(this,arguments);};}
 {const _pn=placeName;placeName=function(k){if(!PLACES[k]&&k!=='_ride'&&typeof cdLug==='function'&&cdLug(k))return bmName(k);return _pn.apply(this,arguments);};}
-{const _lt=liveTap;liveTap=function(x,y){try{if(!BM.on&&mode==='live'&&((viewPlace&&S.sim.work>0)||!inb(x,y))){if(cmToque(lastPtr[0],lastPtr[1]))return;}}catch(e){console.error('toque',e);}return _lt.apply(this,arguments);};}
+{const _lt=liveTap;liveTap=function(x,y){try{if(!BM.on&&mode==='live'){const fuera=S.sim.work>0;
+    if((viewPlace&&fuera)||!inb(x,y)){if(cmToque(lastPtr[0],lastPtr[1],!viewPlace))return;}
+    else if(fuera&&!viewPlace&&cmToque(lastPtr[0],lastPtr[1],true))return;}}catch(e){console.error('toque',e);}return _lt.apply(this,arguments);};}
 // ---------------- la ficha: trayecto e «ir allí andando» ----------------
 function cmTrayectoTxt(id){const R=cmRuta('casa',cmDest(id));if(!R)return '';const m=Math.max(1,Math.round(R.min)),e=R.precio!=null?R.precio:0;
   return e>0?cmT('trayecto',{min:m,y:cmT('y_precio',{eur:String(e).replace('.',',')})}):cmT('trayecto_pie',{min:m});}
