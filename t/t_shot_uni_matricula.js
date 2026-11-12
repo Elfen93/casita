@@ -1,0 +1,5 @@
+setTimeout(()=>{try{S=newState('normal');S.char={...randomChar(),g:'f'};S.ideo='marxista';initPeople();applyHome('viejo');startTrack('oficina',true);rollWeather();newToday();storyStart();S.autoHome=false;S.r3d='simple';S.money=30000;S.weather={k:'sol',t:20};
+ document.querySelectorAll('.diffov,#diffov,#intro,#welcome').forEach(e=>e.remove());S.edu={lv:'bach',done:[],certs:[],cur:null};
+ openMenu('trabajo'); card.querySelectorAll('details.tracks').forEach(x=>{x.open=!!x.querySelector('[data-unirow]');});
+ setTimeout(()=>{const r=card.querySelector('[data-unirow]');if(r){const dt=r.closest('details');let e=r.parentElement;while(e&&e.scrollHeight<=e.clientHeight+2)e=e.parentElement;if(e)e.scrollTop=dt.getBoundingClientRect().top-e.getBoundingClientRect().top+e.scrollTop-6;}document.title='OK matricula rows='+card.querySelectorAll('[data-unirow]').length+' '+window.__errs.length+' '+(window.__errs[0]||'');},1200);
+}catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,300)}},300);

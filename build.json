@@ -60,6 +60,7 @@
   "poblacion.js",
   "servicios.js",
   "hogares.js",
-  "escuela.js"
+  "escuela.js",
+  "universidad.js"
  ]
 }

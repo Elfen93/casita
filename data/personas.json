@@ -418,6 +418,7 @@
       "rol": "comparte piso",
       "trabajo": {"lugar": "bar", "puesto": ["friegaplatos", "friegaplatos"], "h": [21, 24], "dias": [4, 5]},
       "estudia": "uni",
+      "centro": "uni_publica",
       "historia": "Primera de su familia en la universidad. Estudia Biología por las mañanas y friega platos en el bar de viernes a sábado. Quiere acabar el grado sin deber la matrícula del siguiente.",
       "lazos": [["lucia", "amiga"], ["ruben", "amiga"]]
     },

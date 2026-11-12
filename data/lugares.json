@@ -26,7 +26,9 @@
     "sepe": {"n": "Oficina de empleo", "e": "📋", "r": [22.5, 26, 25.5, 32], "h": 28, "c": "#e8dcc4", "acc": "#8a6a3a", "d": "Cola, ventanillas y un cartel que no admite réplica.", "outs": ["sepe", "ssociales"]},
     "colegio": {"n": "Colegio público La Ribera", "e": "🏫", "r": [35, -3, 41, 4], "h": 22, "c": "#e6c88e", "acc": "#c0262d", "d": "De los 3 a los 11 años. Un barracón en el patio desde 2009, «provisional», y la AMPA que paga lo que falta.", "outs": ["cole", "tutoria"]},
     "concertado": {"n": "Colegio San Roque", "e": "🏫", "r": [35, 6, 41, 12], "h": 24, "c": "#efe6d4", "roof": "#9a4a35", "acc": "#2c3e7a", "d": "Concertado, de la parroquia, de los 3 a los 16 años. Uniforme, patio con césped y una cuota «voluntaria».", "outs": ["cole", "tutoria"]},
-    "instituto": {"n": "Instituto Las Eras", "e": "🎒", "r": [35, 14, 41, 22], "h": 28, "c": "#c5d0da", "acc": "#4a7aa8", "d": "De los 12 a los 17 años. Taquillas, corrillos y una puerta donde nunca falta quien fuma.", "outs": ["tutoria"]}
+    "instituto": {"n": "Instituto Las Eras", "e": "🎒", "r": [35, 14, 41, 22], "h": 28, "c": "#c5d0da", "acc": "#4a7aa8", "d": "De los 12 a los 17 años. Taquillas, corrillos y una puerta donde nunca falta quien fuma.", "outs": ["tutoria"]},
+    "uni_publica": {"n": "Universidad Pública del Río", "e": "🎓", "r": [44, -3, 52, 6], "h": 34, "c": "#d9c8a6", "acc": "#8a3b22", "d": "Aulas de ochenta, tasas de las de siempre y una cafetería donde el café cuesta lo que debe. Clases por la mañana.", "outs": []},
+    "uni_privada": {"n": "Campus Nébula", "e": "🏢", "r": [44, 9, 51, 17], "h": 30, "c": "#e9eef2", "acc": "#2a8f9a", "glass": true, "d": "Universidad privada de Nébula. Grupos de veinte, clases por la tarde y una matrícula que se financia a plazos.", "outs": []}
   },
 
   "trabajo_en": {"oficina": "torre", "tech": "torre", "super": "super", "hosteleria": "bar", "obra": "obra", "cuidados": "residencia", "funcion": "ayto", "reparto": "_ride", "arte": "sala", "negocio": "tienda", "coop": "coop"},
