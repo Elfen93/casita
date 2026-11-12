@@ -5,8 +5,8 @@
 build.py llama a la comprobación antes de construir: si algo no cuadra, no hay build.
 Qué es cada archivo y cada campo: data/README.md.
 """
-import json,os,sys
-R=os.path.dirname(os.path.dirname(os.path.abspath(__file__)));D=os.path.join(R,'data')
+import json,os,re,sys
+R=os.path.dirname(os.path.dirname(os.path.abspath(__file__)));D=os.path.join(R,'data');R_=R
 ANCHO=300  # una ficha cabe en una línea si no pasa de aquí; si pasa, se despliega un campo por línea
 
 def cargar():
@@ -87,6 +87,78 @@ def censo(P,lug,ideo,E,dentro):
                     if a<b2 and a2<b and set(ds)&set(d2):E.append(q+'.trabajo: trabaja fuera y «%s» %d-%d lo pisa'%(l2,a2,b2))
             elif not any(l2==lg and a2<=a and b<=b2 and set(ds)<=set(d2) for l2,a2,b2,d2 in v['donde']):E.append(q+'.trabajo: no cuadra con donde (%s %d-%d)'%(lg,a,b))
 
+# ---------- tratar con los vecinos (mods/trato.js) ----------
+TR_FX=('rel','social','diversion','hambre','energia','coste_h','fiar_h','presta_h','presto_h','pista','despensa','agua','hijos_hap','mov','sol','te','chisme')
+TR_REQ=('huerto','hijos_cole','con_trabajo','en_paro','trabajo_dentro','ella_hijos','bloque','politica','justa','solvente')
+TR_HUECOS=('v','x','y','k','c','n','o','quien','sitio','frase','que','st','l','why')
+TR_ACT=(None,'out','tr:curro','tr:chisme','tr:asamblea','tr:ok','tr:no','tr:pagar','tr:luego')
+def trato(T,lug,ideo,E,dentro):
+    def textos(q,x):
+        if isinstance(x,str):
+            for h in re.findall(r'\{(\w+)\}',x):
+                if h not in TR_HUECOS:E.append('%s: hueco {%s} desconocido'%(q,h))
+        elif isinstance(x,list):
+            for y in x:textos(q,y)
+        elif isinstance(x,dict):
+            for k,y in x.items():textos(q+'.'+k,y)
+    textos('trato',T)
+    def par(q,L):
+        if not(isinstance(L,list) and L and all(isinstance(x,list) and len(x)==2 and all(isinstance(t,str) and t for t in x) for x in L)):E.append('%s: lista de [título, línea]'%q)
+    def accion(q,a,ids):
+        if not(a.get('id') and a.get('e') and a.get('n')):E.append('%s: faltan id, e o n'%q);return
+        if a['id'] in ids:E.append('%s: id repetido'%q)
+        ids.add(a['id']);par(q+'.ok',a.get('ok'))
+        if 'ko' in a:par(q+'.ko',a['ko'])
+        for k in list(a.get('fx',{}))+list(a.get('fxko',{})):
+            if k not in TR_FX:E.append('%s: efecto «%s» desconocido'%(q,k))
+        dentro(q+'.req',a.get('req',[]),TR_REQ,'trato (req)')
+        if 'p' in a and not 0<a['p']<=1:E.append('%s.p: entre 0 y 1'%q)
+    for k,o in T['oficios'].items():
+        ids=set()
+        if not(o.get('acciones') or o.get('nota')):E.append('trato.oficios.%s: ni acciones ni nota'%k)
+        for a in o.get('acciones',[]):accion('trato.oficios.%s.%s'%(k,a.get('id')),a,ids)
+    dentro('trato.lugares',T['lugares'],lug,'lugares.lugares')
+    for k,o in T['lugares'].items():
+        ids=set()
+        for a in o['acciones']:accion('trato.lugares.%s.%s'%(k,a.get('id')),a,ids)
+    for k,f in T['favores'].items():
+        q='trato.favores.'+k
+        if f.get('dir') not in ('pedir','pide'):E.append(q+'.dir: pedir o pide')
+        for c in ('e','n','rel','mem','ok','ko' if f.get('dir')=='pedir' else 'rechazo','fx'):
+            if c not in f:E.append('%s: falta %s'%(q,c))
+        for c in ('ok','ko','rechazo'):
+            if c in f:par(q+'.'+c,f[c])
+        for c in list(f.get('fx',{}))+list(f.get('fxko',{}))+list(f.get('fxno',{})):
+            if c not in TR_FX:E.append('%s: efecto «%s» desconocido'%(q,c))
+        dentro(q+'.req',f.get('req',[]),TR_REQ,'trato (req)')
+        if f.get('dir')=='pide':
+            if f.get('modo') not in ('visita','ya'):E.append(q+'.modo: visita o ya')
+            for c in ('msg','corto','si','no','fxko','fxno'):
+                if c not in f:E.append('%s: falta %s'%(q,c))
+            for c in ('si','no'):
+                if len(f.get(c,[]))!=2:E.append('%s.%s: [etiqueta, respuesta]'%(q,c))
+    C=T['politica']['cercanas']
+    dentro('trato.politica.cercanas',C,ideo,'ideologias.ideologias')
+    for k,v in C.items():dentro('trato.politica.cercanas.'+k,v,ideo,'ideologias.ideologias')
+    R=T['romance']
+    if abs(sum(w for _,w in R['orientacion'])-1)>1e-6:E.append('trato.romance.orientacion: los pesos suman 1')
+    dentro('trato.romance.orientacion',[o for o,_ in R['orientacion']],('hetero','homo','ambos','nadie'),'hetero, homo, ambos, nadie')
+    if R['edad_min']<18:E.append('trato.romance.edad_min: nunca menos de 18')
+    for k,m in T['buscan']['mensajes'].items():
+        q='trato.buscan.mensajes.'+k
+        if not(len(m['rel'])==2 and m['rel'][0]<m['rel'][1]):E.append(q+'.rel: [mínimo, máximo]')
+        dentro(q+'.req',m.get('req',[]),TR_REQ,'trato (req)')
+        for r in m['resp']:
+            if len(r)!=5 or r[2] not in TR_ACT:E.append('%s.resp: [etiqueta, relación, acción, respuesta, lo que escribe]; acción de %s'%(q,TR_ACT))
+    for k,m in T['buscan']['visita'].items():
+        par('trato.buscan.visita.%s.ok'%k,m['ok'])
+        for c in m['fx']:
+            if c not in TR_FX:E.append('trato.buscan.visita.%s: efecto «%s» desconocido'%(k,c))
+    # cada texto de la ficha que usa el código existe
+    src=open(os.path.join(R_,'mods','trato.js'),encoding='utf-8').read() if os.path.exists(os.path.join(R_,'mods','trato.js')) else ''
+    for c in set(re.findall(r"trT\('(\w+)'",src))|set(re.findall(r"TRF\(\)\.(\w+)",src)):
+        if c not in T['ficha']:E.append('trato.ficha: falta «%s» (lo usa mods/trato.js)'%c)
+
 # ---------- comprobaciones: cada una devuelve una lista de fallos ----------
 def comprobar(d):
     E=[]
@@ -96,6 +168,7 @@ def comprobar(d):
     def mismas(que,a,b):
         if set(a)!=set(b):E.append('%s: sobran %s, faltan %s'%(que,sorted(set(a)-set(b)),sorted(set(b)-set(a))))
     L,V,P,PR,O,LB,ED,I,ID,G,RG=(d[k] for k in ('lugares','viviendas','personas','profesiones','objetos','libros','estudios','interacciones','ideologias','gobiernos','reglas'))
+    if 'trato' in d:trato(d['trato'],L['lugares'],ID['ideologias'],E,dentro)
     lug,sal,sec,obj=L['lugares'],L['salidas'],PR['sectores'],O['objetos']
     nec=[n[0] for n in RG['necesidades']];hab=[h[0] for h in PR['habilidades']];ideo=ID['ideologias'];gov=G['gobiernos']
     # lugares y salidas

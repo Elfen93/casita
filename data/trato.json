@@ -1,0 +1,424 @@
+{
+  "_": "Tratar con los vecinos (mods/trato.js): lo que se puede hacer con alguien del censo según quién es y dónde está, los favores en los dos sentidos, el cotilleo, la política, el romance con adultos y cuándo te buscan. Aquí van las tablas y los textos; las condiciones con nombre (req) y los efectos (fx) los interpreta el código. Ver data/README.md.",
+
+  "oficios": {
+    "cajera": {
+      "acciones": [
+        {
+          "id": "turnos",
+          "e": "🕑",
+          "n": "Preguntar por los turnos",
+          "rel": 15,
+          "ok": [["{v} te cuenta cómo van los turnos", "Los cambian cada dos semanas y avisan por el grupo a las diez de la noche. De paso te dice dónde han quedado huecos."], ["Turnos con {v}", "Sabe quién ha pedido el cambio y quién se ha ido. Te apuntas dónde hay hueco, por si acaso."]],
+          "fx": {"rel": 3, "social": 4, "pista": "empleo"}
+        }
+      ]
+    },
+    "reponedora": {
+      "acciones": [
+        {
+          "id": "tirar",
+          "e": "🥫",
+          "n": "Preguntar por lo que se va a tirar",
+          "rel": 35,
+          "p": 0.65,
+          "ok": [["{v} te guarda unas latas", "Abolladas, pero buenas. Las saca por la puerta de atrás, como quien saca contrabando."], ["Lo que sobra a cierre", "{v} se ha acordado de ti: lo que no se vende acaba en una bolsa, no en el contenedor."]],
+          "ko": [["Hoy no se puede", "{v} dice que hay cámaras y una encargada con ojo para las latas. Otro día."]],
+          "fx": {"rel": 2, "despensa": 2},
+          "fxko": {"rel": -1}
+        }
+      ]
+    },
+    "camarera": {
+      "acciones": [
+        {
+          "id": "fiar",
+          "e": "🍺",
+          "n": "Que te fíe una",
+          "rel": 25,
+          "p": 0.8,
+          "ok": [["{v} te la apunta", "En la libreta de debajo de la barra, donde apunta a media plantilla del barrio. Se paga el próximo día."]],
+          "ko": [["La caja manda", "{v} baja la voz: «Hoy está el jefe». La libreta se queda cerrada."]],
+          "fx": {"fiar_h": 1.2, "diversion": 10, "social": 8, "rel": 2},
+          "fxko": {"rel": -1}
+        },
+        {"id": "quien", "e": "👀", "n": "Preguntar quién ha pasado", "rel": 20, "ok": [["{v} lo ve todo desde la barra", "Quién ha venido con quién, quién se ha ido sin pagar y quién no ha vuelto desde la mudanza."]], "fx": {"chisme": 1, "rel": 2, "social": 3}}
+      ]
+    },
+    "friegaplatos": {"acciones": [{"id": "platos", "e": "🍽️", "n": "Echarle una mano con los platos", "rel": 25, "ok": [["Platos con {v}", "Una pila que no se acababa. Se habla mejor con las manos ocupadas y el agua caliente."]], "fx": {"energia": -8, "rel": 6, "sol": 0.3, "social": 4}}]},
+    "maestra": {
+      "acciones": [
+        {
+          "id": "hijos",
+          "e": "🎒",
+          "n": "Preguntar por tus hijos",
+          "rel": 20,
+          "req": ["hijos_cole"],
+          "ok": [["{v} te habla de tu cría", "Dice que lee bien, que habla poco y que ayer defendió a otra criatura en el patio. Con veintiocho por clase, que se fije en eso es mucho."]],
+          "fx": {"hijos_hap": 6, "rel": 3, "social": 3}
+        }
+      ]
+    },
+    "profesora": {
+      "acciones": [
+        {
+          "id": "hijos",
+          "e": "🎒",
+          "n": "Preguntar por tus hijos",
+          "rel": 20,
+          "req": ["hijos_cole"],
+          "ok": [["{v} te cuenta cómo van", "Sin dramas: algún examen flojo y una racha de buen humor. Lo que más le preocupa es que nadie pregunta cuántos alumnos tiene."]],
+          "fx": {"hijos_hap": 6, "rel": 3, "social": 3}
+        }
+      ]
+    },
+    "conserje": {"acciones": [{"id": "patio", "e": "🔑", "n": "Preguntar qué se cuece en el patio", "rel": 20, "ok": [["{v} tiene las llaves y los oídos", "Ve entrar y salir a todo el mundo. Y es de los pocos que sí sabe cómo se llaman los críos."]], "fx": {"chisme": 1, "rel": 2}}]},
+    "enfermera": {"nota": "Fuera de turno no hace de médica. «Pide cita en el centro de salud, como todo el mundo»: lo único que no se recorta es el secreto profesional.", "acciones": []},
+    "medica": {"nota": "Fuera de la consulta, nada. Ni un vistazo a la garganta en el rellano.", "acciones": []},
+    "dependienta": {"acciones": [{"id": "ventas", "e": "🛍️", "n": "Preguntar qué se lleva la gente", "rel": 25, "ok": [["{v} ve pasar el barrio", "Lo que compra cada cual dice más que lo que cuenta. {v} lo sabe y, por oficio, calla casi todo."]], "fx": {"chisme": 1, "rel": 2}}]},
+    "dueña de tienda": {
+      "acciones": [
+        {
+          "id": "cuenta",
+          "e": "📒",
+          "n": "Que te apunte la cuenta",
+          "rel": 35,
+          "p": 0.7,
+          "ok": [["{v} abre cuenta", "Una libreta y un «a fin de mes». Las tiendas de barrio fían lo que los bancos no."]],
+          "ko": [["Este mes no", "{v} suspira: «El proveedor tampoco me fía a mí». Y es verdad."]],
+          "fx": {"fiar_h": 2, "hambre": 20, "rel": 2},
+          "fxko": {"rel": -1}
+        }
+      ]
+    },
+    "informática": {"acciones": [{"id": "hueco", "e": "💻", "n": "Preguntar si hay hueco en la torre", "rel": 35, "ok": [["{v} te cuenta lo de arriba", "Contratan a través de una ETT y renuevan cada tres meses. Pero hay hueco, y {v} sabe a quién escribir."]], "fx": {"rel": 2, "pista": "empleo"}}]},
+    "limpiadora": {"acciones": [{"id": "oidos", "e": "🧹", "n": "Preguntar qué se oye en las oficinas", "rel": 25, "ok": [["{v} limpia y escucha", "Las que limpian se enteran de todo y no las ve nadie. Hoy te cuenta un poco."]], "fx": {"chisme": 1, "rel": 2}}]},
+    "albañil": {"acciones": [{"id": "obra", "e": "🧱", "n": "Preguntar si en la obra buscan gente", "rel": 30, "ok": [["{v} te habla del tajo", "Buscan oficiales y peones, siempre. Lo que no dice casi nadie es con qué contrato."]], "fx": {"rel": 2, "pista": "empleo"}}]},
+    "peón": {"acciones": [{"id": "tajo", "e": "⛑️", "n": "Preguntar cómo está el tajo", "rel": 20, "ok": [["{v} te cuenta el tajo", "Doce horas de pie, una subcontrata de otra subcontrata y el casco que le prestó un compañero."]], "fx": {"chisme": 1, "rel": 3, "social": 3}}]},
+    "becaria": {"acciones": [{"id": "leer", "e": "📚", "n": "Pedirle que te recomiende algo", "rel": 15, "ok": [["{v} te pasa un libro", "Uno corto, que se nota que ya sabe cómo tienes la semana. Se lo devuelves cuando puedas."]], "fx": {"diversion": 8, "rel": 3}}]},
+    "delegado sindical": {
+      "acciones": [
+        {"id": "inquilinas", "e": "✊", "n": "Preguntar por el sindicato de inquilinas", "rel": 20, "ok": [["{v} te explica cómo se monta", "Primero se cuenta cuántas sois, luego se habla con el casero en grupo. Sola se aguanta; en el rellano, se negocia."]], "fx": {"mov": 0.6, "sol": 0.4, "rel": 3}}
+      ]
+    },
+    "socio de la cooperativa": {
+      "acciones": [{"id": "coope", "e": "🌱", "n": "Preguntar cómo se entra en la coope", "rel": 30, "ok": [["{v} te habla de la coope", "Se entra por asamblea, con cuota y sin jefe. Se tarda más en decidir y se duerme mejor."]], "fx": {"rel": 2, "mov": 0.2, "pista": "empleo"}}]
+    },
+    "administrativa": {"acciones": [{"id": "ventanilla", "e": "🗂️", "n": "Preguntar qué papeles se mueven", "rel": 30, "ok": [["{v} sabe qué ventanilla es", "Quién ha pedido qué, y a quién le han dicho que vuelva el martes. Sin dar nombres. Casi."]], "fx": {"chisme": 1, "rel": 2}}]}
+  },
+
+  "lugares": {
+    "bar": {
+      "acciones": [
+        {
+          "id": "cana",
+          "e": "🍻",
+          "n": "Invitar a una caña",
+          "rel": 15,
+          "ok": [["Caña con {v}", "Una para cada uno y la conversación que sale cuando nadie mira el reloj."], ["Os tomáis algo", "{v} dice que no hacía falta, y se la bebe despacio. Hacía falta."]],
+          "fx": {"coste_h": 1, "rel": 5, "social": 8, "diversion": 6}
+        }
+      ]
+    },
+    "parque": {"acciones": [{"id": "banco", "e": "🌳", "n": "Sentarte un rato a su lado", "rel": 10, "ok": [["Banco con {v}", "Dos perros, un balón perdido y veinte minutos sin prisa. Gratis, como lo mejor."]], "fx": {"rel": 3, "diversion": 6, "social": 6}}]},
+    "comedor": {"acciones": [{"id": "mano", "e": "🍲", "n": "Echar una mano en el comedor", "rel": 20, "ok": [["Mano en el comedor", "Pelar, servir, recoger. {v} te pasa el delantal sin preguntar si sabes."]], "fx": {"energia": -8, "rel": 4, "sol": 0.4, "social": 5}}]},
+    "ateneo": {"acciones": [{"id": "charla", "e": "📢", "n": "Escuchar la charla juntas", "rel": 20, "ok": [["Charla con {v}", "Sillas duras, café malo y ideas buenas. Os quedáis discutiendo en la puerta."]], "fx": {"rel": 4, "mov": 0.3, "social": 4}}]},
+    "biblioteca": {"acciones": [{"id": "libros", "e": "📖", "n": "Cambiar libros", "rel": 15, "ok": [["Libros con {v}", "Un intercambio a la pata coja entre estanterías. Os sacan el «shhh» una vez."]], "fx": {"rel": 3, "diversion": 5}}]},
+    "super": {"acciones": [{"id": "precios", "e": "🛒", "n": "Comparar precios en el pasillo", "rel": 10, "ok": [["Pasillo con {v}", "Lo que ha subido, lo que han encogido y quién rellena los paquetes con aire."]], "fx": {"rel": 2, "social": 3}}]},
+    "gymbueno": {"acciones": [{"id": "series", "e": "🏋️", "n": "Hacer series juntas", "rel": 20, "ok": [["Series con {v}", "Cada cual con lo suyo y una cuenta de repeticiones que nadie cree."]], "fx": {"energia": -8, "diversion": 6, "rel": 4}}]},
+    "sindicato": {"acciones": [{"id": "lista", "e": "✊", "n": "Apuntaros a la asamblea", "rel": 25, "ok": [["Lista con {v}", "Un nombre debajo de otro. Parece poca cosa hasta que la ve el casero."]], "fx": {"mov": 0.5, "sol": 0.3, "rel": 3}}]},
+    "parroquia": {"acciones": [{"id": "reparto", "e": "🧺", "n": "Echar una mano con el reparto", "rel": 20, "ok": [["Reparto con {v}", "Cajas, listas y vecinas que dan las gracias sin levantar la vista. Se te queda en el pecho."]], "fx": {"energia": -8, "rel": 4, "sol": 0.4, "social": 5}}]}
+  },
+
+  "favores": {
+    "regar": {
+      "dir": "pedir",
+      "e": "🪴",
+      "n": "Que te riegue el huerto",
+      "rel": 35,
+      "req": ["huerto"],
+      "mem": "te regó el huerto",
+      "ok": [["{v} riega el huerto", "Ha subido con la regadera y se ha puesto a hablarles a los tomates. Lo apuntas en la cuenta de favores."]],
+      "ko": [["{v} no puede ahora", "Entre el curro y los suyos, no llega. Otra vez será."]],
+      "fx": {"agua": 1, "rel": 2}
+    },
+    "recoger": {
+      "dir": "pedir",
+      "e": "🎒",
+      "n": "Que recoja a tu cría del cole",
+      "rel": 45,
+      "req": ["hijos_cole", "con_trabajo"],
+      "mem": "recogió a tu cría",
+      "ok": [["{v} recoge a tu cría", "La espera en la puerta con los demás, la lleva a casa y le da la merienda. Tú sales tarde sin correr."]],
+      "ko": [["{v} hoy no llega", "Sale tarde del trabajo, como tú. No hay quien recoja a nadie."]],
+      "fx": {"hijos_hap": 3, "energia": 8, "rel": 2}
+    },
+    "dejar": {
+      "dir": "pedir",
+      "e": "💶",
+      "n": "Que te deje {c}",
+      "rel": 50,
+      "mem": "te dejó dinero",
+      "ok": [["{v} te deja {c}", "«Cuando puedas, sin prisa». Pero lo apunta en la cabeza, como se apunta todo en el barrio."]],
+      "ko": [["{v} tampoco llega", "Te lo dejaría si pudiera. Y te mira de una manera que lo deja claro."]],
+      "fx": {"presta_h": 2.5, "rel": 1},
+      "req": ["justa"]
+    },
+    "avisar": {
+      "dir": "pedir",
+      "e": "📣",
+      "n": "Que te avise si hay curro en su empresa",
+      "rel": 40,
+      "req": ["trabajo_dentro"],
+      "mem": "te avisó de un curro",
+      "ok": [["{v} se compromete a avisarte", "Dice que lo comentará con el encargado y que en cuanto oiga algo te escribe. Las ofertas de verdad nunca salen en el portal."]],
+      "ko": [["{v} no se mete", "Está en periodo de prueba y no quiere llamar la atención. Se entiende."]],
+      "fx": {"pista": "empleo", "rel": 2}
+    },
+    "cuidar": {
+      "dir": "pide",
+      "modo": "visita",
+      "e": "🧒",
+      "n": "Cuidar a su cría una tarde",
+      "rel": 35,
+      "req": ["ella_hijos"],
+      "mem": "cuidaste a su cría",
+      "msg": ["Te pido un favor enorme. Tengo turno y no tengo con quién dejar a {k}. Una tarde, nada más.", "Me ha salido un turno y {k} se queda sin plan. ¿Me la cuidas esta tarde? Te debo una."],
+      "corto": "Que cuides a {k} una tarde.",
+      "si": ["🧒 «Claro, voy ahora»", "Eres un sol. Hay galletas en el armario."],
+      "no": ["😬 «Hoy no puedo»", "Sin problema. Me las apaño con la vecina."],
+      "ok": [["Tarde con {k}", "Merienda, dibujos y un castillo de cojines que ha durado más que cualquier plan de {v}. Cuando vuelve, {v} te mira como a alguien de la familia."]],
+      "ko": [["Le has fallado a {v}", "Se las había apañado ya con otra persona. No ha dicho nada. Eso es peor."]],
+      "rechazo": [["{v} lo entiende", "Dice que sin problema. Dentro de tres semanas lo recordará, pero sin problema."]],
+      "fx": {"energia": -12, "social": 6, "rel": 8, "sol": 0.5, "te": 1},
+      "fxko": {"rel": -8},
+      "fxno": {"rel": -1}
+    },
+    "mudanza": {
+      "dir": "pide",
+      "modo": "visita",
+      "e": "📦",
+      "n": "Ayudar con una mudanza",
+      "rel": 40,
+      "mem": "ayudaste en la mudanza",
+      "msg": ["Me cambio de piso el sábado, a uno que cuesta lo mismo y tiene la mitad de metros. Si tienes un rato y una espalda…", "Mudanza. Seis cajas, un sofá y cero furgonetas. ¿Me echas una mano?"],
+      "corto": "Que le ayudes con la mudanza.",
+      "si": ["📦 «Voy y cargo»", "Te invito a pizza. Es lo único que me queda por invitar."],
+      "no": ["😬 «Esta vez no llego»", "Vale. Buscaré a alguien con furgoneta y menos amigos."],
+      "ok": [["Mudanza con {v}", "Cuatro viajes por la escalera sin ascensor y una pizza fría en el suelo. Un sofá que no cabía y que al final sí."]],
+      "ko": [["Mudanza sin ti", "{v} ha cargado el sofá con la ayuda de quien no tenía otra cosa que hacer. Se acordará de quién no vino."]],
+      "rechazo": [["{v} se las apaña", "«Hay gente con más ganas», dice sin rencor. Sin mucho."]],
+      "fx": {"energia": -22, "hambre": -10, "rel": 10, "sol": 0.4, "te": 1},
+      "fxko": {"rel": -8},
+      "fxno": {"rel": -1}
+    },
+    "firmar": {
+      "dir": "pide",
+      "modo": "ya",
+      "e": "✍️",
+      "n": "Firmar contra un desahucio",
+      "rel": 30,
+      "req": ["bloque"],
+      "mem": "firmaste contra el desahucio",
+      "msg": ["Quieren echar a {x} del bloque por no poder pagar la subida. Estamos recogiendo firmas. ¿Te pasas?", "Hay desahucio en el bloque: {x}. La PAH pide firmas y gente en la puerta. ¿Firmas?"],
+      "corto": "Que firmes contra el desahucio de {x}.",
+      "si": ["✍️ «Firmo»", "Gracias. Cada firma es una carta más en la mesa del juzgado."],
+      "no": ["😬 «No quiero líos»", "Lo entiendo. Cada cual tiene sus miedos."],
+      "ok": [["Firma por {x}", "Un papel con veinte nombres, una fecha y un casero que va a leerlo con la boca torcida. Eso cuenta."]],
+      "ko": [["Llegas tarde", "Las firmas ya se han entregado. {v} no te lo reprocha, pero no sonríe."]],
+      "rechazo": [["{v} no insiste", "Guarda el bolígrafo. «Ya habrá otra, siempre hay otra», dice. Tiene razón."]],
+      "fx": {"mov": 1, "sol": 0.8, "rel": 5},
+      "fxko": {"rel": -4},
+      "fxno": {"rel": -2}
+    },
+    "prestar": {
+      "dir": "pide",
+      "modo": "ya",
+      "e": "💶",
+      "n": "Prestarle {c}",
+      "rel": 35,
+      "mem": "le prestaste dinero",
+      "msg": ["Me da vergüenza, pero ¿me dejas {c}? Te los devuelvo el viernes.", "Se me ha juntado todo. ¿Puedes dejarme {c} hasta final de semana?"],
+      "corto": "Que le prestes {c}.",
+      "si": ["💶 «Toma, devuélvemelo cuando puedas»", "Te lo devuelvo, de verdad. Gracias."],
+      "no": ["😬 «Ahora no puedo»", "No pasa nada. Gracias por escucharme."],
+      "ok": [["Le prestas a {v}", "Un billete doblado que cambia de bolsillo. Ninguno de los dos lo comenta."]],
+      "ko": [["No llegas", "Cuando quieres ayudar, ya se ha buscado la vida. Mejor."]],
+      "rechazo": [["{v} lo entiende", "«Normal, con lo que está todo». Cambia de tema con una elegancia que da pena."]],
+      "fx": {"presto_h": 2.5, "rel": 2},
+      "fxko": {"rel": -2},
+      "fxno": {"rel": 0},
+      "req": ["solvente"]
+    }
+  },
+
+  "cotilleo": {
+    "titulo": ["{v} suelta prenda", "Chisme de {v}", "{v} sabe cosas"],
+    "historia": ["Sobre {x}, {v} dice: «{frase}»", "{v} baja la voz y habla de {x}: «{frase}»"],
+    "lazo_txt": {
+      "pareja": ["{x} está con {y}, y aquí ya se sabía.", "{x} está con {y}, y aquí ya se sabía."],
+      "ex": ["{x} y {y} lo dejaron, y no del todo bien.", "{x} y {y} lo dejaron, y no del todo bien."],
+      "mal_rollo": ["{x} y {y} no se hablan. Mejor no sacar el tema.", "{x} y {y} no se hablan. Mejor no sacar el tema."],
+      "amiga": ["{x} e {y} son uña y carne.", "{x} e {y} son uña y carne."],
+      "casera": ["{y} es la casera de {x}. Se nota el día uno de cada mes.", "{y} es el casero de {x}. Se nota el día uno de cada mes."],
+      "inquilina": ["{y} le tiene alquilada una habitación a {x}.", "{y} le tiene alquilada una habitación a {x}."],
+      "jefa": ["{y} es la jefa de {x}, y no se pasa de simpática.", "{y} es el jefe de {x}, y no se pasa de simpático."],
+      "empleada": ["{y} trabaja para {x}. Cobra en fecha, que ya es decir.", "{y} trabaja para {x}. Cobra en fecha, que ya es decir."],
+      "madre": ["{y} es la madre de {x}. Se les nota en la forma de callarse.", "{y} es la madre de {x}. Se les nota en la forma de callarse."],
+      "padre": ["{y} es el padre de {x}. Tienen el mismo gesto al fruncir el ceño.", "{y} es el padre de {x}. Tienen el mismo gesto al fruncir el ceño."],
+      "hermana": ["{y} es hermana de {x}, y se pelean como solo se pelean las hermanas.", "{y} es hermano de {x}, y se pelean como solo se pelean los hermanos."],
+      "hermano": ["{y} es hermana de {x}, y se pelean como solo se pelean las hermanas.", "{y} es hermano de {x}, y se pelean como solo se pelean los hermanos."]
+    },
+    "nada": [["{v} no tiene nada nuevo", "Ya os lo habéis contado todo. Vuelve otro día, que el barrio da para más."]],
+    "diario": "{n} se ha enterado de cosas sobre {x} por {v}."
+  },
+
+  "politica": {
+    "cercanas": {
+      "marxista": ["anarquista", "socialdemocrata", "ecologista"],
+      "anarquista": ["marxista", "libertaria", "ecologista"],
+      "socialdemocrata": ["marxista", "ecologista", "liberal"],
+      "ecologista": ["socialdemocrata", "anarquista", "marxista"],
+      "liberal": ["libertaria", "conservadora", "socialdemocrata"],
+      "libertaria": ["liberal", "anarquista", "conservadora"],
+      "conservadora": ["liberal", "libertaria"]
+    },
+    "igual": [["Estáis de acuerdo", "Con {v} la conversación sale sola. Os dais la razón en todo y os habéis quedado sin tema para discutir."], ["Mismas ideas con {v}", "Habláis del casero, de los sueldos y de quién gobierna. Os parecéis más de lo que pensabais."]],
+    "cerca": [["Os entendéis", "No pensáis igual, pero casi. {v} te discute un detalle y al final cede en dos."], ["Buena charla con {v}", "Discrepáis en cómo, no en qué. Se agradece."]],
+    "media": [["Charla de política", "{v} escucha, tú escuchas, y salís de ahí sabiendo lo mismo. Pero con educación."]],
+    "apolitica": [["{v} no es de política", "Cambia de tema a los dos minutos. «Lo que me importa es llegar a fin de mes», dice. Y no le falta razón."]],
+    "sin_ideas": [["Sin tema", "Ni tú ni {v} tenéis mucho que decir de política. Habláis del tiempo, que es lo que se hace."]],
+    "lejos_bien": [["Discutís y no pasa nada", "{v} y tú no veis nada igual. Pero habéis hablado sin gritar. En este país, eso ya es un logro."]],
+    "lejos_mal": [["Os cabreáis", "Con {v}, la política acaba en un portazo mental. Os saludáis menos de lo que quisierais."]],
+    "mueve": [["{v} se lo piensa", "Después de tantas charlas, {v} ha dicho en voz alta: «Igual no estás tan equivocad{o}». Para algunos, eso es un cambio de bando."]],
+    "bloque_ok": [["{v} se apunta", "«Si nos juntamos, el casero se lo piensa dos veces». {v} trae la libreta y la lista de pisos."], ["{v} entra en el sindicato del bloque", "Ha tardado un momento en decir que sí. Es lo que hace la gente cuando se da cuenta de que no está sola."]],
+    "bloque_ko": [["{v} tiene miedo", "«Si el casero se entera, no me renueva». No se lo reprocha nadie. Lo hace más difícil."]],
+    "bloque_cap": ["El bloque se organiza", "Tres pisos con la misma carta del casero y la misma rabia. Ya no es una queja, es un sindicato de inquilinas. Se nota en la escalera."],
+    "bloque_huelga": ["Huelga de alquileres", "El bloque entero ha dejado de pagar la última subida. El casero amenaza con burofaxes; las vecinas, con una asamblea cada jueves."],
+    "asamblea": [["Asamblea con {v}", "Una sala con sillas que no combinan, doce personas y un orden del día que se cumple al tercio. Salís con una tarea cada una."], ["Reunión con {v}", "Café malo, actas escritas a mano y una votación a mano alzada. Es lento, pero es de vosotras."]],
+    "sin_ideas_asamblea": "Hace falta tener una causa para ir a una reunión política. {n} aún no la tiene."
+  },
+
+  "romance": {"edad_min": 18, "dif_edad": 15, "orientacion": [["hetero", 0.82], ["homo", 0.07], ["ambos", 0.09], ["nadie", 0.02]], "pareja_no": "{v} ya tiene pareja ({quien}). Ahí no se entra.", "no_vive": "{v} tiene su vida y su casa en el barrio. De momento, cada cual en la suya.", "menor": "No."},
+
+  "buscan": {
+    "mensajes": {
+      "cana": {
+        "rel": [40, 85],
+        "peso": 2,
+        "txt": ["¿Cañas esta noche? Cada cual la suya, que no estamos para invitar.", "Hoy me apetece una caña y compañía. ¿Te apuntas?"],
+        "resp": [["🍻 «Venga, voy»", 4, "out", "Pues ahí nos vemos.", "Venga, voy"], ["😴 «Hoy no puedo»", -1, null, "Otro día, entonces.", "Hoy no puedo"]],
+        "h": [17, 21]
+      },
+      "curro": {
+        "rel": [40, 100],
+        "peso": 3,
+        "req": ["en_paro", "trabajo_dentro"],
+        "txt": ["En {sitio} andan buscando gente. Pregunta por el encargado y di que vas de mi parte."],
+        "resp": [["🙏 «Gracias, mañana voy»", 5, "tr:curro", "Suerte. Y si sale mal, no me nombres 😅", "Gracias, mañana paso"], ["🤷 «Ya tengo algo en vista»", 1, null, "Pues mejor.", "Ya tengo algo en vista"]]
+      },
+      "chisme": {"rel": [45, 100], "peso": 2, "txt": ["Oye, ¿sabes lo último? Te lo cuento por aquí, que en el rellano hay oídos."], "resp": [["👀 «Cuenta, cuenta»", 3, "tr:chisme", "Pues resulta que…", "Cuenta, cuenta"], ["🙈 «Prefiero no saber»", 0, null, "Tú te lo pierdes 😏", "Prefiero no saber"]]},
+      "asamblea": {
+        "rel": [45, 100],
+        "peso": 2,
+        "req": ["politica"],
+        "dias": [1, 4],
+        "h": [15.5, 17.2],
+        "txt": ["Esta tarde hay reunión. Vamos {quien} y yo. ¿Te vienes?"],
+        "resp": [["📢 «Voy»", 4, "tr:asamblea", "Genial, a las seis en la puerta.", "Voy"], ["😬 «Esta vez no»", -1, null, "Vale. Ya sabes dónde estamos.", "Esta vez no puedo"]]
+      }
+    },
+    "visita": {
+      "taper": {"peso": 3, "txt": ["He hecho de más. ¿Te subo un táper?", "Tengo lentejas para un regimiento. ¿Estás en casa? Subo."], "fx": {"hambre": 25, "rel": 2, "social": 6}, "ok": [["{v} sube con un táper", "Todavía caliente. Sin pedir nada a cambio, que es como se piden los favores aquí."]]},
+      "cafe": {
+        "peso": 3,
+        "txt": ["Pasaba por tu calle y me he acordado de ti. ¿Café?", "¿Tienes diez minutos? Me apetece hablar con alguien que no sea el móvil."],
+        "fx": {"social": 12, "diversion": 6, "rel": 3},
+        "ok": [["{v} se pasa a tomar un café", "Diez minutos que han sido una hora. De nada en concreto. Que es lo mejor."]]
+      },
+      "bloque": {
+        "peso": 2,
+        "txt": ["Tengo que comentarte una cosa del bloque. ¿Te pillo en casa?"],
+        "fx": {"mov": 0.4, "sol": 0.2, "rel": 3, "social": 5},
+        "ok": [["{v} viene a hablar del bloque", "La caldera, el ascensor y la carta del administrador. Os apuntáis cosas en una servilleta. Eso es el comienzo de todo."]]
+      }
+    },
+    "sitio_curro": "su curro"
+  },
+
+  "ficha": {
+    "trato": "Trato",
+    "dicen": "Lo que se dice",
+    "dicen_lazo": "Se dice que",
+    "te_pide": "Te pide",
+    "cuenta": "✔ Cuenta conmigo",
+    "no_puedo": "✖ No puedo",
+    "ir_ya": "🚶 Ir ya",
+    "volver": "‹ Volver",
+    "pedir_favor": "🙏 Pedir un favor",
+    "pedir_titulo": "Pedirle un favor a {v}",
+    "chisme": "🗣️ Preguntar por el barrio",
+    "politica": "📢 Hablar de política",
+    "bloque": "🏘️ Montar el sindicato del bloque ({n}/3)",
+    "bloque_en": "En el sindicato del bloque",
+    "asamblea": "📢 Ir juntas a la asamblea",
+    "ligar": "💘 Ligar",
+    "devolver": "💶 Devolver {c}",
+    "te_debe_una": "Te debe una",
+    "te_debe_n": "Te debe {n}",
+    "le_debes_una": "Le debes una",
+    "le_debes_n": "Le debes {n}",
+    "te_debe_euros": "Te debe {c}",
+    "le_debes_euros": "Le debes {c}",
+    "a_mano": "Estáis a mano",
+    "prometido": "Le has prometido: {que}",
+    "hasta": "hasta mañana",
+    "ultimo": "Último favor: {que}",
+    "hoy": "hoy",
+    "ayer": "ayer",
+    "hace": "hace {n} días",
+    "solo_mirar": "Desde el mapa solo se mira: ve allí para hablar.",
+    "tiene_pareja": "Tiene pareja: {quien}.",
+    "stage": "{st} · amor {l}",
+    "fx": {"social": "Compañía", "diversion": "Ánimo", "hambre": "Hambre", "energia": "Energía"},
+    "etiqueta_salida": "Salida",
+    "etiqueta_prestamo": "Préstamo",
+    "etiqueta_devolver": "Cuota",
+    "etiqueta_presto": "Préstamo a vecina",
+    "etiqueta_vuelve": "Ingreso",
+    "sin_dinero": "No te llega para eso ahora mismo.",
+    "ya_hoy": "Hoy ya habéis hablado de eso. Mañana.",
+    "pista": "Pista de curro",
+    "agua": "Huerto regado",
+    "despensa": "Despensa +{n}",
+    "hijos": "Tu cría, más contenta",
+    "sol_nota": "Red de favores +",
+    "mov_nota": "Movimiento +",
+    "no_se_puede": "Ahora no: {why}",
+    "diario_favor_pide": "{n} le ha pedido un favor a {v}: {que}",
+    "diario_favor_si": "{v} ha dicho que sí.",
+    "diario_favor_no": "{v} no ha podido.",
+    "diario_cumple": "{n} ha cumplido con {v}: {que}",
+    "diario_falla": "{n} no ha ido a lo que prometió a {v}. Se ha notado.",
+    "diario_rechaza": "{n} le ha dicho a {v} que esta vez no.",
+    "diario_pide_exp": "{v} le ha pedido un favor a {n} y se ha quedado sin respuesta. Se las ha apañado.",
+    "diario_devuelve": "{n} le ha devuelto {c} a {v}.",
+    "diario_te_devuelve": "{v} le ha devuelto {c} a {n}.",
+    "msg_pagar": "Oye, sin prisa, ¿lo mío de {c}?",
+    "msg_pagar_si": ["💶 «Toma, y gracias»", 3, "tr:pagar", "Gracias. Eres de fiar.", "Toma, y gracias"],
+    "msg_pagar_luego": ["⏳ «Esta semana, lo prometo»", -1, "tr:luego", "Vale. Sin prisa.", "Esta semana, lo prometo"],
+    "msg_te_devuelve": "Aquí tienes lo tuyo, {c}. Gracias por no hacerme preguntas.",
+    "msg_falla": "Al final me las he apañado. Pero me habría venido bien saberlo.",
+    "msg_olvida": "Se me ha pasado devolverte lo tuyo. Perdona. Esta semana, sí o sí.",
+    "diario_asamblea": "{n} ha ido a la asamblea con {v}.",
+    "diario_bloque": "{n} y {v} han hablado de montar el sindicato del bloque.",
+    "diario_pol": "{n} ha hablado de política con {v}.",
+    "cita": "🌹 Quedar a solas",
+    "pagado": ["Cuentas claras con {v}", "Le devuelves {c}. Se lo guarda sin contarlo, que es como se devuelve la confianza."],
+    "mem_pagaste": "le devolviste lo que te prestó",
+    "mem_fallaste": "no fuiste cuando prometiste",
+    "mem_te_pago": "te devolvió lo que le prestaste",
+    "aviso_curro": "{v} habla de ti en su curro. «Mañana llama y di que vas de mi parte».",
+    "diario_curro": "{v} ha hablado de {n} en su trabajo. Las ofertas de verdad nunca salen en el portal."
+  }
+}
