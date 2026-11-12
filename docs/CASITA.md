@@ -158,7 +158,7 @@ Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`do
 2. **Lugares visitables: primero los lugares.** ✅ Centro de salud y oficina de empleo (T-003). Siguen: colegio e instituto (el censo ya manda a las criaturas a clase), mercado, polideportivo y más bares; volver a pintar el mapa del barrio para que bloques y casas se vean por fuera; después, otros barrios y ciudades.
 3. **Interacciones y personajes con los que se puede tratar**, entre toda la población nueva: conocer a los vecinos del censo (hoy son figurantes), que pasen a la lista de gente con su hogar y sus lazos, visitarles, e interacciones nuevas en los lugares y en casa.
 
-Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git worktree add ../wt/t0NN -b fab/t0NN main`); cada agente lee solo los documentos que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica.
+Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git worktree add ../wt/t0NN -b fab/t0NN main`); cada agente lee solo los documentos que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica. La revisión es de diseño y tiene la última palabra: un defecto que se ve no se publica ni se apunta, se arregla antes (`docs/FABRICA.md`, «Revisión de diseño»).
 
 ### Frente B — Godot
 1. Montar Godot en modo sin pantalla y un proyecto en `godot/` dentro de este mismo repo (decidido).

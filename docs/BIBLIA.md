@@ -62,4 +62,5 @@ Una tarea está hecha cuando:
 2. `python3 scripts/test.py all` pasa sin errores (`errs:[]`, `werrs:[]`).
 3. Tiene su test en `t/` si añade sistema, o una captura en `docs/capturas/` si es visual.
 4. Los textos cumplen el punto 2 y 3 de esta biblia.
-5. Está en `docs/CHANGELOG.md` en una línea.
+5. Pasa la revisión de diseño (`docs/FABRICA.md`): nada que un jugador vería mal se publica. Nombres que se pisan, figuras sobre muebles, cosas que no se leen como lo que son, contenido al que no se llega jugando: se arreglan antes, no se apuntan.
+6. Está en `docs/CHANGELOG.md` en una línea.

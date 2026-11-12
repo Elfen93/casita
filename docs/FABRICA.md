@@ -26,7 +26,7 @@ Comandos: `python3 build.py` · `python3 scripts/test.py all` · `python3 script
 
 | Rol | Hace | No hace |
 |---|---|---|
-| **Integradora** (Claude principal) | reparte tareas, revisa, junta, publica | escribir sistemas grandes ella misma |
+| **Integradora** (Claude principal) | reparte tareas, hace la revisión de diseño con la última palabra, junta, publica | escribir sistemas grandes ella misma; dejar pasar un defecto que se ve |
 | **Sistemas** | reglas, números, equilibrio; tests de simulación | textos largos, UI |
 | **Guion** | todos los `tell`/`chapter`/dilemas/mensajes; revisa textos ajenos | tocar lógica |
 | **Escenas y población** | lugares nuevos, gente, hora/clima, paleta | reglas de juego |
@@ -53,6 +53,25 @@ Reglas:
 - Si necesita un cambio en `src/core`, lo pide a la integradora con la línea exacta.
 - Textos nuevos: etiqueta `// GUION:revisar` hasta que guion los lea.
 - La integradora junta en `main`, corre `test.py all`, publica (GitHub Pages + artifact) y apunta en `CHANGELOG.md`.
+
+## Revisión de diseño: la última palabra
+
+Quien integra revisa cada entrega como la diseñadora del juego que firma lo que sale, no como quien comprueba que las pruebas pasan. **Un defecto que un jugador vería no se publica y no se apunta como «a tener en cuenta»: se arregla antes.** Se devuelve al agente con el fallo exacto o va a un agente de pulido en la misma tanda.
+
+Bloquea la publicación:
+- Nombres o textos que se pisan, se cortan o tapan a un personaje.
+- Figuras encima de muebles, de paredes o de otras figuras; gente flotando o fuera del suelo.
+- Algo que el encargo pedía y no se ve en la captura (la médica que llama, el casco en la obra).
+- Objetos que no se leen como lo que son (sillas que parecen mesas).
+- Contenido al que no se puede llegar jugando.
+- Incoherencias de mundo: alguien en dos sitios a la vez, una criatura sola, un sitio cerrado lleno de gente.
+- Escenas o variantes entregadas sin mirar.
+
+Cómo se revisa:
+- Cada escena nueva o tocada se mira en captura **a tamaño de móvil (420×860)**, que es donde se juega, en hora punta y en hora floja, de día y de noche, y en cada variante que tenga.
+- La integradora abre las capturas ella misma. No vale el «las he mirado» del agente.
+- Los textos nuevos se leen contra la BIBLIA antes de publicar; `// GUION:revisar` no sale a `main`.
+- Si algo se deja fuera, es una decisión: se dice por qué y se abre tarea en el backlog. Nunca en silencio.
 
 ## Ciclo
 
