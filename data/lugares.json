@@ -95,26 +95,85 @@
       "d": "Universidad privada de Nébula. Grupos de veinte, clases por la tarde y una matrícula que se financia a plazos.",
       "outs": [],
       "abre": [[8, 22, [0, 1, 2, 3, 4]], [9, 14, [5]]]
-    }
-  },
-
-  "solo_mapa": {
+    },
     "mercado": {
       "n": "Mercado de abastos",
       "e": "🥬",
       "d": "Pescadería, fruta y la carnicera que fía a quien conoce. Los puestos cierran cuando sus dueñas se jubilan y nadie los coge.",
       "abre": [[8.5, 14.5, [0, 1, 2, 3, 4, 5]]],
       "barrio": "casco",
-      "rb": [56.0, 31.9, 70.0, 45.9],
+      "rb": [57.5, 37.9, 68.5, 45.9],
       "h": 26,
-      "c": "#d9b77a"
+      "c": "#d9b77a",
+      "outs": ["mercado_compra", "mercado_cierre"]
     },
-    "juzgados": {"n": "Juzgados", "e": "⚖️", "d": "Aquí se resuelven los desahucios por orden de entrada. La cola de la planta baja es de lunes a viernes.", "abre": [[9, 14, [0, 1, 2, 3, 4]]], "barrio": "casco", "rb": [54.0, 2.8, 68.0, 16.4], "h": 34, "c": "#c9ccd4"},
-    "gran_plaza": {"n": "Centro comercial Gran Plaza", "e": "🛍️", "d": "Cadenas de todo, aire acondicionado y un cine. Se entra a mirar y se sale con una bolsa.", "abre": [[10, 22, [0, 1, 2, 3, 4, 5, 6]]], "barrio": "ensanche", "rb": [36.0, 29.4, 52.0, 45.4], "h": 30, "c": "#bfd3e6"},
-    "cafe_brindis": {"n": "Cafetería Brindis", "e": "☕", "d": "Café a tres euros con leche de avena. Es el único sitio con enchufes del barrio.", "abre": [[7.5, 21, [0, 1, 2, 3, 4, 5, 6]]], "barrio": "ensanche", "rb": [40.0, 66.4, 50.0, 76.4], "h": 22, "c": "#e8c9a4"},
-    "glorieta": {"n": "Cafetería La Glorieta", "e": "🥐", "d": "Desayunos de domingo, abuelas con nietos y cuidadoras esperando el autobús.", "abre": [[8, 20, [0, 1, 2, 3, 4, 5, 6]]], "barrio": "pinares", "rb": [102.0, 64.4, 114.0, 76.4], "h": 22, "c": "#ecd2b5"},
-    "descampado": {"n": "Descampado de las Eras", "e": "⚽", "d": "Dos porterías de palés, mercadillo los domingos y un cartel de «Se vende» que lleva años.", "abre": [[0, 24, [0, 1, 2, 3, 4, 5, 6]]], "barrio": "eras", "rb": [6.0, 34.9, 40.0, 56.9], "h": 2, "c": "#cdbf9f", "solar": 1},
-    "locutorio": {"n": "Locutorio Medina", "e": "📞", "d": "Llamadas al extranjero, giros, fotocopias y wifi. Medina fía el saldo a quien espera la nómina.", "abre": [[9, 22, [0, 1, 2, 3, 4, 5]], [10, 20, [6]]], "barrio": "eras", "rb": [28.0, 18.4, 38.0, 26.4], "h": 20, "c": "#cfc0a6"},
+    "juzgados": {
+      "n": "Juzgados",
+      "e": "⚖️",
+      "d": "Aquí se resuelven los desahucios por orden de entrada. La cola de la planta baja es de lunes a viernes.",
+      "abre": [[9, 14, [0, 1, 2, 3, 4]]],
+      "barrio": "casco",
+      "rb": [55.5, 8.4, 66.5, 16.4],
+      "h": 34,
+      "c": "#c9ccd4",
+      "outs": ["juicio_desahucio", "juzgado_tramite"]
+    },
+    "gran_plaza": {
+      "n": "Centro comercial Gran Plaza",
+      "e": "🛍️",
+      "d": "Cadenas de todo, aire acondicionado y un cine. Se entra a mirar y se sale con una bolsa.",
+      "abre": [[10, 22, [0, 1, 2, 3, 4, 5, 6]]],
+      "barrio": "ensanche",
+      "rb": [38.0, 37.4, 50.0, 45.4],
+      "h": 30,
+      "c": "#bfd3e6",
+      "outs": ["plaza_cine", "plaza_vuelta"]
+    },
+    "cafe_brindis": {
+      "n": "Cafetería Brindis",
+      "e": "☕",
+      "d": "Café a tres euros con leche de avena. Es el único sitio con enchufes del barrio.",
+      "abre": [[7.5, 21, [0, 1, 2, 3, 4, 5, 6]]],
+      "barrio": "ensanche",
+      "rb": [40.0, 68.4, 50.0, 76.4],
+      "h": 22,
+      "c": "#e8c9a4",
+      "outs": ["brindis_cafe", "brindis_portatil"]
+    },
+    "glorieta": {
+      "n": "Cafetería La Glorieta",
+      "e": "🥐",
+      "d": "Desayunos de domingo, abuelas con nietos y cuidadoras esperando el autobús.",
+      "abre": [[8, 20, [0, 1, 2, 3, 4, 5, 6]]],
+      "barrio": "pinares",
+      "rb": [103.0, 68.4, 113.0, 76.4],
+      "h": 22,
+      "c": "#ecd2b5",
+      "outs": ["glorieta_desayuno", "glorieta_merienda"]
+    },
+    "descampado": {
+      "n": "Descampado de las Eras",
+      "e": "⚽",
+      "d": "Dos porterías de palés, mercadillo los domingos y un cartel de «Se vende» que lleva años.",
+      "abre": [[0, 24, [0, 1, 2, 3, 4, 5, 6]]],
+      "barrio": "eras",
+      "rb": [17.0, 48.9, 29.0, 56.9],
+      "h": 2,
+      "c": "#cdbf9f",
+      "solar": 1,
+      "outs": ["futbol", "mercadillo_eras"]
+    },
+    "locutorio": {
+      "n": "Locutorio Medina",
+      "e": "📞",
+      "d": "Llamadas al extranjero, giros, fotocopias y wifi. Medina fía el saldo a quien espera la nómina.",
+      "abre": [[9, 22, [0, 1, 2, 3, 4, 5]], [10, 20, [6]]],
+      "barrio": "eras",
+      "rb": [28.0, 18.4, 38.0, 26.4],
+      "h": 20,
+      "c": "#cfc0a6",
+      "outs": ["locutorio_giro", "locutorio_llamar", "locutorio_papeles"]
+    },
     "asociacion": {
       "n": "Asociación de vecinas La Unión",
       "e": "🤝",
@@ -123,13 +182,56 @@
       "barrio": "eras",
       "rb": [100.0, 18.4, 110.0, 26.4],
       "h": 22,
-      "c": "#d6b9a8"
+      "c": "#d6b9a8",
+      "outs": ["asamblea_barrio", "banco_tiempo"]
     },
-    "bar_esperanza": {"n": "Bar La Esperanza", "e": "🍺", "d": "Cañas a euro cincuenta y mus a las seis. Es el sitio donde se sabe qué piso queda libre.", "abre": [[7, 24, [0, 1, 2, 3, 4, 5, 6]]], "barrio": "eras", "rb": [80.0, 18.4, 90.0, 26.4], "h": 22, "c": "#c9a98c"},
-    "naves": {"n": "Naves de logística", "e": "📦", "d": "Camiones de madrugada y una ETT en la puerta. Se entra por la agencia y se cobra por la agencia.", "abre": [[6, 22, [0, 1, 2, 3, 4]]], "barrio": "poligono", "rb": [6.0, 29.4, 34.0, 45.4], "h": 30, "c": "#a9b1b8"},
-    "bar_cruce": {"n": "Bar El Cruce", "e": "🍽️", "d": "Menú de diez euros para quien tiene media hora. A las dos y diez ya no queda segundo.", "abre": [[7, 17, [0, 1, 2, 3, 4]], [7, 15, [5]]], "barrio": "poligono", "rb": [60.0, 37.4, 72.0, 45.4], "h": 22, "c": "#d9b28a"},
-    "itv": {"n": "Estación de ITV", "e": "🔧", "d": "Revisión del coche cada año. La cola da la vuelta a la nave y quien llega tarde paga otra cita.", "abre": [[8, 20, [0, 1, 2, 3, 4]], [8, 14, [5]]], "barrio": "poligono", "rb": [60.0, 63.9, 76.0, 79.9], "h": 24, "c": "#b9c4cc"}
+    "bar_esperanza": {
+      "n": "Bar La Esperanza",
+      "e": "🍺",
+      "d": "Cañas a euro cincuenta y mus a las seis. Es el sitio donde se sabe qué piso queda libre.",
+      "abre": [[7, 24, [0, 1, 2, 3, 4, 5, 6]]],
+      "barrio": "eras",
+      "rb": [80.0, 18.4, 90.0, 26.4],
+      "h": 22,
+      "c": "#c9a98c",
+      "outs": ["esperanza_cana", "esperanza_mus"]
+    },
+    "naves": {
+      "n": "Naves de logística",
+      "e": "📦",
+      "d": "Camiones de madrugada y una ETT en la puerta. Se entra por la agencia y se cobra por la agencia.",
+      "abre": [[6, 22, [0, 1, 2, 3, 4]]],
+      "barrio": "poligono",
+      "rb": [14.0, 37.4, 26.0, 45.4],
+      "h": 30,
+      "c": "#a9b1b8",
+      "outs": ["ett_manana", "ett_tarde"]
+    },
+    "bar_cruce": {
+      "n": "Bar El Cruce",
+      "e": "🍽️",
+      "d": "Menú de diez euros para quien tiene media hora. A las dos y diez ya no queda segundo.",
+      "abre": [[7, 17, [0, 1, 2, 3, 4]], [7, 15, [5]]],
+      "barrio": "poligono",
+      "rb": [60.0, 37.4, 72.0, 45.4],
+      "h": 22,
+      "c": "#d9b28a",
+      "outs": ["cruce_menu", "cruce_bocata"]
+    },
+    "itv": {
+      "n": "Estación de ITV",
+      "e": "🔧",
+      "d": "Revisión del coche cada año. La cola da la vuelta a la nave y quien llega tarde paga otra cita.",
+      "abre": [[8, 20, [0, 1, 2, 3, 4]], [8, 14, [5]]],
+      "barrio": "poligono",
+      "rb": [62.0, 71.9, 74.0, 79.9],
+      "h": 24,
+      "c": "#b9c4cc",
+      "outs": ["itv_pasar"]
+    }
   },
+
+  "solo_mapa": {},
 
   "trabajo_en": {"oficina": "torre", "tech": "torre", "super": "super", "hosteleria": "bar", "obra": "obra", "cuidados": "residencia", "funcion": "ayto", "reparto": "_ride", "arte": "sala", "negocio": "tienda", "coop": "coop"},
 
@@ -164,7 +266,31 @@
     "medico": {"n": "Ir al médico", "e": "🩺", "dur": 90, "h": [8, 19], "why": "la cita de la que lleva días hablando"},
     "sepe": {"n": "Sellar el paro", "e": "📋", "dur": 120, "h": [9, 13], "wd": [0, 1, 2, 3, 4], "why": "sellar, esperar, volver a esperar"},
     "cole": {"n": "Recoger del cole", "e": "🎒", "dur": 40, "wd": [0, 1, 2, 3, 4], "h": [14, 16.25], "why": "esperar en la verja a que salga"},
-    "tutoria": {"n": "Reunión con la tutora", "e": "🍎", "dur": 60, "wd": [0, 1, 2, 3, 4], "h": [16, 18], "why": "veinte minutos de tutoría fuera de horario"}
+    "tutoria": {"n": "Reunión con la tutora", "e": "🍎", "dur": 60, "wd": [0, 1, 2, 3, 4], "h": [16, 18], "why": "veinte minutos de tutoría fuera de horario"},
+    "mercado_compra": {"n": "Compra en el mercado", "e": "🥬", "dur": 45, "h": [8.5, 13.5], "why": "fruta, pescado y carne de la semana, más barata que en el súper. Solo por la mañana", "wd": [0, 1, 2, 3, 4, 5]},
+    "mercado_cierre": {"n": "Lo que queda al cerrar", "e": "🧺", "dur": 20, "h": [13.5, 14.5], "why": "lo que no se ha vendido, a precio de saldo", "wd": [0, 1, 2, 3, 4, 5]},
+    "juicio_desahucio": {"n": "Acompañar a un juicio de desahucio", "e": "⚖️", "dur": 150, "h": [9.5, 13], "why": "una vecina entra sola a la sala. Con gente al lado, la jueza mira distinto", "wd": [0, 1, 2, 3, 4]},
+    "juzgado_tramite": {"n": "Papeleo en el juzgado", "e": "📑", "dur": 90, "h": [9, 13.5], "why": "tasas, copias y una cola de planta baja", "wd": [0, 1, 2, 3, 4]},
+    "plaza_cine": {"n": "Cine en Gran Plaza", "e": "🎬", "dur": 150, "h": [15.5, 21], "why": "entrada, palomitas y aire acondicionado"},
+    "plaza_vuelta": {"n": "Dar una vuelta por Gran Plaza", "e": "🛍️", "dur": 90, "h": [10, 21], "why": "se entra a mirar y se sale con una bolsa"},
+    "brindis_cafe": {"n": "Café en Brindis", "e": "☕", "dur": 60, "h": [7.5, 20], "why": "leche de avena y música de lista"},
+    "brindis_portatil": {"n": "Trabajar con el portátil en Brindis", "e": "💻", "dur": 150, "h": [8, 19.5], "why": "el único sitio con enchufes del barrio"},
+    "glorieta_desayuno": {"n": "Desayunar en La Glorieta", "e": "🥐", "dur": 60, "h": [8, 13], "why": "tostada, zumo y la tele de las abuelas"},
+    "glorieta_merienda": {"n": "Merendar en La Glorieta", "e": "🍰", "dur": 60, "h": [16, 19.5], "why": "chocolate con churros y cuidadoras que esperan el bus"},
+    "futbol": {"n": "Echar un fútbol en el descampado", "e": "⚽", "dur": 90, "h": [10, 21], "why": "dos porterías de palés y quien llegue"},
+    "locutorio_giro": {"n": "Enviar dinero a la familia", "e": "💶", "dur": 30, "h": [9.5, 21.5], "why": "un giro, con su comisión", "wd": [0, 1, 2, 3, 4, 5]},
+    "locutorio_llamar": {"n": "Llamar y recargar el móvil", "e": "📞", "dur": 30, "h": [9.5, 21.5], "why": "saldo, una llamada al extranjero y wifi", "wd": [0, 1, 2, 3, 4, 5]},
+    "locutorio_papeles": {"n": "Hacer papeles en el locutorio", "e": "🖨️", "dur": 45, "h": [9.5, 21.5], "why": "copias, impresiones y cita previa por internet", "wd": [0, 1, 2, 3, 4, 5]},
+    "asamblea_barrio": {"n": "Asamblea de la asociación", "e": "🤝", "dur": 120, "h": [17.5, 20], "why": "martes: agua cortada, bloques y ayuntamiento", "wd": [1]},
+    "banco_tiempo": {"n": "Banco de tiempo", "e": "⏳", "dur": 90, "h": [17, 20.5], "why": "una hora tuya por una hora de otra persona", "wd": [0, 1, 2, 3, 4]},
+    "esperanza_cana": {"n": "Cañas en La Esperanza", "e": "🍺", "dur": 120, "h": [12, 23.5], "why": "a euro cincuenta, y se sabe todo del barrio"},
+    "esperanza_mus": {"n": "Mus en La Esperanza", "e": "🃏", "dur": 120, "h": [17.5, 23], "why": "la partida de las seis y lo que se oye en ella"},
+    "ett_manana": {"n": "Jornada de ETT en las naves (mañana)", "e": "📦", "dur": 300, "h": [5.5, 7.5], "why": "cinco horas descargando, sin contrato fijo", "wd": [0, 1, 2, 3, 4]},
+    "ett_tarde": {"n": "Jornada de ETT en las naves (tarde)", "e": "📦", "dur": 300, "h": [13, 15], "why": "cinco horas descargando, sin contrato fijo", "wd": [0, 1, 2, 3, 4]},
+    "cruce_menu": {"n": "Menú del día en El Cruce", "e": "🍽️", "dur": 40, "h": [12.5, 14.5], "why": "primero, segundo, postre y la prisa del polígono", "wd": [0, 1, 2, 3, 4]},
+    "cruce_bocata": {"n": "Bocata en El Cruce", "e": "🥖", "dur": 20, "h": [7, 11], "why": "café y bocadillo antes del turno", "wd": [0, 1, 2, 3, 4, 5]},
+    "itv_pasar": {"n": "Pasar la ITV", "e": "🔧", "dur": 120, "h": [8, 14], "why": "revisión anual del vehículo de trabajo", "wd": [0, 1, 2, 3, 4, 5]},
+    "mercadillo_eras": {"n": "Segunda mano en el descampado", "e": "🧺", "dur": 90, "h": [10, 14], "why": "los domingos, sobre lonas: de todo y regateado", "wd": [6]}
   },
 
   "salidas_necesidades": {
@@ -197,7 +323,31 @@
     "medico": {"diversion": -0.03},
     "sepe": {"diversion": -0.05},
     "cole": {"social": 0.12, "diversion": 0.04},
-    "tutoria": {"diversion": -0.03}
+    "tutoria": {"diversion": -0.03},
+    "mercado_compra": {"social": 0.08, "energia": -0.05},
+    "mercado_cierre": {"social": 0.05},
+    "juicio_desahucio": {"social": 0.12, "energia": -0.1, "diversion": -0.06},
+    "juzgado_tramite": {"energia": -0.1, "diversion": -0.08},
+    "plaza_cine": {"diversion": 0.3, "social": 0.04, "hambre": -0.02},
+    "plaza_vuelta": {"diversion": 0.16},
+    "brindis_cafe": {"social": 0.12, "diversion": 0.08, "hambre": 0.12},
+    "brindis_portatil": {"energia": -0.05, "diversion": -0.02},
+    "glorieta_desayuno": {"hambre": 0.5, "social": 0.1},
+    "glorieta_merienda": {"hambre": 0.3, "social": 0.14, "diversion": 0.06},
+    "futbol": {"diversion": 0.3, "social": 0.18, "energia": -0.18, "higiene": -0.3},
+    "locutorio_giro": {"social": 0.1},
+    "locutorio_llamar": {"social": 0.3},
+    "locutorio_papeles": {"energia": -0.06, "diversion": -0.06},
+    "asamblea_barrio": {"social": 0.2, "energia": -0.06},
+    "banco_tiempo": {"social": 0.2, "energia": -0.1},
+    "esperanza_cana": {"social": 0.2, "diversion": 0.14, "hambre": 0.06},
+    "esperanza_mus": {"social": 0.18, "diversion": 0.2},
+    "ett_manana": {"energia": -0.16, "diversion": -0.1, "higiene": -0.1},
+    "ett_tarde": {"energia": -0.16, "diversion": -0.1, "higiene": -0.1},
+    "cruce_menu": {"hambre": 1.3, "social": 0.05},
+    "cruce_bocata": {"hambre": 0.8},
+    "itv_pasar": {"energia": -0.06, "diversion": -0.06},
+    "mercadillo_eras": {"diversion": 0.12, "social": 0.1}
   },
 
   "salidas_grupos": [
@@ -207,6 +357,35 @@
     ["🧠 Cabeza", ["terapia", "beber", "pillar"]],
     ["🧳 Cuando no hay nada", ["comedor", "albergue", "pedir", "chatarra", "ssociales", "sepe"]],
     ["🛒 Casa", ["compra"]],
-    ["🧒 Criaturas", ["cole", "tutoria"]]
+    ["🧒 Criaturas", ["cole", "tutoria"]],
+    [
+      "🏘️ Barrio",
+      [
+        "mercadillo_eras",
+        "mercado_compra",
+        "mercado_cierre",
+        "juicio_desahucio",
+        "juzgado_tramite",
+        "plaza_cine",
+        "plaza_vuelta",
+        "brindis_cafe",
+        "brindis_portatil",
+        "glorieta_desayuno",
+        "glorieta_merienda",
+        "futbol",
+        "locutorio_giro",
+        "locutorio_llamar",
+        "locutorio_papeles",
+        "asamblea_barrio",
+        "banco_tiempo",
+        "esperanza_cana",
+        "esperanza_mus",
+        "ett_manana",
+        "ett_tarde",
+        "cruce_menu",
+        "cruce_bocata",
+        "itv_pasar"
+      ]
+    ]
   ]
 }

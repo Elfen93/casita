@@ -54,11 +54,11 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
      const gasto=BKS().log.slice(bk0).filter(q=>q[3]==='Transporte').reduce((a,q)=>a+q[2],0);ok(gasto<0,'no se cobra el transporte');info.billete=[gasto,tt.precio];
      const p=cmPos();ok(p&&p.b===cdBarrioDe(id),'llega a otro barrio que el de '+id);}}
  // 4. un sitio sin interior: se queda en la puerta
- {nuevo('viejo');const id='mercado',s=S.sim;ok(!SCENES[id]&&cdPuerta(id),'mercado debería ser un sitio sin interior');ok(cmIr(id),'cmIr mercado');let llego=false;
+ {nuevo('viejo');const id='mercado',s=S.sim;const _sc=SCENES[id];delete SCENES[id];/* t133: ya no queda ningún solo_mapa real, se simula quitando el interior */ok(!SCENES[id]&&cdPuerta(id),'mercado debería ser un sitio sin interior');ok(cmIr(id),'cmIr mercado');let llego=false;
    for(let i=0;i<4000&&!llego;i++){step(.25);try{placeHud();}catch(e){}const f=S.sim.work>0?cmFase():null;if(f&&f.k==='dentro')llego=true;}
    ok(llego,'no llegó al mercado');const p=cmPos(),q=cmPuertaPts(id);ok(p&&!p.esc&&Math.hypot(p.x-q.side[0],p.y-q.side[1])<.5,'no se queda delante de la puerta');
    ok(awayKey()===id,'awayKey de un sitio sin interior: '+awayKey());ok(menu.classList.contains('open')&&/rcado/i.test(card.innerHTML),'no abre la ficha del sitio');menu.classList.remove('open');
-   R();info.sinInterior=1;}
+   SCENES[id]=_sc;R();info.sinInterior=1;}
  // 5. al trabajo a su hora desde cada vivienda, y tarde si sale tarde
  const llegadas={};
  for(const casa of ['padres','infra','habitacion','viejo','casita','bueno','chalet','calle']){nuevo(casa);S.free=true;S.autoHome=true;const s=S.sim,start=SHIFT.start*60;S.t=Math.floor(SHIFT.leave*60)-20;let tArr=null,tOut=null;

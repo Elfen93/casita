@@ -104,7 +104,16 @@
     "socio de la cooperativa": {
       "acciones": [{"id": "coope", "e": "🌱", "n": "Preguntar cómo se entra en la coope", "rel": 30, "ok": [["{v} te habla de la coope", "Se entra por asamblea, con cuota y sin jefe. Se tarda más en decidir y se duerme mejor."]], "fx": {"rel": 2, "mov": 0.2, "pista": "empleo"}}]
     },
-    "administrativa": {"acciones": [{"id": "ventanilla", "e": "🗂️", "n": "Preguntar qué papeles se mueven", "rel": 30, "ok": [["{v} sabe qué ventanilla es", "Quién ha pedido qué, y a quién le han dicho que vuelva el martes. Sin dar nombres. Casi."]], "fx": {"chisme": 1, "rel": 2}}]}
+    "administrativa": {"acciones": [{"id": "ventanilla", "e": "🗂️", "n": "Preguntar qué papeles se mueven", "rel": 30, "ok": [["{v} sabe qué ventanilla es", "Quién ha pedido qué, y a quién le han dicho que vuelva el martes. Sin dar nombres. Casi."]], "fx": {"chisme": 1, "rel": 2}}]},
+    "verdulera": {
+      "acciones": [
+        {"id": "huerto", "e": "🥕", "n": "Comprarle lo de su huerto", "rel": 15, "ok": [["Verdura de huerto de {v}", "Tomates feos, judías con tierra y un «lléveselo, que luego se pone mala». Lo pesa a ojo y a tu favor."]], "fx": {"coste_h": 0.5, "despensa": 3, "rel": 4, "social": 4}},
+        {"id": "puesto", "e": "🧺", "n": "Preguntar por el puesto", "rel": 25, "ok": [["Cómo va el puesto de {v}", "Cuatro puestos cerrados este año, cuatro dueñas jubiladas y ningún relevo. «El alquiler del local lo paga el huerto», dice."]], "fx": {"chisme": 1, "rel": 3, "social": 4}}
+      ]
+    },
+    "mozo de almacén (ETT)": {
+      "acciones": [{"id": "ett", "e": "📦", "n": "Preguntar por la ETT", "rel": 15, "ok": [["{v} te cuenta lo de la ETT", "Llaman la víspera por la tarde. Cinco horas, sin contrato fijo, y el que dice que no, no vuelve a estar en la lista."]], "fx": {"pista": 1, "rel": 3, "social": 3}}]
+    }
   },
 
   "lugares": {
@@ -127,7 +136,62 @@
     "super": {"acciones": [{"id": "precios", "e": "🛒", "n": "Comparar precios en el pasillo", "rel": 10, "ok": [["Pasillo con {v}", "Lo que ha subido, lo que han encogido y quién rellena los paquetes con aire."]], "fx": {"rel": 2, "social": 3}}]},
     "gymbueno": {"acciones": [{"id": "series", "e": "🏋️", "n": "Hacer series juntas", "rel": 20, "ok": [["Series con {v}", "Cada cual con lo suyo y una cuenta de repeticiones que nadie cree."]], "fx": {"energia": -8, "diversion": 6, "rel": 4}}]},
     "sindicato": {"acciones": [{"id": "lista", "e": "✊", "n": "Apuntaros a la asamblea", "rel": 25, "ok": [["Lista con {v}", "Un nombre debajo de otro. Parece poca cosa hasta que la ve el casero."]], "fx": {"mov": 0.5, "sol": 0.3, "rel": 3}}]},
-    "parroquia": {"acciones": [{"id": "reparto", "e": "🧺", "n": "Echar una mano con el reparto", "rel": 20, "ok": [["Reparto con {v}", "Cajas, listas y vecinas que dan las gracias sin levantar la vista. Se te queda en el pecho."]], "fx": {"energia": -8, "rel": 4, "sol": 0.4, "social": 5}}]}
+    "parroquia": {"acciones": [{"id": "reparto", "e": "🧺", "n": "Echar una mano con el reparto", "rel": 20, "ok": [["Reparto con {v}", "Cajas, listas y vecinas que dan las gracias sin levantar la vista. Se te queda en el pecho."]], "fx": {"energia": -8, "rel": 4, "sol": 0.4, "social": 5}}]},
+    "mercado": {
+      "acciones": [
+        {
+          "id": "fiado",
+          "e": "🥬",
+          "n": "Pedir fiado hasta fin de mes",
+          "rel": 35,
+          "p": 0.7,
+          "ok": [["{v}, en el mercado", "«Te lo apunto en la libreta». Hay puestos que apuntan y puestos que no, y el de {v} es de los primeros."]],
+          "ko": [["Hoy no", "«Hoy no, que la libreta está llena»."]],
+          "fx": {"fiar_h": 2.5, "rel": 3, "social": 3},
+          "fxko": {"rel": -1}
+        }
+      ]
+    },
+    "juzgados": {"acciones": [{"id": "pasillo", "e": "⚖️", "n": "Hablar en el pasillo", "rel": 20, "ok": [["Pasillo de los juzgados con {v}", "Esperar es lo único que se hace aquí. Cuentas, te cuenta, y los dos miráis la puerta de la sala 2."]], "fx": {"chisme": 1, "rel": 3, "social": 3}}]},
+    "gran_plaza": {
+      "acciones": [
+        {
+          "id": "cafe",
+          "e": "🛍️",
+          "n": "Tomar algo con {v} en la plaza",
+          "rel": 20,
+          "ok": [["Café en Gran Plaza con {v}", "Un café a tres euros, música de ascensor y una bolsa de la tienda de al lado. Se habla mejor en la calle, pero aquí hay aire."]],
+          "fx": {"coste_h": 0.6, "rel": 4, "social": 6, "diversion": 4}
+        }
+      ]
+    },
+    "cafe_brindis": {"acciones": [{"id": "enchufe", "e": "☕", "n": "Compartir mesa y enchufe", "rel": 15, "ok": [["Mesa compartida con {v}", "Un enchufe para dos portátiles y un café que dura tres horas. Se hace amistad por necesidad."]], "fx": {"rel": 4, "social": 6, "pista": 1}}]},
+    "glorieta": {"acciones": [{"id": "churros", "e": "🥐", "n": "Invitar a churros", "rel": 15, "ok": [["Churros con {v}", "Chocolate espeso, servilletas de papel y toda la vida de un barrio contada en media hora."]], "fx": {"coste_h": 0.7, "rel": 5, "social": 7, "diversion": 4, "hambre": 12}}]},
+    "descampado": {"acciones": [{"id": "balon", "e": "⚽", "n": "Echar un balón con {v}", "rel": 10, "ok": [["Un partido con {v}", "Sin árbitro, con palés por portería y un gol discutido. Se juega para eso."]], "fx": {"energia": -8, "rel": 5, "social": 8, "diversion": 8}}]},
+    "locutorio": {
+      "acciones": [{"id": "saldo", "e": "📞", "n": "Preguntarle por la familia", "rel": 15, "ok": [["Medina y {v}", "Llamadas de media hora a tres países. Quien espera la nómina deja el nombre en la libreta, y Medina no lo pregunta dos veces."]], "fx": {"rel": 4, "social": 5, "chisme": 1}}]
+    },
+    "asociacion": {
+      "acciones": [
+        {
+          "id": "lista",
+          "e": "🤝",
+          "n": "Ayudar con la lista del agua",
+          "rel": 20,
+          "ok": [["La lista de {v}", "Quién tiene el agua cortada, quién no tiene luz y quién va a recibir hoy una carta del banco. {v} la lleva en un cuaderno de tapas rojas."]],
+          "fx": {"energia": -6, "rel": 4, "sol": 0.4, "social": 5}
+        }
+      ]
+    },
+    "bar_esperanza": {
+      "acciones": [
+        {"id": "piso", "e": "🍺", "n": "Preguntar qué piso queda libre", "rel": 25, "ok": [["{v} sabe de un piso", "«El del 14, en dos semanas. El casero no usa agencia.» Y paga la caña quien pregunta."]], "fx": {"coste_h": 0.2, "chisme": 1, "rel": 4, "social": 5}},
+        {"id": "cana", "e": "🍻", "n": "Invitar a una caña", "rel": 15, "ok": [["Caña con {v}", "Una a euro y medio y la conversación de siempre: la nómina, el casero y el equipo."]], "fx": {"coste_h": 0.2, "rel": 5, "social": 8, "diversion": 6}}
+      ]
+    },
+    "naves": {"acciones": [{"id": "turno", "e": "📦", "n": "Preguntar por el turno", "rel": 15, "ok": [["{v} en las naves", "Quién ha faltado, qué camión llega tarde y a quién ha llamado hoy la ETT. En la nave todo se sabe por la agencia."]], "fx": {"pista": 1, "rel": 3, "social": 3}}]},
+    "bar_cruce": {"acciones": [{"id": "menu", "e": "🍽️", "n": "Compartir el menú del día", "rel": 15, "ok": [["Menú con {v}", "Diez euros, media hora y la tele puesta. A las dos y diez ya no queda segundo."]], "fx": {"coste_h": 1.3, "rel": 4, "social": 5, "hambre": 40}}]},
+    "itv": {"acciones": [{"id": "cola", "e": "🔧", "n": "Hacer cola con {v}", "rel": 15, "ok": [["Cola de la ITV con {v}", "Dos horas dando la vuelta a la nave. Se habla de coches, del casero y de quien tuvo que pagar otra cita."]], "fx": {"rel": 3, "social": 4, "chisme": 1}}]}
   },
 
   "favores": {
