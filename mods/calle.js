@@ -112,7 +112,7 @@ function clRelleno(bar,h){const C=clAgenda(),k=Math.floor(S.t)+'|'+bar;if(C.rell
   clRecado(best.v,best.c,best.dest,h+.004,'rl|'+best.v.id+'|'+dia+'|'+Math.floor(S.t)+'|'+rep);cerca++;}}
 // ¿anda ahora por la calle? (para no tenerle también dentro de un sitio)
 {vecinosEn=function(lugar,hora,wd){const out=clVe.apply(this,arguments);try{if(wd!==dateOf(S.day).wd||!out.length)return out;const C=clAgenda();
-    return out.filter(q=>{const l=C.span.get(q.v.id);if(!l)return true;for(const s of l)if(hora>=s[0]&&hora<s[1])return false;return true;});}catch(e){console.error(e);return out;}};}
+    return out.filter(q=>{if(pqEn(q.v.id))return false;const l=C.span.get(q.v.id);if(!l)return true;for(const s of l)if(hora>=s[0]&&hora<s[1])return false;return true;});}catch(e){console.error(e);return out;}};}
 // dónde está un trozo a una hora: {b,x,y,dx,dy,walk,leg} o null si no se ve (dentro de un sitio, en el metro)
 function clPosRec(r,h){if(r.fix)return {b:r.fix.b,x:r.fix.x,y:r.fix.y,dx:r.fix.dx,dy:r.fix.dy,walk:false,fix:true};
   const f=r.t1>r.t0?Math.max(0,Math.min(1,(h-r.t0)/(r.t1-r.t0))):1,{i,lf}=cmEnRuta(r.R,f),l=r.R.legs[i];if(!l||l.k==='viaje')return null;
@@ -120,7 +120,7 @@ function clPosRec(r,h){if(r.fix)return {b:r.fix.b,x:r.fix.x,y:r.fix.y,dx:r.fix.d
   return {b:l.b,x:l.p[0],y:l.p[1],dx:0,dy:-1,walk:false,leg:l};}
 // los que se ven ahora en un barrio: [{r, p}] (la lista se recalcula cada minuto de juego; las posiciones, en cada fotograma)
 function clActivos(bar,h){const C=clAgenda(),k=Math.floor(h*60)+'|'+bar;if(C.actK!==k){C.actK=k;C.act=C.recs.filter(r=>h>=r.t0&&h<r.te);}
-  const out=[];for(const r of C.act){const p=clPosRec(r,h);if(!p||p.b!==bar)continue;out.push({r,p});}return out;}
+  const out=[];for(const r of C.act){if(pqEn(r.vid))continue;const p=clPosRec(r,h);if(!p||p.b!==bar)continue;out.push({r,p});}return out;}
 // compatibilidad: quienes andan por el barrio a una hora (lo que usaba el viejo cmPlanGente)
 cmPlanGente=function(bar,h,wd){const out=[];for(const {r,p} of clActivos(bar,h)){if(!r.R)continue;out.push({v:r.v,R:r.R,f:r.t1>r.t0?(h-r.t0)/(r.t1-r.t0):1,t:r.k==='trabajo',rec:r,p});}return out;};
 // ---- dibujo de una figura de calle

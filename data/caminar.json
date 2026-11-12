@@ -266,5 +266,153 @@
    "pinares": 0.6,
    "poligono": 0.5
   }
- }
+ },
+ "piquete_pancarta": "EN HUELGA",
+ "piquete_pancarta_gs": "HUELGA GENERAL",
+ "piquete_pancarta_de": "Plantilla de {lugar}",
+ "piquete_bandera": "HUELGA",
+ "piquete_horas": [
+  6.75,
+  14
+ ],
+ "piquete_pastilla": "Piquete en la puerta: {lugar}",
+ "piquete_cruza": "{n} cruza el piquete de {lugar}. Nadie dice nada.",
+ "piquete_cruza_compi": "{n} cruza el piquete de {lugar}. {compi} la mira y no dice nada.",
+ "piquete_llega": "🪧 {n} llega al piquete de {lugar}",
+ "piquete_policia": "Dos policías vigilan desde la otra acera",
+ "piquete_octavilla": "📄",
+ "manif_lemas": [
+  "VIVIENDA DIGNA",
+  "SUELDOS QUE LLEGUEN",
+  "SANIDAD PÚBLICA",
+  "BASTA YA"
+ ],
+ "manif_horas": [
+  11.25,
+  13
+ ],
+ "manif_pastilla": "Manifestación por {calle}",
+ "cola_toast": "🕐 {n} hace cola en {lugar}: unos {min} min",
+ "cola_entra": "{n} entra tras {min} min de cola",
+ "cola_pastilla": "En la cola · {lugar} · {min} min",
+ "cola_ficha": "Cola en la puerta: {n} personas",
+ "colas": {
+  "_": "Colas en la acera hacia la puerta. franjas [desde,hasta] en horas, dias (0 = lunes), base + k por punto de crisis (W_().crisis), max personas, T minutos que tarda en avanzar un puesto, lugar el nombre con artículo.",
+  "sepe": {
+   "franjas": [
+    [
+     8.5,
+     10.5
+    ]
+   ],
+   "dias": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "base": 2,
+   "k": 0.1,
+   "max": 12,
+   "T": 1.8,
+   "el": "la oficina de empleo"
+  },
+  "comedor": {
+   "franjas": [
+    [
+     13,
+     15
+    ]
+   ],
+   "dias": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "base": 2,
+   "k": 0.1,
+   "max": 11,
+   "T": 1.5,
+   "el": "el comedor social"
+  },
+  "mercado": {
+   "franjas": [
+    [
+     9,
+     11
+    ],
+    [
+     17,
+     19
+    ]
+   ],
+   "dias": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "base": 1,
+   "k": 0.02,
+   "max": 3,
+   "T": 0.7,
+   "el": "el mercado"
+  },
+  "ambulatorio": {
+   "franjas": [
+    [
+     8,
+     10
+    ],
+    [
+     17,
+     18.5
+    ]
+   ],
+   "dias": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "base": 1,
+   "k": 0.03,
+   "max": 3,
+   "T": 1.1,
+   "el": "el centro de salud"
+  }
+ },
+ "colas_outs": [
+  "sepe",
+  "ssociales",
+  "comedor",
+  "medico"
+ ],
+ "reparto_pastilla": "🛵 {que} · {n} {ent}",
+ "reparto_recoge": "Recoge en {lugar}",
+ "reparto_entrega": "Entrega en {lugar}",
+ "reparto_camino": "Va a {lugar}",
+ "reparto_vuelve": "Vuelve a {lugar}",
+ "reparto_casa": "Vuelve a casa",
+ "reparto_ent_1": "entrega",
+ "reparto_ent_n": "entregas",
+ "reparto_colores": [
+  "#1fb59a",
+  "#ff7a1a",
+  "#e8c23a"
+ ],
+ "reparto_recogidas": [
+  "bar",
+  "super",
+  "mercado"
+ ],
+ "reparto_max_min": 20
 }

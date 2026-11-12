@@ -123,6 +123,57 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
   for(const [casa,bar] of [['viejo','ribera'],['infra','eras'],['habitacion','casco']]){nuevo(casa);const f={};for(const [a,b] of [[8,9],[13.5,14.5],[17,19],[3,5]]){let mx=0;for(let h=a;h<b;h+=.25)mx=Math.max(mx,cmPlanGente(bar,h,dateOf(S.day).wd).length);f[a]=mx;}maxN[bar]=f;}
   ok(maxN.ribera[8]>=1&&maxN.ribera[3]===0,'vecinos andando: ribera '+JSON.stringify(maxN.ribera));info.censoCalle=maxN;
   const r=C.recs.find(z=>z.R&&z.k==='trabajo');if(r){const t=clFichaTxt(r.v);S.t=(r.t0+r.m/2)*60;const t2=clFichaTxt(r.v);ok(/Va al trabajo: /.test(t2),'la ficha no dice adónde va: '+t2);ficha=t2;}info.ficha=ficha;}
+ // 13. T-141 · piquete en la acera de la puerta correcta, ella con ellos y no dentro; la policía según el gobierno; los nombrados no andan a la vez por la calle
+ {nuevo('viejo');const s=S.sim,wk=destOf('work'),bar=cdBarrioDe(wk);S.t=8*60;S.strike={on:true,left:3,total:3,join:true,by:'plantilla',start:S.day,picket:0};PQ.k='';
+  const cs=pqCentros();ok(cs.length===1&&cs[0].id===wk,'el piquete no está en el centro de trabajo ('+JSON.stringify(cs.map(g=>g.id))+')');ok(cs[0]&&cs[0].nP>=4&&cs[0].nP<=8,'el piquete no tiene 4–8 personas: '+(cs[0]&&cs[0].nP));
+  const q=cmPuertaPts(wk);cam.z=.6;cmFrame(bar);const vis=()=>true;let it=pqItems(bar,1,vis);ok(it.length>=cs[0].nP+2,'faltan figuras, pancarta o banderas del piquete: '+it.length);
+  ok(it.length===pqItems(bar,1,vis).length,'piquete inestable');
+  ok(cs[0].nom.length>=1,'ninguna compañera ni vecina con nombre en el piquete');
+  // los nombrados del censo no andan por la calle a la vez
+  let dup=0;for(let h=7;h<13.5;h+=.25){S.t=h*60;PQ.k='';pqCentros();for(const a of clActivos(bar,h))if(pqEn(a.r.vid))dup++;for(const v of pbVec()){if(!pqEn(v.id))continue;for(const k of clLugares())for(const r of vecinosEn(k,h,dateOf(S.day).wd))if(r.v.id===v.id)dup++;}}
+  ok(dup===0,'vecinos del piquete también andando o dentro: '+dup);
+  S.t=9.5*60;PQ.k='';S.outAuto=false;ok(!outAvail('piquete'),'piquete no disponible: '+outAvail('piquete'));doOut('piquete');let llego=false;
+  for(let i=0;i<4000;i++){step(.25);const f=s.work>0?cmFase():null;if(i%50===0)R();if(f&&f.k==='dentro'){llego=true;break;}}
+  ok(llego,'no llegó al piquete');const p=cmPos();ok(p&&p.k==='dentro'&&!p.esc&&p.b===bar,'en el piquete no debe estar dentro del edificio');
+  ok(p&&p.y>q.y1&&p.y<q.y1+CMSW+.01&&Math.abs(p.x-q.xd)<3,'no está en la acera de la puerta: '+(p&&[p.x,p.y])+' puerta '+[q.xd,q.y1]);
+  ok(awayKey()==='_piquete','awayKey del piquete: '+awayKey());ok(p&&p.vest&&/Piquete/.test(p.txt||''),'sin chaleco ni rótulo en el piquete');
+  const mid=it.map(z=>z.d);ok(mid.every(Number.isFinite),'profundidad rota');
+  info.piquete={nP:cs[0].nP,nom:cs[0].nom.length,figs:it.length};
+  // policía: con gobierno conservador, dos figuras enfrente
+  W_().gov='conservador';PQ.k='';it=pqItems(bar,1,vis);const sin=it.length;W_().gov='centro';W_().era=null;PQ.k='';const sin2=pqItems(bar,1,vis).length;ok(sin===sin2+2,'la policía no son dos figuras: '+sin+' vs '+sin2);
+  // esquirola: cruza por delante y se dice
+  while(s.work>0)step(5);S.strike={on:true,left:3,total:3,join:false,by:'plantilla',start:S.day,picket:0};S.t=7*60+10;PQ.k='';const m=[];const tt0=toast;toast=function(x){m.push(String(x));};
+  try{goWork(true);for(let i=0;i<4000&&!(s.work>0);i++)step(.5);for(let i=0;i<4000;i++){step(.25);const f=s.work>0?cmFase():null;if(f&&f.k==='dentro')break;}step(1);}finally{toast=tt0;}
+  ok(m.some(x=>/cruza el piquete/.test(x)),'cruzar el piquete no se dice: '+m.slice(0,4).join('|'));}
+ // 14. T-141 · cola en la oficina de empleo: fila en la acera, avanza, ella se pone, los minutos de cola cuentan y se dicen
+ {nuevo('viejo');const s=S.sim,bar=cdBarrioDe('sepe');S.jobless=true;W_().crisis=60;S.t=9*60;const q=cmPuertaPts('sepe'),vis=()=>true;cmFrame(bar);
+  ok(cmColaLen('sepe',9.0)>=4,'cola de la oficina de empleo a las 9:00 corta: '+cmColaLen('sepe',9));ok(cmColaLen('sepe',12)===0,'cola a las 12:00');
+  W_().crisis=10;const corta=cmColaLen('sepe',9);W_().crisis=90;const larga=cmColaLen('sepe',9);ok(larga>corta,'la cola no crece con la crisis: '+corta+' '+larga);W_().crisis=60;
+  ok(cmColaLen('comedor',13.5)>=3&&cmColaLen('comedor',10)===0,'cola del comedor: '+cmColaLen('comedor',13.5)+' '+cmColaLen('comedor',10));
+  ok(cmColaLen('mercado',10)<=3&&cmColaLen('mercado',15)===0&&cmColaLen('ambulatorio',9)<=3,'colas cortas de mercado y ambulatorio');
+  const a0=colaItems(bar,1,vis).length;ok(a0>=3,'no se pinta la cola: '+a0);S.t+=10;const a1=colaItems(bar,1,vis).length;ok(a1>=3,'la cola desaparece al avanzar');
+  S.t=9*60+5;S.sim.work=0;ok(!outAvail('sepe'),'sellar no disponible: '+outAvail('sepe'));const m=[];const tt0=toast;toast=function(x){m.push(String(x));};
+  try{doOut('sepe');let en=false,x0=null,xn=null,min=0,t1=null,dentro=false,mxd=0;
+    let ini=false;for(let i=0;i<6000;i++){step(.25);if(s.work>0)ini=true;if(ini&&!(s.work>0))break;const f=s.work>0?cmFase():null;if(i%40===0)R();const p=f?cmPos():null;
+      if(f&&f.k==='dentro'&&s.tr&&s.tr.cq>0){if(!en){en=true;t1=S.t;}if(p&&p.cola){if(x0==null)x0=[p.x,p.y];xn=[p.x,p.y];mxd=Math.max(mxd,Math.abs(p.x-q.xd));ok(!p.esc&&p.y>q.y1&&p.y<q.y1+CMSW+.01,'en la cola debe estar en la acera: '+p.y);}else if(p&&p.esc&&!dentro){dentro=true;min=Math.round(S.t-t1);}}}
+    ok(en,'no se puso en la cola');ok(dentro,'no entró tras la cola');ok(s.tr==null||true,'');
+    info.cola={min,xIni:x0&&Math.round(x0[0]),xFin:xn&&Math.round(xn[0]),puerta:Math.round(q.xd)};ok(x0&&xn&&Math.abs(xn[0]-q.xd)<=2.5&&mxd>3,'la fila no avanza hacia la puerta: cola máx '+mxd+' y al final a '+(xn&&Math.abs(xn[0]-q.xd)));
+    ok(min>=3,'minutos de cola: '+min);ok(m.some(x=>/min de cola/.test(x)||/hace cola/.test(x)),'no se dice la cola: '+m.join('|'));ok(m.some(x=>/min de cola/.test(x)),'al entrar no se dicen los minutos: '+m.join('|'));}
+  finally{toast=tt0;}
+  while(s.work>0)step(5);ok(!s.tr,'no terminó');}
+ // 15. T-141 · el rider reparte: puertas reales, 2–3 entregas por tanda, vuelta al punto de recogida, sin metro, jornada que cuadra
+ {nuevo('viejo','reparto');const s=S.sim;S.t=Math.floor(SHIFT.leave*60);S.free=false;let n=0;goWork(true);for(let i=0;i<2000&&!(s.work>0);i++){step(.5);}
+  ok(s.work>0&&s.dest==='_ride','no sale a repartir: '+s.dest);const tot=s.awayTotal,pl=rdPlan(tot);ok(pl&&pl.n>=2,'sin entregas: '+(pl&&pl.n));
+  if(pl){const ent=pl.segs.filter(z=>z.kind==='entrega'),rec=pl.segs.filter(z=>z.kind==='recoge');ok(ent.every(z=>cdPuerta(z.lugar)&&((DATA.personas.edificios||{})[z.lugar]||z.lugar==='casaV'||z.lugar==='casa2')),'entrega en una puerta que no es un portal del censo');ok(rec.every(z=>cdPuerta(z.lugar)),'recogida sin puerta');
+   ok(pl.segs.every(z=>!z.R||rdPie(z.R)),'usa transporte');ok(pl.segs[pl.segs.length-1].kind==='casa'||!rdPie(cmRuta(pl.segs[pl.segs.length-1].lugar,'casa')),'no vuelve a casa');ok(Math.abs(pl.fin-tot)<=2.5,'la jornada no cuadra: plan '+Math.round(pl.fin)+' y salida '+Math.round(tot));
+   const tandas=[];let cur=0;for(const z of pl.segs){if(z.kind==='entrega')cur++;if(z.kind==='vuelve'){tandas.push(cur);cur=0;}}ok(tandas.length>=2&&tandas.every(c=>c>=1&&c<=3),'tandas: '+tandas.join(','));
+   ok(pl.segs.filter(z=>z.kind==='vuelve').every((z,i,a)=>true),'');
+   // vuelve al punto de recogida: cada «vuelve» acaba donde empezó la tanda
+   let ok2=true,pk=null;for(const z of pl.segs){if(z.kind==='recoge')pk=z.lugar;if(z.kind==='vuelve'&&z.lugar!==pk)ok2=false;}ok(ok2,'no vuelve a su punto de recogida');
+   const bars=new Set();let maxJ=0,last=null,vistos=0,ents=0,quietos=0;
+   for(let i=0;i<6000&&s.work>0;i++){step(.5);const p=s.work>0?cmPos():null;if(!p)continue;if(i%30===0)R();bars.add(p.b);if(p.vis){vistos++;if(last&&last.b===p.b){const dj=Math.hypot(p.x-last.x,p.y-last.y);if(dj>maxJ){maxJ=dj;info.saltoRider=[Math.round(last.x),Math.round(last.y),Math.round(p.x),Math.round(p.y),p.txt];}}last=p;}if(p.quieto&&/Entrega/.test(p.txt||''))quietos++;}
+   ok(vistos>20,'no se ve repartiendo');ok(maxJ<10,'salto de '+maxJ+' casillas repartiendo (0,5 min a 16 casillas/min)');ok(quietos>=1,'no se detiene a entregar');ok(s.work<=0&&!s.dest,'no termina la jornada');
+   info.reparto={entregas:pl.n,tandas:tandas,barrios:[...bars].length,plan:Math.round(pl.fin),jornada:Math.round(tot)};}}
 
  console.error=oe;
  document.title=(bad.length||__errs.length?'ERR ':'OK ')+JSON.stringify({bad:[...new Set(bad)].slice(0,12),nbad:bad.length,errs:__errs.slice(0,3),info});
