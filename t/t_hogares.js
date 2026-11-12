@@ -21,7 +21,7 @@ setTimeout(()=>{try{
  const L5=[0,1,2,3,4];D0.vecinos=(D0.vecinos||[]).concat([{id:'v1',n:'Marta',g:'f',edad:38,hogar:'h1',rol:'madre',trabajo:{lugar:'super',puesto:'cajera',h:[8,15],dias:L5},donde:[]},{id:'v2',n:'Rafa',g:'m',edad:41,hogar:'h1',rol:'padre',trabajo:{lugar:'obra',puesto:'peón',h:[7,16],dias:L5},donde:[]},{id:'v3',n:'Lola',g:'f',edad:7,hogar:'h1',rol:'hija',trabajo:null,donde:[['colegio',9,14,L5]]},{id:'v4',n:'Hugo',g:'m',edad:4,hogar:'h1',rol:'hijo',trabajo:null,donde:[['colegio',9,13,L5]]},{id:'v5',n:'Concha',g:'f',edad:74,hogar:'h1',rol:'abuela',trabajo:null,donde:[]},{id:'v6',n:'Irene',g:'f',edad:36,hogar:'h2',rol:'pareja',trabajo:{lugar:'torre',puesto:'analista',h:[9,18],dias:L5},donde:[]},{id:'v7',n:'Sergio',g:'m',edad:39,hogar:'h2',rol:'pareja',trabajo:{lugar:'torre',puesto:'abogado',h:[8,17],dias:L5},donde:[]}]);
  const hr=hogarDe({hogar:'h1',n:'Marta'});chk(hr.censo&&hr.miembros.length===5&&hr.edificio.tipo==='bloque','hogarDe censo');
  am.n='Marta';am.hogar='h1';S.outWith='amiga';s.work=100;s.awayTotal=160;s.dest='hogar';s.outingActive='visita';
- chk(placeName('hogar')==='Casa de Marta · 3.º B · Bloque de la calle Olivo, 12','rotulo censo '+placeName('hogar'));
+ chk(placeName('hogar')==='Casa de Marta','rotulo censo '+placeName('hogar'));
  const names=[];const _l=label;label=function(t){names.push(t);return _l.apply(this,arguments);};
  const noms=(who,h)=>{const p=S.people.find(q=>q.k==='amiga');p.n=who[0];p.hogar=who[1];S.t=h*60;names.length=0;const nt=(h>=21||h<7)?1:0;drawScene('hogar',3,nt);return names.filter(n=>n!==CH().name).sort().join(',');};
  const exp={10:{h1:'Concha,Marta',h2:'Irene'},14:{h1:'Concha,Hugo,Lola,Marta',h2:'Irene'},19:{h1:'Concha,Hugo,Lola,Marta,Rafa',h2:'Irene,Sergio'},2:{h1:'',h2:''}};

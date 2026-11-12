@@ -2,6 +2,7 @@
 conLogica(OUT,{
   medico:{req:()=>{const H=HP();return !!H.citaDue&&H.citaDue===S.day;}},
   sepe:{req:()=>!!S.jobless}});
+if(OUT.sepe)OUT.sepe.n='Sellar el paro';
 {const _d=destOf;destOf=function(k){if(k==='medico')return 'ambulatorio';if(k==='sepe'||k==='ssociales')return 'sepe';return _d.apply(this,arguments);};}
 {const _oc=outCost;outCost=function(k){if(k==='medico'||k==='sepe')return 0;return _oc.apply(this,arguments);};}
 // ---- la cita: el día señalado sale; si no puede, se resuelve como siempre antes de acabar el día ----
@@ -34,34 +35,42 @@ function svQuadY(y0,y1,z0,z1,col){poly([P(0,y0,z0),P(0,y1,z0),P(0,y1,z1),P(0,y0,
 function svSky(night){const w=(S.weather||{}).k;return night>.5?'#1f2742':(w==='lluvia'||w==='tormenta'||w==='nieve')?'#9aa8b5':w==='nublado'?'#c3ccd3':'#bfe3f7';}
 function svRain(y0,y1,z0,z1,tt){const w=(S.weather||{}).k;if(w!=='lluvia'&&w!=='tormenta')return;ctx.strokeStyle='rgba(60,80,110,.5)';ctx.lineWidth=1;ctx.beginPath();for(let k=0;k<9;k++){const y=y0+(y1-y0)*svH(k+40),z=z1-((tt*30+svH(k+60)*(z1-z0))%(z1-z0));ctx.moveTo(...P(0,y,z));ctx.lineTo(...P(0,y-.04,z-4));}ctx.stroke();}
 function svChair(x,y,col){sBox(x-.26,y-.26,x+.26,y+.26,8,10,col);for(const [a,b] of [[-.22,-.22],[.16,-.22],[-.22,.16],[.16,.16]])sBox(x+a,y+b,x+a+.06,y+b+.06,0,8,'#6b6f78');}
+// silla de sala de espera: patas finas, asiento y respaldo alto. El respaldo va aparte (se pinta DESPUÉS de quien se sienta, para que tape sus lomos)
+function svSillaBase(x,y,col){for(const [a,b] of [[-.22,-.22],[.16,-.22],[-.22,.16],[.16,.16]])sBox(x+a,y+b,x+a+.06,y+b+.06,0,9,'#5d626b');sBox(x-.27,y-.27,x+.27,y+.27,9,12,col);}
+function svSillaResp(x,y,col){const c=shade(col,.82);sBox(x-.25,y+.2,x-.18,y+.27,11,24,'#5d626b');sBox(x+.18,y+.2,x+.25,y+.27,11,24,'#5d626b');sBox(x-.27,y+.19,x+.27,y+.29,12,26,c);}
+function svSillaRespN(x,y,col){const c=shade(col,.82);sBox(x-.25,y-.27,x-.18,y-.2,11,24,'#5d626b');sBox(x+.18,y-.27,x+.25,y-.2,11,24,'#5d626b');sBox(x-.27,y-.29,x+.27,y-.19,12,26,c);}
 function svFrac(){const s=S.sim,tot=s.awayTotal||1;return Math.max(0,Math.min(1,(tot-(s.work||0))/tot));}
 // ---- escena: sala de espera del centro de salud ----
 SCENES['ambulatorio']=function(E){const {tt,night}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});const W=12,D=9,WH=66;const h=S.t/60;const fr=svFrac();
-  const turno=40+(S.day*3)%50+Math.floor(tt/9);const cyc=(tt%18)/18;
+  const turno=40+(S.day*3)%50+Math.floor(tt/18);const cyc=(tt%18)/18;const docOn=cyc>.03&&cyc<.95;
   const drawBase=()=>{prism(0,0,W,D,-22,0,'#8fa6a8');topQuad(0,0,W,D,0,'#d5e4e1');ctx.strokeStyle='rgba(60,110,100,.12)';ctx.lineWidth=1;ctx.beginPath();for(let k=1;k<W;k++){ctx.moveTo(...P(k,0));ctx.lineTo(...P(k,D));}for(let k=1;k<D;k++){ctx.moveTo(...P(0,k));ctx.lineTo(...P(W,k));}ctx.stroke();
     sBox(0,-.15,W,0,0,WH,'#eef4f2');sBox(-.15,-.15,0,D,0,WH,'#e2ece9');svQuadX(0,W,0,9,'#3f9a8f');svQuadY(0,D,0,9,'#3f9a8f');
-    svQuadX(3.6,8.4,40,60,'#16191d');svQuadX(3.75,8.25,42,58,'#0c0f12');svText(4.9,0,53,'TURNO',"#8fe0c8",4,false);svText(7.0,0,53,'CONSULTA',"#8fe0c8",3.2,false);svText(4.9,0,46,String(turno),"#ff5a3c",8,false);svText(7.0,0,46,String(1+turno%3),"#ffc84a",8,false);
+    svQuadX(3.4,8.6,18,46,'#16191d');svQuadX(3.55,8.45,20,44,'#0c0f12');svText(4.75,0,40,'TURNO',"#8fe0c8",6.5,false);svText(7.25,0,40,'CONSULTA',"#8fe0c8",5.5,false);svText(4.75,0,28,String(turno),"#ff5a3c",15,false);svText(7.25,0,28,String(1+turno%3),"#ffc84a",15,false);
     svQuadX(.5,2.6,26,50,'#fffdf8');svText(1.55,0,45,'VACUNAS',"#3f9a8f",3.2,false);svText(1.55,0,39,'gripe y covid',"#555",2.2,false);svText(1.55,0,34,'pida cita',"#555",2.2,false);
     svQuadX(9.4,11.5,26,50,'#fffdf8');svText(10.45,0,45,'NORMAS',"#3f9a8f",3.2,false);svText(10.45,0,39,'Mascarilla si tos',"#555",2,false);svText(10.45,0,35,'Un acompañante',"#555",2,false);svText(10.45,0,31,'Apague el móvil',"#555",2,false);
     svQuadY(5.4,8.4,18,52,'#8fa6a8');svQuadY(5.5,8.3,20,50,svSky(night));svRain(5.5,8.3,20,50,tt);
-    for(const [y,n] of [[1.0,'1'],[3.1,'2']]){svQuadY(y,y+1.1,0,50,cyc<.62&&y===1.0?'#3a3f46':'#b6875a');svText(0,y+.55,56,'Consulta '+n,"#3f9a8f",3,true);}};
-  const decor=()=>{svText(6,0,64,'CENTRO DE SALUD',"#3f9a8f",8,false);};
+    for(const [y,n] of [[1.0,'1'],[3.1,'2']]){svQuadY(y,y+1.1,0,50,docOn&&y===1.0?'#3a3f46':'#b6875a');svText(0,y+.55,56,'Consulta '+n,"#3f9a8f",3,true);}};
+  const decor=()=>{svText(6,0,57,'CENTRO DE SALUD',"#1f6f63",7.5,false);};
   add(10.4,1.2,()=>{sBox(8.8,.5,11.8,1.4,0,22,'#fffdf8');sBox(8.8,.5,11.8,1.4,22,24,'#3f9a8f');sBox(9.3,.7,9.9,1.1,24,30,'#cfd4d8');if(h>=7.5)svP(10.5,.25,91,'adult',{pose:'stand',act:'type',front:true,right:false,shirt:'#3f9a8f'});});
   const seats=[];for(let r=0;r<3;r++)for(let i=0;i<5;i++)seats.push({x:2.2+i*1.5,y:3.6+r*1.5,k:r*5+i});
   const anaSeat=seats[7];
-  for(const st of seats){const forced=st.k%5!==4;const on=forced||svH(st.k+S.day*3)<.55;const old=st.k%4===1||st.k%7===2;
-    add(st.x+.2,st.y+.2,()=>{svChair(st.x,st.y,['#3f9a8f','#e9c46a','#3f9a8f'][Math.floor(st.k/5)]);if(on&&st!==anaSeat)svP(st.x,st.y-.02,100+st.k,old?'old':'adult',{pose:'sit',front:false,right:st.k%2===0,cane:false,act:st.k%6===3?'phone':null});});}
+  for(const st of seats){const forced=st.k%5!==4;const on=forced||svH(st.k+S.day*3)<.55;const old=st.k%4===1||st.k%7===2;const col=['#3f9a8f','#e9c46a','#3f9a8f'][Math.floor(st.k/5)];
+    const d0=st.x+st.y;add(d0-.1,0,()=>svSillaBase(st.x,st.y,col));
+    if(on&&st!==anaSeat)add(d0,0,()=>svP(st.x,st.y-.02,100+st.k,old?'old':'adult',{pose:'sit',front:false,right:st.k%2===0,cane:false,act:st.k%6===3?'phone':null}));
+    add(d0+.1,0,()=>svSillaResp(st.x,st.y,col));}
   add(1.0,7.6,()=>svP(1.0,7.6,120,'adult',{pose:'stand',act:'phone',front:true,right:true}));
   add(10.5,5.6,()=>{svP(10.4,5.6,121,'adult',{pose:'stand',front:true,right:false});svP(10.95,5.9,122,'kid',{pose:'stand',front:true,right:false});});
   add(10.6,7.6,()=>svP(10.6,7.6,123,'old',{pose:'stand',front:true,right:false}));
   add(6.0,2.2,()=>svP(6.0,2.2,124,'adult',{pose:'stand',front:false,right:true,act:'phone'}));
   add(.5,8.4,()=>{cyl(.6,8.2,.2,0,10,'#b5543c','#c27458');const [a,b]=P(.6,8.2,10);for(let k=0;k<6;k++){ctx.fillStyle=['#3f8a3a','#58ac4e'][k%2];ctx.beginPath();ctx.ellipse(a+Math.cos(k*1.3)*6,b-10-Math.abs(Math.sin(k))*6,5,2.8,k,0,7);ctx.fill();}});
   add(8.4,.7,()=>{sBox(8.0,.15,8.3,.4,0,22,'#cfd4d8');sBox(7.98,.12,8.32,.43,22,30,'#3f9a8f');});
-  const mx=cyc<.12?.45+cyc/.12*1.9:cyc<.5?2.35:cyc<.62?2.35-(cyc-.5)/.12*1.9:-1;
-  if(mx>0)add(mx+.5,1.55,()=>{const [a,b]=P(mx,1.55);svP(mx,1.55,130,'adult',{pose:'stand',front:false,right:true,shirt:'#ffffff',act:cyc>=.12&&cyc<.5?'talk':null,ph:tt*5});if(cyc>=.12&&cyc<.5){ctx.save();label('Número '+turno,a+6,b-72,'rgba(255,253,248,.95)','#3b3247',10);ctx.restore();}});
+  // la médica: sale a la puerta de la consulta 1 y llama el número que marca la pantalla durante casi todo el ciclo
+  if(docOn){const mx=cyc<.09?.4+(cyc-.03)/.06*.5:cyc>.88?.9-(cyc-.88)/.07*.5:.9;const walk=cyc<.09||cyc>.88;const call=!walk;
+    add(mx+1.55,0,()=>{const [a,b]=P(mx,1.55);svP(mx,1.55,130,'adult',{pose:'stand',front:true,right:true,shirt:'#ffffff',act:call?'talk':null,ph:walk?tt*9:tt*5});
+      if(call){ctx.save();const t='Número '+turno,bx=a+30,by=b-88;ctx.fillStyle='rgba(255,253,248,.97)';ctx.beginPath();ctx.moveTo(bx-16,by+10);ctx.lineTo(a+5,b-66);ctx.lineTo(bx-2,by+10);ctx.fill();label(t,bx,by,'rgba(255,253,248,.97)','#3b3247',13);ctx.restore();}});}
   const ana=fr<.82?{x:anaSeat.x,y:anaSeat.y-.02,pose:'sit',front:false,right:true,act:null}:{x:1.5,y:1.7,pose:'stand',front:false,right:false,act:null};
   const after=()=>{if(night>.4){ctx.fillStyle='rgba(20,30,60,.12)';ctx.fillRect(-2000,-2000,4000,4000);}};
-  return {W,D,floor:'#d5e4e1',wall:'#eef4f2',out:false,tile:false,drawBase,decor,items:it,ana,after};};
+  return {W:W*1.14,D:D*1.14,floor:'#d5e4e1',wall:'#eef4f2',out:false,tile:false,drawBase,decor,items:it,ana,after};};
 // ---- escena: oficina de empleo ----
 SCENES['sepe']=function(E){const {tt,night}=E;const it=[],add=(x,y,f)=>it.push({d:x+y,f});const W=12,D=9,WH=66;const fr=svFrac();
   const ven=[[1.0,3.4,1],[4.5,6.9,0],[8.0,10.4,1]];
@@ -88,4 +97,4 @@ SCENES['sepe']=function(E){const {tt,night}=E;const it=[],add=(x,y,f)=>it.push({
   add(5.0,8.3,()=>{sBox(3.0,8.0,7.6,8.6,8,10,'#6b6252');for(const x of [3.1,5.2,7.4])sBox(x,8.1,x+.12,8.5,0,8,'#4a4a50');svP(4.0,8.3,180,'adult',{pose:'sit',front:true,right:true});svP(6.6,8.3,181,'old',{pose:'sit',front:true,right:false});});
   const ana={x:slots[aj][0],y:slots[aj][1],pose:'stand',front:true,right:false,act:null};
   const after=()=>{if(night>.4){ctx.fillStyle='rgba(20,30,60,.12)';ctx.fillRect(-2000,-2000,4000,4000);}};
-  return {W,D,floor:'#cfcabc',wall:'#e6e0cf',out:false,tile:false,drawBase,decor,items:it,ana,after};};
+  return {W:W*1.14,D:D*1.14,floor:'#cfcabc',wall:'#e6e0cf',out:false,tile:false,drawBase,decor,items:it,ana,after};};

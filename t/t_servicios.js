@@ -21,6 +21,11 @@ setTimeout(()=>{try{
  // ya hecho el bucle completo: comprobar
  ck(r.out==='sepe'&&r.dest==='sepe','sepe sale y va: '+r.out+' '+r.dest);ck(!S.sim.outingActive,'sepe vuelve');ck(S.netBoost>S.day-1&&S.netBoost>nb0,'empujón a la búsqueda: '+S.netBoost);
  S.jobless=false;ck(outAvail('sepe')!==null,'con trabajo no disponible: '+outAvail('sepe'));
+ // (c) la médica llama en la puerta: el bocadillo lleva el número de la pantalla durante buena parte del ciclo
+ {const labs=[];const _l=label,_t=svText;label=function(t){labs.push(String(t));return _l.apply(this,arguments);};let con=0,tot=0,ok=true;
+  const pantalla=[];svText=function(x,y,z,t){pantalla.push(String(t));return _t.apply(this,arguments);};
+  S.day=60;S.t=10*60;for(let q=0;q<36;q++){const tt=q*.5+.25;labs.length=0;pantalla.length=0;drawScene('ambulatorio',tt,0);tot++;const b=labs.find(x=>/^Número \d+$/.test(x));if(b){con++;if(!pantalla.includes(b.slice(7)))ok=false;}}
+  label=_l;svText=_t;ck(con/tot>=.7,'médica llamando en '+con+'/'+tot+' instantes');ck(ok,'el número del bocadillo no coincide con la pantalla');}
  ck(window.__errs.length===0,'errores JS: '+(window.__errs[0]||''));
  document.title=(fail?'ERR ':'OK ')+'errs:'+fail+' espera:'+waited+'d '+log.join(' | ');
 }catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,400)}},300);
