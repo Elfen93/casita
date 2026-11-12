@@ -1,21 +1,22 @@
 // ---------- el golpe personal ----------
+const PT=DATA.sucesos.nucleo_personal;
 const PERSONAL=[
-  {id:'madre',c:()=>!!P_('madre'),t:()=>'🤒 Su madre',x:()=>`${P_('madre').n} se ha caído en casa: cadera. Dos semanas sin poder valerse. Ana es quien vive más cerca.`,
-    o:()=>{const m=P_('madre');const cost=Math.round(WP()*.55);return [
-      {t:'Faltar al trabajo y cuidarla',s:'Reputación y sueldo abajo; su madre, arriba.',f:()=>{S.rep=Math.max(0,(S.rep??70)-12);S.money-=Math.round(salary()*4);S.absences=(S.absences||0)+4;m.rel=Math.min(100,m.rel+18);ex().exp.solid++;tell(`Ana ha faltado cuatro días. ${bossS()} lo ha apuntado. Su madre no ha dejado de darle las gracias.`,'🫶');}},
-      {t:`Pagar a una cuidadora (${fmt(cost)})`,ok:()=>S.money>=cost,f:()=>{S.money-=cost;m.rel=Math.min(100,m.rel+5);tell(`Ha contratado a Dolores, que cobra ${fmt(cost)} por dos semanas y tiene otras tres casas. Cuidar también es un trabajo mal pagado.`,'🧺');pushI('socialdemocrata',6,'cuidados');}},
-      {t:'Pedir permiso en el trabajo',s:'Depende de quién mande.',f:()=>{if(TOX()<.45||TR().coop||S.track==='funcion'){m.rel=Math.min(100,m.rel+12);tell(`Le han dado cinco días por cuidado de familiar. Ni una pega.`,'📄');}else{S.rep=Math.max(0,(S.rep??70)-6);tell(`${bossS()}: «¿Y quién te cubre? Aquí todos tenemos madre». Al final ha ido por las tardes, después del turno. Dos semanas sin dormir.`,'😮‍💨');ex().exp.stress++;grieve(10);}}},
-      {t:'Que se encargue su hermano',s:'Tiene coche y tiempo. Nunca se ha encargado de nada.',f:()=>{m.rel=Math.max(0,m.rel-14);tell(`Su hermano ha ido dos veces y ha dicho que «ya estaba mejor». Ana ha acabado yendo igual, pero más tarde y con más culpa.`,'😤');ex().exp.stress++;}}];},
+  {id:'madre',c:()=>!!P_('madre'),t:()=>PT.madre.t,x:()=>huecos(PT.madre.x,{m:P_('madre').n}),
+    o:()=>{const m=P_('madre');const cost=Math.round(WP()*.55);const O=PT.madre.o;return [
+      {t:O[0].t,s:O[0].s,f:()=>{S.rep=Math.max(0,(S.rep??70)-12);S.money-=Math.round(salary()*4);S.absences=(S.absences||0)+4;m.rel=Math.min(100,m.rel+18);ex().exp.solid++;tell(huecos(O[0].tell,{b:String(bossS())}),'🫶');}},
+      {t:huecos(O[1].t,{c:fmt(cost)}),ok:()=>S.money>=cost,f:()=>{S.money-=cost;m.rel=Math.min(100,m.rel+5);tell(huecos(O[1].tell,{c:fmt(cost)}),'🧺');pushI('socialdemocrata',6,'cuidados');}},
+      {t:O[2].t,s:O[2].s,f:()=>{if(TOX()<.45||TR().coop||S.track==='funcion'){m.rel=Math.min(100,m.rel+12);tell(O[2].tell_ok,'📄');}else{S.rep=Math.max(0,(S.rep??70)-6);tell(huecos(O[2].tell_ko,{b:String(bossS())}),'😮‍💨');ex().exp.stress++;grieve(10);}}},
+      {t:O[3].t,s:O[3].s,f:()=>{m.rel=Math.max(0,m.rel-14);tell(O[3].tell,'😤');ex().exp.stress++;}}];},
     auto:()=>S.money>WP()*.9?1:T('trabajadora')?2:0},
-  {id:'vecina',c:()=>!!P_('vecina'),t:()=>'🏘️ Desahucio',x:()=>`A ${P_('vecina').n}, del piso de al lado, la desahucian el jueves a las nueve. Debe tres meses. En el portal hay un cartel: «Este desahucio lo paramos».`,
-    o:()=>{const v=P_('vecina');return [
-      {t:'Ir a las nueve a la puerta',s:'Puede acabar en comisaría.',f:()=>{v.rel=Math.min(100,v.rel+30);ex().exp.solid++;pushI('anarquista',14,'vivienda');pushI('marxista',8,'vivienda');const ok=Math.random()<.45+W_().mov/200;if(ok){chapter('desahucio','El jueves a las nueve',`Había sesenta personas en el portal. La comitiva judicial se dio la vuelta. ${v.n} lloraba y Ana también. Por ahora.`);ex().exp.win++;W_().mov=Math.min(100,W_().mov+6);}else{if(Math.random()<.25)arrestAna(1,'en el desahucio');else tell(`Eran veinte. La policía los apartó uno a uno. ${v.n} salió con dos bolsas y el gato. Ana no durmió.`,'🥀');ex().exp.loss++;}}},
-      {t:`Darle ${fmt(Math.round(WP()*.35))} para el hostal`,ok:()=>S.money>=WP()*.35,f:()=>{S.money-=Math.round(WP()*.35);v.rel=Math.min(100,v.rel+12);tell(`${v.n} ha aceptado el dinero sin mirarla. Esa noche el piso de al lado estaba vacío y muy silencioso.`,'🏚️');}},
-      {t:'No meterse',s:'No es asunto suyo. ¿O sí?',f:()=>{v.rel=Math.max(0,v.rel-25);pushI('apolitica',8,'vivienda');tell(`Ana se fue a trabajar a las ocho y media para no cruzarse con nadie. Al volver, la puerta de al lado tenía la cerradura cambiada.`,'🚪');ex().exp.stress++;}}];},
+  {id:'vecina',c:()=>!!P_('vecina'),t:()=>PT.vecina.t,x:()=>huecos(PT.vecina.x,{v:P_('vecina').n}),
+    o:()=>{const v=P_('vecina');const O=PT.vecina.o;return [
+      {t:O[0].t,s:O[0].s,f:()=>{v.rel=Math.min(100,v.rel+30);ex().exp.solid++;pushI('anarquista',14,'vivienda');pushI('marxista',8,'vivienda');const ok=Math.random()<.45+W_().mov/200;if(ok){chapter('desahucio',O[0].cap,huecos(O[0].capx,{v:v.n}));ex().exp.win++;W_().mov=Math.min(100,W_().mov+6);}else{if(Math.random()<.25)arrestAna(1,O[0].arresto);else tell(huecos(O[0].tell_ko,{v:v.n}),'🥀');ex().exp.loss++;}}},
+      {t:huecos(O[1].t,{c:fmt(Math.round(WP()*.35))}),ok:()=>S.money>=WP()*.35,f:()=>{S.money-=Math.round(WP()*.35);v.rel=Math.min(100,v.rel+12);tell(huecos(O[1].tell,{v:v.n}),'🏚️');}},
+      {t:O[2].t,s:O[2].s,f:()=>{v.rel=Math.max(0,v.rel-25);pushI('apolitica',8,'vivienda');tell(O[2].tell,'🚪');ex().exp.stress++;}}];},
     auto:()=>isLeft()&&comp()>=2?0:S.money>WP()*1.2?1:2},
-  {id:'amiga',c:()=>!!P_('amiga'),t:()=>`🫶 Su mejor amig${P_('amiga').g==='a'?'a':'o'}`,x:()=>{const f=P_('amiga');return `${f.n} ha aparecido con una maleta. ${f.g==='a'?'La':'Lo'} han echado del piso: no podía pagar. Pregunta si puede quedarse «unos días».`;},
-    o:()=>{const f=P_('amiga');return [
-      {t:'Que se quede lo que haga falta',f:()=>{f.rel=Math.min(100,f.rel+20);ex().exp.solid++;S.res=S.res||[];inviteHome(f,true);S.lodger=f.k;schedule(21,'lodger',{p:f.k});tell(`${f.n} duerme ${huDonde(f)[0]}. Paga la mitad de la compra y hace las mejores lentejas del barrio.`,'🛋️');}},
-      {t:'Una semana, y que busque algo',f:()=>{f.rel=Math.max(0,f.rel-5);inviteHome(f,true);S.lodger=f.k;S.lodgerEnd=S.day+6;tell(`${f.n} ha entendido el mensaje. Duerme ${huDonde(f)[0]}, con la maleta sin deshacer, y esa misma noche ya está mirando anuncios.`,'🧳');}},
-      {t:`Prestarle ${fmt(Math.round(WP()*.5))} para una fianza`,ok:()=>S.money>=WP()*.5,f:()=>{S.money-=Math.round(WP()*.5);f.rel=Math.min(100,f.rel+10);schedule(35,'devolver',{p:f.k,m:Math.round(WP()*.5)});tell(`${f.n} ha encontrado una habitación. Devolverá el dinero «en cuanto pueda».`,'🤝');}}];},
+  {id:'amiga',c:()=>!!P_('amiga'),t:()=>huecos(PT.amiga.t,{g:P_('amiga').g==='a'?'a':'o'}),x:()=>{const f=P_('amiga');return huecos(PT.amiga.x,{p:f.n,l:f.g==='a'?'La':'Lo'});},
+    o:()=>{const f=P_('amiga');const O=PT.amiga.o;return [
+      {t:O[0].t,f:()=>{f.rel=Math.min(100,f.rel+20);ex().exp.solid++;S.res=S.res||[];inviteHome(f,true);S.lodger=f.k;schedule(21,'lodger',{p:f.k});tell(huecos(O[0].tell,{p:f.n,d:huDonde(f)[0]}),'🛋️');}},
+      {t:O[1].t,f:()=>{f.rel=Math.max(0,f.rel-5);inviteHome(f,true);S.lodger=f.k;S.lodgerEnd=S.day+6;tell(huecos(O[1].tell,{p:f.n,d:huDonde(f)[0]}),'🧳');}},
+      {t:huecos(O[2].t,{c:fmt(Math.round(WP()*.5))}),ok:()=>S.money>=WP()*.5,f:()=>{S.money-=Math.round(WP()*.5);f.rel=Math.min(100,f.rel+10);schedule(35,'devolver',{p:f.k,m:Math.round(WP()*.5)});tell(huecos(O[2].tell,{p:f.n}),'🤝');}}];},
     auto:()=>T('solidaria')||T('sociable')?0:1}];

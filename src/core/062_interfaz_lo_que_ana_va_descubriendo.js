@@ -1,13 +1,13 @@
 // ---------- interfaz: lo que Ana va descubriendo ----------
-function innerBlock(){const c=ex(),L=latentOf();let h=`<h3>🔍 Por dentro</h3>`;
-  h+=`<div class="kv"><span>Clase</span><span>${CLASSN[classOf()]}</span></div>`;
-  if(L.hidden.length)h+=`<div class="sub" style="font-size:11.5px">Hay ${L.hidden.length===1?'algo':'cosas'} de Ana que ni ella sabe todavía.</div>`;
-  if(c.contra>10)h+=`<div class="kv"><span>⚖️ Contradicción</span><span><span class="minibars" style="display:inline-block;width:90px;vertical-align:middle"><i style="width:${c.contra}%;background:#e07a5f"></i></span></span></div>`;
+function innerBlock(){const c=ex(),L=latentOf();let h=`<h3>${TXN.interfaz_ana.ui_por_dentro}</h3>`;
+  h+=`<div class="kv"><span>${TXN.interfaz_ana.ui_clase}</span><span>${CLASSN[classOf()]}</span></div>`;
+  if(L.hidden.length)h+=`<div class="sub" style="font-size:11.5px">${huecos(TXN.interfaz_ana.ui_ocultas,{x:L.hidden.length===1?TXN.interfaz_ana.ui_ocultas_1:TXN.interfaz_ana.ui_ocultas_n})}</div>`;
+  if(c.contra>10)h+=`<div class="kv"><span>${TXN.interfaz_ana.ui_contradiccion}</span><span><span class="minibars" style="display:inline-block;width:90px;vertical-align:middle"><i style="width:${c.contra}%;background:#e07a5f"></i></span></span></div>`;
   const dr=Object.entries(c.drift).filter(([k,v])=>k!==S.ideo&&v>15).sort((a,b)=>b[1]-a[1]).slice(0,2);
-  for(const [k,v] of dr)h+=`<div class="kv"><span>${IDEOS[k].e} Se acerca a lo ${IDEOS[k].n.toLowerCase()}</span><span style="font-size:11px">por ${topWhy(k)}</span></div>`;
-  const pend=c.cq.length;if(pend)h+=`<div class="sub" style="font-size:11.5px">⏳ ${pend===1?'Hay una decisión pasada que todavía no ha dado la cara.':'Hay '+pend+' decisiones pasadas que todavía no han dado la cara.'}</div>`;
+  for(const [k,v] of dr)h+=`<div class="kv"><span>${huecos(TXN.interfaz_ana.ui_se_acerca,{e:IDEOS[k].e,n:IDEOS[k].n.toLowerCase()})}</span><span style="font-size:11px">${huecos(TXN.interfaz_ana.ui_por,{why:topWhy(k)})}</span></div>`;
+  const pend=c.cq.length;if(pend)h+=`<div class="sub" style="font-size:11.5px">⏳ ${pend===1?TXN.interfaz_ana.ui_pend_1:huecos(TXN.interfaz_ana.ui_pend_n,{k:pend})}</div>`;
   const mem=c.mem.slice(-4).reverse();if(mem.length)h+=`<div class="sub" style="font-size:11.5px;margin-top:4px">${mem.map(m=>'• '+m.t).join('<br>')}</div>`;
-  h+=`<div class="chips" style="margin-top:6px"><span class="sub" style="font-size:11px;align-self:center">Dilemas:</span><button class="mini${c.dmode!=='ana'?' sel':''}" data-dmode="preguntar">Decido yo</button><button class="mini${c.dmode==='ana'?' sel':''}" data-dmode="ana">Decide Ana</button></div>`;
+  h+=`<div class="chips" style="margin-top:6px"><span class="sub" style="font-size:11px;align-self:center">${TXN.interfaz_ana.ui_dilemas}</span><button class="mini${c.dmode!=='ana'?' sel':''}" data-dmode="preguntar">${TXN.interfaz_ana.ui_decido_yo}</button><button class="mini${c.dmode==='ana'?' sel':''}" data-dmode="ana">${TXN.interfaz_ana.ui_decide_ana}</button></div>`;
   return h;}
 function hidBadges(p){const r=(p.rev||[]).map(k=>HID[k]).filter(Boolean);return r.map(H=>`<span title="${H.n}" class="hb${H.pos?' pos':''}">${H.e} ${H.n}</span>`).join('');}
 
@@ -20,7 +20,7 @@ const BOSST=DATA.personas.jefes_trato;
 function boss(){const o=office();if(!o.boss){const g=Math.random()<.5?'f':'m';o.boss={n:pickR(BOSSN[g]),g};}return o.boss;}
 const bossT=()=>{const b=boss();const t=(BOSST[S.track]||['la jefa','el jefe'])[b.g==='f'?0:1];return S.track==='reparto'?'la app':`${t}, ${b.n},`;};
 const bossS=()=>S.track==='reparto'?'la app':boss().n;
-const compiN=()=>{const c=P_('compi');return c?c.n:'una compañera';};
+const compiN=()=>{const c=P_('compi');return c?c.n:TXN.interfaz_ana.una_companera;};
 const weekPay=()=>Math.round(salary()*TR().days.length);
 const WP=()=>Math.max(150,weekPay());
 const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);

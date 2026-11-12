@@ -539,6 +539,37 @@ def comprobar(d):
     if len(RG['dias'])!=7 or len(RG['dias_corto'])!=7 or len(RG['meses'])!=12:E.append('reglas: son 7 días y 12 meses')
     for k,g in I['gestos'].items():
         if not(g.get('n') and g.get('e')):E.append('interacciones.gestos.%s: faltan nombre (n) o icono (e)'%k)
+    # p0a: textos sueltos del núcleo (data/textos_nucleo.json) y tablas de sucesos del núcleo (sucesos.nucleo_*)
+    TN=d.get('textos_nucleo',{})
+    for sec,v in TN.items():
+        if sec=='_':continue
+        if not isinstance(v,dict):E.append('textos_nucleo.%s: tiene que ser un objeto de claves legibles'%sec);continue
+        def _rec(x,ruta):
+            if isinstance(x,str):
+                if _re.search(r'\{(?!\w+\})|(?<!\{)\w*\}(?!\})',_re.sub(r'\{\w+\}','',x)):E.append('textos_nucleo.%s: llave suelta o hueco mal escrito en «%s»'%(ruta,x[:50]))
+            elif isinstance(x,list):
+                for i,y in enumerate(x):_rec(y,'%s[%d]'%(ruta,i))
+            elif isinstance(x,dict):
+                for k,y in x.items():_rec(y,ruta+'.'+k)
+            else:E.append('textos_nucleo.%s: solo texto, listas y objetos'%ruta)
+        for k,x in v.items():
+            if k[0].isdigit():E.append('textos_nucleo.%s.%s: la clave no puede empezar por cifra (el código la usa como TXN.%s.%s)'%(sec,k,sec,k))
+            _rec(x,sec+'.'+k)
+    CORE=os.path.join(R,'src','core')
+    if os.path.isdir(CORE):
+        for f in sorted(os.listdir(CORE)):
+            if not f.endswith('.js'):continue
+            for m in _re.finditer(r'TXN\.(\w+)\.(\w+)',open(os.path.join(CORE,f),encoding='utf-8').read()):
+                if m.group(1) not in TN or m.group(2) not in TN[m.group(1)]:E.append('src/core/%s: TXN.%s.%s no existe en data/textos_nucleo.json'%(f[:3],m.group(1),m.group(2)))
+    SU=d['sucesos']
+    for sec in ('nucleo_consecuencias','nucleo_golpes','nucleo_personal','nucleo_incidentes','nucleo_hitos','nucleo_arcos','nucleo_rasgos_ocultos','nucleo_aspiraciones','nucleo_objetivos'):
+        if not isinstance(SU.get(sec),dict):E.append('sucesos.%s: falta la sección'%sec)
+    for sec,lst in (('nucleo_aspiraciones',SU.get('nucleo_aspiraciones',{}).get('lista',[])),('nucleo_objetivos',SU.get('nucleo_objetivos',{}).get('lista',[]))):
+        ids=[x.get('id') for x in lst]
+        if not ids or len(set(ids))!=len(ids) or None in ids:E.append('sucesos.%s.lista: cada ficha con id distinto'%sec)
+    for k,l in SU.get('nucleo_arcos',{}).items():
+        ids=[x.get('id') for x in l] if isinstance(l,list) else []
+        if len(set(ids))!=len(ids):E.append('sucesos.nucleo_arcos.%s: ids repetidos'%k)
     return E
 
 # ---------- formato ----------

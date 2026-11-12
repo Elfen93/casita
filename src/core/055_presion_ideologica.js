@@ -23,13 +23,13 @@ function driftWeekly(){const c=ex(),cur=S.ideo||'apolitica';
   let best=null,bv=0;for(const k in c.drift){if(k===cur)continue;if(c.drift[k]>bv){bv=c.drift[k];best=k;}}
   if(best&&bv>hold&&!c.dlg&&!c.dq.some(d=>d.id==='ideo'))askDilemma('ideo',{to:best});
   // compromiso: sube con las victorias, baja con el agotamiento
-  if(S.ideo!=='apolitica'&&S.pol){if(comp()<3&&c.exp.win>=2&&(T('lider')||T('combativa'))&&Math.random()<.15){S.pol.comp=comp()+1;tell(`Ana ha dado un paso más: ahora es ${L(COMP[S.pol.comp]).toLowerCase()}. Las victorias enganchan.`,ID().e);}
-    else if(comp()>1&&c.exp.stress>=4&&!T('combativa')&&Math.random()<.2){S.pol.comp=comp()-1;tell(`Ana se ha retirado un poco: ya no llega a todo. Ahora es ${L(COMP[S.pol.comp]).toLowerCase()}.`,'🪫');}}
+  if(S.ideo!=='apolitica'&&S.pol){if(comp()<3&&c.exp.win>=2&&(T('lider')||T('combativa'))&&Math.random()<.15){S.pol.comp=comp()+1;tell(huecos(TXN.ideologia.paso_mas,{comp:L(COMP[S.pol.comp]).toLowerCase()}),ID().e);}
+    else if(comp()>1&&c.exp.stress>=4&&!T('combativa')&&Math.random()<.2){S.pol.comp=comp()-1;tell(huecos(TXN.ideologia.retirada,{comp:L(COMP[S.pol.comp]).toLowerCase()}),'🪫');}}
 }
 function topWhy(k){const w=ex().why[k]||{};const e=Object.entries(w).sort((a,b)=>b[1]-a[1])[0];return e?WHYTXT[e[0]]||e[0]:'la vida';}
 function changeIdeo(to){const from=S.ideo||'apolitica';const dir=from==='apolitica'?'A>':to==='apolitica'?'>A':isLeft(from)&&isRight(to)?'L>R':isRight(from)&&isLeft(to)?'R>L':isLeft(from)?'L>L':'R>R';
-  chapter('ideo_'+S.day,`${IDEOS[from].e} → ${IDEOS[to].e} Ya no es la misma`,`Ha sido ${topWhy(to)}. ${pickR(SHIFT_TXT[dir])} Antes se decía ${IDEOS[from].n.toLowerCase()}; ahora, ${IDEOS[to].n.toLowerCase()}.`);
+  chapter('ideo_'+S.day,huecos(TXN.ideologia.cambio_t,{de:IDEOS[from].e,a:IDEOS[to].e}),huecos(TXN.ideologia.cambio,{why:topWhy(to),r:pickR(SHIFT_TXT[dir]),de:IDEOS[from].n.toLowerCase(),a:IDEOS[to].n.toLowerCase()}));
   S.ideo=to;S.pol.xp=Math.round((S.pol.xp||0)*.3);S.pol.comp=to==='apolitica'?1:Math.max(1,comp()-1);const c=ex();c.drift[from]=(c.drift[from]||0)*.3;c.drift[to]=0;c.why[to]={};
-  for(const p of S.people||[])if(p.ideo){if(p.ideo===to)p.rel=Math.min(100,p.rel+6);else if(p.ideo===from&&from!=='apolitica'){p.rel=Math.max(0,p.rel-8);if(closeTo(p)>50)remember(`${p.n} no entiende el cambio de Ana.`);}}
+  for(const p of S.people||[])if(p.ideo){if(p.ideo===to)p.rel=Math.min(100,p.rel+6);else if(p.ideo===from&&from!=='apolitica'){p.rel=Math.max(0,p.rel-8);if(closeTo(p)>50)remember(huecos(TXN.ideologia.no_entiende,{p:p.n}));}}
   if(isRight(to)&&S.union&&S.union.member&&Math.random()<.5)leaveUnion();}
 

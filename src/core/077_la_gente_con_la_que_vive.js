@@ -6,4 +6,4 @@
       if(c){S.res=S.res||[];S.res.push({kind:'mate',pid:k,x:c[0]+.5,y:c[1]+.5,path:[],phase:0});}}
     if(away&&has)S.res=S.res.filter(r=>r.pid!==k);}
   return S.res||list;};}
-{const _pay=payRent;payRent=function(){const t=(S.home&&S.home.type)||'casita';if(t!=='padres'||S.owned)return _pay.apply(this,arguments);const r=weeklyRent();S.money-=r;bumpMoney();toast(`🛒 Pone ${fmt(r)} para la compra de la semana en casa de su madre`);};}
+{const _pay=payRent;payRent=function(){const t=(S.home&&S.home.type)||'casita';if(t!=='padres'||S.owned)return _pay.apply(this,arguments);const r=weeklyRent();S.money-=r;bumpMoney();toast(huecos(TXN.convivientes.compra_madre,{r:fmt(r)}));};}

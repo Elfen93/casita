@@ -46,16 +46,16 @@ const DLG={
     auto:d=>comp()>=3?1:2}};
 const DLG_CD={ascenso:40,prestamo:28,crisis:21,militancia:30,despedir:30,contra:20,ideo:14};
 function askDilemma(id,data){const c=ex();if(c.dq.length>=3||c.dq.some(x=>x.id===id)||(c.dlg&&c.dlg.id===id))return;const cd=DLG_CD[id];if(cd&&c.cool&&c.cool[id]!=null&&S.day-c.cool[id]<cd)return;c.dq.push({id,data:data||{},d:S.day});}
-function resolveDlg(i){const c=ex(),d=c.dlg;if(!d)return;c.cool=c.cool||{};c.cool[d.id]=S.day;const D=DLG[d.id];const opts=D.o(d.data);const o=opts[i];c.dlg=null;hideDlg();if(o&&(!o.ok||o.ok())){try{o.f();}catch(e){console.error(e);}remember(`Decidió: ${o.t}.`);}
+function resolveDlg(i){const c=ex(),d=c.dlg;if(!d)return;c.cool=c.cool||{};c.cool[d.id]=S.day;const D=DLG[d.id];const opts=D.o(d.data);const o=opts[i];c.dlg=null;hideDlg();if(o&&(!o.ok||o.ok())){try{o.f();}catch(e){console.error(e);}remember(huecos(TXN.dilemas_motor.decidio,{t:o.t}));}
   try{save();}catch(e){}}
 function dlgTick(){const c=ex();if(c.dlg||!c.dq.length)return;const d=c.dq.shift();const D=DLG[d.id];if(!D)return;
-  if(c.dmode==='ana'){const opts=D.o(d.data);let i=D.auto(d.data);if(opts[i]&&opts[i].ok&&!opts[i].ok())i=opts.findIndex(o=>!o.ok||o.ok());const o=opts[i];if(o){try{o.f();}catch(e){console.error(e);}tell(`${D.t(d.data)} — Ana ha decidido: ${o.t.charAt(0).toLowerCase()+o.t.slice(1)}.`,'🧭');c.cool=c.cool||{};c.cool[d.id]=S.day;}return;}
+  if(c.dmode==='ana'){const opts=D.o(d.data);let i=D.auto(d.data);if(opts[i]&&opts[i].ok&&!opts[i].ok())i=opts.findIndex(o=>!o.ok||o.ok());const o=opts[i];if(o){try{o.f();}catch(e){console.error(e);}tell(huecos(TXN.dilemas_motor.ana_decide,{d:D.t(d.data),t:o.t.charAt(0).toLowerCase()+o.t.slice(1)}),'🧭');c.cool=c.cool||{};c.cool[d.id]=S.day;}return;}
   c.dlg=d;showDlg();}
 const dlgBlocking=()=>!!(S&&S.cx&&S.cx.dlg&&S.cx.dmode!=='ana');
 function showDlg(){const c=ex(),d=c.dlg;if(!d)return;const D=DLG[d.id];let el=document.getElementById('dlg');if(!el){el=document.createElement('div');el.id='dlg';document.body.appendChild(el);locEl(el);}
   const opts=D.o(d.data);
   el.innerHTML=`<div class="dlgc"><div class="dlgt">${D.t(d.data)}</div><div class="dlgx">${D.x(d.data)}</div>${opts.map((o,i)=>{const dis=o.ok&&!o.ok();return `<button class="dlgb"${dis?' disabled':''} data-i="${i}"><b>${o.t}</b>${o.s?`<small>${o.s}</small>`:''}</button>`;}).join('')}
-  <div class="dlgf"><button class="mini" data-auto="1">🧭 Que decida Ana</button><label><input type="checkbox" id="dlgalways"> Que decida siempre</label></div></div>`;
+  <div class="dlgf"><button class="mini" data-auto="1">${TXN.dilemas_motor.ui_que_decida_ana}</button><label><input type="checkbox" id="dlgalways"> ${TXN.dilemas_motor.ui_siempre}</label></div></div>`;
   el.style.display='flex';
   el.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>resolveDlg(+b.dataset.i));
   el.querySelector('[data-auto]').onclick=()=>{if(el.querySelector('#dlgalways').checked)c.dmode='ana';let i=D.auto(d.data);if(opts[i]&&opts[i].ok&&!opts[i].ok())i=opts.findIndex(o=>!o.ok||o.ok());toast(`🧭 ${opts[i].t}`);resolveDlg(i);};

@@ -1,11 +1,11 @@
 // ---------- consecuencias nuevas ----------
 Object.assign(CQ,{
-  respuesta:()=>{if(S.jobless)return;const o=office();if(o.org>=25){tell(`Han ido juntas al despacho: cinco personas y una lista. ${bossS()} ha cedido en lo principal. No ha sido una huelga: ha sido un aviso.`,'✊');ex().exp.win++;o.griev=Math.max(0,(o.griev||0)-10);S.noOvertime=S.day+45;}else{tell(`Al final solo ${compiN()} y Ana fueron al despacho. ${bossS()} les escuchó «con mucho interés» y no cambió nada.`,'🥀');}},
-  marcada:()=>{if(S.jobless)return;S.needs.energia=Math.max(0,S.needs.energia-15);tell(`Semana de turnos partidos y tareas que nadie quiere. ${compiN()} le ha dicho en voz baja: «te la tienen jurada».`,'👁️');},
-  adelanto:d=>{S.money-=d.m;bumpMoney&&bumpMoney();if(S.owe>S.day&&Math.random()<.5)tell(`Nómina con ${fmt(d.m)} menos: el adelanto. ${bossS()} le ha pedido «un favor» este fin de semana. No ha podido decir que no.`,'🪝');},
-  masgente:()=>{if(S.jobless)return;const o=office();if(o.org>=50){tell(`Ya son más de la mitad. En el vestuario alguien ha escrito en la pizarra: «cuando queráis».`,'✊');if(!S.strike&&Math.random()<.6)askDilemma('asamblea',{});}else tell('La cosa va lenta. Dos se han echado atrás: «yo tengo hipoteca».','🐢');},
-  lodger:d=>{const p=P_(d.p);if(!p||S.lodger!==p.k)return;const w=huDonde(p);if(Math.random()<.6){S.lodger=null;tell(`${p.n} ha encontrado habitación. Ha dejado ${w[1]} y una nota: «gracias por no hacerme sentir que molestaba».`,'🫶');}else{tell(`${p.n} sigue durmiendo ${w[0]}. No encuentra nada por menos de ${fmt(Math.round(weeklyRent()*.8))} a la semana. Nadie lo menciona.`,'🛋️');schedule(21,'lodger',d);}},
-  proveedor:()=>{if(Math.random()<.5){tell('Ha encontrado otro proveedor, más barato y más lejos. Dos horas de furgoneta cada martes.','🚚');S.needs.energia=Math.max(0,S.needs.energia-10);}else{tell('No hay otro proveedor: son todos el mismo con distinto nombre. Ha pagado la subida.','🏪');S.payMul=(S.payMul||1)*.92;}}});
+  respuesta:()=>{if(S.jobless)return;const o=office();if(o.org>=25){tell(huecos(CQT.respuesta.si,{b:String(bossS())}),'✊');ex().exp.win++;o.griev=Math.max(0,(o.griev||0)-10);S.noOvertime=S.day+45;}else{tell(huecos(CQT.respuesta.no,{c:compiN(),b:String(bossS())}),'🥀');}},
+  marcada:()=>{if(S.jobless)return;S.needs.energia=Math.max(0,S.needs.energia-15);tell(huecos(CQT.marcada.tell,{c:compiN()}),'👁️');},
+  adelanto:d=>{S.money-=d.m;bumpMoney&&bumpMoney();if(S.owe>S.day&&Math.random()<.5)tell(huecos(CQT.adelanto.tell,{m:fmt(d.m),b:String(bossS())}),'🪝');},
+  masgente:()=>{if(S.jobless)return;const o=office();if(o.org>=50){tell(CQT.masgente.si,'✊');if(!S.strike&&Math.random()<.6)askDilemma('asamblea',{});}else tell(CQT.masgente.no,'🐢');},
+  lodger:d=>{const p=P_(d.p);if(!p||S.lodger!==p.k)return;const w=huDonde(p);if(Math.random()<.6){S.lodger=null;tell(huecos(CQT.lodger.si,{p:p.n,s:w[1]}),'🫶');}else{tell(huecos(CQT.lodger.no,{p:p.n,d:w[0],m:fmt(Math.round(weeklyRent()*.8))}),'🛋️');schedule(21,'lodger',d);}},
+  proveedor:()=>{if(Math.random()<.5){tell(CQT.proveedor.si,'🚚');S.needs.energia=Math.max(0,S.needs.energia-10);}else{tell(CQT.proveedor.no,'🏪');S.payMul=(S.payMul||1)*.92;}}});
 
 // =================== ENTORNO: la calle donde vive Ana (decorado vivo, no interactuable) ===================
 const ENT_ON=()=>S&&S.entorno!==false;
@@ -20,7 +20,7 @@ const ENT_HOUSES=[
   {id:'bloque',r:[13,-10,20,-3],h:118,c:'#d9cfc0',flat:1,balc:1},
   {id:'esquina',r:[-9,-9,-3,-3],park:1},
   {id:'bar',r:[-11,N+6.5,-4,N+11],h:50,c:'#d9a066',flat:1,sign:'Bar Manolo',shop:1,awning:'#c0392b'},
-  {id:'local',r:[-2.5,N+6.5,5,N+11],h:48,c:'#c7d2d8',flat:1,sign:'Ultramarinos Pepi',shop:1,awning:'#2a9d8f',closable:1},
+  {id:'local',r:[-2.5,N+6.5,5,N+11],h:48,c:'#c7d2d8',flat:1,sign:TXN.consecuencias_nuevas.rotulo_local,shop:1,awning:'#2a9d8f',closable:1},
   {id:'pana',r:[6.5,N+6.5,13,N+11],h:48,c:'#f1e3d3',flat:1,sign:'Panadería',shop:1,awning:'#e9c46a'},
   {id:'casa3',r:[14.5,N+6.5,N+1,N+12],h:54,c:'#e1d4c2',roof:'#7a5a4a',door:'#5a3e2b'},
   {id:'casa4',r:[N+6.5,-2,N+12,6],h:54,c:'#dcc8d8',roof:'#6b4a6b',door:'#3b3f46',garden:[N+6.5,6,N+12,9],fence:1},

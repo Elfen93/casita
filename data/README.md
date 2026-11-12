@@ -180,13 +180,44 @@ Tratar con los vecinos (`mods/trato.js`). Secciones:
 
 Efectos (`fx`): rel, social, diversion, hambre, energia, coste_h, fiar_h, presta_h, presto_h, pista, despensa, agua, hijos_hap, mov, sol, te, chisme. Condiciones (`req`): huerto, hijos_cole, con_trabajo, en_paro, trabajo_dentro, ella_hijos, bloque, politica, justa, solvente. Huecos: `{v}`, `{x}`, `{y}`, `{k}`, `{c}`, `{n}`, `{o}`, `{quien}`, `{sitio}`, `{frase}`, `{que}`, `{st}`, `{l}`, `{why}`. `datos.py` lo comprueba todo.
 
+<!-- p0a:inicio -->
+### sucesos.json (secciones `nucleo_*`, paso 0 segunda pasada, parte `p0a`)
+Las tablas de sucesos del núcleo (`src/core`). Aquí van los textos y las cifras; las condiciones y los efectos siguen en el código y se unen por `id` (`conLogica`, o `porId` para listas de fichas con `id`). Los textos llevan huecos `{k}` que rellena `huecos()`; `{n}` es el nombre del personaje y `{o}` su terminación si el código no los da.
+| Sección | En el código | Qué es |
+|---|---|---|
+| `nucleo_consecuencias` | `CQ` (059, 069) | Los textos de las consecuencias que llegan más tarde, por id. |
+| `nucleo_golpes` | `GOLPES` (066) | Golpes de dinero: cifras (`k`, `a`, `v`) y textos. |
+| `nucleo_personal` | `PERSONAL` (067) | Golpes personales (`madre`, `vecina`, `amiga`…). |
+| `nucleo_incidentes` | `INCID` (065) | Incidentes por oficio. |
+| `nucleo_hitos` | `BEATS` (064) | Hitos de la temporada. |
+| `nucleo_arcos` | `ARCS` (043) | Arco de cada ideología: lista de fichas con `id`. |
+| `nucleo_rasgos_ocultos` | `HID` (053) | Rasgos ocultos de la gente: `d`, `txt`, `izq` y los campos fijos; `rev`, `onRev`… siguen en el código. |
+| `nucleo_aspiraciones` | `ASP`, `ASPS`, `ASP_CAT` (073) | `lista` (fichas con `id`), `sin`, `categorias`. |
+| `nucleo_objetivos` | `GOALS` (091) | `lista` de objetivos de la casa (`id`, `t`, `r`) y `toast`. La condición `ok` es código. |
+
+### textos_nucleo.json (paso 0 segunda pasada, parte `p0a`)
+Textos sueltos del núcleo: lo que dicen `tell`, `toast`, `chapter`, `remember` y las etiquetas de interfaz. Una sección por archivo de `src/core`, con nombre legible; el código los lee de `const TXN=DATA.textos_nucleo` (`TXN.sección.clave`). Un texto es una cadena (con huecos `{k}` si lleva nombres o cifras), una lista (el código elige con `pickR`) o un objeto indexado por un id que el código ya tiene. Las claves no empiezan por cifra. Lo que no es texto (ids de etapa, claves de estado, comparaciones) se queda en el código.
+| Sección | Archivo del núcleo |
+|---|---|
+| `ordenes` · `vivienda` · `suministros` · `trabajo_y_sucesos` | 026 · 027 · 028 · 029 |
+| `historia` · `diario` · `pensamientos` · `jardin` · `profesiones` | 037 · 038 · 039 · 040 · 041 |
+| `politica` · `sindicato` · `mundo` · `escenas` | 044 · 045 · 046 · 047 (solo textos, nada de dibujo) |
+| `acciones` · `acciones_semana` · `visitas` · `gente` | 048 · 049 · 050 · 051 |
+| `rasgos_ana` · `ideologia` · `desgaste` | 054 · 055 · 056 |
+| `dilemas_motor` · `autodescubrimiento` · `interfaz_ana` · `consecuencias_nuevas` | 058 · 060 · 062 · 069 |
+| `efectos` · `plantillas` · `obras` · `alquiler_compra` · `convivientes` | 073 · 074 · 075 · 076 · 077 |
+| `tipos_de_casa` · `mudarse` · `interfaz_casa` | 078 · 079 · 080 |
+
+`scripts/datos.py` comprueba que cada `TXN.sección.clave` del código exista, que no haya llaves sueltas ni claves que empiecen por cifra y que estén las secciones `nucleo_*`.
+<!-- p0a:fin -->
+
 ## Lo que todavía está en el código
 
 Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con condiciones y efectos:
 
-- **Sucesos con decisiones**: consecuencias (`CQ`), golpes e incidentes (`GOLPES`, `PERSONAL`, `INCID`), hitos (`BEATS`), arcos de ideología (`ARCS`), rasgos ocultos de la gente (`HID`), aspiraciones y objetivos (`ASP`, `GOALS`), dilemas de la comunidad (`UT_DIL`).
-- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de cada módulo, y las plantillas de mensajes y noticias del móvil.
-- **Escenas** (`SCENES`): los interiores se dibujan con código; sus carteles y su gente van dentro.
+- **Sucesos con decisiones**: los dilemas de la comunidad (`UT_DIL`).
+- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los archivos de `src/core` desde el 081 (obra, ropa, muebles, looks, planes, creador, calendario…) y de los mods, y las plantillas de mensajes y noticias del móvil.
+- **Escenas** (`SCENES`): los interiores se dibujan con código; los carteles y rótulos de cadena suelta ya están en `textos_nucleo.escenas`, el dibujo y su gente siguen dentro.
 - **Aspecto**: peinados, caras, ropa y retratos (`LOOKS`, `LOOK_SRC`), y el dibujo de cada mueble (`MDRAW`).
 - Tablas menores por objeto (`BACKD`, `ACTS`, `ELECTRIC`, `SMALL_ITEMS`, `MUEB_NEW`) y los eslóganes de las ideologías en las pancartas.
 
