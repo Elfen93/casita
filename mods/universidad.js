@@ -23,7 +23,7 @@ function uniWhy(k,cen){return uniCon(cen,k,()=>_uniEC(k),true);}
 {const _es=eduStart;eduStart=function(k){const P=EDU_PROGS[k];if(!P)return _es.apply(this,arguments);const uni=uniIs(k);const cen=uni?(UNI.pick==='privada'?'privada':'publica'):null;const m0=S.money;let ok;
   try{ok=uni?uniCon(cen,k,()=>_es(k),true):_es(k);}finally{UNI.pick=null;}
   if(ok){const gasto=m0-S.money;if(gasto>0){S.money=m0;bkAdd('Matrícula',-gasto);}   // el engine lo apuntó como «Otros»: se deshace y se paga con bkAdd
-    if(uni&&ED().cur){ED().cur.centro=cen;const n=CH().name;const g=gasto>0?fmt(gasto):'nada';
+    if(uni&&ED().cur){ED().cur.centro=cen;const n=CH().name;const g=gasto>0?fmt(gasto):TXHZ.universidad.nada;
       tell(cen==='privada'?huecos(TXHZ.universidad.ha_pagado_campus_nebula_mismo,{nom:n,g,c:fmt(Math.round(P.cost*PM()))})
         :huecos(TXHZ.universidad.ha_matriculado_universidad_publica_del,{nom:n,g}),'🎓');}}
   return ok;};}
@@ -46,11 +46,11 @@ const uniDias=ds=>ds.length===5?'L–V':ds.length===4?'L–J':ds.map(d=>WDS[d]).
 function uniRows(html){const parts=html.split('<div class="outrow">');
   return parts.map((p,i)=>{if(!i)return p;const m=p.match(/data-edu="([^"]+)"/);if(!m||!uniIs(m[1]))return '<div class="outrow">'+p;const k=m[1],P=EDU_PROGS[k];
     const line=(cen,e,nom)=>{const why=uniWhy(k,cen);const s=uniSched(k,cen),c=uniCoste(k,cen);const g=UNI_D.centros[cen].grupo;
-      return `<small>${e} <b>${nom}</b> · ${fmt(c)} · ${uniDias(uniDays(k,cen))} ${s[0]}–${s[1]} h · grupos de ${g}${why?' · <i>'+why+'</i>':''}</small>`;};
+      return `<small>${e} <b>${nom}</b> · ${fmt(c)} · ${uniDias(uniDays(k,cen))} ${s[0]}–${s[1]} h · ${huecos(TXHZ.universidad.grupos_de,{g})}${why?' · <i>'+why+'</i>':''}</small>`;};
     const bt=(cen,t)=>`<button class="mini" data-uni="${k}|${cen}" ${uniWhy(k,cen)?'disabled style="opacity:.45"':''}>${t}</button>`;
-    return `<div class="outrow" data-unirow="${k}"><span class="oe">${EDU_LV[P.lv].e}</span><span class="ot"><b>${P.n}</b><small>${eduHours(k)} h · ${P.d}</small>${line('publica','🏛️','Pública')}${line('privada','🏢','Nébula')}</span><span style="display:flex;flex-direction:column;gap:5px">${bt('publica','Pública')}${bt('privada','Nébula')}</span></div>`;}).join('');}
+    return `<div class="outrow" data-unirow="${k}"><span class="oe">${EDU_LV[P.lv].e}</span><span class="ot"><b>${P.n}</b><small>${eduHours(k)} h · ${P.d}</small>${line('publica','🏛️',TXHZ.universidad.nombre_publica)}${line('privada','🏢',TXHZ.universidad.nombre_nebula)}</span><span style="display:flex;flex-direction:column;gap:5px">${bt('publica',TXHZ.universidad.nombre_publica)}${bt('privada',TXHZ.universidad.nombre_nebula)}</span></div>`;}).join('');}
 {const _eb=eduBlock;eduBlock=function(){const C=uniCur();let h=C&&uniCen(C)==='privada'?uniCon('privada',C.k,()=>_eb.apply(this,arguments)):_eb.apply(this,arguments);
-  if(C)h=h.replace('<button class="btn grey" id="edudrop">',`<div class="sub" style="font-size:11.5px">${uniCen(C)==='privada'?'🏢 Campus Nébula · tardes, grupos de veinte.':'🏛️ Universidad Pública del Río · mañanas, aulas de ochenta.'}</div><button class="btn grey" id="edudrop">`);
+  if(C)h=h.replace('<button class="btn grey" id="edudrop">',`<div class="sub" style="font-size:11.5px">${uniCen(C)==='privada'?TXHZ.universidad.matricula_privada:TXHZ.universidad.matricula_publica}</div><button class="btn grey" id="edudrop">`);
   else h=uniRows(h);return h;};}
 {const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);card.querySelectorAll('[data-uni]').forEach(b=>b.onclick=()=>{const [k,cen]=b.dataset.uni.split('|');UNI.pick=cen;let ok=false;try{ok=eduStart(k);}finally{UNI.pick=null;}if(ok)openMenu('trabajo');});};}
 

@@ -20,7 +20,7 @@ flirt=function(p){
       if(p.stage==='rollo')chapter('rollo1',TXHZ.relaciones.sin_etiquetas,huecos(TXHZ.relaciones.han_decidido_verse_sin_compromisos,{p:p.n}));
       else chapter('cita1',TXHZ.relaciones.primera_cita,huecos(TXHZ.relaciones.despues_semanas_tonteo_ha_atrevido,{p:p.n,roleTxt:roleTxt(p)}));
       toast(huecos(TXHZ.relaciones.ha_dicho_si,{p:p.n}),true);sfx('level');popBubble('💘');return true;}
-    tell(huecos(TXHZ.relaciones.txt,{pickR:pickR(lines),x:p.chispa===1?TXHZ.relaciones.algo_hay:p.chispa===2?TXHZ.relaciones.hay_chispa_pero_aun_momento:(p.dates||0)<1?TXHZ.relaciones.tocaria_quedar_solas_antes_dar:TXHZ.relaciones.falta_poco_mas}),'✨');toast(`✨ Hay chispa con ${p.n}${p.chispa>=2&&(p.dates||0)<1?' · queda con ${p.n} a solas':''}`.replace('${p.n}',p.n));popBubble('✨');return true;}
+    tell(huecos(TXHZ.relaciones.txt,{pickR:pickR(lines),x:p.chispa===1?TXHZ.relaciones.algo_hay:p.chispa===2?TXHZ.relaciones.hay_chispa_pero_aun_momento:(p.dates||0)<1?TXHZ.relaciones.tocaria_quedar_solas_antes_dar:TXHZ.relaciones.falta_poco_mas}),'✨');toast(huecos(TXHZ.relaciones.chispa_toast,{p:p.n,x:p.chispa>=2&&(p.dates||0)<1?huecos(TXHZ.relaciones.chispa_toast_a_solas,{p:p.n}):''}));popBubble('✨');return true;}
   p.fails=(p.fails||0)+1;if(p.fails>1)p.rel=Math.max(0,p.rel-4);S.needs.diversion=Math.max(0,S.needs.diversion-12);
   if(p.fails>=4&&c<60){p.noLove=S.day+30;p.refused=(p.refused||0)+1;tell(huecos(TXHZ.relaciones.ha_sido_clar_te_quiero,{p:p.n,pO:pO(p)}),'💔');toast(huecos(TXHZ.relaciones.quiere_nada_mas_al_menos,{p:p.n}));return false;}
   tell(huecos(TXHZ.relaciones.intento,{p:p.n,resultado:huecos(pickR(TXHZ.relaciones.intento_resultado),{})}),'🙈');toast(huecos(TXHZ.relaciones.esta_labor,{p:p.n}));return false;};
@@ -46,7 +46,7 @@ const GEST=conLogica(DATA.interacciones.gestos,{
   cama:{ok:p=>p.k.startsWith('p')&&canLove(p)&&(['rollo','pareja','convive','casada'].includes(p.stage)||(p.stage==='cita'&&(p.love||0)>=55)),run:p=>intimo(p)},
   hotel:{cost:()=>Math.round(9*Math.max(5,90*Dm().pay/8)),ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2),run:p=>escapada(p,'hotel')},
   sucasa:{ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2)&&ownPlace(p),run:p=>escapada(p,'sucasa')},
-  discutir:{ok:()=>true,run:p=>{p.rel=Math.max(0,p.rel-8);if(p.love!=null)p.love=Math.max(0,p.love-5);p.wear=Math.min(100,(p.wear||0)+6);p.wearWhy='broncas';bubbleFor(p,'😠');popBubble('😠');S.needs.social=Math.max(0,S.needs.social-5);return huecos(TXHZ.relaciones.han_discutido,{p:p.n,x:pickR([TXHZ.relaciones.platos,'política','dinero',TXHZ.relaciones.quien_contesta_mensajes,TXHZ.relaciones.tonteria_era_tonteria])});}},
+  discutir:{ok:()=>true,run:p=>{p.rel=Math.max(0,p.rel-8);if(p.love!=null)p.love=Math.max(0,p.love-5);p.wear=Math.min(100,(p.wear||0)+6);p.wearWhy='broncas';bubbleFor(p,'😠');popBubble('😠');S.needs.social=Math.max(0,S.needs.social-5);return huecos(TXHZ.relaciones.han_discutido,{p:p.n,x:pickR([TXHZ.relaciones.platos,TXHZ.relaciones.discute_politica,TXHZ.relaciones.discute_dinero,TXHZ.relaciones.quien_contesta_mensajes,TXHZ.relaciones.tonteria_era_tonteria])});}},
   echar:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return r&&r.kind==='guest';},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.until=S.day*1440+S.t;r.stay=false;}p.rel=Math.max(0,p.rel-3);return huecos(TXHZ.relaciones.marcha,{p:p.n});}},
 });
 function bubbleFor(p,txt){const r=(S.res||[]).find(x=>x.pid===p.k);if(!r)return;r.bub={t:txt,until:performance.now()+2200};}
@@ -106,13 +106,13 @@ function riskCheck(p,how,base){const pt=cheatingOn(p);if(!pt)return;let ch=base;
 {const _up6=update;update=function(gm){const r=_up6.apply(this,arguments);try{if(S.riskAfter&&!S.intimo){const q=(S.people||[]).find(x=>x.k===S.riskAfter.p);const R=S.riskAfter;S.riskAfter=null;if(q)riskCheck(q,R.how,R.ch);}}catch(e){}return r;};}
 // escapadas discretas: hotel (cuesta) o su casa (gratis, si tiene)
 function escapada(p,where){const cost=where==='hotel'?GEST.hotel.cost():0;if(S.money<cost){toast(huecos(TXHZ.relaciones.hay_dinero_para_hotel,{c:fmt(cost)}));return null;}
-  const why=outAvail('amigos');if(why&&why!=='solo en días libres'){toast(huecos(TXHZ.relaciones.no_puede_salir,{why}));return null;}
+  const why=outAvail('amigos');if(why&&why!==TXN.politica.solo_libres){toast(huecos(TXHZ.relaciones.no_puede_salir,{why}));return null;}
   const pt=cheatingOn(p);if(pt&&present(pt)&&where!=='hotel'){/* se puede ir igualmente: «he quedado» */}
   S.money-=cost;S.outWith=p.k;S.dateOut=true;S.escapada={p:p.k,where,cost};const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.until=S.day*1440+S.t;}
   doOut('amigos');return null;}
 {const _fb=friendBack;friendBack=function(){const E=S.escapada;S.escapada=null;const r=_fb.apply(this,arguments);if(!E)return r;try{const p=(S.people||[]).find(x=>x.k===E.p);if(!p)return r;
   p.love=Math.min(100,(p.love||0)+12);p.rel=Math.min(100,p.rel+6);p.lastIntimo=S.day;S.needs.diversion=100;S.needs.social=100;S.needs.energia=Math.max(0,S.needs.energia-10);tally('intimo',p.n);
-  tell(E.where==='hotel'?huecos(TXHZ.relaciones.han_pasado_unas_horas_hotel,{p:p.n,x:E.cost?fmt(E.cost)+' bien gastados, dirían ellos.':''}):huecos(TXHZ.relaciones.ha_estado_casa_volvio_tarde,{p:p.n}),'💕');
+  tell(E.where==='hotel'?huecos(TXHZ.relaciones.han_pasado_unas_horas_hotel,{p:p.n,x:E.cost?huecos(TXHZ.relaciones.bien_gastados,{c:fmt(E.cost)}):''}):huecos(TXHZ.relaciones.ha_estado_casa_volvio_tarde,{p:p.n}),'💕');
   riskCheck(p,E.where==='hotel'?TXHZ.relaciones.alguien_vio_salir_hotel:huecos(TXHZ.relaciones.conocido_vio_entrar_casa,{p:p.n}),E.where==='hotel'?.06:.1);}catch(e){console.error(e);}return r;};}
 // la pareja puede enterarse por redes
 {const _pf=phFeedDaily;phFeedDaily=function(){const r=_pf.apply(this,arguments);try{const pt=partner();if(!pt)return r;for(const p of S.people||[]){if(p.affair&&p!==pt&&Math.random()<.04){const P=PH();P.feed.unshift({pk:p.k,txt:TXHZ.relaciones.alguien_especial_digo_mas,d:S.day,likes:5,liked:false});if(Math.random()<.5)caught(pt,p,huecos(TXHZ.relaciones.publicacion_fotogram,{p:p.n}));break;}}}catch(e){}return r;};}

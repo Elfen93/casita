@@ -3,7 +3,7 @@ const {banco:TX_banco}=DATA.textos_mods_ag;
 const BKS=()=>{if(!S.bk)S.bk={log:[],hucha:0,auto:0,fees:0,ctx:null};S.bk.log=S.bk.log||[];return S.bk;};
 let bkCtx=null;function bkAdd(label,v){const p=bkCtx;bkCtx=label;S.money+=v;bkCtx=p;}const withCtx=(fn,label)=>function(){const prev=bkCtx;bkCtx=typeof label==='function'?label.apply(this,arguments):label;try{return fn.apply(this,arguments);}finally{bkCtx=prev;}};
 const BK_CAT={'Nómina':'ingresos','Ingreso':'ingresos','Premio':'ingresos','Ventas':'ingresos','Préstamo':'ingresos','Ayuda':'ingresos','Alquiler':'casa','Hipoteca':'casa','Luz, agua y gas':'casa','Arreglos':'casa','Muebles y obras':'casa','Compra':'comida','Comida':'comida','Menú':'comida','Salida':'ocio','Libros':'ocio','Gimnasio':'cuerpo','Farmacia':'cuerpo','Médico':'cuerpo','Terapia':'cuerpo','Críos':'familia','Cuota':'deudas','Comisión':'deudas','Multa':'deudas','Hacienda':'deudas','Hucha':'ahorro','Otros':'otros'};
-let BANK_N=TX_banco.bancos.priv;const BANK_IBAN=()=>{const h=Math.floor(Math.abs(hash((CH().name||'x').length*7+13))*9000)%9000+1000;return 'ES21 0182 4411 '+String(h).padStart(4,'0')+' **** 2714';};
+let BANK_N=TX_banco.bancos.priv;const BANK_IBAN=()=>{const h=Math.floor(Math.abs(hash((CH().name||'x').length*7+13))*9000)%9000+1000;return huecos(TX_banco.iban,{h:String(h).padStart(4,'0')});};
 const BK_CATN=TX_banco.categorias;
 // el saldo como propiedad con memoria: cada cambio queda apuntado
 function bkInstall(){if(!S||typeof S!=='object')return;const d=Object.getOwnPropertyDescriptor(S,'money');if(d&&d.get)return;let m=S.money||0;

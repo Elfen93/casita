@@ -352,7 +352,38 @@
   "libros_casa_leidos_escritura_10": "📚 {x} libros en casa{x2} · leídos {C_libDone_length} · escritura {x3}/10 · pintura {x4}/10 · nombre {x5}",
   "publicado_guardado": "Publicado / guardado ({C_pub_length})",
   "cuadros_sin_vender": "Cuadros sin vender ({C_obras_length})",
-  "ganado_oficio": "💶 Ganado con el oficio: {c}{x}"
+  "ganado_oficio": "💶 Ganado con el oficio: {c}{x}",
+  "manual_prefijo": "Manual · ",
+  "titulo_libreria": "📚 Librería del barrio",
+  "titulo_mercadillo": "📦 Mercadillo de domingo",
+  "titulo_biblioteca": "🏛️ Biblioteca pública",
+  "sub_gratis": "Un libro por carné, tres semanas. Gratis.",
+  "sub_mercadillo": "Lo que hay. Precios de risa, lomos rotos.",
+  "sub_tiene": "Tiene {c}. {x}",
+  "manuales_al_fondo": "Los manuales de estudio están al fondo.",
+  "etiqueta_escribir": "escribir",
+  "etiqueta_pintar": "pintar",
+  "leido_pct": "{pr}% leído",
+  "sin_empezar": "sin empezar",
+  "prestamo": " · préstamo",
+  "revisar_quitar_adjetivos": "Revisar: quitar adjetivos. {n} ha quitado cuarenta.",
+  "hacienda_retencion": "Hacienda: retención del 19 % sobre lo que ha ganado escribiendo o pintando: {c}. Para eso {n} tuvo que darse de alta como autónom{o}, con una cuota que pagaría aunque no vendiera nada.",
+  "comision_20": "comisión del 20 %; miles de cuadros iguales",
+  "mercadillo_vendido": "Mercadillo: {n} ha vendido {sold} cuadro{s} por {c} en total. Seis horas de pie. Una señora quería «el mismo pero en azul».",
+  "mercadillo_cero": "Mercadillo: seis horas, cero ventas. Mucha gente ha dicho «qué bonito» y ha seguido andando. El puesto costaba {c}.",
+  "galeria_figurativo": "Galería: «es muy figurativo, muy… de barrio». Lo ha dicho como un defecto.",
+  "inauguracion_cero": "Inauguración: vino, veinte personas, ningún comprador. La galerista: «es que el mercado está parado». Los cuadros vuelven a casa.",
+  "nada_todavia": "Nada todavía.",
+  "en_marcha": "En marcha:",
+  "proyecto_marcha": "{e} «{t}» · {h}/{need} h{fin}",
+  "terminado_sin_enviar": " · terminad{o}, sin enviar",
+  "esperando_respuesta": "Esperando respuesta:",
+  "envio": "«{t}» ({how}, {d} días)",
+  "how_cajon": "cajón",
+  "how_editorial": "editorial, {v} vend.",
+  "how_autoed": "autoed. {v}/{s}",
+  "how_ebook": "ebook, {v}",
+  "rechazos": " · {r} rechazos"
  },
  "trato": {
   "esta_interesad_esa_manera": "{p} no está interesad{pO} en {n} de esa manera",
@@ -367,7 +398,10 @@
   "cita": "🌹 Cita",
   "quede": "🌙 Que se quede",
   "pedir_salir": "❤️ Pedir salir",
-  "unas_vecinas": "unas vecinas"
+  "unas_vecinas": "unas vecinas",
+  "vecin": "vecin{po}",
+  "edad_anos": "{edad} años",
+  "fue_asamblea_con": "fue a la asamblea con {v}"
  },
  "universidad": {
   "veinte_aula_profe_sabe_como_lista": [
@@ -420,7 +454,13 @@
   "desde_189_mes": "desde 189 €/mes",
   "nebula_credito": "Nébula Crédito",
   "tazon_co": "TAZÓN & CO.",
-  "flat_white_3_90": "flat white 3,90 €"
+  "flat_white_3_90": "flat white 3,90 €",
+  "nada": "nada",
+  "grupos_de": "grupos de {g}",
+  "nombre_publica": "Pública",
+  "nombre_nebula": "Nébula",
+  "matricula_privada": "🏢 Campus Nébula · tardes, grupos de veinte.",
+  "matricula_publica": "🏛️ Universidad Pública del Río · mañanas, aulas de ochenta."
  },
  "servicios": {
   "oficina_empleo_dos_horas_cola_lista": [
@@ -451,7 +491,8 @@
   "salvo_averia": "(salvo avería)"
  },
  "hogares": {
-  "casa_alguien": "Casa de alguien"
+  "casa_alguien": "Casa de alguien",
+  "casa_de": "Casa de {p}"
  },
  "mente": {
   "ha_vuelto_tumbar_tiene_sueno_lista": [
@@ -570,7 +611,8 @@
   "debe": "Debe {c} a {camello}. ",
   "intentar_dejarlo": "🌱 Intentar dejarlo",
   "lleva_intentando": "🌱 Lleva {d} días intentando dejarlo",
-  "dias_limpio": "🌱 {d} días limpi{o}"
+  "dias_limpio": "🌱 {d} días limpi{o}",
+  "camello_ya_no_escribe": "{camello} ya no le escribe."
  },
  "relaciones": {
   "ya_ves_lista": [
@@ -678,7 +720,12 @@
   "pillado_titulo": "Pillad{o}",
   "no_puede_salir": "Ahora no puede salir: {why}",
   "publicacion_fotogram": "una publicación de {p} en Fotogram",
-  "interactuar": "🤝 Interactuar"
+  "interactuar": "🤝 Interactuar",
+  "chispa_toast": "✨ Hay chispa con {p}{x}",
+  "chispa_toast_a_solas": " · queda con {p} a solas",
+  "discute_politica": "política",
+  "discute_dinero": "dinero",
+  "bien_gastados": "{c} bien gastados, dirían ellos."
  },
  "salud": {
   "barras_del_parque_hay_senor_lista": [
@@ -763,7 +810,24 @@
   "altura": "Altura ",
   "cm": " cm",
   "peso2": "Peso ",
-  "kg": " kg"
+  "kg": " kg",
+  "analitica_anemia_remite": "Analítica: la anemia de {n} ha remitido. Comer. Era eso.",
+  "diagnostico": "Diagnóstico: {dn}. {d}{x}",
+  "medicacion_semana": " Medicación: {c} a la semana{x}.",
+  "mutua_cubre": " (la mutua cubre parte)",
+  "receta_publica": " con receta de la pública",
+  "ficha_cuerpo": "⚖️ {peso} kg · {st} · 🏃 forma {fit}/100{x}{x2}{x3}",
+  "ficha_gym": " · 🏋️ socio del gimnasio ({d} días este mes)",
+  "ficha_seguro": " · 🏥 seguro privado",
+  "ficha_dieta": " · 🥗 cuidando lo que come",
+  "algo_no_esta_bien": "algo que no está bien ({d} días)",
+  "baja_gym": "🏋️ Darse de baja del gym",
+  "alta_gym": "🏋️ Apuntarse al gimnasio ({c}/mes)",
+  "quitar_seguro": "🏥 Quitar el seguro privado",
+  "alta_seguro": "🏥 Seguro privado ({c}/mes)",
+  "dejar_dieta": "🥗 Dejar de contar lo que come",
+  "cuidar_dieta": "🥗 Cuidar lo que come",
+  "mini": "📏 {alt} m · ⚖️ {kg} kg · IMC {imc} ({txt}) · 🏃 forma {fit}"
  },
  "huelga": {
   "huelga": "✊ Huelga {day}/{x}",
@@ -830,7 +894,8 @@
   "humo_poco": "Carbón, paciencia y algo chamuscado.",
   "copa_sola": "🍸 sol{o}",
   "copa_con": "🍸 con {con}",
-  "flores_para": "💐 para {p}"
+  "flores_para": "💐 para {p}",
+  "y": "y"
  },
  "voces": {
   "socialdemocrata_lista": [
@@ -867,7 +932,9 @@
    "Paloma",
    "Sergio",
    "Marga"
-  ]
+  ],
+  "resumen": "⏰ {extra} horas extra sin cobrar ({c}) · 🔁 {cov} turnos cubiertos · 😤 {abuse} broncas tragadas · 📅 {shift} cambios de turno{said}",
+  "dijo_no": " · 🙅 {k} veces dijo que no"
  },
  "intimo": {
   "ya_viene": "Ya viene {p}.",
@@ -923,7 +990,22 @@
   "listo": "Listo",
   "libros": "📚 Libros",
   "nada_entre_manos": "Nada entre manos",
-  "mis_libros2": "📚 Mis libros"
+  "mis_libros2": "📚 Mis libros",
+  "src_biblioteca": "biblioteca",
+  "src_comprado": "comprado",
+  "src_mercadillo": "mercadillo",
+  "src_libreria": "librería",
+  "tab_por_leer": "Por leer",
+  "tab_leidos": "Leídos",
+  "tab_buscar": "Qué hay por ahí",
+  "vacio_leyendo": "Nada por leer. Librería, mercadillo o biblioteca.",
+  "vacio_leidos": "Todavía ninguno. Cada uno cuenta.",
+  "vacio_buscar": "Ya lo tiene todo.",
+  "leyendo_ahora": "leyendo ahora",
+  "leer_este": "📖 Leer este",
+  "releer": "🔁 Releer",
+  "leyendo_titulo": "Leyendo «{t}» ({pct}%)",
+  "n_leidos": "{num} leídos"
  },
  "productos": {
   "comision_mantenimiento_cuenta_ahorro_ten": "Comisión de mantenimiento de la cuenta de ahorro: {c}. Por tener poco.",
@@ -959,7 +1041,18 @@
   "romperlo_2": "Romperlo (−2 %)",
   "pendiente": "pendiente",
   "banco_gana_tu_dinero_sale": "Lo que el banco gana con tu dinero no sale en esta pantalla.",
-  "red": "🤝 Red"
+  "red": "🤝 Red",
+  "cripto_cartera": "Cripto: {c}.",
+  "sacar_todo": "Sacar todo",
+  "ahorro_linea": "{r} % anual{promo} · disponible al momento{inf}",
+  "promo_3_meses": " (promo 3 meses)",
+  "pierde_inflacion": "pierde contra la inflación",
+  "aportado": "aportado {a} · {p}",
+  "prestamo_linea": "{r} % · hasta {m}{x}",
+  "sin_nomina_no": "sin nómina, no",
+  "ahorro_inversiones": "🏦 Ahorro e inversiones: {c}{x}",
+  "prestamo_pendiente": " · 💳 préstamo pendiente {c}",
+  "prestamo_dato": "{r} % · {c}/sem"
  },
  "social_fx": {
   "te_contesta_tres_audios_lista": [
@@ -1016,7 +1109,9 @@
   "va_casa": "🏡 {n} va a casa de {p}",
   "ha_quedado_parque": "🌳 {n} ha quedado con {p} en el parque",
   "relacion": "🤝 Relación",
-  "amor": "💗 Amor"
+  "amor": "💗 Amor",
+  "llamada_sin_coger": "{n} ha llamado a {p}. No lo ha cogido.{x}",
+  "normal_a_estas_horas": " Normal, a estas horas."
  },
  "visitas": {
   "estas_casa_luego_me_paso_lista": [
@@ -1060,7 +1155,8 @@
   "desde_mapa_solo_mira_ve": "👁️ Desde el mapa solo se mira: ve allí para hablar",
   "barrio": "el barrio",
   "vive": "Vive en {vcEsc}",
-  "relacion": "🤝 Relación"
+  "relacion": "🤝 Relación",
+  "y": "y"
  },
  "huesped": {
   "cama_sobraba": "en la cama que sobraba",
@@ -1106,7 +1202,11 @@
   "txt2": "{x} {x2}{c}",
   "deudas": "deudas {x}{c}",
   "patrimonio": "Patrimonio: {c}",
-  "red": "🤝 Red"
+  "red": "🤝 Red",
+  "mas_rico": "Es {c} más rico que hace dos meses",
+  "mas_pobre": "Es {c} más pobre que hace dos meses",
+  "desglose": "cuenta {cuenta} + ahorro {ahorro} + lo hecho en casa {casa}{deudas}",
+  "menos_deudas": " − deudas {c}"
  },
  "reparto": {
   "ha_pagado_madre_mi_casa": "{x}: lo ha pagado su madre. «Es mi casa», ha dicho, y ha sacado la cartera de la pensión.",
@@ -1116,7 +1216,8 @@
   "ha_pagado_mitad": "{p} ha pagado la mitad de {nm}: {c}.",
   "averia_ha_pagado_madre_ha": "La avería la ha pagado su madre. {n} ha intentado poner algo; no le ha dejado.",
   "averia_entre_tres_vuelta": "La avería, entre los tres: {c} de vuelta.",
-  "ha_puesto_mitad": "{x} ha puesto la mitad: {c}."
+  "ha_puesto_mitad": "{x} ha puesto la mitad: {c}.",
+  "eso": "eso"
  },
  "texto": {
   "todo": "Todo",
@@ -1134,7 +1235,8 @@
   "depresion": "depresión",
   "al_mes_tras_casa_luz": "al mes, tras casa y luz",
   "animo": "ánimo · {anL}",
-  "forma": "forma · {sal}"
+  "forma": "forma · {sal}",
+  "n_diagnosticos": "{dx} diagn."
  },
  "horario_obras": {
   "hoy_8": "hoy a las 8",
@@ -1150,7 +1252,8 @@
   "deja_hay_donde": "{n} deja lo de «{x}»: no hay dónde",
   "sabe_arreglarlo_pide_tiene_tecnico": "{n} no sabe arreglarlo: pide {skLabel} {fl} y tiene {lvl}. Técnico, o cambiarlo.",
   "va_herramientas_puede_fallar_tener": "Va a por las herramientas. Puede fallar y tener que repetirlo.",
-  "marcha": "🔧 En marcha"
+  "marcha": "🔧 En marcha",
+  "apuntado_arreglara_cuando_vuelva": "Apuntado: lo arreglará cuando vuelva a casa."
  },
  "peso": {
   "analitica_nueva_anemia_ya_aparece": "Analítica nueva: la anemia de {nom} ya no aparece. Con lo que come ahora, los niveles están bien.",
@@ -1167,7 +1270,9 @@
   "ya_tiene_rutina_ducha": "🚿 {n} ya tiene su rutina: se ducha {x}",
   "levanto_medio_dormid_hacer_pis": "{n} se levantó medio dormid{o} a hacer pis."
  },
- "salidas": {},
+ "salidas": {
+  "ir_ahora": "Ir ahora"
+ },
  "invitados": {},
  "pintar": {},
  "ritmo": {}

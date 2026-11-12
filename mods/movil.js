@@ -38,13 +38,13 @@ function phTick(){if(!S||!S.people)return;const P=PH(),now=phNow(),h=S.t/60;
   const th=P.th[pp.k]||[];const lastOpen=th.length&&th[th.length-1].f==='t'&&th[th.length-1].open;if(lastOpen&&Math.random()<.85)return;
   const recent=th.slice(-8).map(m=>m.t);const cand=phTemplates(pp).filter(x=>!recent.includes(x[0]));if(!cand.length)return;const [txt,k]=phPick(cand);phIncoming(pp,txt,k);}
 function phAnswer(pk,i,oi){const P=PH(),th=P.th[pk],m=th&&th[i];const p=(S.people||[]).find(q=>q.k===pk);if(!m||!m.open||!p)return;m.open=false;
-  const [t,rel,act,back,say]=phRepOpts(m.k)[oi];if(say)phPush(pk,{f:'me',t:say,m:phNow()});else if(act!=='call')phPush(pk,{f:'sys',t:rel<0?'(visto)':'',m:phNow()});
+  const [t,rel,act,back,say]=phRepOpts(m.k)[oi];if(say)phPush(pk,{f:'me',t:say,m:phNow()});else if(act!=='call')phPush(pk,{f:'sys',t:rel<0?TXMV.ui.visto:'',m:phNow()});
   p.rel=Math.max(0,Math.min(100,(p.rel||30)+rel));p.last=S.day;if(rel>0)S.needs.social=Math.min(100,S.needs.social+3+rel);if(act==='love'&&p.love!=null)p.love=Math.min(100,p.love+3);
   if(back)setTimeout(()=>{if(!S)return;phPush(pk,{f:'t',t:back,m:phNow()});if(phOpenNow())phRender();else{PH().un[pk]=(PH().un[pk]||0)+1;phBadge();}},1400+Math.random()*2200);
   if(act==='call'){phCall(p);return;}
   if(act==='home'){phClose();inviteHome(p,false);return;}
   if(act==='stay'){phClose();inviteHome(p,true);return;}
-  if(act==='out'){const why=outAvail('amigos');if(why&&why!=='solo en días libres'){toast(huecos(TXMV.avisos.no_puede,{why}));return;}phClose();S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);doOut('amigos');return;}
+  if(act==='out'){const why=outAvail('amigos');if(why&&why!==TXN.politica.solo_libres){toast(huecos(TXMV.avisos.no_puede,{why}));return;}phClose();S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);doOut('amigos');return;}
   if(act==='org'&&S.office){S.office.org=Math.min(100,(S.office.org||0)+2);}
   if(act==='gossip'){const pt=partner()||(S.people||[]).find(q=>['cita','rollo'].includes(q.stage));setTimeout(()=>{phPush(pk,{f:'me',t:pt?huecos(TXMV.avisos.gossip_yo,{pt:pt.n}):TXMV.avisos.gossip_nada,m:phNow()});phIncoming(p,pt?huecos(TXMV.avisos.gossip_ella,{pt:pt.n,la:pt.g==='m'||pt.g==='o'?'o':'a'}):TXMV.avisos.gossip_ella_nada,'gen');},3500);}
   phRender();}
@@ -189,7 +189,7 @@ function phFree(p,t){const P=PH();const th=P.th[p.k]||[];const last=th[th.length
   p.rel=Math.max(0,Math.min(100,(p.rel||30)+rel));if(love&&p.love!=null)p.love=Math.min(100,p.love+love);p.last=S.day;if(rel>0)S.needs.social=Math.min(100,S.needs.social+3+rel);
   setTimeout(()=>{if(!S)return;phPush(p.k,{f:'t',t:ans,m:phNow()});if(phOpenNow())phRender();else{PH().un[p.k]=(PH().un[p.k]||0)+1;phBadge();}
     if(act==='stay'||act==='home'){setTimeout(()=>{if(!S.sim.work&&!(S.res||[]).some(x=>x.pid===p.k)){inviteHome(p,act==='stay');}},2500);}
-    else if(act==='out'){const why=outAvail('amigos');if(!why||why==='solo en días libres'){setTimeout(()=>{if(S.sim.work>0)return;S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);phClose();doOut('amigos');},2500);}else setTimeout(()=>phIncoming(p,pickR(TXMV.libre.sin_plan),'gen'),3000);}
+    else if(act==='out'){const why=outAvail('amigos');if(!why||why===TXN.politica.solo_libres){setTimeout(()=>{if(S.sim.work>0)return;S.outWith=p.k;S.dateOut=['cita','rollo','pareja','convive','casada'].includes(p.stage);phClose();doOut('amigos');},2500);}else setTimeout(()=>phIncoming(p,pickR(TXMV.libre.sin_plan),'gen'),3000);}
   },1200+Math.random()*1800);}
 // ---- Oury contesta solo si no lo haces tú: respuesta coherente con su carácter y la relación ----
 function phAutoAnswer(){if(!S||S.phAuto===false)return;const P=PH();const now=phNow();const h=S.t/60;if(h<8||h>=23.5)return;const u=S.sim.use;if(u&&['cama','camamat','ducha','banera'].includes(u.type))return;

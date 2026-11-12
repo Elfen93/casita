@@ -85,7 +85,7 @@ function openFs(){const f=FS();const P=FSP();const G=GOVS[W_().gov]||{};const n=
   h+=`<div class="sub" style="font-size:11.5px;padding-top:6px"><b>${U.gana}</b> ${P.gana}<br><b>${U.paga}</b> ${P.pierde}</div></div><div style="padding:6px"><button class="btn" id="fsclose">${U.cerrar}</button></div>`;
   fsEl.innerHTML=h;fsEl.classList.add('on');}
 document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.closest('#fsopen,#fsclose');if(!t)return;if(t.id==='fsopen')openFs();else closeFs();},true);
-{const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{h=h.replace('<h3>🌍 El mundo</h3>',`<h3>🌍 El mundo</h3><button class="btn grey" id="fsopen">${TX_fiscal.ui.abrir}</button>`);}catch(e){}return h;};}
+{const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{h=h.replace(`<h3>${TXN.mundo.ui_mundo}</h3>`,`<h3>${TXN.mundo.ui_mundo}</h3><button class="btn grey" id="fsopen">${TX_fiscal.ui.abrir}</button>`);}catch(e){}return h;};}
 
 // =================== TRABAJO EN NEGRO ===================
 const fsDlgEl=()=>{let e=document.getElementById('fsdlg');if(!e){e=document.createElement('div');e.id='fsdlg';document.body.appendChild(e);}return e;};

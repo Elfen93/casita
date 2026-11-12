@@ -5,7 +5,7 @@ function shareOf(i){const T=S.home&&S.home.type;const o=i!=null?S.obj[i]:null;co
   if(T==='calle')return 0;
   if(liveIn())return .5;
   return 1;}
-function splitTell(i,paid,share){const T=S.home&&S.home.type;const back=Math.round(paid*(1-share));if(back<=0)return;S.money+=back;const o=i!=null&&S.obj[i];const nm=o&&OBJ[o.t]?OBJ[o.t].n.toLowerCase():'eso';
+function splitTell(i,paid,share){const T=S.home&&S.home.type;const back=Math.round(paid*(1-share));if(back<=0)return;S.money+=back;const o=i!=null&&S.obj[i];const nm=o&&OBJ[o.t]?OBJ[o.t].n.toLowerCase():TXHZ.reparto.eso;
   if(T==='padres')tell(share===0?huecos(TXHZ.reparto.ha_pagado_madre_mi_casa,{x:nm[0].toUpperCase()+nm.slice(1)}):huecos(TXHZ.reparto.madre_ha_puesto_mitad_para,{nm,c:fmt(back)}),'👩‍🦳');
   else if(T==='habitacion')tell(huecos(TXHZ.reparto.han_puesto_companeros_piso,{x:nm[0].toUpperCase()+nm.slice(1),c:fmt(back),x2:Math.random()<.3?TXHZ.reparto.uno_ellos_reganadientes_final_mes:''}),'🚪');
   else{const p=liveIn();if(p)tell(huecos(TXHZ.reparto.ha_pagado_mitad,{p:p.n,nm,c:fmt(back)}),'💞');}}

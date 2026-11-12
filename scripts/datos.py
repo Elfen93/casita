@@ -602,6 +602,9 @@ def comprobar(d):
     # --- p0d begin: textos de src/core/081–098 (secciones nuevas de textos_nucleo.json) ---
     p0d_textos(d,E)
     # --- p0d end ---
+    # --- p0e begin ---
+    p0e_textos(d,E)
+    # --- p0e end ---
     return E
 
 # --- p0c begin: validaciones de los textos que el código lee de data/movil.json y data/textos_mods_hz.json ---
@@ -714,6 +717,48 @@ def p0d_textos(d,E):
             if isinstance(v,str) and _p0c_huecos(v):
                 E.append('src/core/%s: TXN.%s.%s lleva huecos y el código no lo pasa por huecos()'%(f[:3],m.group(1),m.group(2)))
 # --- p0d end ---
+# --- p0e begin: remate de los módulos de mods/ (textos_mods_ag.escuela y claves nuevas): lo que el código lee existe y los huecos cierran ---
+def p0e_textos(d,E):
+    ag=d.get('textos_mods_ag');nu=d.get('textos_nucleo')
+    if ag is None:return
+    carpeta=os.path.join(R,'mods')
+    try:mods_b=[m for m in json.load(open(os.path.join(R,'build.json'),encoding='utf-8'))['mods']]
+    except Exception:return
+    mov=((ag.get('banco') or {}).get('mov')) or {}
+    for f in mods_b:
+        try:src=open(os.path.join(carpeta,f),encoding='utf-8').read()
+        except OSError:continue
+        # const {sección:TX_alias}=DATA.textos_mods_ag  →  TX_alias.clave existe en esa sección
+        for al in re.finditer(r'const\s*\{\s*(\w+)\s*:\s*(TX_\w+)\s*\}\s*=\s*DATA\.textos_mods_ag',src):
+            sec,alias=al.group(1),al.group(2)
+            if sec not in ag:E.append('mods/%s: textos_mods_ag.%s no existe'%(f,sec));continue
+            for m in re.finditer(r'\b'+alias+r'\.(\w+)',src):
+                if m.group(1) not in ag[sec]:E.append('mods/%s: %s.%s no existe en data/textos_mods_ag.json'%(f,alias,m.group(1)))
+            for m in re.finditer(r'huecos\(\s*(?:pickR\()?'+alias+r'\.(\w+)\)?\s*,\s*\{',src):
+                i=m.end()-1;j=_p0c_cierra(src,i)
+                if j<0 or m.group(1) not in ag[sec]:continue
+                dadas=set(_p0c_claves(src[i:j+1]))|{'n','o'}
+                for t in _p0c_textos_de(ag[sec][m.group(1)]):
+                    for h in _p0c_huecos(t):
+                        if h not in dadas:E.append('mods/%s: %s.%s lleva {%s} y el código no lo rellena'%(f,alias,m.group(1),h))
+        # TXN.sección.clave (los textos del núcleo que los módulos comparan) existe
+        if nu is not None:
+            for m in re.finditer(r'\bTXN\.(\w+)\.(\w+)',src):
+                if m.group(1) not in nu or m.group(2) not in nu[m.group(1)]:E.append('mods/%s: TXN.%s.%s no existe en data/textos_nucleo.json'%(f,m.group(1),m.group(2)))
+        # cada concepto de banco que se apunta con bkAdd('…') o withCtx(f,'…') tiene su línea en banco.mov
+        for m in re.finditer(r"bkAdd\('([^']+)'|withCtx\(\s*\w+\s*,\s*'([^']+)'",src):
+            c=m.group(1) or m.group(2)
+            if mov and c not in mov and c!='Hucha':E.append('mods/%s: el concepto bancario «%s» no está en textos_mods_ag.banco.mov'%(f,c))
+    # las listas de la escuela que el código elige con pickR llevan tres variantes cada una
+    es=ag.get('escuela')
+    if es:
+        for k in ('cole_ext_publico','cole_ext_concertado','cole_sale','tutoria_ext_publico','tutoria_ext_concertado','tutoria'):
+            if not (isinstance(es.get(k),list) and len(es[k])==3):E.append('textos_mods_ag.escuela.%s: tiene que ser una lista de 3 variantes (el azar elige entre 3)'%k)
+        for k in ('cole_sale','tutoria'):
+            for t in es.get(k) or []:
+                for h in _p0c_huecos(t):
+                    if h not in {'k','n','e','muy','ext','o'}:E.append('textos_mods_ag.escuela.%s lleva {%s} y el código no lo rellena'%(k,h))
+# --- p0e end ---
 
 # ---------- formato ----------
 def una(v):return json.dumps(v,ensure_ascii=False,separators=(', ',': '))

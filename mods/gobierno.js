@@ -39,7 +39,7 @@ function govTick(){const g=GV();if(!REV())return;const ph=govPh();const n=CH().n
   // escasez: cambia cada semana
   if(govPh()>=3&&(S.day-g.since)%7===5){const all=TX_gobierno.escasez_lista;g.lack=all.filter(()=>Math.random()<.3).slice(0,2);if(!g.lack.length)g.lack=[pickR(all)];
     if(g.lack.includes('electrónica'))S.shortage=Math.max(S.shortage||0,S.day+8);
-    tell(huecos(TX_gobierno.escasez,{lista:g.lack.join(' y ')}),'🧺');}
+    tell(huecos(TX_gobierno.escasez,{lista:g.lack.join(' '+TX_gobierno.y+' ')}),'🧺');}
   if(OUT.compra){OUT.compra._d=OUT.compra._d||OUT.compra.dur;OUT.compra.dur=govPh()>=3?Math.round(OUT.compra._d*1.5):OUT.compra._d;}
   // problemas nuevos, de vez en cuando
   if(Math.random()<.12&&S.day-g.ev>3){g.ev=S.day;const E=TX_gobierno.eventos;
@@ -58,7 +58,7 @@ function govTick(){const g=GV();if(!REV())return;const ph=govPh();const n=CH().n
 {const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{if(REV()){
   if(govPh()>=2){h=h.replace(/<button class="btn[^"]*" id="ustrike"[^>]*>[^<]*<\/button>/,`<button class="btn${S.day-GV().prop>=7?'':' grey'}" id="gvprop">${TX_gobierno.ui_propuesta}</button>`)
     .replace(/Para convocar huelga hace falta organización 50 y malestar 35\.[^<]*/,TX_gobierno.ui_sin_patron);}
-  h=h.replace('<h3>🌍 El mundo</h3>',`<h3>🌍 El mundo</h3><button class="btn grey" id="gvopen">${huecos(TX_gobierno.ui_que_ha_cambiado,{})}</button>`);}}catch(e){}return h;};}
+  h=h.replace(`<h3>${TXN.mundo.ui_mundo}</h3>`,`<h3>${TXN.mundo.ui_mundo}</h3><button class="btn grey" id="gvopen">${huecos(TX_gobierno.ui_que_ha_cambiado,{})}</button>`);}}catch(e){}return h;};}
 document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.closest('#gvprop,#gvopen,#gvclose');if(!t)return;if(t.id==='gvopen')openGov();else if(t.id==='gvclose')closeGov();else govPropose();},true);
 function govPropose(){const g=GV();if(S.day-g.prop<7){toast(huecos(TX_gobierno.prop_espera,{d:7-(S.day-g.prop)}));return;}g.prop=S.day;const o=office();const n=CH().name;
   const ideas=[['comedor',TX_gobierno.ideas.comedor,()=>{g.comedor=1;}],['sueldo',TX_gobierno.ideas.sueldo,()=>{S.payMul=(S.payMul||1)*1.05;}],['org',TX_gobierno.ideas.org,()=>{gainSkill('logica',120);}]].filter(i=>!(i[0]==='comedor'&&g.comedor));

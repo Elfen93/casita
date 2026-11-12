@@ -1,4 +1,5 @@
 // =================== ESCUELA: colegio público, colegio concertado e instituto ===================
+const {escuela:TX_escuela}=DATA.textos_mods_ag;
 // Quién está en cada centro (vecinosEn), las tres escenas (entrada/salida, recreo, clase) y dos salidas: recoger del cole y la tutoría.
 const esR=s=>pbH(Math.floor(pbH(String(s))*4294967296).toString(36)+'~'+s); // el hash de poblacion se parece demasiado entre cadenas casi iguales
 const esPick=(a,k)=>a[Math.floor(esR(k)*a.length)%a.length];
@@ -42,18 +43,14 @@ conLogica(OUT,{
 const esPub=k=>k==='colegio'||k==='instituto';
 {const _ob=outBack;outBack=function(k){const r=_ob.apply(this,arguments);
   if(k!=='cole'&&k!=='tutoria')return r;
-  try{const ks=S.kids||[];let q=ks[S.sim.escKid];if(!q||kidAge(q)<3)q=k==='cole'?esKid(3,11):esKids(3,16)[0];if(!q)return r;esKD(q);const n=CH().name,e=q.g==='f'?'ella':'él',c=esCentroDe(q);
+  try{const ks=S.kids||[];let q=ks[S.sim.escKid];if(!q||kidAge(q)<3)q=k==='cole'?esKid(3,11):esKids(3,16)[0];if(!q)return r;esKD(q);const n=CH().name,e=q.g==='f'?TX_escuela.pron_ella:TX_escuela.pron_el,c=esCentroDe(q);
     q.play++;S.needs.social=Math.min(100,S.needs.social+4);
     if(k==='cole'){q.hap=Math.min(100,q.hap+4);q.recDay=S.day;q.recT=S.t;const pu=colPuerta(c,q);
-      const ext=esPub(c)?pickR([' Veintiocho por clase y una profe de baja sin sustituir.',' En la verja, el cartel de la huelga y otro de la AMPA pidiendo voluntarias.',' El barracón sigue en el patio. «Provisional», desde 2009.']):pickR([' En la puerta, un sobre con la cuota «voluntaria». Ya es el tercer recordatorio.',' Todas con el mismo jersey y la misma sonrisa de foto.',' El patio, con césped. Alguien lo paga y no es el colegio.']);
-      tell(pickR([`${q.n} ha salido con la mochila a medio cerrar y un dibujo arrugado. «Mira». ${n} lo ha mirado hasta que ${e} se ha cansado de esperar.${ext}`,
-        `${q.n} ha tardado en salir: se había quedado «ayudando a la profe». ${n} no ha preguntado más y han ido andando despacio.${ext}`,
-        `${q.n} ha contado todo el camino lo del recreo, en el orden equivocado. ${n} ha escuchado. Hoy sí podía.${ext}`])+(pu?' '+pu:''),'🎒');}
+      const ext=' '+(esPub(c)?pickR(TX_escuela.cole_ext_publico):pickR(TX_escuela.cole_ext_concertado));
+      tell(pickR(TX_escuela.cole_sale.map(t=>huecos(t,{k:q.n,n,e,ext})))+(pu?' '+pu:''),'🎒');}
     else{q.hap=Math.min(100,q.hap+5);q.tutDay=S.day;
-      const ext=esPub(c)?pickR([' Orientadora, una para tres colegios.',' La reunión, a las cinco: a esa hora ya no hay clase y casi nadie sale del trabajo.',' Once familias detrás de la puerta y un solo despacho.']):pickR([' Aquí la tutora habló de «actividades complementarias» y de lo que cuestan.',' Antes de irse, una carpeta con el precio de las excursiones.',' La directora pasó a saludar. Siempre pasa cuando se habla de la cuota.']);
-      tell(pickR([`La tutora de ${q.n} tenía veinte minutos y la cola detrás. Ha dicho que ${e} es ${q.g==='f'?'muy lista':'muy listo'} y que hay que «reforzar». ${n} ha salido con una fotocopia.${ext}`,
-        `«${q.n} tiene capacidad», ha dicho la tutora. Lo dicen siempre que algo falta: apoyo, tiempo o plazas. ${n} ha asentido y ha firmado.${ext}`,
-        `Tutoría de ${q.n}: la letra, las tablas y una anécdota del patio. ${n} ha pedido el permiso en el trabajo y ha llegado con el abrigo puesto.${ext}`]),'🍎');}
+      const ext=' '+(esPub(c)?pickR(TX_escuela.tutoria_ext_publico):pickR(TX_escuela.tutoria_ext_concertado));
+      tell(pickR(TX_escuela.tutoria.map(t=>huecos(t,{k:q.n,n,e,muy:q.g==='f'?TX_escuela.muy_lista:TX_escuela.muy_listo,ext}))),'🍎');}
   }catch(e){console.error(e);}return r;};}
 // al recogerlo, la criatura vuelve a casa con quien la recoge (crianza.js la manda fuera hasta las 17)
 {const _ur=updateResidents;updateResidents=function(gm){const r=_ur.apply(this,arguments);
@@ -272,10 +269,10 @@ for(const k of ESC_K)SCENES[k]=E=>escScene(k,E);
 // Estado en la criatura: k.centro ('colegio' | 'concertado' | 'instituto'; sin él, lo de siempre), k.pend (decisión por tomar: cole3, cole12, cambio),
 // k.pagado (lo que lleva este curso), k.debe (recibos devueltos), k.huelga (día de huelga), k.sucDay (último suceso del centro).
 // Textos en data/sucesos.json (dilemas cr_cole y cr_cole_cambio, sección centros).
-const colNom=c=>c==='concertado'?'San Roque':c==='instituto'?'Las Eras':'La Ribera';
+const colNom=c=>c==='concertado'?TX_escuela.centro_concertado:c==='instituto'?TX_escuela.centro_instituto:TX_escuela.centro_publico;
 const colPub=k=>kidAge(k)>=12?'instituto':'colegio';
 const colCuota=k=>hrs(kidAge(k)>=12?12:10),colExtra=()=>hrs(4),colMat=()=>hrs(1.5); // cuota «voluntaria» ≈ 85 € (lo que pone el cartel de San Roque), extraescolares y material
-const colK=d=>(S.kids||[])[d.i]||{n:d.k||'la criatura',g:'f',born:S.day-60*3};
+const colK=d=>(S.kids||[])[d.i]||{n:d.k||TX_escuela.la_criatura,g:'f',born:S.day-60*3};
 const colHue=k=>({k:k.n,lo:k.g==='f'?'a':'o',m:fmt(colMat()),t:fmt(colCuota(k)+colExtra()),q:6,h:TR().sh[1]});
 // admisión del concertado: puntos de renta (menos ingresos, más puntos), cercanía, hermanos en el centro y un sorteo de desempate; con 6 se entra (con hermano dentro, siempre)
 function colPuntos(k){const H=HOMES[(S.home&&S.home.type)||'casita'],cl=H&&typeof H.cls==='number'?H.cls:1;
@@ -320,7 +317,7 @@ function colSuceso(k,a,c){const T=DATA.sucesos.centros[c];if(!T||(k.sucDay&&S.da
   if(c!=='concertado'&&Math.random()<.008){k.sucDay=S.day;colHuelga(k,c);return;}
   for(const x of T.sucesos){if(Math.random()>=x.p)continue;k.sucDay=S.day;
     const ks=pbVec().filter(v=>v&&v.centro===c&&v.estudia&&v.estudia!=='fp');const v=ks.length?esPick(ks,k.n+S.day+x.id):null;
-    tell(huecos(x.tell,{k:k.n,c:fmt(hrs(x.gasto||0)),v:v?v.n:'una compañera'}),'🏫');
+    tell(huecos(x.tell,{k:k.n,c:fmt(hrs(x.gasto||0)),v:v?v.n:TX_escuela.una_companera}),'🏫');
     k.hap=Math.max(0,Math.min(100,(k.hap??70)+(x.hap||0)));if(x.social)S.needs.social=Math.min(100,S.needs.social+x.social);
     if(x.gasto){bkAdd('Críos',-hrs(x.gasto));if(c==='concertado')k.pagado=(k.pagado||0)+hrs(x.gasto);}return;}}
 // cada día: recibo del mes (días 1, de septiembre a junio), fin de curso (24 de junio) y lo que pasa en el centro
