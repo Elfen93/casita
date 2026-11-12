@@ -48,7 +48,7 @@ casita/
                       ideologías, gobiernos, reglas y sucesos (data/README.md). Lo comparten el juego web y Godot
   src/head.html, src/tail.html
   src/core/NNN_*.js   núcleo: 99 archivos numerados (motor, dibujo, casa, trabajo, mundo…)
-  mods/*.js           63 módulos que amplían el núcleo, en el orden de build.json
+  mods/*.js           64 módulos que amplían el núcleo, en el orden de build.json
   mods/movil.css      estilos de todas las ventanas
   p3d/, q3d/          librería 3D y modelos de los personajes
   pwa/                registro del service worker
@@ -145,7 +145,7 @@ Abreviaturas del estado que más aparecen: `S` (partida), `S.sim` (el personaje 
 Sacar el contenido a una carpeta `data/` en un formato legible. El juego web pasa a leer de ahí sin cambiar por fuera. Es la pieza que comparten los dos frentes.
 
 - ✅ **Primera pasada (12 nov 2026):** 107 secciones en 11 archivos: lugares y salidas, viviendas, personas, profesiones, objetos y lo que se hace con ellos, libros, estudios, interacciones, ideologías, gobiernos (ciclos e impuestos) y reglas básicas. Comprobado con `scripts/comparar.py`: 11 partidas de 120 días con el azar sembrado dan el mismo estado, el mismo diario y las mismas pantallas que antes.
-- 🟡 **Segunda pasada:** lo que mezcla texto con condiciones y efectos. El formato está decidido: textos con huecos (`"{p} sale del cole a las cinco."`, norma 7 de `data/README.md`) que el código rellena con `huecos()`. Hechos los 23 dilemas (`data/sucesos.json`), como piloto. Quedan consecuencias, golpes, incidentes, hitos y arcos; los textos sueltos de `tell()`/`toast()`/`chapter()`; las plantillas del móvil; los carteles de las escenas. Cada tabla es un encargo para un agente, con `scripts/comparar.py` y una prueba de textos como `t/t_dlg.js` para demostrar que no cambia nada. Lista al final de `data/README.md`.
+- 🟡 **Segunda pasada:** lo que mezcla texto con condiciones y efectos. El formato está decidido: textos con huecos (`"{p} sale del cole a las cinco."`, norma 7 de `data/README.md`) que el código rellena con `huecos()`. Hechos los 24 dilemas (`data/sucesos.json`), como piloto. Quedan consecuencias, golpes, incidentes, hitos y arcos; los textos sueltos de `tell()`/`toast()`/`chapter()`; las plantillas del móvil; los carteles de las escenas. Cada tabla es un encargo para un agente, con `scripts/comparar.py` y una prueba de textos como `t/t_dlg.js` para demostrar que no cambia nada. Lista al final de `data/README.md`.
 
 La fábrica y la prueba de Godot ya pueden empezar con lo que hay: lo que necesitan (lugares, gente, trabajos, objetos, necesidades, interacciones) está en `data/`.
 

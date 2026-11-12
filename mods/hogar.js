@@ -5,9 +5,12 @@ const isWinter=()=>typeof seasonOf==='function'&&seasonOf(S.day)==='inv';
 // ---- averías: calentador (invierno), nevera, lavadora ----
 {const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const g=HG();const n=CH().name;const T=S.home&&S.home.type;if(!T||T==='calle')return r;const old=['infra','viejo','habitacion'].includes(T);
   // calentador
-  if(!g.boiler&&Math.random()<(isWinter()?.012:.004)*(old?1.6:T==='bueno'||T==='chalet'?.4:1)){g.boiler=1;g.boilerSince=S.day;g.req=0;tell(`El calentador ha muerto. ${isWinter()?'En enero.':''} Ducha fría hasta que alguien lo arregle${renting()?': el casero dice que «lo mira»':T==='padres'?': su madre ha llamado a un primo que entiende':''}.`,'🚿');}
+  if(!g.boiler&&Math.random()<(isWinter()?.012:.004)*(old?1.6:T==='bueno'||T==='chalet'?.4:1)){g.boiler=1;g.boilerSince=S.day;g.req=0;g.fixBy=0;tell(`El calentador ha muerto. ${isWinter()?'En enero.':''} Ducha fría hasta que alguien lo arregle${renting()?': el casero dice que «lo mira»':T==='padres'?': su madre ha llamado a un primo que entiende':''}.`,'🚿');}
   if(g.boiler){const d=S.day-g.boilerSince;S.needs.higiene=Math.max(0,S.needs.higiene-2);if(isWinter()&&Math.random()<.04&&!S.sick){S.sick=1+(Math.random()*2|0);tell(`Ducha fría en invierno, ${d} días. ${n} ha cogido un catarro de los de cama.`,'🤒');}
-    if(renting()){const fixP=.05+(S.rentStrike?.1:0)+(g.req>=2?.08:0)+(W_().mov>=55?.05:0);if(Math.random()<fixP){g.boiler=0;tell(d>14?`Por fin: el casero ha mandado a un fontanero. ${d} días de ducha fría. Ha descontado cero.`:`El casero ha arreglado el calentador. ${d} días. «Es que el fontanero estaba liado».`,'🚿');}
+    if(renting()){if(d===2||(d>2&&d%10===2))askDilemma('calentador',{});// a los dos días, y cada diez mientras siga roto: reclamar, pagarlo, el sindicato o aguantar
+      const fixP=.05+(S.rentStrike?.1:0)+(g.req>=2?.12:0)+(W_().mov>=55?.05:0);
+      if(g.fixBy&&S.day>=g.fixBy){g.boiler=0;g.fixBy=0;tell(huecos(DT.calentador.fin_sindicato,{d}),'🚿');}
+      else if(!g.fixBy&&Math.random()<fixP){g.boiler=0;tell(g.req>=2?huecos(DT.calentador.fin_burofax,{d}):d>14?`Por fin: el casero ha mandado a un fontanero. ${d} días de ducha fría. Ha descontado cero.`:`El casero ha arreglado el calentador. ${d} días. «Es que el fontanero estaba liado».`,'🚿');}
       else if(d===5||d===15||d===30)tell(pickR([`${n} ha vuelto a escribir al casero por el calentador. Visto. Sin respuesta.`,`El casero: «si quieres lo arreglas tú y me pasas la factura». No dice cuándo la paga.`,`${d} días sin agua caliente. ${n} se ducha en el gimnasio${HP().gymMember?'':', si pudiera pagarlo'}.`]),'🚿');}
     else if(T==='padres'){if(d>=3){g.boiler=0;tell(`El primo de su madre ha cambiado el calentador por ${fmt(hrs(20))} y dos cervezas.`,'🚿');}}
     else{if(S.money>=hrs(45)&&(d>=2||Math.random()<.5)){g.boiler=0;bkAdd('Arreglos',-hrs(45));tell(`Calentador nuevo: ${fmt(hrs(45))}. Ser propietari${oa()} es pagar tú lo que antes no pagaba nadie.`,'🚿');}}}
@@ -39,4 +42,18 @@ const isWinter=()=>typeof seasonOf==='function'&&seasonOf(S.day)==='inv';
 {const _su=startUse;startUse=function(){const r=_su.apply(this,arguments);try{const u=S.sim.use;if(u&&(u.type==='ducha'||u.type==='banera')&&HG().boiler){u.cold=true;if(throttled('cold',3e5))toast('🥶 Ducha fría');}}catch(e){}return r;};}
 {const _up=update;update=function(gm){const u=S.sim.use;const h0=S.needs.higiene;const r=_up.apply(this,arguments);try{if(u&&u.cold&&S.sim.use===u){const d=S.needs.higiene-h0;if(d>0)S.needs.higiene=h0+d*.5;S.needs.diversion=Math.max(0,S.needs.diversion-.3*gm);}}catch(e){}return r;};}
 // perfil de casa: estado
-{const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const g=HG();const L=[];if(g.boiler)L.push('🚿 sin agua caliente ('+(S.day-g.boilerSince)+' días)');if(g.fridge)L.push('🧊 nevera rota');if(g.wash)L.push('🧺 lavadora rota');if(S.noRenew)L.push('📨 contrato sin renovar: '+(S.noRenew-S.day)+' días');if(!L.length)return h;return `<h3>🏚️ En casa</h3><div class="sub" style="font-size:12px;color:#a04a3a">${L.join(' · ')}</div>`+h;}catch(e){return h;}};}
+{const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const g=HG();const L=[];if(g.boiler)L.push('🚿 sin agua caliente ('+(S.day-g.boilerSince)+' días)'+(renting()?g.fixBy?' · el fontanero viene esta semana':g.req>=2?' · reclamado por burofax':' · el arreglo le toca al casero':hgTipo()==='padres'?'':' · '+fmt(hrs(45))+' de arreglo'));if(g.fridge)L.push('🧊 nevera rota');if(g.wash)L.push('🧺 lavadora rota');if(S.noRenew)L.push('📨 contrato sin renovar: '+(S.noRenew-S.day)+' días');if(!L.length)return h;return `<h3>🏚️ En casa</h3><div class="sub" style="font-size:12px;color:#a04a3a">${L.join('<br>')}</div>${g.boiler&&renting()&&!g.fixBy?`<div style="padding:8px 0 12px"><button class="btn grey" id="hgcal">🚿 Hacer algo con el calentador</button></div>`:''}`+h;}catch(e){return h;}};}
+
+// ---- el calentador roto de alquiler: la jugadora puede hacer algo ----
+const hgTipo=()=>S.home&&S.home.type;
+Object.assign(DLG,{calentador:{t:()=>DT.calentador.t,x:()=>huecos(DT.calentador.x,{d:Math.max(1,S.day-HG().boilerSince)}),
+  o:()=>{const g=HG();const O=DT.calentador.o;const c=hrs(45),b=hrs(3);const sind=!!(S.rentStrike||(S.pol&&S.pol.tenant));return [
+    {t:O[0].t,s:huecos(O[0].s,{c:fmt(b)}),ok:()=>S.money>=b,f:()=>{if(!g.boiler)return;bkAdd('Otros',-b);g.req=2;tell(huecos(O[0].tell,{}),'📨');}},
+    {t:huecos(O[1].t,{c:fmt(c)}),s:O[1].s,ok:()=>S.money>=c,f:()=>{if(!g.boiler)return;bkAdd('Arreglos',-c);g.boiler=0;g.req=0;g.fixBy=0;
+      if(sind||Math.random()<.5){bkAdd('Alquiler',c);tell(huecos(O[1].tell_ok,{c:fmt(c)}),'🚿');}else{try{MT().an-=2;}catch(e){}tell(huecos(O[1].tell_ko,{c:fmt(c)}),'🚿');}}},
+    ...(sind?[{t:O[2].t,s:O[2].s,f:()=>{if(!g.boiler)return;g.req=3;g.fixBy=S.day+2+(Math.random()*2|0);W_().mov=Math.min(100,W_().mov+1);tell(huecos(O[2].tell,{}),'🏘️');}}]:[]),
+    {t:O[3].t,s:O[3].s,f:()=>{if(!g.boiler)return;tell(huecos(O[3].tell,{}),'🚿');}}];},
+  auto:()=>(S.rentStrike||(S.pol&&S.pol.tenant))?2:S.money>=hrs(45)*3?1:S.money>=hrs(3)?0:2}});
+Object.assign(DLG_CD,{calentador:3});
+// el botón de Vida: abre la decisión ahora (de madrugada espera a que se despierte, como todas)
+document.addEventListener('click',ev=>{const t=ev.target&&ev.target.closest&&ev.target.closest('#hgcal');if(!t)return;ev.stopPropagation();try{const c=ex();if(c.cool)delete c.cool.calentador;askDilemma('calentador',{});menu.classList.remove('open');const h=S.t/60;if(h<7.5||h>=23.5)toast('🚿 Mañana, con la cabeza despejada');else dlgTick();}catch(e){console.error(e);}},true);

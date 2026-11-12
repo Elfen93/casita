@@ -255,6 +255,23 @@
         {"t": "Que vaya su madre", "s": "Gratis. Para {n}.", "tell": "Su madre dice que sí, claro. Lo dice siempre."},
         {"t": "Que se apañe {p}", "s": "A ver quién cede.", "tell": "{p} recoge. Ha dicho que «vale» y ha pedido reducción {ella}. Ahora se discute de dinero cada domingo."}
       ]
+    },
+    "calentador": {
+      "t": "🚿 El calentador",
+      "x": "{d} días sin agua caliente. El casero ha visto los mensajes y no contesta. El arreglo le toca a él: el calentador es suyo y viene en el contrato.",
+      "o": [
+        {"t": "Reclamarlo por burofax", "s": "{c}. Que conste la fecha y que conste por escrito.", "tell": "{n} ha mandado un burofax al casero: diez días para arreglar el calentador. Esto ya no se puede dejar en visto."},
+        {
+          "t": "Pagar el arreglo ({c}) y descontarlo del alquiler",
+          "s": "Agua caliente mañana. Lo de descontarlo, ya se verá.",
+          "tell_ok": "Fontanero, factura y un mensaje al casero: {c} menos en el próximo recibo. Ha protestado y ha tragado.",
+          "tell_ko": "Fontanero y factura: {c}. El casero dice que nadie le pidió permiso y que no descuenta nada. Reclamárselo cuesta más que el calentador."
+        },
+        {"t": "Llevarlo al sindicato de inquilinas", "s": "No es solo este piso: en el bloque hay más calentadores rotos.", "tell": "En la asamblea había otras tres vecinas con el calentador roto. Han ido juntas a la puerta del casero, con las facturas en la mano. El fontanero viene esta semana."},
+        {"t": "Aguantar", "s": "Ducha fría y a esperar.", "tell": "{n} calienta agua en una olla para lavarse. El casero sigue sin contestar."}
+      ],
+      "fin_burofax": "El burofax ha hecho efecto: el casero ha mandado a un fontanero. {d} días de ducha fría. Con un papel delante, sí encontró el teléfono.",
+      "fin_sindicato": "Ha venido el fontanero, con el casero detrás y mala cara. {d} días de ducha fría; solo se movió cuando fueron varias a la vez."
     }
   }
 }

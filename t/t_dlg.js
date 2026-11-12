@@ -33,6 +33,7 @@ setTimeout(()=>{try{
  add('j_riesgo','a',()=>{},()=>({}));add('j_chivato','a',()=>{},()=>({}));
  add('cr_recoger','a',()=>{},()=>({k:'Leo'}));add('cr_recoger','b',()=>{abu();conv();},()=>({k:'Leo'}));add('cr_recoger','c',()=>{abu();},()=>({k:'Leo'}));add('cr_recoger','d',()=>{conv();P_(pk()).n='Dani';},()=>({k:'Leo'}));
  add('cr_recoger','e',()=>{conv();P_(pk()).n='Marta';},()=>({k:'Leo'}));
+ const cal=(sind)=>()=>{const g=HG();g.boiler=1;g.boilerSince=S.day-3;S.money=5000;if(sind)S.pol.tenant=true;};add('calentador','a',cal(0),()=>({}));add('calentador','b',cal(1),()=>({}));
  const R={};const errs={};const ids=Object.keys(DLG);const bad=new Set();
  const log=[];const stub={};for(const f of ['tell','toast','chapter','remember','chose']){stub[f]=globalThis[f];}
  tell=(a,b)=>{log.push('tell|'+a+'|'+b);};toast=(a)=>{log.push('toast|'+a);};chapter=(a,b,c)=>{log.push('chapter|'+a+'|'+b+'|'+c);};remember=(a)=>{log.push('rem|'+a);};chose=(a)=>{log.push('chose|'+a);};

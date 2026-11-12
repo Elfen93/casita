@@ -77,3 +77,7 @@
 - La gente añadida a las escenas ya no pisa mesas ni mostradores, y quien trabaja está en su puesto (tras la barra, en la caja, en el andamio).
 - Centro de salud, oficina de empleo, casas y aulas, rehechos a escala de móvil: sillas que parecen sillas, la médica que sale a llamar con el número de la pantalla, pupitres a la medida de las criaturas, la dirección de la casa a la vista.
 - Revisión de diseño: norma en `docs/FABRICA.md`, capturas a tamaño de móvil de verdad (`t/cdpshot.py`) y visor de escenas (`t/t_ver.js`).
+- Quien se queda a dormir, duerme: la amiga o el amigo que pasa la noche en casa se acuesta a su hora en la cama libre; si no hay, en el sofá; si tampoco, comparte la cama; antes se quedaba de pie toda la noche al lado del personaje.
+- La persona acogida («que se quede lo que haga falta») vive en casa las semanas que dure, no solo la primera noche: cocina, sale a sus cosas y duerme cada noche; «una semana» son seis días de verdad. Echarla desde su menú la echa. Los textos dicen dónde duerme.
+- Se ve quién duerme: cualquiera de la casa (madre, compañeros de piso, visita) aparece acostado en su cama o en el sofá, no como un «zzz» sobre un mueble vacío.
+- Calentador roto en alquiler: ya se puede hacer algo. A los dos días (y desde Vida → En casa) se decide entre reclamar por burofax, pagar el arreglo y descontarlo, llevarlo al sindicato de inquilinas (si se está en él) o aguantar. La pestaña dice por qué sigue roto.

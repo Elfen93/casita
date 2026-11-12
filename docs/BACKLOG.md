@@ -13,6 +13,8 @@ Orden del frente A (12 nov 2026): 1 población · 2 lugares · 3 interacciones y
 ### ✅ T-110 · Colegio público, concertado e instituto (`mods/escuela.js`) · ✅ T-112 · Universidad pública y privada (`mods/universidad.js`)
 ### ✅ T-104 · Rótulos que no se pisan y gente bien colocada (`mods/rotulos.js`, `mods/poblacion.js`) · ✅ T-105 y T-106 · Pulido en móvil de salud, empleo, casas y aulas
 
+### ✅ T-107 · Huéspedes que duermen y se ven, acogida que dura (`mods/huesped.js`, `t/t_huesped.js`) · calentador de alquiler con decisión (`mods/hogar.js`, dilema `calentador`)
+
 ### T-113 · Elegir colegio para los hijos
 Rol: sistemas + guion. Hoy los hijos del personaje van a la pública. Poder elegir concertado (cuota «voluntaria» mensual, uniforme) con consecuencias reales y sin monigotes.
 

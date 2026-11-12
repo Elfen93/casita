@@ -15,7 +15,7 @@ const PERSONAL=[
     auto:()=>isLeft()&&comp()>=2?0:S.money>WP()*1.2?1:2},
   {id:'amiga',c:()=>!!P_('amiga'),t:()=>`🫶 Su mejor amig${P_('amiga').g==='a'?'a':'o'}`,x:()=>{const f=P_('amiga');return `${f.n} ha aparecido con una maleta. ${f.g==='a'?'La':'Lo'} han echado del piso: no podía pagar. Pregunta si puede quedarse «unos días».`;},
     o:()=>{const f=P_('amiga');return [
-      {t:'Que se quede lo que haga falta',f:()=>{f.rel=Math.min(100,f.rel+20);ex().exp.solid++;S.res=S.res||[];inviteHome(f,true);S.lodger=f.k;schedule(21,'lodger',{p:f.k});tell(`${f.n} duerme en el sofá. Paga la mitad de la compra y hace las mejores lentejas del barrio.`,'🛋️');}},
-      {t:'Una semana, y que busque algo',f:()=>{f.rel=Math.max(0,f.rel-5);inviteHome(f,true);tell(`${f.n} ha entendido el mensaje. A los seis días ya tenía una habitación de ${fmt(Math.round(weeklyRent()*.7))} a la semana, compartiendo con cuatro desconocidos.`,'🧳');}},
+      {t:'Que se quede lo que haga falta',f:()=>{f.rel=Math.min(100,f.rel+20);ex().exp.solid++;S.res=S.res||[];inviteHome(f,true);S.lodger=f.k;schedule(21,'lodger',{p:f.k});tell(`${f.n} duerme ${huDonde(f)[0]}. Paga la mitad de la compra y hace las mejores lentejas del barrio.`,'🛋️');}},
+      {t:'Una semana, y que busque algo',f:()=>{f.rel=Math.max(0,f.rel-5);inviteHome(f,true);S.lodger=f.k;S.lodgerEnd=S.day+6;tell(`${f.n} ha entendido el mensaje. Duerme ${huDonde(f)[0]}, con la maleta sin deshacer, y esa misma noche ya está mirando anuncios.`,'🧳');}},
       {t:`Prestarle ${fmt(Math.round(WP()*.5))} para una fianza`,ok:()=>S.money>=WP()*.5,f:()=>{S.money-=Math.round(WP()*.5);f.rel=Math.min(100,f.rel+10);schedule(35,'devolver',{p:f.k,m:Math.round(WP()*.5)});tell(`${f.n} ha encontrado una habitación. Devolverá el dinero «en cuanto pueda».`,'🤝');}}];},
     auto:()=>T('solidaria')||T('sociable')?0:1}];

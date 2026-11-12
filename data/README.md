@@ -144,6 +144,8 @@ Campos comunes: `n` nombre · `e` emoji · `d` descripción.
 |---|---|---|
 | `dilemas` | `DLG` (`DT` en el código) | Los textos de cada dilema, por id: `t` título · `x` cuerpo (si cambia según el caso, un objeto con una frase por caso) · `o` opciones `[{t, s, …}]`: `t` etiqueta, `s` letra pequeña, y las frases de lo que pasa al elegir con nombre propio: `tell`, `tell_ok`/`tell_ko`, `chose`, `rem` (`remember`), `cap`/`capx` (título y texto de `chapter`). Si las opciones dependen del caso, `o` es un objeto con una lista por caso (`contra`, `incidente`) y `o_sin` es la opción de relleno cuando falta la persona. Las listas de frases al azar (`casos`, `dias`, `tareas`…) las elige `pickR`. Condiciones, efectos y `auto` son código, en `src/core/058`, `068`, `mods/jornada.js` y `mods/crianza.js`. |
 
+El dilema `calentador` lleva además `fin_burofax` y `fin_sindicato`: la frase del día en que por fin lo arreglan, según lo que se eligió.
+
 ## Lo que todavía está en el código
 
 Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con condiciones y efectos:
