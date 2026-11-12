@@ -60,3 +60,4 @@
 - Peso: por debajo del objetivo y comiendo bien (nutrición 55+), gana de verdad (~1 kg a la semana, algo más yendo al gimnasio); el gimnasio ya no le resta lo que gana comiendo.
 - Patrimonio: el resumen de temporada cuenta cuenta + ahorro + lo hecho y comprado en casa − deudas («Es 378 € más rico… (en la cuenta −252 €, invertido en la casa +630 €)»); en Vida, línea de patrimonio.
 - Una clase de verdad: al ir a clase se entra en un aula del centro de adultos (en el edificio de la biblioteca), con pizarra con la asignatura, tema, deberes y fecha del examen, la profe explicando, pupitres con compañeras y el personaje en su sitio con su cuaderno.
+- Documento maestro docs/CASITA.md: qué es, reglas, mapa de sistemas, decisiones y plan (paso 0, fábrica, Godot).

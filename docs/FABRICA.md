@@ -1,5 +1,7 @@
 # Casita · la fábrica
 
+> Antes de nada: lee `docs/CASITA.md` (documento maestro).
+
 Cómo trabajan varios agentes a la vez sin pisarse.
 
 ## Estructura del repo
