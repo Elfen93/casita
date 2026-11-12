@@ -15,6 +15,9 @@ Orden del frente A (12 nov 2026): 1 población · 2 lugares · 3 interacciones y
 
 ### ✅ T-107 · Huéspedes que duermen y se ven, acogida que dura (`mods/huesped.js`, `t/t_huesped.js`) · calentador de alquiler con decisión (`mods/hogar.js`, dilema `calentador`)
 
+### T-121 · Pulido del mapa y de los vecinos
+Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son cajas con rótulo); rótulos de las casas del censo que no tapen tejados; horario de súper, bar y obra en la ficha; romance con vecinos adultos; `SCENES.comedor` falla con acciones que no son suyas (hoy se esquiva desde `barrio.js`).
+
 ### T-113 · Elegir colegio para los hijos
 Rol: sistemas + guion. Hoy los hijos del personaje van a la pública. Poder elegir concertado (cuota «voluntaria» mensual, uniforme) con consecuencias reales y sin monigotes.
 
@@ -24,10 +27,10 @@ Rol: motor. Las escenas de 12×9 casillas (patios, súper) se ven algo más pequ
 ### (hecho) T-110 · Colegio e instituto
 Rol: escenas. Dos lugares con escena (patio y aula; pasillo con taquillas). Las criaturas y adolescentes del censo que tienen `estudia: 'cole'|'instituto'` están allí en horario de clase; a la salida, adultas de su hogar en la puerta. Hecho cuando: capturas de entrada, recreo y salida; `t/t_censo.js` pasa con los nuevos lugares.
 
-### ⚡ T-111 · El mapa del barrio vuelve a pintarse
+### ✅ (hecho, `mods/barrio.js`) T-111 · El mapa del barrio vuelve a pintarse
 Rol: motor. `barrioItems`/`drawBarrioGround` existen en `src/core/047` pero nada los llama. Recuperar la vista del barrio (al salir de casa o con un botón), con los edificios de `lugares` y los del censo (`edificios`: bloques y casas) y tocar un edificio para verlo. Hecho cuando: captura del barrio con bloques y casas; no baja el rendimiento en la vista de casa.
 
-### ⚡ T-120 · Conocer a los vecinos
+### ✅ (hecho, `mods/vecinos.js`) T-120 · Conocer a los vecinos
 Rol: sistemas + guion. En una escena, tocar a un vecino con nombre: ficha (oficio, una frase) y «Presentarse». Al conocerle pasa a `S.people` con `vid` (su id del censo) y `hogar`, y `hogarDe(p)` ya le lleva a su casa de verdad. Sus lazos se van descubriendo (`lazos`). Partidas guardadas: nada obligatorio. Hecho cuando: prueba que conoce a tres vecinos, visita una casa del censo y ve a su familia.
 
 ### ✅ T-001 · Población en las escenas (hecho el 12 nov 2026: `mods/poblacion.js`, `data/personas.json` → vecinos)

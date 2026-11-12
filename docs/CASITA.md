@@ -48,7 +48,7 @@ casita/
                       ideologías, gobiernos, reglas y sucesos (data/README.md). Lo comparten el juego web y Godot
   src/head.html, src/tail.html
   src/core/NNN_*.js   núcleo: 99 archivos numerados (motor, dibujo, casa, trabajo, mundo…)
-  mods/*.js           64 módulos que amplían el núcleo, en el orden de build.json
+  mods/*.js           66 módulos que amplían el núcleo, en el orden de build.json
   mods/movil.css      estilos de todas las ventanas
   p3d/, q3d/          librería 3D y modelos de los personajes
   pwa/                registro del service worker
@@ -155,8 +155,8 @@ Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`do
    - ✅ El censo: 46 personas en 15 hogares y 8 edificios (`data/personas.json` → `vecinos`, `hogares`, `edificios`), con trabajo y horario, historia y lazos; 10 niñas y niños y 7 adolescentes.
    - ✅ En las escenas: cada cual donde le toca a su hora, quien trabaja en su puesto, las criaturas con una adulta de su casa (`mods/poblacion.js`).
    - ✅ Casas visitables: el piso o la casa de cada hogar por dentro, según su nivel y quién vive allí (`mods/hogares.js`).
-2. **Lugares visitables: primero los lugares.** ✅ Centro de salud y oficina de empleo. ✅ Colegio público, colegio concertado e instituto (las criaturas del censo van a clase; con hijos propios, «Recoger del cole» y «Reunión con la tutora»). ✅ Universidad pública y privada (se elige al matricularse: mismo título, otro precio y otro horario). Siguen: volver a pintar el mapa del barrio y poder mirar un edificio sin estar en él (T-111), mercado, polideportivo y más bares; después, otros barrios y ciudades.
-3. **Interacciones y personajes con los que se puede tratar**, entre toda la población nueva: conocer a los vecinos del censo (hoy son figurantes), que pasen a la lista de gente con su hogar y sus lazos, visitarles, e interacciones nuevas en los lugares y en casa.
+2. **Lugares visitables: primero los lugares.** ✅ Centro de salud y oficina de empleo. ✅ Colegio público, colegio concertado e instituto (las criaturas del censo van a clase; con hijos propios, «Recoger del cole» y «Reunión con la tutora»). ✅ Universidad pública y privada (se elige al matricularse: mismo título, otro precio y otro horario). ✅ El mapa del barrio, con «Mirar dentro» de cualquier lugar (`mods/barrio.js`, `data/barrio.json`). Siguen: mercado, polideportivo y más bares; después, otros barrios y ciudades.
+3. **Interacciones y personajes con los que se puede tratar**, entre toda la población nueva: ✅ conocer a los vecinos del censo: ficha, presentarse, pasan a Gente con su hogar, visitarles, lazos que se descubren (`mods/vecinos.js`). Siguen: interacciones nuevas en los lugares y en casa, y romance con vecinos adultos (T-121).
 
 Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git worktree add ../wt/t0NN -b fab/t0NN main`); cada agente lee solo los documentos que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica. La revisión es de diseño y tiene la última palabra: un defecto que se ve no se publica ni se apunta, se arregla antes (`docs/FABRICA.md`, «Revisión de diseño»).
 

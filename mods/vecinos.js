@@ -34,7 +34,7 @@ function vcProb(v,via){let c=.42+(lvl('carisma')||0)*.05;
   try{const a=S.ideo,b=v.ideo;if(a&&b){if(a===b&&a!=='apolitica')c+=.12;else if((LEFT.includes(a)&&RIGHT.includes(b))||(RIGHT.includes(a)&&LEFT.includes(b)))c-=.12;}}catch(e){}
   if(via)c+=.28;return Math.max(.15,Math.min(.92,c));}
 // presentarse: pasa a S.people (una sola vez) y deja una tarjeta con lo que ha pasado
-function vcConocer(v,o){o=o||{};if(!v)return null;const ya=vcPer(v.id);if(ya)return ya;if(vcMenor(v,12))return null;
+function vcConocer(v,o){if(typeof BM!=='undefined'&&BM.obs){toast('👁️ Desde el mapa solo se mira: ve allí para hablar');return;}o=o||{};if(!v)return null;const ya=vcPer(v.id);if(ya)return ya;if(vcMenor(v,12))return null;
   const via=o.via||null,ok=Math.random()<vcProb(v,via);
   const rel=Math.round(((ok?16+Math.random()*8:6+Math.random()*4)+(via?8:0))*10)/10;
   const p={k:vcK(v.id),vid:v.id,hogar:v.hogar,n:v.n,g:v.g,age:v.edad,ch:vcCh(v),ideo:v.ideo||'apolitica',rel,love:0,stage:'conocida',
@@ -48,7 +48,7 @@ function vcConocer(v,o){o=o||{};if(!v)return null;const ya=vcPer(v.id);if(ya)ret
   try{sfxCard(ok?'🤝':'👋',huecos(L[0],vars),huecos(L[1],vars),ok?true:null,p,{rel:0,stage:p.stage});}catch(e){}
   return p;}
 // charlar un rato con alguien ya conocido (una vez al día): sube la relación y avisa si se ha soltado
-function vcCharla(p){if(!p||vcMenorP(p))return false;const v=vecinoPorId(p.vid);if(!v)return false;
+function vcCharla(p){if(typeof BM!=='undefined'&&BM.obs){toast('👁️ Desde el mapa solo se mira: ve allí para hablar');return;}if(!p||vcMenorP(p))return false;const v=vecinoPorId(p.vid);if(!v)return false;
   const D=S.vcharla=S.vcharla||{};if(D[p.k]===S.day){toast(vcT('charla_hoy'));return false;}D[p.k]=S.day;
   const r0=p.rel||0,b={rel:r0,stage:p.stage};p.rel=Math.min(100,r0+2+Math.min(4,(lvl('carisma')||0)*.4)+Math.random()*1.5);p.last=S.day;
   S.needs.social=Math.min(100,(S.needs.social||0)+6);
