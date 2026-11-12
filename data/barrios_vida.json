@@ -473,7 +473,7 @@
       "control": 0,
       "visitas_casero": 0.006,
       "pie": {"ambulatorio": 14, "cole": 8, "parada": 2},
-      "ficha": {"gana": "Todo a pie, mercado y juzgados a la vuelta, tranvía cada pocos minutos.", "pierde": "Cada renovación sube más: los fondos compran portales y los turistas pagan la noche. Terrazas hasta las dos."}
+      "ficha": {"gana": "Todo a pie y el tranvía cada pocos minutos: servicios de sobra y vecinas que se conocen.", "pierde": "Ruido de plaza y terrazas hasta las dos, compra y cañas más caras, y cada renovación sube más: los fondos compran portales."}
     },
     "ensanche": {
       "compra": 1.08,
@@ -491,8 +491,8 @@
       "ficha": {"gana": "Ascensor, fibra y aceras anchas. Obra de día y silencio de noche.", "pierde": "Pocos bares, ningún vecino de siempre y la plaza prometida sigue siendo un solar. Cafés a tres euros."}
     },
     "pinares": {
-      "compra": 1.15,
-      "bar": 1.35,
+      "compra": 1.2,
+      "bar": 1.5,
       "ruido": 0,
       "seguridad": 5,
       "policia": {"p": 0.006, "pobre": 4, "rico": 0.3, "txt_pobre": "Dos agentes piden la documentación a {n} en la puerta de su casa: «un aviso de un vecino». Tardan diez minutos en creer que vive ahí.", "txt_rico": "Un coche de seguridad privada pasa dos veces por tu calle. No es por ti."},
@@ -503,7 +503,7 @@
       "control": 1,
       "visitas_casero": 0.002,
       "pie": {"ambulatorio": 30, "cole": 7, "parada": 9},
-      "ficha": {"gana": "Silencio, jardines y una avería arreglada en días: la comunidad paga rápido.", "pierde": "La comunidad también mira. Quien no parece de allí es parada en la puerta, y los vecinos escriben notas por un toldo."}
+      "ficha": {"gana": "Silencio, jardines y la mayor seguridad de la ciudad. El casero casi no aparece.", "pierde": "La compra y las cañas, lo más caro; la policía para a quien no parece de allí y casi nadie llama a la puerta."}
     },
     "ribera": {
       "compra": 1.0,
@@ -516,9 +516,9 @@
       "presion": 0.04,
       "abandono": 2,
       "control": 0.1,
-      "visitas_casero": 0.01,
+      "visitas_casero": 0.02,
       "pie": {"ambulatorio": 6, "cole": 5, "parada": 4},
-      "ficha": {"gana": "Se conoce todo el mundo: quien fía en el súper, quien arregla la persiana. Ambulatorio y cole a pie.", "pierde": "Los pisos viejos no se arreglan y el alquiler sube porque el centro ya no cabe."}
+      "ficha": {"gana": "Los precios más bajos de la ciudad. Ambulatorio y cole a pie, y todo el mundo se conoce.", "pierde": "El casero entra más que en ningún otro barrio y el alquiler sube cada año porque el centro ya no cabe."}
     },
     "eras": {
       "compra": 1.06,
@@ -526,7 +526,7 @@
       "ruido": 2,
       "seguridad": 2,
       "policia": {
-        "p": 0.02,
+        "p": 0.015,
         "pobre": 2,
         "rico": 1,
         "txt_pobre": "Furgón en la parada: control de identidad a todo el que parece lo que parece. {n} enseña los papeles, espera diez minutos y pierde el autobús, que sí que pasó.",
@@ -539,7 +539,7 @@
       "control": 0,
       "visitas_casero": 0.008,
       "pie": {"ambulatorio": 38, "cole": 6, "parada": 5},
-      "ficha": {"gana": "Vida de calle: comedor, asociación, locutorio y quien baja a ayudarte con la compra. Alquiler a dos tercios de la media.", "pierde": "Redadas y controles a quien parece lo que parece, averías que tardan semanas y un autobús que a veces no pasa."}
+      "ficha": {"gana": "Vida de calle: más trato con las vecinas que en ningún otro barrio, comedor, asociación y las cañas más baratas.", "pierde": "Controles de identidad a quien parece lo que parece, seguridad y servicios por los suelos y el ambulatorio a 38 minutos."}
     },
     "poligono": {
       "compra": 1.04,
@@ -558,7 +558,7 @@
     }
   },
 
-  "pesos": {"animo_seguridad": 0.3, "animo_servicios": 0.3, "animo_ruido": 0.2, "animo_red": 1.0, "energia_ruido": 1.2, "corte_energia": 1, "corte_higiene": 2},
+  "pesos": {"animo_seguridad": 0.5, "animo_servicios": 0.5, "animo_ruido": 0.4, "animo_red": 1.0, "energia_ruido": 1.2, "corte_energia": 1, "corte_higiene": 2},
 
   "sucesos": {
     "casco": {
@@ -640,7 +640,7 @@
 
   "textos": {
     "ficha_titulo": "Vivir aquí",
-    "ficha_alquiler": "Alquiler ×{f} la media de la ciudad",
+    "ficha_alquiler": "Alquiler ×{f} la media de la ciudad.",
     "ficha_ejemplo": "Un piso de ejemplo: {r} a la semana",
     "ficha_tuyo": " · el tuyo: {r}",
     "ficha_sin_vivienda": "Aquí no hay vivienda de alquiler para el personaje",
@@ -648,11 +648,8 @@
     "itv_multa": "Multa de {c}: la ITV de la furgoneta estaba caducada. A quien reparte, por no tener tiempo de hacer cola.",
     "ficha_trayecto": "Al curro ({sitio}): {m} min",
     "ficha_trayecto_sin": "Al curro: sin trabajo fijo ahora.",
-    "ficha_pie": "A pie: parada {parada} min, cole {cole} min, ambulatorio {amb} min.",
-    "ficha_bueno": "Lo bueno: {t}",
-    "ficha_cuesta": "Lo que cuesta: {t}",
-    "ficha_efectos": "Compra ×{compra}, bar ×{bar}, ruido {ruido}/3, seguridad {seg}/5, {red}.",
-    "casa_linea": "{b}: alquiler ×{f}, al curro {m} min, compra ×{compra}, ruido {ruido}/3.",
+    "ficha_pie": "Parada {parada} min, cole {cole} min, ambulatorio {amb} min.",
+    "casa_linea": "📍 {b} · al curro {m} min · compra ×{compra} · ruido {ruido}/3.",
     "aviso_alquiler": "Con el piso nuevo, el alquiler sale a ×{f} de la media del barrio.",
     "renueva_barrio": "El casero reajusta el contrato al barrio: ×{f}.",
     "presion_casco": "Los fondos y los pisos turísticos suben el precio de la zona: otro {pct} % por encima de la subida normal.",
@@ -663,6 +660,10 @@
     "hrs_unidad": "h",
     "hecho_ya": "Ya has estado hoy.",
     "sin_dinero": "No llega para eso.",
-    "sin_mov": "No hay nada que acompañar hoy."
+    "sin_mov": "No hay nada que acompañar hoy.",
+    "ficha_pie_t": "A pie",
+    "ficha_gana_t": "Lo que ganas",
+    "ficha_cuesta_t": "Lo que cuesta",
+    "ficha_cuesta_cifras": "Compra ×{compra}, bar ×{bar}, ruido {ruido}/3."
   }
 }

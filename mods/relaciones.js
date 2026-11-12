@@ -38,14 +38,14 @@ const GEST=conLogica(DATA.interacciones.gestos,{
   charlar:{ok:()=>true,run:p=>{talkTo(p);popBubble('💬');bubbleFor(p,pickR(TXHZ.relaciones.ya_ves_lista));return huecos(TXHZ.relaciones.ponen_al_dia,{p:p.n});}},
   chiste:{ok:()=>true,run:p=>{const q=lvl('carisma')+Math.random()*4;if(q>3){p.rel=Math.min(100,p.rel+5);S.needs.diversion=Math.min(100,S.needs.diversion+10);bubbleFor(p,'😂');return huecos(TXHZ.relaciones.rie_verdad,{p:p.n});}p.rel=Math.max(0,p.rel-1);bubbleFor(p,'😐');return huecos(TXHZ.relaciones.sonrie_compromiso,{p:p.n});}},
   abrazar:{ok:p=>p.rel>=40||isRom(p)||p.k==='madre',run:p=>{p.rel=Math.min(100,p.rel+4);if(p.love!=null)p.love=Math.min(100,p.love+2);S.needs.social=Math.min(100,S.needs.social+10);bubbleFor(p,'🫂');return huecos(TXHZ.relaciones.abrazo_largo,{p:p.n});}},
-  ligar:{ok:p=>p.k.startsWith('p')&&!isRom(p)&&p.stage!=='ex'&&canLove(p),run:p=>{flirt(p);return null;}},
-  besar:{ok:p=>p.k.startsWith('p')&&p.stage!=='ex'&&canLove(p)&&(isRom(p)||(p.chispa||0)>=2),run:p=>{
+  ligar:{ok:p=>romPersona(p)&&!isRom(p)&&p.stage!=='ex'&&canLove(p),run:p=>{flirt(p);return null;}},
+  besar:{ok:p=>romPersona(p)&&p.stage!=='ex'&&canLove(p)&&(isRom(p)||(p.chispa||0)>=2),run:p=>{
     if(!isRom(p)){const c=.3+(p.love||0)/150+lvl('carisma')*.04;if(Math.random()<c){p.love=Math.min(100,p.love+12);p.chispa=(p.chispa||0)+1;p.chispaDay=S.day;bubbleFor(p,'💋');popBubble('💋');sfx('level');if(p.chispa>=3&&p.love>=40){setStage(p,'cita');chapter('cita1',TXHZ.relaciones.primera_cita,huecos(TXHZ.relaciones.beso_pasillo_ha_cambiado_todo,{p:p.n}));}return huecos(TXHZ.relaciones.han_besado,{p:p.n,x:p.stage==='cita'?TXHZ.relaciones.ya_hay_vuelta_atras:TXHZ.relaciones.nadie_ha_dicho_nada_despues});}
       p.rel=Math.max(0,p.rel-8);p.fails=(p.fails||0)+1;bubbleFor(p,'😳');return huecos(TXHZ.relaciones.ha_lanzado_ha_apartado_incomodisimo,{p:p.n});}
     p.love=Math.min(100,p.love+4);S.needs.social=Math.min(100,S.needs.social+8);S.needs.diversion=Math.min(100,S.needs.diversion+6);bubbleFor(p,'💋');popBubble('💕');return null;}},
-  cama:{ok:p=>p.k.startsWith('p')&&canLove(p)&&(['rollo','pareja','convive','casada'].includes(p.stage)||(p.stage==='cita'&&(p.love||0)>=55)),run:p=>intimo(p)},
-  hotel:{cost:()=>Math.round(9*Math.max(5,90*Dm().pay/8)),ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2),run:p=>escapada(p,'hotel')},
-  sucasa:{ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2)&&ownPlace(p),run:p=>escapada(p,'sucasa')},
+  cama:{ok:p=>romPersona(p)&&canLove(p)&&(['rollo','pareja','convive','casada'].includes(p.stage)||(p.stage==='cita'&&(p.love||0)>=55)),run:p=>intimo(p)},
+  hotel:{cost:()=>Math.round(9*Math.max(5,90*Dm().pay/8)),ok:p=>romPersona(p)&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2),run:p=>escapada(p,'hotel')},
+  sucasa:{ok:p=>romPersona(p)&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2)&&ownPlace(p),run:p=>escapada(p,'sucasa')},
   discutir:{ok:()=>true,run:p=>{p.rel=Math.max(0,p.rel-8);if(p.love!=null)p.love=Math.max(0,p.love-5);p.wear=Math.min(100,(p.wear||0)+6);p.wearWhy='broncas';bubbleFor(p,'😠');popBubble('😠');S.needs.social=Math.max(0,S.needs.social-5);return huecos(TXHZ.relaciones.han_discutido,{p:p.n,x:pickR([TXHZ.relaciones.platos,TXHZ.relaciones.discute_politica,TXHZ.relaciones.discute_dinero,TXHZ.relaciones.quien_contesta_mensajes,TXHZ.relaciones.tonteria_era_tonteria])});}},
   echar:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return r&&r.kind==='guest';},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.until=S.day*1440+S.t;r.stay=false;}p.rel=Math.max(0,p.rel-3);return huecos(TXHZ.relaciones.marcha,{p:p.n});}},
 });
@@ -76,7 +76,7 @@ function intimo(p){const r=(S.res||[]).find(x=>x.pid===p.k);if(!r||r.away)return
 // ---- menú al tocar a alguien en casa ----
 let perMenuEl=null;function closePerMenu(){if(perMenuEl)perMenuEl.classList.remove('on');}
 function openPerMenu(p){if(!perMenuEl){perMenuEl=document.createElement('div');perMenuEl.id='permenu';perMenuEl.className='';document.body.appendChild(perMenuEl);addEventListener('pointerdown',e=>{if(perMenuEl.classList.contains('on')&&!perMenuEl.contains(e.target))closePerMenu();},true);}
-  const rom=p.k.startsWith('p');let h=`<div class="omt">${p.ch&&p.ch.look&&LOOK_SRC[p.ch.look]?`<img src="${LOOK_SRC[p.ch.look]}" class="pmav">`:'🙂'} <span><b>${p.n}</b><small>${rom?STAGE[p.stage]||'':p.r||''} · ${p.rel|0}% ${p.love!=null&&isRom(p)?'· ❤️ '+(p.love|0):''}</small></span></div>`;
+  const rom=romPersona(p);let h=`<div class="omt">${p.ch&&p.ch.look&&LOOK_SRC[p.ch.look]?`<img src="${LOOK_SRC[p.ch.look]}" class="pmav">`:'🙂'} <span><b>${p.n}</b><small>${rom?STAGE[p.stage]||'':p.r||''} · ${p.rel|0}% ${p.love!=null&&isRom(p)?'· ❤️ '+(p.love|0):''}</small></span></div>`;
   for(const k in GEST){const g=GEST[k];if(!g.ok(p))continue;h+=`<button class="oma" data-g="${k}"><span>${g.e}</span><span class="omn"><b>${g.n}</b></span></button>`;}
   perMenuEl.innerHTML=h;perMenuEl.classList.add('on');const W=perMenuEl.offsetWidth||230,H=perMenuEl.offsetHeight||200;let [x,y]=lastPtr;x=Math.max(8,Math.min(innerWidth-W-8,x-W/2));y=y+14+H>innerHeight-130?Math.max(60,y-H-14):y+14;perMenuEl.style.left=x+'px';perMenuEl.style.top=y+'px';
   perMenuEl.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{closePerMenu();const g=GEST[b.dataset.g];if(S.sim.work>0){toast(huecos(TXHZ.relaciones.esta_casa2,{}));return;}

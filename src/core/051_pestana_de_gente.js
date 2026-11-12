@@ -1,4 +1,11 @@
 // ---------- pestaña de gente ----------
+// ¿Caben opciones románticas con esta persona? (lista de Gente, menú de opciones, gestos, visitas, quedarse a dormir). Núcleo: las de clave «p…».
+// mods/trato.js la amplía a los vecinos adultos libres del censo y la cierra a cualquier menor.
+function romPersona(p){return !!p&&p.k.startsWith('p');}
+// ¿Se puede ir a vivir con ella? (mods/trato.js lo cierra con los vecinos del censo, que tienen su casa)
+function puedeConvivir(p){return true;}
+// línea extra bajo el nombre (mods/trato.js: lo que os debéis)
+function notaPersona(p){return '';}
 function genteTab(){
   const L=LIFE(),pt=partner();let h='';
   const chips=(key,obj)=>`<div class="chips">${Object.entries(obj).map(([k,v])=>`<button class="mini${L[key]===k?' sel':''}" data-life="${key}" data-v="${k}">${v}</button>`).join('')}</div>`;
@@ -13,13 +20,13 @@ function genteTab(){
   h+=`<h3>${TXN.gente.ui_gente}</h3>`;
   const order=p=>isPartner(p)?0:p.stage==='rollo'?1:p.stage==='cita'?2:['madre','amiga'].includes(p.k)?3:p.stage==='ex'?9:5;
   for(const p of [...(S.people||[])].sort((a,b)=>order(a)-order(b)||b.rel-a.rel)){
-    const rom=p.k.startsWith('p');const st=rom?STAGE[p.stage]:p.r;
-    h+=`<div class="pers"><canvas data-por="${p.k}" width="80" height="80"></canvas><div class="pi"><b>${p.n}</b> <small>${rom?roleTxt(p)+' · '+(IDEOS[p.ideo]?IDEOS[p.ideo].e:''):''}</small><div class="sub" style="font-size:11px">${st}${rom&&p.met?' · de '+p.met.replace(/^el /,''):''}</div>${p.bio?`<div class="sub" style="font-size:11px;font-style:italic;margin-top:2px">${!rom&&p.job&&p.ch&&p.ch.look?p.job[0].toUpperCase()+p.job.slice(1)+'. ':''}${p.bio}</div>`:''}${(p.rev||[]).length?`<div class="hbs">${hidBadges(p)}</div>`:''}`;
+    const rom=romPersona(p);const st=rom?STAGE[p.stage]:p.r;
+    h+=`<div class="pers"><canvas data-por="${p.k}" width="80" height="80"></canvas><div class="pi"><b>${p.n}</b> <small>${rom?roleTxt(p)+' · '+(IDEOS[p.ideo]?IDEOS[p.ideo].e:''):''}</small><div class="sub" style="font-size:11px">${st}${rom&&p.met?' · de '+p.met.replace(/^el /,''):''}</div>${p.bio?`<div class="sub" style="font-size:11px;font-style:italic;margin-top:2px">${!rom&&p.job&&p.ch&&p.ch.look?p.job[0].toUpperCase()+p.job.slice(1)+'. ':''}${p.bio}</div>`:''}${(p.rev||[]).length?`<div class="hbs">${hidBadges(p)}</div>`:''}${notaPersona(p)?`<div class="sub" style="font-size:11px;color:#7a4fa0">${notaPersona(p)}</div>`:''}`;
     h+=`<div class="minibars"><i style="width:${p.rel}%;background:#7a6fd0"></i></div>`;if(rom&&p.stage!=='conocida'&&p.stage!=='amiga'&&p.stage!=='ex')h+=`<div class="minibars"><i style="width:${p.love}%;background:#e88aa8"></i></div>`;if((p.wear||0)>12&&p.stage!=='ex')h+=`<div class="minibars" title="${TXN.gente.ui_desgaste_t}"><i style="width:${p.wear}%;background:#e9a23b"></i></div><div class="sub" style="font-size:10.5px">${huecos(TXN.gente.ui_desgaste,{why:p.wearWhy?': '+p.wearWhy:''})}</div>`;
     h+=`<div class="pbtn"><button class="mini" data-act="call" data-p="${p.k}">☎️</button><button class="mini" data-act="out" data-p="${p.k}">🍻</button><button class="mini" data-act="home" data-p="${p.k}">🏠</button>`;
     if(rom&&p.stage!=='ex'){if(['conocida','amiga'].includes(p.stage)&&canLove(p))h+=`<button class="mini" data-act="flirt" data-p="${p.k}">${TXN.gente.ui_ligar}</button>`;
       if(p.stage==='cita'||p.stage==='rollo')h+=`<button class="mini" data-act="date" data-p="${p.k}">${TXN.gente.ui_cita}</button><button class="mini" data-act="stay" data-p="${p.k}">${TXN.gente.ui_que_se_quede}</button><button class="mini" data-act="ask" data-p="${p.k}">${TXN.gente.ui_pedir_salir}</button>`;
-      if(p.stage==='pareja')h+=`<button class="mini" data-act="date" data-p="${p.k}">${TXN.gente.ui_cita}</button><button class="mini" data-act="stay" data-p="${p.k}">🌙</button><button class="mini" data-act="movein" data-p="${p.k}">${TXN.gente.ui_vivir_juntos}</button>`;
+      if(p.stage==='pareja')h+=`<button class="mini" data-act="date" data-p="${p.k}">${TXN.gente.ui_cita}</button><button class="mini" data-act="stay" data-p="${p.k}">🌙</button>${puedeConvivir(p)?`<button class="mini" data-act="movein" data-p="${p.k}">${TXN.gente.ui_vivir_juntos}</button>`:''}`;
       if(p.stage==='convive')h+=`<button class="mini" data-act="wed" data-p="${p.k}">${TXN.gente.ui_casarse}</button><button class="mini" data-act="hecho" data-p="${p.k}">${TXN.gente.ui_pareja_hecho}</button>`;
       if(['cita','rollo','pareja','convive','casada'].includes(p.stage))h+=`<button class="mini" data-act="break" data-p="${p.k}">💔</button>`;}
     h+=`</div></div></div>`;}

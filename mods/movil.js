@@ -176,7 +176,7 @@ function phFree(p,t){const P=PH();const th=P.th[p.k]||[];const last=th[th.length
   else if(thanks&&!plan){rel=2;ans=sel(F.gracias);}
   else if(study){rel=2;const C=(S.edu&&S.edu.cur);ans=sel(F.estudio);}
   else if(sick){rel=3;ans=sel(F.enfermo);}
-  else if(decl&&r!=='amor'&&r!=='madre'){const ok=canLove(p)&&(p.rel||0)>=45;rel=ok?3:-3;ans=sel(ok?F.declaracion_si:F.declaracion_no);if(ok){p.chispa=(p.chispa||0)+1;p.chispaDay=S.day;}}
+  else if(decl&&r!=='amor'&&r!=='madre'){const ok=(p.vid==null||romPersona(p))&&canLove(p)&&(p.rel||0)>=45;rel=ok?3:-3;ans=sel(ok?F.declaracion_si:F.declaracion_no);if(ok){p.chispa=(p.chispa||0)+1;p.chispaDay=S.day;}}
   else if(bye){rel=1;ans=sel(F.adios);}
   else if(rude){rel=-4;ans=sel(F.grosero);}
   else if(sleep&&r==='amor'){love=3;rel=4;act='stay';ans=sel(F.dormir);}

@@ -16,8 +16,6 @@
       "c": "#e9c46a",
       "alquiler": 1.4,
       "d": "Ayuntamiento, juzgados, mercado y la plaza. Viven jubiladas de toda la vida, pisos de estudiantes y quien paga por llegar andando. Los fondos van comprando portales enteros.",
-      "bueno": "Todo a pie, y el transporte pasa cada pocos minutos.",
-      "cuesta": "Cada renovación sube el alquiler y los bajos ya son todos de cadena.",
       "plano": [3, 5, 9, 10],
       "calles": [
         {"n": "Calle Mayor", "a": [0.0, 50.0], "b": [120.0, 50.0], "w": 5},
@@ -52,8 +50,6 @@
       "c": "#9cc3d5",
       "alquiler": 1.35,
       "d": "Barrio de tres años: torre de oficinas, campus privado y una grúa que no para. Viven parejas con hipoteca a treinta años. Manda la promotora, que aún no ha entregado la plaza.",
-      "bueno": "Todo nuevo: aceras anchas, ascensor y fibra.",
-      "cuesta": "Pocos bares, ningún vecino de siempre y la plaza prometida sigue siendo un solar.",
       "plano": [6, 0, 12, 5],
       "calles": [
         {"n": "Avenida de las Torres", "a": [0.0, 50.0], "b": [120.0, 50.0], "w": 6},
@@ -73,8 +69,6 @@
       "c": "#8fbf8a",
       "alquiler": 1.6,
       "d": "Chalets, adosados y un colegio concertado con lista de espera. Viven quienes pueden pagar el sitio y la tranquilidad. Manda la comunidad de propietarios, que vota quién entra.",
-      "bueno": "Silencio, jardines y calles seguras para ir con críos.",
-      "cuesta": "No hay comercio de barrio, y quien limpia y cuida llega en autobús desde lejos.",
       "plano": [0, 0, 6, 5],
       "calles": [
         {"n": "Avenida de los Pinos", "a": [0.0, 50.0], "b": [120.0, 50.0], "w": 5},
@@ -104,8 +98,6 @@
       "c": "#e8a67c",
       "alquiler": 1.0,
       "d": "Bloques de los setenta y casas bajas junto al parque del río. Viven quienes curran por turnos, y el bar es la oficina de información. Manda el casero, y la comunidad cuando se pone de acuerdo.",
-      "bueno": "Se conoce todo el mundo: quien fía en el súper, quien arregla la persiana.",
-      "cuesta": "Los pisos viejos no se arreglan y el alquiler sube porque el centro ya no cabe.",
       "plano": [9, 5, 15, 10],
       "calles": [
         {"n": "Calle del Canal", "a": [0.0, 50.0], "b": [120.0, 50.0], "w": 5},
@@ -143,8 +135,6 @@
       "c": "#b9a1c9",
       "alquiler": 0.65,
       "d": "Último barrio antes del descampado: bloques sin ascensor, casas autoconstruidas y un instituto con más mochilas que plazas. Viven quienes no entraron en otro sitio. Manda el banco que embargó dos bloques.",
-      "bueno": "Gente que se cuida: el comedor, la asociación y el locutorio funcionan de verdad.",
-      "cuesta": "Un solo autobús y ningún súper cerca: quien trabaja fuera pierde una hora al día en ir y volver.",
       "plano": [4, 10, 10, 15],
       "calles": [{"n": "Camino de las Eras", "a": [50.0, 0.0], "b": [50.0, 100.0], "w": 4}, {"n": "Calle Olivo", "a": [0.0, 30.0], "b": [120.0, 30.0], "w": 4}, {"n": "Calle del Pozo", "a": [0.0, 60], "b": [120.0, 60], "w": 3}, {"n": "Calle Noria", "a": [0.0, 88.0], "b": [120.0, 88.0], "w": 3}],
       "puertas": {
@@ -172,8 +162,6 @@
       "c": "#a9afb5",
       "alquiler": 0.8,
       "d": "Naves, camiones y un bar de menús. De día trabaja aquí media ciudad; de noche no vive nadie. Manda quien tiene la nave, y el sindicato guarda un local en la entrada.",
-      "bueno": "Hay curro, y los turnos se cobran.",
-      "cuesta": "Sin transporte de noche y sin más sitio donde comer que el menú.",
       "plano": [10, 10, 15, 15],
       "calles": [{"n": "Avenida del Metal", "a": [0.0, 50.0], "b": [100.0, 50.0], "w": 6}, {"n": "Camino de Servicio", "a": [50.0, 0.0], "b": [50.0, 100.0], "w": 5}, {"n": "Calle del Acero", "a": [0.0, 84.0], "b": [100.0, 84.0], "w": 5}],
       "puertas": {"naves": [20.0, 50.0, "Avenida del Metal"], "bar_cruce": [66.0, 50.0, "Avenida del Metal"], "sindicato": [82.0, 50.0, "Avenida del Metal"], "coop": [14.0, 84.0, "Calle del Acero"], "itv": [68.0, 84.0, "Calle del Acero"]},
