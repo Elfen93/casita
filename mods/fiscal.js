@@ -1,4 +1,5 @@
 // =================== IMPUESTOS DE VERDAD: nómina bruta/neta, IRPF por tramos, IVA, IBI, declaración y «tu año fiscal» ===================
+const {fiscal:TX_fiscal}=DATA.textos_mods_ag;
 // Modelo España 2026 simplificado. La moneda del juego es el euro.
 const FS_EUR=()=>1;
 const FS_SMI=DATA.gobiernos.smi_anual;
@@ -41,20 +42,20 @@ function fsIvaOf(ctx,v,P){const c=BK_CAT[ctx]||'otros';if(['ingresos','ahorro','
   const L=BKS().log;for(let i=L.length-1;i>=0&&i>L.length-80;i--){const e=L[i];if(e[0]<S.day-1)break;if(e[0]===S.day-1&&e[2]<0)f.yr.iva+=fsIvaOf(e[3],e[2],P);}
   if(S.union&&S.union.member&&typeof unionFee==='function')f.yr.sind+=unionFee()/30;
   // IBI, el recibo de otoño
-  if(S.owned&&d.m===9&&d.dm===1&&P.ibi>0){const v=Math.round(housePrice()*.003*P.ibi);if(v>0){bkAdd('Hacienda',-v);f.yr.ibi+=v;tell(`Recibo del IBI: ${fmt(v)}. Ser propietaria también se paga cada año.${P.k==='conservador'||P.k==='liberal'?' Este año, rebajado.':''}`.replace('propietaria',ga('propietaria','propietario','propietarie')),'🏛️');}}
+  if(S.owned&&d.m===9&&d.dm===1&&P.ibi>0){const v=Math.round(housePrice()*.003*P.ibi);if(v>0){bkAdd('Hacienda',-v);f.yr.ibi+=v;tell(huecos(TX_fiscal.ibi,{v:fmt(v),prop:ga(...TX_fiscal.ibi_prop),rebaja:P.k==='conservador'||P.k==='liberal'?TX_fiscal.ibi_rebajado:''}),'🏛️');}}
   // año nuevo: se cierra el anterior
   if(d.year!==f.yr.y){f.prev={...f.yr,done:false,gov:W_().gov};f.yr={y:d.year,bruto:0,ss:0,irpf:0,neto:0,emp:0,valor:0,iva:0,ibi:0,sind:0,shifts:0};
-    if(f.prev.bruto>0)tell(`Año fiscal cerrado. ${n} ganó ${fmt(Math.round(f.prev.bruto))} brutos y le llegaron ${fmt(Math.round(f.prev.neto))}. La declaración, en abril.`,'🧾');}
+    if(f.prev.bruto>0)tell(huecos(TX_fiscal.anio_cerrado,{b:fmt(Math.round(f.prev.bruto)),c:fmt(Math.round(f.prev.neto))}),'🧾');}
   // la renta: abril
   if(f.prev&&!f.prev.done&&d.m>=3){f.prev.done=true;if(f.prev.bruto>0||(f.prev.aut||0)>0)fsDeclara(f.prev);}
 }catch(e){console.error(e);}return r;};}
 function fsDeclara(p){const E=FS_EUR();const A=(p.bruto+Math.max(0,(p.aut||0)-(p.cuota||0)))*E;const P=FS_GOV[p.gov]||FSP();const sind=p.sind*E;const t=fsTax(A,P,sind);const real=t.irpf/E;const res=Math.round(real-p.irpf);const n=CH().name;
-  const why=[];if(p.shifts<fsShiftsYr()*.85)why.push('no trabajó el año entero y le retuvieron como si sí');if(sind>0)why.push(`la cuota del sindicato (${fmt(Math.round(p.sind))}) desgrava`);if((S.kids||[]).length)why.push('los críos rebajan la cuota');
+  const why=[];if(p.shifts<fsShiftsYr()*.85)why.push(TX_fiscal.decl_porque_sin_ano);if(sind>0)why.push(huecos(TX_fiscal.decl_porque_sindicato,{v:fmt(Math.round(p.sind))}));if((S.kids||[]).length)why.push(TX_fiscal.decl_porque_hijos);
   S.fs.decl={y:p.y,real:Math.round(real),ret:Math.round(p.irpf),res,day:S.day};
-  if(P.caja){tell(`Este año no hay declaración: la caja común se liquida sola en asamblea. ${n} ha ido a mirar en qué se gastó: hospital, comedores y el autobús nuevo.`,'🧾');return;}
-  if(Math.abs(res)<3){tell(`Declaración de la renta: ni pagar ni devolver. Retuvieron lo justo.`,'🧾');return;}
-  if(res<0){bkAdd('Hacienda',-res);tell(`Declaración de la renta: le devuelven ${fmt(-res)}. ${why.length?'Porque '+why.join(', ')+'.':''} Es su propio dinero, prestado un año a Hacienda sin intereses.`,'🧾');}
-  else{bkAdd('Hacienda',-res);tell(`Declaración de la renta: le sale a pagar ${fmt(res)}. ${n} lo mira tres veces. Está bien hecha.`,'🧾');}}
+  if(P.caja){tell(huecos(TX_fiscal.decl_caja,{}),'🧾');return;}
+  if(Math.abs(res)<3){tell(TX_fiscal.decl_igual,'🧾');return;}
+  if(res<0){bkAdd('Hacienda',-res);tell(huecos(TX_fiscal.decl_devuelven,{v:fmt(-res),porque:why.length?huecos(TX_fiscal.decl_porque,{lista:why.join(', ')}):''}),'🧾');}
+  else{bkAdd('Hacienda',-res);tell(huecos(TX_fiscal.decl_paga,{v:fmt(res)}),'🧾');}}
 // la compra: el IVA de los básicos entra en el precio
 // (comidas.js multiplica por govFood(); aquí se encadena el IVA)
 {const _gf=typeof govFood==='function'?govFood:()=>1;govFood=function(){return _gf()*govIvaFood();};}
@@ -63,28 +64,28 @@ let fsEl=null;
 function closeFs(){if(fsEl)fsEl.classList.remove('on');}
 function openFs(){const f=FS();const P=FSP();const G=GOVS[W_().gov]||{};const n=CH().name;if(!fsEl){fsEl=document.createElement('div');fsEl.id='fsheet';document.body.appendChild(fsEl);}
   const row=(a,b,cls)=>`<div class="gvr"><span>${a}</span><b${cls?` style="color:${cls}"`:''}>${b}</b></div>`;const F=v=>fmt(Math.round(v));const pc=v=>(v*100).toFixed(1).replace('.',',')+' %';
-  let h=`<div class="omt">🧾 Nómina e impuestos de ${n}</div><div class="sub" style="padding:0 8px 6px">${G.e||''} ${G.n||''}. Tramos y cotizaciones de 2026.</div>`;
+  const U=TX_fiscal.ui;let h=`<div class="omt">${huecos(U.titulo,{})}</div><div class="sub" style="padding:0 8px 6px">${huecos(U.sub,{ge:G.e||'',gn:G.n||''})}</div>`;
   const sl=f.last;
-  if(sl){h+=`<div class="gvbox"><div class="fst">Último turno (día ${sl.day})</div>`;
-    h+=row('🏭 Valor que produjo',F(sl.valor),'#2e8b57');h+=row('💼 Lo que le cuesta a la empresa',F(sl.coste));if(sl.emp>0)h+=row('  · cotización de la empresa',F(sl.emp));
-    h+=row('📄 Sueldo bruto',F(sl.bruto));h+=row(P.caja?'🤝 Caja común (salud, pensiones)':'🏥 Seguridad Social ('+pc(sl.ssr)+')','−'+F(sl.ss),'#c0392b');h+=row(P.caja?'🤝 Aportación progresiva':'🏛️ Retención de IRPF ('+pc(sl.ret)+')','−'+F(sl.irpf),'#c0392b');
-    h+=row('💶 Le llega',F(sl.neto),'#3b3247');h+=`<div class="sub" style="font-size:11px;padding:4px 0">De cada 100 que produce, le llegan ${Math.round(sl.neto/sl.valor*100)}. ${P.caja?'El resto se decide en asamblea.':'Al Estado van '+Math.round((sl.ss+sl.irpf+sl.emp)/sl.valor*100)+'; a la empresa, '+Math.round((sl.valor-sl.coste)/sl.valor*100)+'.'}</div></div>`;}
-  else h+=`<div class="sub" style="padding:6px 8px">Todavía no hay nómina este año.</div>`;
+  if(sl){h+=`<div class="gvbox"><div class="fst">${huecos(U.ultimo,{d:sl.day})}</div>`;
+    h+=row(U.valor,F(sl.valor),'#2e8b57');h+=row(U.coste,F(sl.coste));if(sl.emp>0)h+=row(U.cot_emp,F(sl.emp));
+    h+=row(U.bruto,F(sl.bruto));h+=row(P.caja?U.ss_caja:huecos(U.ss,{p:pc(sl.ssr)}),'−'+F(sl.ss),'#c0392b');h+=row(P.caja?U.aport:huecos(U.irpf_ret,{p:pc(sl.ret)}),'−'+F(sl.irpf),'#c0392b');
+    h+=row(U.llega,F(sl.neto),'#3b3247');h+=`<div class="sub" style="font-size:11px;padding:4px 0">${huecos(U.de_cada,{a:Math.round(sl.neto/sl.valor*100),resto:P.caja?U.resto_caja:huecos(U.resto_estado,{a:Math.round((sl.ss+sl.irpf+sl.emp)/sl.valor*100),b:Math.round((sl.valor-sl.coste)/sl.valor*100)})})}</div></div>`;}
+  else h+=`<div class="sub" style="padding:6px 8px">${U.sin_nomina}</div>`;
   const y=f.yr;const tot=y.ss+y.irpf+y.iva+y.ibi;
-  h+=`<div class="gvbox"><div class="fst">Este año (${y.y}) · ${y.shifts} turnos</div>${row('Bruto',F(y.bruto))}${row('Seguridad Social',F(y.ss))}${row('IRPF retenido',F(y.irpf))}${row('IVA pagado al comprar (aprox.)',F(y.iva))}${y.ibi?row('IBI',F(y.ibi)):''}${row('Total en impuestos y cotizaciones',F(tot),'#c0392b')}${y.bruto>0?row('Su tipo efectivo',pc(tot/(y.bruto+y.iva))):''}</div>`;
+  h+=`<div class="gvbox"><div class="fst">${huecos(U.anio,{y:y.y,s:y.shifts})}</div>${row(U.r_bruto,F(y.bruto))}${row(U.r_ss,F(y.ss))}${row(U.r_irpf,F(y.irpf))}${row(U.r_iva,F(y.iva))}${y.ibi?row(U.r_ibi,F(y.ibi)):''}${row(U.r_total,F(tot),'#c0392b')}${y.bruto>0?row(U.r_efectivo,pc(tot/(y.bruto+y.iva))):''}</div>`;
   // el dueño de la empresa
   if(!P.caja&&S.office&&!TR().coop){const prof=3.2e6;const soc=prof*P.soc;const rest=prof-soc;const dist=rest*.1;const hold=rest*.9*P.hold;const ah=fsScale(dist,P.ah);const tAll=(soc+fsScale(rest,P.ah))/prof,tReal=(soc+hold+ah)/prof;
     const wk=sl?(sl.ss+sl.irpf+sl.emp)/sl.coste+(y.bruto>0?y.iva/(y.bruto+y.iva):.06):0;
-    h+=`<div class="gvbox"><div class="fst">¿Y el dueño de ${S.office.n}?</div><div class="sub" style="font-size:11.5px">Vive de los beneficios de la empresa: unos 3,2 millones al año. Paga sociedades y, si los cobra, impuesto del ahorro (que tiene su propia escala, más baja que la del trabajo en lo alto).</div>${row('Si lo cobrara todo',pc(tAll))}${row('Como lo hace: lo deja en una sociedad patrimonial',pc(tReal),'#c0392b')}${sl?row(n+', contando cotizaciones e IVA',pc(wk),'#3b3247'):''}<div class="sub" style="font-size:11px">La sociedad patrimonial es legal: el dinero se queda en una empresa suya y casi no tributa hasta que lo saca. ${n} no tiene dónde dejar su nómina.</div></div>`;}
+    h+=`<div class="gvbox"><div class="fst">${huecos(U.dueno,{e:S.office.n})}</div><div class="sub" style="font-size:11.5px">${U.dueno_txt}</div>${row(U.dueno_todo,pc(tAll))}${row(U.dueno_real,pc(tReal),'#c0392b')}${sl?row(huecos(U.dueno_ella,{}),pc(wk),'#3b3247'):''}<div class="sub" style="font-size:11px">${huecos(U.dueno_pie,{})}</div></div>`;}
   // la declaración
-  const dc=f.decl;h+=`<div class="gvbox"><div class="fst">Declaración de la renta</div>${dc?row(`Año ${dc.y}`,dc.res<0?'le devolvieron '+F(-dc.res):dc.res>0?'pagó '+F(dc.res):'ni pagar ni devolver'):`<div class="sub" style="font-size:11.5px">En abril se liquida el año anterior. Si no trabajó el año entero, si está en el sindicato o tiene críos, suele salir a devolver.</div>`}</div>`;
+  const dc=f.decl;h+=`<div class="gvbox"><div class="fst">${U.decl}</div>${dc?row(huecos(U.decl_anio,{y:dc.y}),dc.res<0?huecos(U.decl_devolvieron,{v:F(-dc.res)}):dc.res>0?huecos(U.decl_pago,{v:F(dc.res)}):U.decl_ni):`<div class="sub" style="font-size:11.5px">${U.decl_txt}</div>`}</div>`;
   // el sistema actual
-  if(!P.caja){h+=`<div class="gvbox"><div class="fst">El sistema ahora</div>${row('Tramos de IRPF',P.tr.length+' · del '+Math.round(P.tr[0][1]*100)+' al '+Math.round(P.tr[P.tr.length-1][1]*100)+' %')}${row('No paga IRPF por debajo de',P.smiTo?Math.round(P.smiTo/1000)+'.000 € al año':'nada: sin exención')}${row('IVA básicos / reducido / general',[P.iva.sup,P.iva.red,P.iva.gen].map(v=>Math.round(v*100)+' %').join(' · '))}${row('Rentas del capital',Math.round(P.ah[0][1]*100)+'–'+Math.round(P.ah[P.ah.length-1][1]*100)+' %')}${row('IBI',P.ibi===1?'normal':P.ibi<1?'rebajado':'subido')}`;}
-  else h+=`<div class="gvbox"><div class="fst">El sistema ahora</div>${row('IRPF','sustituido por aportación a la caja común')}${row('Sin aportar por debajo de','18.000 € al año')}${row('IVA básicos / reducido / general',[P.iva.sup,P.iva.red,P.iva.gen].map(v=>Math.round(v*100)+' %').join(' · '))}`;
-  h+=`<div class="sub" style="font-size:11.5px;padding-top:6px"><b>A quién beneficia:</b> ${P.gana}<br><b>Quién lo paga:</b> ${P.pierde}</div></div><div style="padding:6px"><button class="btn" id="fsclose">Cerrar</button></div>`;
+  if(!P.caja){h+=`<div class="gvbox"><div class="fst">${U.sistema}</div>${row(U.tramos,huecos(U.tramos_dato,{t:P.tr.length,a:Math.round(P.tr[0][1]*100),b:Math.round(P.tr[P.tr.length-1][1]*100)}))}${row(U.exento,P.smiTo?huecos(U.exento_dato,{k:Math.round(P.smiTo/1000)}):U.sin_exencion)}${row(U.iva,[P.iva.sup,P.iva.red,P.iva.gen].map(v=>Math.round(v*100)+' %').join(' · '))}${row(U.capital,Math.round(P.ah[0][1]*100)+'–'+Math.round(P.ah[P.ah.length-1][1]*100)+' %')}${row(U.ibi,P.ibi===1?U.ibi_normal:P.ibi<1?U.ibi_rebajado:U.ibi_subido)}`;}
+  else h+=`<div class="gvbox"><div class="fst">${U.sistema}</div>${row(U.caja_irpf,U.caja_irpf_dato)}${row(U.caja_sin,U.caja_sin_dato)}${row(U.iva,[P.iva.sup,P.iva.red,P.iva.gen].map(v=>Math.round(v*100)+' %').join(' · '))}`;
+  h+=`<div class="sub" style="font-size:11.5px;padding-top:6px"><b>${U.gana}</b> ${P.gana}<br><b>${U.paga}</b> ${P.pierde}</div></div><div style="padding:6px"><button class="btn" id="fsclose">${U.cerrar}</button></div>`;
   fsEl.innerHTML=h;fsEl.classList.add('on');}
 document.addEventListener('click',ev=>{const t=ev.target.closest&&ev.target.closest('#fsopen,#fsclose');if(!t)return;if(t.id==='fsopen')openFs();else closeFs();},true);
-{const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{h=h.replace('<h3>🌍 El mundo</h3>',`<h3>🌍 El mundo</h3><button class="btn grey" id="fsopen">🧾 Nómina e impuestos</button>`);}catch(e){}return h;};}
+{const _vt=vidaTab;vidaTab=function(){let h=_vt.apply(this,arguments);try{h=h.replace('<h3>🌍 El mundo</h3>',`<h3>🌍 El mundo</h3><button class="btn grey" id="fsopen">${TX_fiscal.ui.abrir}</button>`);}catch(e){}return h;};}
 
 // =================== TRABAJO EN NEGRO ===================
 const fsDlgEl=()=>{let e=document.getElementById('fsdlg');if(!e){e=document.createElement('div');e.id='fsdlg';document.body.appendChild(e);}return e;};
@@ -92,28 +93,28 @@ function fsAsk(title,txt,opts){const e=fsDlgEl();e.innerHTML=`<div class="omt">$
 function fsNegroOK(){const w=W_();return !S.jobless&&!TR().self&&!TR().auto&&!TR().coop&&S.track!=='funcion'&&w.era!=='consejos'&&w.era!=='comunas';}
 function fsNegroStop(why){const f=FS();if(!f.negro)return;f.negro=false;tell(why,'📄');}
 {const _ww=worldWeekly;worldWeekly=function(){const r=_ww.apply(this,arguments);try{fsNegroWeek();fsAutWeek();}catch(e){console.error(e);}return r;};}
-function fsNegroWeek(){const f=FS();const w=W_();const n=CH().name;const jefe=S.office?S.office.n:'la empresa';
-  if(f.negro&&!fsNegroOK()){fsNegroStop('Se acabó cobrar en negro.');return;}
+function fsNegroWeek(){const f=FS();const w=W_();const n=CH().name;const jefe=S.office?S.office.n:TX_fiscal.la_empresa;
+  if(f.negro&&!fsNegroOK()){fsNegroStop(TX_fiscal.negro_fin);return;}
   // la oferta
   if(!f.negro&&fsNegroOK()&&S.day-(f.negroAsk||-99)>40){const sec=['hosteleria','obra','cuidados','super'].includes(S.track)?.09:.03;if(Math.random()<sec*(1+TOX())*(w.crisis>55?1.5:1)){f.negroAsk=S.day;
-    fsAsk('💶 «Te lo pago en mano»',`En ${jefe} te proponen dejar de tener contrato y cobrar en negro. «Te llevas más limpio y nos ahorramos papeles.» Más dinero cada semana; pero sin Seguridad Social: sin paro si te echan, sin baja si te pasa algo, y esos días no cuentan para la pensión.`,
-      [['Aceptar: cobrar en B',()=>{f.negro=true;f.negroSince=S.day;tell(`${n} cobra en negro desde hoy. El sobre llega los viernes. Oficialmente, no trabaja en ningún sitio.`,'💶');}],
-       ['No: quiero contrato',()=>{if(Math.random()<.25+TOX()*.3){S.rep=Math.max(0,(S.rep??60)-5);tell(`${n} ha dicho que no. El encargado lo ha apuntado. «Hay cola de gente que diría que sí.»`,'😒');}else tell(`${n} ha dicho que no. Por esta vez, no ha pasado nada.`,'📄');}]]);}}
+    fsAsk(TX_fiscal.negro_oferta_titulo,huecos(TX_fiscal.negro_oferta,{jefe}),
+      [[TX_fiscal.negro_acepta,()=>{f.negro=true;f.negroSince=S.day;tell(huecos(TX_fiscal.negro_desde,{}),'💶');}],
+       [TX_fiscal.negro_rechaza,()=>{if(Math.random()<.25+TOX()*.3){S.rep=Math.max(0,(S.rep??60)-5);tell(huecos(TX_fiscal.negro_no_apunta,{}),'😒');}else tell(huecos(TX_fiscal.negro_no_nada,{}),'📄');}]]);}}
   if(!f.negro)return;
   // inspección de trabajo
   const pIns={progresista:.06,mercado:.05,austeridad:.02,conservador:.015,liberal:.01}[w.gov]||.03;
-  if(Math.random()<pIns){if(Math.random()<.55){f.negro=false;tell(`Inspección de trabajo en ${jefe}. A la empresa le cae una multa y tiene que dar de alta a todo el mundo. ${n} vuelve a tener contrato. Al encargado no le ha hecho gracia.`,'🕵️');}
-    else{f.negro=false;S.jobless=true;S.paroWeeks=0;tell(`Inspección de trabajo. La empresa paga la multa y despide a quien estaba en negro, «para evitar problemas». ${n} se va a la calle sin paro: oficialmente nunca trabajó allí.`,'🕵️');}}}
+  if(Math.random()<pIns){if(Math.random()<.55){f.negro=false;tell(huecos(TX_fiscal.insp_multa,{jefe}),'🕵️');}
+    else{f.negro=false;S.jobless=true;S.paroWeeks=0;tell(huecos(TX_fiscal.insp_despide,{}),'🕵️');}}}
 // si echan a alguien que estaba en negro: sin paro
-{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const f=FS();if(f.negro&&S.jobless){f.negro=false;if(S.paroWeeks>0){S.paroWeeks=0;tell(`Sin contrato no hay paro. ${CH().name} ha ido al SEPE: «no consta ninguna relación laboral». ${f.negroSince?Math.round((S.day-f.negroSince)/7)+' semanas trabajadas que no existen.':''}`,'📄');}}
-  if(f.negro&&S.sick>0&&!f.negroSick){f.negroSick=1;tell(`Sin contrato, la baja no existe. ${CH().name} no cobra los días que no puede ir. Y si fue en el trabajo, «se cayó en casa».`,'🩹');}if(!S.sick)f.negroSick=0;}catch(e){}return r;};}
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const f=FS();if(f.negro&&S.jobless){f.negro=false;if(S.paroWeeks>0){S.paroWeeks=0;tell(huecos(TX_fiscal.negro_sin_paro,{sem:f.negroSince?huecos(TX_fiscal.negro_sin_paro_sem,{w:Math.round((S.day-f.negroSince)/7)}):''}),'📄');}}
+  if(f.negro&&S.sick>0&&!f.negroSick){f.negroSick=1;tell(TX_fiscal.negro_sin_baja,'🩹');}if(!S.sick)f.negroSick=0;}catch(e){}return r;};}
 function fsPedirAlta(){const f=FS();const o=office();const n=CH().name;const p=.35+(o.org||0)/200+(S.union&&S.union.member?.15:0);
-  if(Math.random()<p){f.negro=false;tell(`${n} ha pedido el alta. ${S.union&&S.union.member?'Con el delegado sindical delante, ':''}la empresa ha cedido: vuelve a tener contrato.`,'📄');}
-  else if(Math.random()<.4){f.negro=false;S.jobless=true;S.paroWeeks=0;tell(`${n} ha pedido el alta. Al día siguiente ya no la necesitaban. Sin contrato, ni despido ni paro.`.replace('no la necesitaban',ga('no la necesitaban','no lo necesitaban','no le necesitaban')),'📦');}
-  else tell(`${n} ha pedido el alta. «Ya veremos», dice el encargado. Sigue en negro.`,'📄');
+  if(Math.random()<p){f.negro=false;tell(huecos(TX_fiscal.alta_ok,{del:S.union&&S.union.member?TX_fiscal.alta_ok_delegado:''}),'📄');}
+  else if(Math.random()<.4){f.negro=false;S.jobless=true;S.paroWeeks=0;tell(huecos(TX_fiscal.alta_despide,{nec:ga(...TX_fiscal.alta_necesitaban)}),'📦');}
+  else tell(huecos(TX_fiscal.alta_ya_veremos,{}),'📄');
   if(typeof openMenu==='function')openMenu();}
 // =================== AUTÓNOMOS: cuota por tramos de rendimiento ===================
-const FS_CUOTA=[[670,200],[900,220],[1166,260],[1300,291],[1700,294],[1850,350],[2030,370],[2330,390],[2760,415],[3190,440],[3620,465],[4050,490],[6000,530],[1e9,590]];
+const FS_CUOTA=TX_fiscal.cuota_autonomos;
 function fsCuotaEur(rendMes){for(const [lim,c] of FS_CUOTA)if(rendMes<=lim)return c;return 590;}
 function fsAut(){const f=FS();f.au=f.au||{alta:false,since:null,hist:[],lastInc:0,warned:0};return f.au;}
 function fsAutRendMes(){const a=fsAut();const E=FS_EUR();let v=0;if(TR().auto&&!S.jobless&&!TR().self)v+=salary()*(TR().days||[]).length*4.3;else if(TR().self&&S.biz)v+=Math.max(0,(S.biz.last||0))*4.3;
@@ -123,16 +124,16 @@ function fsAutWeek(){const a=fsAut();const n=CH().name;
   // lo que entra por escribir o pintar
   try{const C=LB();const inc=C.inc||0;if(inc>a.lastInc){a.hist.push([S.day,inc-a.lastInc]);a.lastInc=inc;}a.hist=a.hist.filter(x=>x[0]>S.day-365);}catch(e){}
   // el reparto y el negocio son autónomos desde el principio
-  if((TR().auto||TR().self)&&!S.jobless&&!a.alta){a.alta=true;a.since=S.day;tell(`${n} se ha dado de alta como autónoma. El primer año, tarifa plana: 80 € al mes. Luego, según lo que gane.`.replace('autónoma',ga('autónoma','autónomo','autónome')),'📑');}
+  if((TR().auto||TR().self)&&!S.jobless&&!a.alta){a.alta=true;a.since=S.day;tell(huecos(TX_fiscal.aut_alta,{aut:ga(...TX_fiscal.autonoma)}),'📑');}
   // si gana con regularidad escribiendo o pintando: toca alta
   const fl=a.hist.reduce((s,x)=>s+x[1],0)*FS_EUR();
   if(!a.alta&&fl>=FS_SMI*.5&&S.day-a.warned>60){a.warned=S.day;
-    fsAsk('📑 Ya no es un hobby',`Lo que ${n} gana escribiendo o pintando ya es habitual. Hacienda y la Seguridad Social consideran que es una actividad: toca darse de alta como autónoma y pagar cuota cada mes (el primer año, tarifa plana de 80 €).`.replace('autónoma',ga('autónoma','autónomo','autónome')),
-      [['Darse de alta',()=>{a.alta=true;a.since=S.day;tell(`${n} ya es autónoma. Factura, IVA trimestral y cuota. Bienvenida a la burocracia.`.replace('autónoma',ga('autónoma','autónomo','autónome')).replace('Bienvenida',ga('Bienvenida','Bienvenido','Bienvenide')),'📑');}],
-       ['Seguir sin alta (y cruzar los dedos)',()=>{a.sin=S.day;tell(`${n} sigue cobrando sin estar de alta. Si llega una inspección, habrá que pagar las cuotas atrasadas y una multa.`,'🤞');}]]);}
-  if(!a.alta&&a.sin&&Math.random()<.015){const atr=Math.round(fsCuotaEur(fl/12)*Math.min(12,Math.round((S.day-a.sin)/30))/FS_EUR());const multa=Math.round(atr*.5);bkAdd('Hacienda',-(atr+multa));a.alta=true;a.since=S.day-400;a.sin=null;tell(`Inspección: ${n} tenía ingresos sin estar de alta. Cuotas atrasadas (${fmt(atr)}) y multa (${fmt(multa)}). Ahora, de alta y sin tarifa plana.`,'🕵️');}
+    fsAsk(TX_fiscal.aut_hobby_titulo,huecos(TX_fiscal.aut_hobby,{aut:ga(...TX_fiscal.autonoma)}),
+      [[TX_fiscal.aut_darse_alta,()=>{a.alta=true;a.since=S.day;tell(huecos(TX_fiscal.aut_ya_es,{aut:ga(...TX_fiscal.autonoma),bien:ga(...TX_fiscal.aut_bienvenida)}),'📑');}],
+       [TX_fiscal.aut_sin_alta,()=>{a.sin=S.day;tell(huecos(TX_fiscal.aut_sigue,{}),'🤞');}]]);}
+  if(!a.alta&&a.sin&&Math.random()<.015){const atr=Math.round(fsCuotaEur(fl/12)*Math.min(12,Math.round((S.day-a.sin)/30))/FS_EUR());const multa=Math.round(atr*.5);bkAdd('Hacienda',-(atr+multa));a.alta=true;a.since=S.day-400;a.sin=null;tell(huecos(TX_fiscal.aut_insp,{a:fmt(atr),m:fmt(multa)}),'🕵️');}
   // la baja como autónoma si deja de haber actividad
-  if(a.alta&&!TR().auto&&!TR().self&&fl<FS_SMI*.2){a.alta=false;tell(`${n} se ha dado de baja como autónoma: ya no le compensa.`.replace('autónoma',ga('autónoma','autónomo','autónome')),'📑');}
+  if(a.alta&&!TR().auto&&!TR().self&&fl<FS_SMI*.2){a.alta=false;tell(huecos(TX_fiscal.aut_baja,{aut:ga(...TX_fiscal.autonoma)}),'📑');}
   // la cuota, el día 1 de cada mes (se cobra en el lunes que cae en la primera semana)
   const d=dateOf(S.day);if(a.alta&&d.dm<=7&&a.paid!==d.m){a.paid=d.m;const c=fsCuota();if(c>0){bkAdd('Cuota autónomos',-c);const y=FS().yr;y.cuota=(y.cuota||0)+c;y.ss+=c;}}
   // la vieja cuota simbólica del núcleo se devuelve: ahora va por tramos
@@ -140,7 +141,7 @@ function fsAutWeek(){const a=fsAut();const n=CH().name;
 if(typeof BK_CAT!=='undefined')BK_CAT['Cuota autónomos']='deudas';
 // en la ventana: negro y autónomos
 {const _of=openFs;openFs=function(){_of.apply(this,arguments);try{const f=FS();const a=fsAut();const n=CH().name;let x='';
-  if(f.negro)x+=`<div class="gvbox" style="border-color:#c0392b"><div class="fst">💶 Cobrando en negro</div><div class="sub" style="font-size:11.5px">Desde el día ${f.negroSince}. Sin Seguridad Social: sin paro, sin baja, y ${f.negroTot||0} turnos que no cuentan para la pensión.</div><button class="btn grey" id="fsalta">📄 Pedir que me den de alta</button></div>`;
-  else if(f.negroTot)x+=`<div class="sub" style="font-size:11px;padding:2px 8px">${f.negroTot} turnos trabajados en negro: no cuentan para la pensión.</div>`;
-  if(a.alta){const c=fsCuota();x+=`<div class="gvbox"><div class="fst">📑 Autónoma</div>`.replace('Autónoma',ga('Autónoma','Autónomo','Autónome'))+`<div class="gvr"><span>Rendimiento estimado</span><b>${Math.round(fsAutRendMes())} €/mes</b></div><div class="gvr"><span>Cuota a la Seguridad Social</span><b style="color:#c0392b">${fmt(c)}/mes${a.since!=null&&S.day-a.since<365?' (tarifa plana)':''}</b></div><div class="sub" style="font-size:11px">Por tramos: gana poco y paga mucho en proporción (200 € al mes por debajo de 670 €); gana mucho y paga como mucho 590 €. El IRPF de lo que gane se liquida en la renta.</div></div>`;}
+  if(f.negro)x+=`<div class="gvbox" style="border-color:#c0392b"><div class="fst">${TX_fiscal.ui_negro_titulo}</div><div class="sub" style="font-size:11.5px">${huecos(TX_fiscal.ui_negro_txt,{d:f.negroSince,t:f.negroTot||0})}</div><button class="btn grey" id="fsalta">${TX_fiscal.ui_negro_alta}</button></div>`;
+  else if(f.negroTot)x+=`<div class="sub" style="font-size:11px;padding:2px 8px">${huecos(TX_fiscal.ui_negro_tot,{t:f.negroTot})}</div>`;
+  if(a.alta){const c=fsCuota();x+=`<div class="gvbox"><div class="fst">${TX_fiscal.ui_aut_titulo}</div>`.replace('Autónoma',ga(...TX_fiscal.ui_aut_titulo_g))+`<div class="gvr"><span>${TX_fiscal.ui_aut_rend}</span><b>${huecos(TX_fiscal.ui_aut_rend_dato,{v:Math.round(fsAutRendMes())})}</b></div><div class="gvr"><span>${TX_fiscal.ui_aut_cuota}</span><b style="color:#c0392b">${huecos(TX_fiscal.ui_aut_cuota_dato,{c:fmt(c),plana:a.since!=null&&S.day-a.since<365?TX_fiscal.ui_aut_plana:''})}</b></div><div class="sub" style="font-size:11px">${TX_fiscal.ui_aut_txt}</div></div>`;}
   if(x){const box=fsEl.querySelector('#fsclose');box.parentElement.insertAdjacentHTML('beforebegin',x);const b=fsEl.querySelector('#fsalta');if(b)b.onclick=()=>{fsPedirAlta();openFs();};}}catch(e){console.error(e);}};}

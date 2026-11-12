@@ -539,6 +539,32 @@ def comprobar(d):
     if len(RG['dias'])!=7 or len(RG['dias_corto'])!=7 or len(RG['meses'])!=12:E.append('reglas: son 7 días y 12 meses')
     for k,g in I['gestos'].items():
         if not(g.get('n') and g.get('e')):E.append('interacciones.gestos.%s: faltan nombre (n) o icono (e)'%k)
+    # --- p0b: textos_mods_ag (textos sueltos de los módulos de la «a» a la «g») ---
+    TM=d.get('textos_mods_ag')
+    if TM is not None:
+        try:mods_b=[m[:-3] for m in json.load(open(os.path.join(R,'build.json'),encoding='utf-8'))['mods']]
+        except Exception:mods_b=None
+        def _hojas(x,ruta):
+            if isinstance(x,str):yield ruta,x
+            elif isinstance(x,list):
+                for i,v in enumerate(x):yield from _hojas(v,ruta+'[%d]'%i)
+            elif isinstance(x,dict):
+                for k,v in x.items():yield from _hojas(v,ruta+'.'+k)
+        for m,sec in TM.items():
+            if m=='_':continue
+            if not isinstance(sec,dict) or not sec:E.append('textos_mods_ag.%s: tiene que ser una sección con claves'%m);continue
+            if mods_b is not None and m not in mods_b:E.append('textos_mods_ag.%s: no es un módulo de build.json'%m)
+            if m[0]>'g':E.append('textos_mods_ag.%s: este archivo es de los módulos de la «a» a la «g»'%m)
+            try:codigo=open(os.path.join(R,'mods',m+'.js'),encoding='utf-8').read()
+            except OSError:codigo='';E.append('textos_mods_ag.%s: no existe mods/%s.js'%(m,m))
+            if codigo and 'DATA.textos_mods_ag' not in codigo:E.append('textos_mods_ag.%s: mods/%s.js no lee esta sección'%(m,m))
+            for k in sec:
+                if not re.match(r'^[\wñ]+$',k):E.append('textos_mods_ag.%s.%s: clave poco legible (letras, cifras y _)'%(m,k))
+            for ruta,t in _hojas(sec,'textos_mods_ag.'+m):
+                if not t.strip():E.append('%s: texto vacío'%ruta)
+                if '${' in t or '`' in t:E.append('%s: sobra un ${…} o una comilla invertida: los huecos son {clave}'%ruta)
+                if re.sub(r'\{\w+\}','',t).count('{')+re.sub(r'\{\w+\}','',t).count('}'):E.append('%s: llaves sin cerrar o hueco mal escrito'%ruta)
+    # --- fin p0b ---
     return E
 
 # ---------- formato ----------

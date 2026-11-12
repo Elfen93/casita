@@ -1,4 +1,5 @@
 // =================== CONVIVENCIA: la gente de casa habla entre sí y con Ana por su cuenta ===================
+const {convivencia:TX_convivencia}=DATA.textos_mods_ag;
 const CV_LINES=DATA.interacciones.convivencia_frases;
 const CV_PAIR=DATA.interacciones.convivencia_dialogos;
 function cvRole(p){if(!p)return 'x';if(p.k==='madre')return 'madre';if(['pareja','convive','casada','rollo','cita'].includes(p.stage))return 'pareja';return 'guest';}
@@ -27,4 +28,4 @@ if(typeof bubbleFor!=='function'){window.bubbleFor=function(p,txt){const r=(S.re
   return _rc.apply(this,arguments);};}
 // 4) la pareja/madre viene a saludar cuando Ana vuelve del curro
 {const _ob2=outBack;outBack=function(k){const r=_ob2.apply(this,arguments);try{cvGreet();}catch(e){}return r;};}
-function cvGreet(){for(const r of S.res||[]){if(r.away||r.kind==='kid'||(r.doing&&r.doing.act==='sleep'))continue;const p=(S.people||[]).find(q=>q.k===r.pid);if(!p)continue;const role=cvRole(p);if(role==='pareja'||role==='madre'||r.kind==='mate'){setTimeout(()=>cvSay(r,pickR(role==='madre'?['¡Ya estás aquí! ¿Has comido?','Hola, hij'+oa()+'.','¿Qué tal el día?']:role==='pareja'?['¡Hola! 😘','¿Qué tal, amor?','Ya era hora 🥰']:['Ey.','¿Qué pasa?','Hay comida en la nevera.'])),800+Math.random()*1500);}}}
+function cvGreet(){for(const r of S.res||[]){if(r.away||r.kind==='kid'||(r.doing&&r.doing.act==='sleep'))continue;const p=(S.people||[]).find(q=>q.k===r.pid);if(!p)continue;const role=cvRole(p);if(role==='pareja'||role==='madre'||r.kind==='mate'){setTimeout(()=>cvSay(r,huecos(pickR(TX_convivencia.saludos[role==='madre'?'madre':role==='pareja'?'pareja':'otro']),{})),800+Math.random()*1500);}}}

@@ -1,4 +1,5 @@
 // =================== MI SEMANA: un horario como el de la vida real, y Ana lo cumple (si la vida la deja) ===================
+const {agenda:TX_agenda}=DATA.textos_mods_ag;
 const AG=()=>{if(!S.ag)S.ag={plan:{},done:{},on:true};S.ag.plan=S.ag.plan||{};S.ag.done=S.ag.done||{};return S.ag;};
 const AG_SLOTS=DATA.interacciones.agenda_horas;
 // qué se puede planear: salidas y cosas de casa (estas necesitan el mueble)
@@ -9,10 +10,10 @@ function agAvail(it){if(it[3]==='out')return !!OUT[it[0]]&&!(OUT[it[0]].req&&!OU
 {const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const A=AG();if(!A.on)return r;const h=S.t/60;const wd=dateOf(S.day).wd;const s=S.sim;
     for(let si=0;si<AG_SLOTS.length;si++){const [st,lab]=AG_SLOTS[si];const key=wd+':'+st;const k=A.plan[key];if(!k||k==='nada')continue;const nx=si+1<AG_SLOTS.length?AG_SLOTS[si+1][0]:24;if(h<st||h>=nx)continue;const dk=S.day+':'+st;if(A.done[dk])continue;
       const it=agItem(k);if(!it)continue;
-      if(it[3]==='out'){if(s.work>0&&!s.outingActive)continue;/* en el trabajo: no se va a mitad por la agenda */const why=outAvail(k);if(why){if(h>=nx-.1){A.done[dk]=1;if(throttled('ag'+k,6e5))toast(`🗓️ ${it[2]}: ${why}`);}continue;}A.done[dk]=1;if(s.outingActive==='clase'){try{const C=ED().cur;if(C){C.miss=(C.miss||0)+1;tell(`${CH().name} se ha ido de clase a ${outName(k).toLowerCase()}. Lo tenía en el horario.`,'🎓');}}catch(e){}}doOut(k);toast(`🗓️ ${it[1]} ${it[2]}`);}
+      if(it[3]==='out'){if(s.work>0&&!s.outingActive)continue;/* en el trabajo: no se va a mitad por la agenda */const why=outAvail(k);if(why){if(h>=nx-.1){A.done[dk]=1;if(throttled('ag'+k,6e5))toast(huecos(TX_agenda.no_se_puede,{it2:it[2],why}));}continue;}A.done[dk]=1;if(s.outingActive==='clase'){try{const C=ED().cur;if(C){C.miss=(C.miss||0)+1;tell(huecos(TX_agenda.se_fue_de_clase,{n:CH().name,out:outName(k).toLowerCase()}),'🎓');}}catch(e){}}doOut(k);toast(huecos(TX_agenda.toast_plan,{it1:it[1],it2:it[2]}));}
       else if(it[3]==='home'){if(s.work>0)continue;const objs=findObjs((d,t)=>it[4].includes(t)&&ACTV[t]&&ACTV[t].some(a=>a[0]===it[5])).filter(i=>usable(S.obj[i]));if(!objs.length){A.done[dk]=1;continue;}
-        if(['hambre','vejiga'].some(n=>S.needs[n]<15))continue;A.done[dk]=1;s.use=null;s.path=[];s.target=null;s.cmd=false;s.queue=[];enqueue({k:'obj',i:objs[0],act:it[5]});toast(`🗓️ ${it[1]} ${it[2]}`);}
-      else if(it[3]==='kid'){if(s.work>0)continue;const rr=(S.res||[]).find(x=>x.kind==='kid'&&!x.away);if(!rr){A.done[dk]=1;continue;}A.done[dk]=1;S.kidAct={r:rr.kid,k:'jugar',m:30,t:0};const cx=Math.floor(rr.x),cy=Math.floor(rr.y);const [sx,sy]=simCell();const p=bfs([sx,sy],(x,y)=>Math.abs(x-cx)+Math.abs(y-cy)<=1&&walkable(x,y));if(p){s.path=p;s.target=null;s.use=null;s.cmd=true;}toast(`🗓️ ${it[1]} ${it[2]}`);}}
+        if(['hambre','vejiga'].some(n=>S.needs[n]<15))continue;A.done[dk]=1;s.use=null;s.path=[];s.target=null;s.cmd=false;s.queue=[];enqueue({k:'obj',i:objs[0],act:it[5]});toast(huecos(TX_agenda.toast_plan,{it1:it[1],it2:it[2]}));}
+      else if(it[3]==='kid'){if(s.work>0)continue;const rr=(S.res||[]).find(x=>x.kind==='kid'&&!x.away);if(!rr){A.done[dk]=1;continue;}A.done[dk]=1;S.kidAct={r:rr.kid,k:'jugar',m:30,t:0};const cx=Math.floor(rr.x),cy=Math.floor(rr.y);const [sx,sy]=simCell();const p=bfs([sx,sy],(x,y)=>Math.abs(x-cx)+Math.abs(y-cy)<=1&&walkable(x,y));if(p){s.path=p;s.target=null;s.use=null;s.cmd=true;}toast(huecos(TX_agenda.toast_plan,{it1:it[1],it2:it[2]}));}}
     // limpiar lo viejo
     if(h<.1)for(const dk in A.done)if(+dk.split(':')[0]<S.day-1)delete A.done[dk];}catch(e){console.error(e);}return r;};}
 // ---- UI: pestaña dentro de Vida ----
@@ -29,9 +30,9 @@ function openAg(wd){const A=AG();if(wd==null)wd=A.wd??dateOf(S.day).wd;A.wd=wd;i
   agEl.querySelectorAll('[data-wd]').forEach(b=>b.onclick=()=>openAg(+b.dataset.wd));
   agEl.querySelectorAll('select').forEach(s=>s.onchange=()=>{A.plan[s.dataset.key]=s.value;});
   agEl.querySelector('#agon').onchange=e=>{A.on=e.target.checked;};
-  agEl.querySelector('#agcopy').onclick=()=>{for(let d=0;d<7;d++){if(d===wd||!T0.days.includes(d)===!T0.days.includes(wd)){for(const [st] of AG_SLOTS)A.plan[d+':'+st]=A.plan[wd+':'+st]||'nada';}}toast('📅 Copiado');openAg(wd);};
+  agEl.querySelector('#agcopy').onclick=()=>{for(let d=0;d<7;d++){if(d===wd||!T0.days.includes(d)===!T0.days.includes(wd)){for(const [st] of AG_SLOTS)A.plan[d+':'+st]=A.plan[wd+':'+st]||'nada';}}toast(TX_agenda.copiado);openAg(wd);};
   agEl.querySelector('#agclear').onclick=()=>{for(const [st] of AG_SLOTS)delete A.plan[wd+':'+st];openAg(wd);};
   agEl.querySelector('#agclose').onclick=closeAg;}
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const A=AG();const wd=dateOf(S.day).wd;const today=AG_SLOTS.map(([st,lab])=>[lab,A.plan[wd+':'+st]]).filter(x=>x[1]&&x[1]!=='nada').map(([lab,k])=>{const it=agItem(k);return it?lab+' '+it[1]:'';}).filter(Boolean);
-    return `<h3>📅 Mi semana</h3><div class="sub" style="font-size:12px">${today.length?'Hoy: '+today.join(' · '):'Hoy no hay nada planeado.'}${A.on?'':' · <b>en pausa</b>'}</div><button class="btn grey" id="agopen">📅 Montar el horario</button>`+h;}catch(e){return h;}};}
+    return `<h3>📅 Mi semana</h3><div class="sub" style="font-size:12px">${today.length?TX_agenda.hoy+today.join(' · '):TX_agenda.hoy_nada}${A.on?'':TX_agenda.en_pausa}</div><button class="btn grey" id="agopen">📅 Montar el horario</button>`+h;}catch(e){return h;}};}
 {const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);try{const b=card.querySelector('#agopen');if(b)b.onclick=()=>{menu.classList.remove('open');openAg();};}catch(e){}};}

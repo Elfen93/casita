@@ -180,12 +180,24 @@ Tratar con los vecinos (`mods/trato.js`). Secciones:
 
 Efectos (`fx`): rel, social, diversion, hambre, energia, coste_h, fiar_h, presta_h, presto_h, pista, despensa, agua, hijos_hap, mov, sol, te, chisme. Condiciones (`req`): huerto, hijos_cole, con_trabajo, en_paro, trabajo_dentro, ella_hijos, bloque, politica, justa, solvente. Huecos: `{v}`, `{x}`, `{y}`, `{k}`, `{c}`, `{n}`, `{o}`, `{quien}`, `{sitio}`, `{frase}`, `{que}`, `{st}`, `{l}`, `{why}`. `datos.py` lo comprueba todo.
 
+<!-- p0b -->
+### textos_mods_ag.json
+Los textos sueltos de los módulos de `mods/` de la «a» a la «g» (`agenda` … `gym`): lo que cuentan `tell()`, `toast()` y `chapter()`, las líneas del móvil, las fichas de interfaz y los dilemas de la comunidad. Una sección por módulo, con el nombre del módulo (`colectivo`, `comunidad`, `crianza`, `curro`, `entrevista`, `ducha`, `energia`, `facturas`, `ciclos`, `gobierno`, `fiscal`, `banco`, `banco2`, `banco3`, `casa`, `comidas`, `estudios`, `final`, `fregar`, `cocinar`, `convivencia`, `gente_menu`, `encadenar`, `agenda`, `body3d`); la clave `_` es la nota del archivo. Cada módulo lo lee con `const {modulo:TX_modulo}=DATA.textos_mods_ag;` al principio.
+- Una frase es un texto; una variante al azar es una lista que el código elige con `pickR(TX_x.clave)` en el mismo punto donde antes estaba la lista (el orden de los sorteos no cambia).
+- Huecos: `{clave}` los rellena el código con `huecos(texto,{clave:…})`; `{n}` es el nombre del personaje y `{o}` la terminación de su género (donde el original usaba `oa()`). El resto del género (`ga`, `L`, `.replace(…,ga(…))`) se queda en el código: la palabra variable llega como hueco (`{rev}`, `{otras}`) o como lista de tres formas (`reventado_g`: `[ella, él, elle]`).
+- `comunidad`: `tipos` y `nombres` (las fichas de cada tipo de comunidad) y `dilemas` (`UT_DIL`): `t` título y `o` opciones `{t, r}` donde `r` es el texto del resultado o un objeto con un texto por desenlace; los efectos siguen en `UT_FX`, en el código.
+- `banco`: `bancos` (`pub`/`priv`: nombre y rótulos de cada modo, que `gobierno` también lee), `mov` (los conceptos de los movimientos con huecos `{emp}`, `{arr}`, `{banco}`) y `categorias`.
+- `final`: el texto del final de la partida, por piezas que `finalText()` junta con `huecos()`.
+- Se queda en el código lo que es una clave hacia otro módulo (el id de un lugar, una acción, un tipo de objeto), el dibujo (`SCENES`, `MDRAW`, `LOOKS`, colores y rótulos pintados en el canvas) y los trozos de HTML que son estructura sin texto propio.
+- `datos.py` comprueba que cada sección es un módulo de `build.json`, que el módulo la lee, que las claves son legibles y que ningún texto está vacío, lleva `${…}` o tiene llaves sin cerrar. `t/t_txt_p0b.js` comprueba que cada texto de más de 12 caracteres que había en esos módulos antes de moverlos sigue existiendo, igual, en el código o aquí.
+<!-- /p0b -->
+
 ## Lo que todavía está en el código
 
 Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con condiciones y efectos:
 
-- **Sucesos con decisiones**: consecuencias (`CQ`), golpes e incidentes (`GOLPES`, `PERSONAL`, `INCID`), hitos (`BEATS`), arcos de ideología (`ARCS`), rasgos ocultos de la gente (`HID`), aspiraciones y objetivos (`ASP`, `GOALS`), dilemas de la comunidad (`UT_DIL`).
-- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de cada módulo, y las plantillas de mensajes y noticias del móvil.
+- **Sucesos con decisiones**: consecuencias (`CQ`), golpes e incidentes (`GOLPES`, `PERSONAL`, `INCID`), hitos (`BEATS`), arcos de ideología (`ARCS`), rasgos ocultos de la gente (`HID`), aspiraciones y objetivos (`ASP`, `GOALS`), dilemas de la comunidad (los textos de `UT_DIL` ya están en `textos_mods_ag.json`; los efectos siguen en `UT_FX`).
+- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los módulos de la «h» en adelante y las plantillas de mensajes y noticias del móvil de esos módulos (los de la «a» a la «g» están en `textos_mods_ag.json`).
 - **Escenas** (`SCENES`): los interiores se dibujan con código; sus carteles y su gente van dentro.
 - **Aspecto**: peinados, caras, ropa y retratos (`LOOKS`, `LOOK_SRC`), y el dibujo de cada mueble (`MDRAW`).
 - Tablas menores por objeto (`BACKD`, `ACTS`, `ELECTRIC`, `SMALL_ITEMS`, `MUEB_NEW`) y los eslóganes de las ideologías en las pancartas.

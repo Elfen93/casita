@@ -1,21 +1,22 @@
 // =================== SALIR DESDE FUERA: del curro al gimnasio, del gimnasio a la asamblea; irse a mitad de algo ===================
+const {encadenar:TX_encadenar}=DATA.textos_mods_ag;
 const awayNow=()=>S.sim.work>0&&!S.jail;
 {const _oa=outAvail;outAvail=function(k){const s=S.sim;if(awayNow()&&OUT[k]&&s.outingActive!==k){const w=s.work;s.work=0;try{const r=_oa.apply(this,arguments);return r;}finally{s.work=w;}}return _oa.apply(this,arguments);};}
 function leaveNow(){const s=S.sim;const n=CH().name;if(s.outingActive){const k=s.outingActive;const left=s.work;const tot=s.awayTotal||1;const frac=1-Math.min(1,left/tot);s.outingActive=null;s.work=0;s.dest=null;s.route=null;
     if(k==='calabozo')return false;
     if(frac>=.35){if(k==='amigos')friendBack();else if(OUT[k])outBack(k);else if(k==='eat'){S.money-=mealOutCost();S.needs.hambre=Math.min(100,S.needs.hambre+40);}}
-    else{S.outAcc=null;if(k==='amigos'&&S.outWith){const f=(S.people||[]).find(q=>q.k===S.outWith);if(f){f.rel=Math.max(0,f.rel-3);toast(`${f.n} se ha quedado con la palabra en la boca`);}}}
+    else{S.outAcc=null;if(k==='amigos'&&S.outWith){const f=(S.people||[]).find(q=>q.k===S.outWith);if(f){f.rel=Math.max(0,f.rel-3);toast(huecos(TX_encadenar.plantado,{f:f.n}));}}}
     return true;}
   // en el trabajo: irse antes
-  if(S.lastWorkDay===S.day&&!s.outingActive){const h=S.t/60;if(h<SHIFT.start+.5){toast(`${n} acaba de llegar al trabajo`);return false;}
+  if(S.lastWorkDay===S.day&&!s.outingActive){const h=S.t/60;if(h<SHIFT.start+.5){toast(huecos(TX_encadenar.recien_llegado,{n}));return false;}
     const left=s.work;s.worked=Math.max(30,(s.worked||480)-Math.max(0,left-30));S.rep=Math.max(0,(S.rep??70)-(left>150?7:left>60?4:1));S.leftEarly=(S.leftEarly||0)+1;
-    if(left>60)tell(`${n} se ha ido del trabajo ${Math.round(left/60*10)/10} h antes. ${pickR(['«Es que tengo una cosa». Nadie ha preguntado qué.','El encargado ha mirado el reloj y luego a '+n+'.','Ha fichado y ha salido sin mirar atrás.'])}`,'🚪');
+    if(left>60)tell(huecos(TX_encadenar.se_va_antes,{n,h:Math.round(left/60*10)/10,x:huecos(pickR(TX_encadenar.excusas),{n})}),'🚪');
     finishWork();return true;}
   return false;}
 {const _do=doOut;doOut=function(k){const s=S.sim;if(awayNow()&&OUT[k]){const from=s.outingActive?(OUT[s.outingActive]?outName(s.outingActive):'fuera'):'el trabajo';if(!leaveNow())return;
     // sin pasar por casa
     S.outDay=S.day;s.use=null;s.target=null;s.path=[];s.leaving=false;s.outing=null;s.work=OUT[k].dur;s.dest=destOf(k);s.route=null;s.awayTotal=s.work;s.outingActive=k;s.think=0;
-    S.outManual=!S.outAuto;toast(`${OUT[k].e} ${CH().name} va directo desde ${from.toLowerCase()}: ${outName(k).toLowerCase()}`);return;}
+    S.outManual=!S.outAuto;toast(huecos(TX_encadenar.directo,{e:OUT[k].e,n:CH().name,from:from.toLowerCase(),to:outName(k).toLowerCase()}));return;}
   return _do.apply(this,arguments);};}
 // botón «volver a casa» cuando está fuera: cortar lo que esté haciendo
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const s=S.sim;if(awayNow()){const what=s.outingActive?(OUT[s.outingActive]?outName(s.outingActive):s.outingActive==='amigos'?'con amigos':'fuera'):'en el trabajo';const left=Math.round(s.work);return `<div class="sub" style="font-size:12px;margin:0 0 8px">📍 Ahora: ${what.toLowerCase()} · quedan ${left>=60?Math.round(left/60*10)/10+' h':left+' min'} <button class="mini" id="leavenow">🏠 Irse ya</button></div>`+h;}}catch(e){}return h;};}

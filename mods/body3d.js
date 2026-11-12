@@ -1,4 +1,5 @@
 // ---------- muñecos 3D en lugar del dibujo plano ----------
+const {body3d:TX_body3d}=DATA.textos_mods_ag;
 let B3D=null;
 function use3D(o){if(B3D===false)return false;if(S&&S.r3d===false)return false;if(typeof C3D==='undefined')return false;if(B3D==null){B3D=C3D.ok();}return B3D&&!o.flat2d;}
 {const _da=drawAna;drawAna=function(bx,by,o){if(!use3D(o))return _da(bx,by,o);
@@ -14,6 +15,6 @@ function use3D(o){if(B3D===false)return false;if(S&&S.r3d===false)return false;i
     let okQ=false;if(S.r3d!=='simple'&&typeof Q3D!=='undefined'&&Q3D.ready(ch)){okQ=Q3D.draw(ctx,ch,bx,by+(o.pose==='sit'?9:0),30*sc,opts,sc);}
     if(!okQ)C3D.draw(ctx,ch,bx,by+(o.pose==='sit'?3:0),31*sc,opts,sc);return [bx,by-(o.pose==='sit'?42:56)];
   }catch(e){console.error(e);B3D=false;return _da(bx,by,o);}};}
-{const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{const sb=card.querySelector('#soundbtn');if(sb&&!card.querySelector('#r3dbtn')){const b=document.createElement('button');b.className=sb.className;b.id='r3dbtn';b.textContent=S.r3d===false?'🧍 Muñecos: clásicos (2D)':S.r3d==='simple'?'🧍 Muñecos: 3D simples':'🧍 Muñecos: 3D Quaternius';b.onclick=()=>{S.r3d=S.r3d===false?true:S.r3d==='simple'?false:'simple';if(S.r3d)B3D=null;save();openMenu('ajustes');};sb.after(b);}}catch(e){}return r;};}
+{const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{const sb=card.querySelector('#soundbtn');if(sb&&!card.querySelector('#r3dbtn')){const b=document.createElement('button');b.className=sb.className;b.id='r3dbtn';b.textContent=S.r3d===false?TX_body3d.muñecos.clasicos:S.r3d==='simple'?TX_body3d.muñecos.simples:TX_body3d.muñecos.quaternius;b.onclick=()=>{S.r3d=S.r3d===false?true:S.r3d==='simple'?false:'simple';if(S.r3d)B3D=null;save();openMenu('ajustes');};sb.after(b);}}catch(e){}return r;};}
 // precarga de los modelos de la casa al arrancar y al abrir Gente
 {const pre=()=>{try{if(typeof Q3D==='undefined'||!S)return;const L=[CH()];for(const p of (S.people||[]))if(p.ch)L.push(p.ch);Q3D.preload(L);}catch(e){}};setTimeout(pre,800);const _gt2=genteTab;genteTab=function(...a){pre();return _gt2.apply(this,a);};}
