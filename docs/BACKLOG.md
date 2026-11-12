@@ -23,7 +23,7 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 ### ✅ (hecho) T-133 · Lugares nuevos con interior y vida de barrio (`mods/barrios_vida.js`, `data/barrios_vida.json`)
 
 ### T-134 · Lo que quedó de caminar
-Rol: motor. (1) Que se vea a vecinos del censo andando por la calle en hora punta: hoy el personaje va solo en las capturas. (2) Piquetes y colas delante de la puerta correcta. (3) El rider repartiendo por las calles (`_ride`). (4) Botones de romance con vecinos adultos en la lista de Gente. (5) Equilibrar los pesos de `barrios_vida` en partidas largas y quitar la repetición «Lo bueno / Lo que cuesta» ↔ «Vivir aquí» en la ficha de barrio.
+Rol: motor. (1) Hecho a medias (`mods/calle.js`): los vecinos del censo andan por sus rutas, pero con 50 personas en seis barrios se ve de media medio vecino con nombre en pantalla; para calles con gente conocida hace falta AMPLIAR EL CENSO (200–300 personas) o barrios más pequeños. (2) Piquetes y colas delante de la puerta correcta. (3) El rider repartiendo por las calles (`_ride`). (4) Botones de romance con vecinos adultos en la lista de Gente. (5) Equilibrar los pesos de `barrios_vida` en partidas largas y quitar la repetición «Lo bueno / Lo que cuesta» ↔ «Vivir aquí» en la ficha de barrio.
 
 ### ✅ (hecho, `mods/caminar.js`) T-131 · Caminar por la ciudad
 Rol: motor. El personaje va andando por las calles de `ciudad.json` de puerta a puerta (`cdCamino`, `cdTrayecto`), y en transporte entre barrios. Sustituir los usos del `r` antiguo en `src/core/047` y borrarlo. Dibujo mínimo.

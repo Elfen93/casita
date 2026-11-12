@@ -124,14 +124,18 @@ function clActivos(bar,h){const C=clAgenda(),k=Math.floor(h*60)+'|'+bar;if(C.act
 // compatibilidad: quienes andan por el barrio a una hora (lo que usaba el viejo cmPlanGente)
 cmPlanGente=function(bar,h,wd){const out=[];for(const {r,p} of clActivos(bar,h)){if(!r.R)continue;out.push({v:r.v,R:r.R,f:r.t1>r.t0?(h-r.t0)/(r.t1-r.t0):1,t:r.k==='trabajo',rec:r,p});}return out;};
 // ---- dibujo de una figura de calle
-function clItems(a,tt,vis){const r=a.r,p=a.p,h=S.t/60;const [pp,qq]=[p.x+(r.off?r.off[0]:0),p.y+(r.off?r.off[1]:0)];if(!vis(pp,qq))return [];const [u,v]=cmW2V(pp,qq),out=[];
+// tapado por un edificio que tiene delante: se pinta (el edificio lo cubre) pero sin rótulo, que si no flota sobre el tejado
+const clCajas={};
+function clTapado(bar,u,v){let L=clCajas[bar+'|'+cmHome()];if(!L){L=clCajas[bar+'|'+cmHome()]=cdCosas(bar).filter(c=>c.h>20&&!(c.p&&c.p.solar)).map(c=>{const r=cmV(c.r);return [Math.min(r[0],r[2]),Math.min(r[1],r[3]),Math.max(r[0],r[2]),Math.max(r[1],r[3]),c.h];});}
+  for(const [u0,v0,u1,v1,h] of L){const t0=Math.max(u0-u,v0-v,0),t1=Math.min(u1-u,v1-v);if(t0>0.05&&t0<=t1&&t0*TH+16<=h)return true;}return false;}
+function clItems(a,tt,vis,bar){const r=a.r,p=a.p,h=S.t/60;const [pp,qq]=[p.x+(r.off?r.off[0]:0),p.y+(r.off?r.off[1]:0)];if(!vis(pp,qq))return [];const [u,v]=cmW2V(pp,qq),out=[];let tap=false;try{tap=!!bar&&clTapado(bar,u,v);}catch(e){}
   const sit=r.sit&&p.fix,ph=tt*8+r.v.id.length,talk=r.k==='corrillo'||r.k==='cole';
   if(sit)out.push({d:u+v-.2,f:()=>{prism(u-.9,v-.45,u+.9,v+.05,0,5,'#8a6440');prism(u-.9,v-.55,u+.9,v-.4,5,13,'#9a7450');}});
   const dir=p.walk?[p.dx,p.dy]:[r.perro&&p.fix?-1:p.dx,p.dy];
   out.push({d:u+v,f:()=>{const c=cmCuerpo(0,0,dir[0],dir[1]),[px,py]=P(u,v),e=r.v.edad,sc=typeof pbEscala==='function'?pbEscala(e):1;
     ctx.save();if(sc!==1){ctx.translate(px,py);ctx.scale(sc,sc);ctx.translate(-px,-py);}
     const act=talk&&!(typeof e==='number'&&e<6)?(((tt*.9+r.v.id.length)%3<1.5)===(r.idx%2===0)?'talk':null):null;
-    sPerson(u,v,cmChOf(r.v),{pose:sit?'sit':p.walk?'walk':'stand',front:sit?true:c.front,right:c.right,ph:p.walk?ph:0,act,name:r.v.n,rot:{hogar:r.v.hogar,trab:false}});
+    sPerson(u,v,cmChOf(r.v),{pose:sit?'sit':p.walk?'walk':'stand',front:sit?true:c.front,right:c.right,ph:p.walk?ph:0,act,name:tap?null:r.v.n,rot:{hogar:r.v.hogar,trab:false}});
     if(r.perro)emoji('🐕',px+(c.right?-14:14),py-3,13);if(r.pan&&r.vuelta)emoji('🥖',px+(c.right?7:-7),py-22,9);
     ctx.restore();}});
   return out;}

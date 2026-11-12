@@ -104,3 +104,5 @@
 - Caminar: se puede cambiar de destino mientras se anda y encadenar salidas sin pasar por casa; la figura en la calle va a la misma escala que en los interiores; no se sale hacia un sitio que estará cerrado al llegar («El súper cierra los domingos»); con «Ver casa», tocar un lugar o a alguien abre su ficha.
 - Corregido: hacer la compra iba al parque (ahora al súper; beber, al bar; préstamos de libros, a la biblioteca); «los domingo» → «los domingos».
 - Paso 0, segunda pasada, terminado: núcleo 081–098 y remate de módulos. 40 partidas de 100 días, 143.113 mensajes idénticos antes y después. En el código solo quedan dibujo, estructura HTML, estilos e identificadores.
+- Gente por la calle: los vecinos del censo recorren el camino real entre su casa, su trabajo y sus sitios (los pequeños, con una persona adulta), con algo de vida de calle (el pan, el perro, corrillo a la salida del colegio), y su ficha dice adónde van. Más gente sin nombre en hora punta según el barrio. Quien queda tapado por un edificio no enseña el rótulo.
+- Corregido: la tutoría del instituto era imposible (cerraba a las 15:00); ahora abre por la tarde de lunes a jueves.

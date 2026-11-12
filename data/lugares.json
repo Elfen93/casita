@@ -70,7 +70,18 @@
       "outs": ["cole", "tutoria"],
       "abre": [[7.5, 17.5, [0, 1, 2, 3, 4]]]
     },
-    "instituto": {"n": "Instituto Las Eras", "e": "🎒", "barrio": "eras", "rb": [8.0, 17.4, 20.0, 26.4], "h": 28, "c": "#c5d0da", "acc": "#4a7aa8", "d": "De los 12 a los 17 años. Taquillas, corrillos y una puerta donde nunca falta quien fuma.", "outs": ["tutoria"], "abre": [[8, 15, [0, 1, 2, 3, 4]]]},
+    "instituto": {
+      "n": "Instituto Las Eras",
+      "e": "🎒",
+      "barrio": "eras",
+      "rb": [8.0, 17.4, 20.0, 26.4],
+      "h": 28,
+      "c": "#c5d0da",
+      "acc": "#4a7aa8",
+      "d": "De los 12 a los 17 años. Taquillas, corrillos y una puerta donde nunca falta quien fuma.",
+      "outs": ["tutoria"],
+      "abre": [[8, 15, [0, 1, 2, 3, 4]], [16, 18.5, [0, 1, 2, 3]]]
+    },
     "uni_publica": {
       "n": "Universidad Pública del Río",
       "e": "🎓",

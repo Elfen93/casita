@@ -152,17 +152,20 @@ function cmPlanGente(bar,h,wd){const out=[],C=DATA.personas||{},H=C.hogares||{};
 function cmGente(bar,tt,night){const items=[],h=S.t/60,wd=dateOf(S.day).wd,key=Math.floor(S.t)+'|'+S.day+'|'+bar+'|'+cmHome();
     const [vx,vy,vw,vh]=[0,0,W,H],vis=(x,y)=>{const [u,v]=cmW2V(x,y),[px,py]=P(u,v),sx=cam.x+px*cam.z,sy=cam.y+py*cam.z;return sx>-30&&sx<vw+30&&sy>-90&&sy<vh+50;};
   try{clRelleno(bar,h);}catch(e){console.error('relleno',e);}
-  for(const a of clActivos(bar,h))for(const it of clItems(a,tt,vis))items.push(it);   // los vecinos del censo (mods/calle.js)
+  for(const a of clActivos(bar,h))for(const it of clItems(a,tt,vis,bar))items.push(it);   // los vecinos del censo (mods/calle.js)
   // paseantes sin nombre: unos por cada tramo de calle, de ida y vuelta a su ritmo (menos de noche)
   if(h>=6.5&&h<23.5){const SP=15;
-    for(const q of cmPlanPaseos(bar)){if(h>=21&&q.k%2)continue;const m=q.d/SP,per=2*m+8,u0=(S.t+q.ph*per)%per;let pts=q.f,f,walk=true;
+    const punta=(h>=7.5&&h<9.5)||(h>=13&&h<15)||(h>=17&&h<20.5),cada=h>=21||h<7.5?4:punta?1:2;// gente sin nombre: toda en hora punta, la mitad entre horas, un cuarto de noche
+    for(const q of cmPlanPaseos(bar)){if(q.k%cada)continue;const m=q.d/SP,per=2*m+8,u0=(S.t+q.ph*per)%per;let pts=q.f,f,walk=true;
       if(u0<m)f=u0/m;else if(u0<m+4){f=1;walk=false;}else if(u0<2*m+4){pts=q.r;f=(u0-m-4)/m;}else{pts=q.r;f=1;walk=false;}
       const p=cmAlong(pts,f);if(!vis(p.x,p.y))continue;const [u,v]=cmW2V(p.x,p.y);
       items.push({d:u+v,f:()=>cmFigura(p.x,p.y,p.dx,p.dy,q.ch,{walk,ph:tt*8+q.k,shirt:q.ch.shirt,edad:30})});}}
   return items;}
 const cmPaseos={};
+// cuánta gente hay por la calle según el barrio (dato: caminar.json → calle.afluencia)
+function cmAfluencia(bar){const t=(DATA.caminar.calle||{}).afluencia||{};return t[bar]||t._||1;}
 function cmPlanPaseos(bar){if(cmPaseos[bar])return cmPaseos[bar];const out=[];let k=0;
-  for(const c of CDX().barrios[bar].calles){const hor=cdHor(c),L=hor?c.b[0]-c.a[0]:c.b[1]-c.a[1],n=Math.max(1,Math.round(L/32));
+  for(const c of CDX().barrios[bar].calles){const hor=cdHor(c),L=hor?c.b[0]-c.a[0]:c.b[1]-c.a[1],n=Math.max(1,Math.round(L/(13/cmAfluencia(bar))));
     for(let i=0;i<n;i++,k++){const d=Math.min(L,24+pbH('d'+bar+k)*26),t0=pbH('t'+bar+k)*(L-d),A=hor?[c.a[0]+t0,c.a[1]]:[c.a[0],c.a[1]+t0],B=hor?[A[0]+d,A[1]]:[A[0],A[1]+d];
       out.push({f:cmLane(bar,[A,B]),r:cmLane(bar,[B,A]),d,ph:pbH('p'+bar+k),ch:cmPaseante(bar,k),k});}}
   return cmPaseos[bar]=out;}
