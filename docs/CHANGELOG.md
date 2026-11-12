@@ -68,3 +68,6 @@
 - Centro de salud: el día de la cita el personaje va (90 minutos en la pública, 45 en la privada) y la visita pasa allí; si ese día no puede ir, se resuelve como antes. Sala de espera con pantalla de turnos.
 - Oficina de empleo: en paro se puede ir por la mañana en días laborables. Cola, ventanillas y un empujón de tres días a la búsqueda de trabajo. Servicios sociales se ve ahí.
 - Paso 0, segunda pasada (piloto): los textos de los 23 dilemas pasan a `data/sucesos.json`; no cambia ni una letra (`t/t_dlg.js`, `scripts/comparar.py`).
+- El censo del barrio: 46 personas en 15 hogares y 8 edificios (tres bloques y cinco casas bajas), cada una con trabajo y horario, historia y lazos; 10 niñas y niños y 7 adolescentes.
+- La gente del censo en las escenas: quien trabaja en un sitio está allí en su turno con su puesto bajo el nombre; las criaturas, más pequeñas según la edad y siempre con una adulta de su casa; los de un mismo hogar van juntos.
+- Casas visitables: «Ir a su casa» enseña el piso o la casa por dentro, distinta según el nivel del hogar y quién vive allí (juguetes, andador, estufa de butano, tendedero), con quien esté en casa a esa hora.

@@ -48,7 +48,7 @@ casita/
                       ideologías, gobiernos, reglas y sucesos (data/README.md). Lo comparten el juego web y Godot
   src/head.html, src/tail.html
   src/core/NNN_*.js   núcleo: 99 archivos numerados (motor, dibujo, casa, trabajo, mundo…)
-  mods/*.js           59 módulos que amplían el núcleo, en el orden de build.json
+  mods/*.js           60 módulos que amplían el núcleo, en el orden de build.json
   mods/movil.css      estilos de todas las ventanas
   p3d/, q3d/          librería 3D y modelos de los personajes
   pwa/                registro del service worker
@@ -112,7 +112,8 @@ Estado: ✅ funciona · 🟡 funciona pero corto · ⬜ pendiente.
 | Comunidad propia (socialismo utópico), semilla de las comunas | `comunidad` | ✅ |
 | Gobierno progresista y conservador en la vida diaria | `ciclos`, `fiscal` | 🟡 impuestos y pulso sí; faltan efectos en vivienda, servicios y calle |
 | Deseos del personaje, objetivos, temporadas, final | núcleo, `deseos`, `final` | ✅ |
-| Mundo: lugares visitables y escenas interiores con gente según la hora; 18 vecinos con nombre | núcleo (`047`), `gym`, `aula`, `poblacion`, `servicios` | 🟡 un solo barrio; el mapa del barrio existe en el código (`barrioItems`) pero no se pinta: solo se ven la casa y las escenas; los vecinos aún son figurantes, no se les puede conocer |
+| Mundo: lugares visitables y escenas interiores con gente según la hora | núcleo (`047`), `gym`, `aula`, `poblacion`, `servicios` | 🟡 un solo barrio; el mapa del barrio existe en el código (`barrioItems`) pero no se pinta: solo se ven la casa y las escenas |
+| Censo del barrio: 46 vecinos en 15 hogares (trabajo, historia, lazos, niños y adolescentes) y sus casas por dentro | `data/personas.json`, `poblacion`, `hogares` | 🟡 se les ve en su sitio y en su casa, pero aún no se les puede conocer; «Ir a su casa» usa el censo solo cuando la persona tenga `hogar` |
 | Otras ciudades y barrios | — | ⬜ |
 | Envejecer, calendario anual de fiestas | — | ⬜ |
 
@@ -149,10 +150,13 @@ Sacar el contenido a una carpeta `data/` en un formato legible. El juego web pas
 La fábrica y la prueba de Godot ya pueden empezar con lo que hay: lo que necesitan (lugares, gente, trabajos, objetos, necesidades, interacciones) está en `data/`.
 
 ### Frente A — La fábrica de contenido (juego web)
-Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`docs/FABRICA.md`, plantilla en `docs/prompts/PLANTILLA.md`, tareas en `docs/BACKLOG.md`). Primera tanda:
-1. **Población** (T-001): ✅ 18 vecinos con nombre, oficio, ideología y horarios, y escenas con gente. Falta que tengan relaciones entre ellos y que se les pueda conocer.
-2. **Barrios y lugares visitables**: ✅ centro de salud y oficina de empleo (T-003). Siguen mercado, polideportivo, más bares, y después otros barrios y ciudades.
-3. **Interacciones nuevas** con la gente, en los lugares y en casa.
+Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`docs/FABRICA.md`, plantilla en `docs/prompts/PLANTILLA.md`, tareas en `docs/BACKLOG.md`). Orden (decidido el 12 nov 2026):
+1. **Población.** Gente con trabajo, historia y casa; hogares de varios tipos; niños y adolescentes; unos en casas y otros en bloques.
+   - ✅ El censo: 46 personas en 15 hogares y 8 edificios (`data/personas.json` → `vecinos`, `hogares`, `edificios`), con trabajo y horario, historia y lazos; 10 niñas y niños y 7 adolescentes.
+   - ✅ En las escenas: cada cual donde le toca a su hora, quien trabaja en su puesto, las criaturas con una adulta de su casa (`mods/poblacion.js`).
+   - ✅ Casas visitables: el piso o la casa de cada hogar por dentro, según su nivel y quién vive allí (`mods/hogares.js`).
+2. **Lugares visitables: primero los lugares.** ✅ Centro de salud y oficina de empleo (T-003). Siguen: colegio e instituto (el censo ya manda a las criaturas a clase), mercado, polideportivo y más bares; volver a pintar el mapa del barrio para que bloques y casas se vean por fuera; después, otros barrios y ciudades.
+3. **Interacciones y personajes con los que se puede tratar**, entre toda la población nueva: conocer a los vecinos del censo (hoy son figurantes), que pasen a la lista de gente con su hogar y sus lazos, visitarles, e interacciones nuevas en los lugares y en casa.
 
 Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git worktree add ../wt/t0NN -b fab/t0NN main`); cada agente lee solo los documentos que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica.
 
