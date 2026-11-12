@@ -11,7 +11,7 @@ function outName(k){if(k==='militancia'){const n=ID().org_n;return n?capF(n.repl
 function outAvail(k){const o=OUT[k],h=S.t/60,d=dateOf(S.day);
   if(S.sim.work>0||S.jail>0)return TXN.politica.no_casa;if(o.req&&!o.req())return TXN.politica.no_toca;
   if(o.days==='libre'&&dayType(S.day)==='work'&&!(S.jobless||S.strike&&S.strike.on))return TXN.politica.solo_libres;
-  if(o.wd&&!o.wd.includes(d.wd))return 'los '+o.wd.map(w=>WDL[w].toLowerCase()).join(' y ');
+  if(o.wd&&!o.wd.includes(d.wd))return 'los '+o.wd.map(w=>WDL[w].toLowerCase()).map(n=>/s$/.test(n)?n:n+'s').join(' y ');
   const hh=o.flex&&!S.jobless&&SHIFT.start>=12&&dayType(S.day)==='work'?[10,12]:o.h;if(h<hh[0]||h>hh[1])return huecos(TXN.politica.horario,{desde:hh[0],hasta:hh[1]});
   if(shouldWork()||(dayType(S.day)==='work'&&!S.jobless&&S.lastWorkDay!==S.day&&h<SHIFT.start&&h+o.dur/60>leaveTime()))return TXN.politica.trabajar;
   if(S.needs.energia<12)return TXN.politica.agotada;
