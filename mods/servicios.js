@@ -14,10 +14,7 @@ function svVisitNow(){const H=HP();H.citaDue=0;svBack=true;try{hpVisit();}finall
 {const _ob=outBack;outBack=function(k){const r=_ob.apply(this,arguments);
   if(k==='medico'){svVisitNow();return r;}
   if(k==='sepe'){const n=CH().name;S.netBoost=Math.max(S.netBoost||0,S.day+3);if(!S.seek){try{autoSeek();}catch(e){}}
-    tell(pickR([
-      `Oficina de empleo. Dos horas de cola para que le sellen un papel que podía sellarse solo. «Siga buscando», le han dicho. ${n} lo hace.`,
-      `Ventanilla tres, cerrada. Ventanilla uno, «sin cita no se atiende». ${n} ha salido con una cita para dentro de un mes y una fotocopia.`,
-      `«Vuelva usted mañana», le ha dicho el cartel. ${n} ha vuelto igual: hoy no ha cobrado nada y ha rellenado tres formularios.`]),'📋');return r;}
+    tell(huecos(pickR(TXHZ.servicios.oficina_empleo_dos_horas_cola_lista),{nom:n}),'📋');return r;}
   return r;};}
 // ---- helpers de escena (sin Math.random: todo sale de un hash) ----
 const svH=i=>{let h=Math.imul((i|0)^0x9e3779b9,2654435761)>>>0;h=(h^(h>>>15))>>>0;h=Math.imul(h,2246822519)>>>0;h=(h^(h>>>13))>>>0;return (h%10000)/10000;};
@@ -44,12 +41,12 @@ SCENES['ambulatorio']=function(E){const {tt,night}=E;const it=[],add=(x,y,f)=>it
   const turno=40+(S.day*3)%50+Math.floor(tt/18);const cyc=(tt%18)/18;const docOn=cyc>.03&&cyc<.95;
   const drawBase=()=>{prism(0,0,W,D,-22,0,'#8fa6a8');topQuad(0,0,W,D,0,'#d5e4e1');ctx.strokeStyle='rgba(60,110,100,.12)';ctx.lineWidth=1;ctx.beginPath();for(let k=1;k<W;k++){ctx.moveTo(...P(k,0));ctx.lineTo(...P(k,D));}for(let k=1;k<D;k++){ctx.moveTo(...P(0,k));ctx.lineTo(...P(W,k));}ctx.stroke();
     sBox(0,-.15,W,0,0,WH,'#eef4f2');sBox(-.15,-.15,0,D,0,WH,'#e2ece9');svQuadX(0,W,0,9,'#3f9a8f');svQuadY(0,D,0,9,'#3f9a8f');
-    svQuadX(2.9,7.0,18,46,'#16191d');svQuadX(3.05,6.85,20,44,'#0c0f12');svText(3.9,0,40,'TURNO',"#8fe0c8",6.5,false);svText(5.95,0,40,'CONSULTA',"#8fe0c8",5.5,false);svText(3.9,0,28,String(turno),"#ff5a3c",15,false);svText(5.95,0,28,String(1+turno%3),"#ffc84a",15,false);
-    svQuadX(.5,2.6,26,50,'#fffdf8');svText(1.55,0,45,'VACUNAS',"#3f9a8f",3.2,false);svText(1.55,0,39,'gripe y covid',"#555",2.2,false);svText(1.55,0,34,'pida cita',"#555",2.2,false);
-    svQuadX(8.5,10.5,26,50,'#fffdf8');svText(9.5,0,45,'NORMAS',"#3f9a8f",3.2,false);svText(9.5,0,39,'Mascarilla si tos',"#555",2,false);svText(9.5,0,35,'Un acompañante',"#555",2,false);svText(9.5,0,31,'Apague el móvil',"#555",2,false);
+    svQuadX(2.9,7.0,18,46,'#16191d');svQuadX(3.05,6.85,20,44,'#0c0f12');svText(3.9,0,40,TXHZ.servicios.turno,"#8fe0c8",6.5,false);svText(5.95,0,40,TXHZ.servicios.consulta,"#8fe0c8",5.5,false);svText(3.9,0,28,String(turno),"#ff5a3c",15,false);svText(5.95,0,28,String(1+turno%3),"#ffc84a",15,false);
+    svQuadX(.5,2.6,26,50,'#fffdf8');svText(1.55,0,45,TXHZ.servicios.vacunas,"#3f9a8f",3.2,false);svText(1.55,0,39,TXHZ.servicios.gripe_covid,"#555",2.2,false);svText(1.55,0,34,TXHZ.servicios.pida_cita,"#555",2.2,false);
+    svQuadX(8.5,10.5,26,50,'#fffdf8');svText(9.5,0,45,TXHZ.servicios.normas,"#3f9a8f",3.2,false);svText(9.5,0,39,TXHZ.servicios.mascarilla_si_tos,"#555",2,false);svText(9.5,0,35,TXHZ.servicios.acompanante,"#555",2,false);svText(9.5,0,31,TXHZ.servicios.apague_movil,"#555",2,false);
     svQuadY(4.9,7.4,18,52,'#8fa6a8');svQuadY(5.0,7.3,20,50,svSky(night));svRain(5.0,7.3,20,50,tt);
     for(const [y,n] of [[1.0,'1'],[3.1,'2']]){svQuadY(y,y+1.1,0,50,docOn&&y===1.0?'#3a3f46':'#b6875a');svText(0,y+.55,56,'Consulta '+n,"#3f9a8f",3,true);}};
-  const decor=()=>{svText(5.5,0,60,'CENTRO DE SALUD',"#1f6f63",7,false);};
+  const decor=()=>{svText(5.5,0,60,TXHZ.servicios.centro_salud,"#1f6f63",7,false);};
   add(9.4,1.2,()=>{if(h>=7.5)svP(9.6,.25,91,'adult',{pose:'stand',act:'type',front:true,right:false,shirt:'#3f9a8f'});sBox(7.8,.5,10.8,1.4,0,22,'#fffdf8');sBox(7.8,.5,10.8,1.4,22,24,'#3f9a8f');sBox(8.3,.7,8.9,1.1,24,30,'#cfd4d8');});
   const seats=[];for(let r=0;r<3;r++)for(let i=0;i<5;i++)seats.push({x:2.0+i*1.4,y:3.2+r*1.4,k:r*5+i});
   const anaSeat=seats[7];
@@ -75,12 +72,12 @@ SCENES['sepe']=function(E){const {tt,night}=E;const it=[],add=(x,y,f)=>it.push({
   const ven=[[.8,3.0,1],[4.2,6.4,0],[7.6,9.8,1]];
   const drawBase=()=>{prism(0,0,W,D,-22,0,'#8c8576');topQuad(0,0,W,D,0,'#cfcabc');ctx.strokeStyle='rgba(80,70,50,.14)';ctx.lineWidth=1;ctx.beginPath();for(let k=1;k<W;k++){ctx.moveTo(...P(k,0));ctx.lineTo(...P(k,D));}for(let k=1;k<D;k++){ctx.moveTo(...P(0,k));ctx.lineTo(...P(W,k));}ctx.stroke();
     sBox(0,-.15,W,0,0,WH,'#e6e0cf');sBox(-.15,-.15,0,D,0,WH,'#dcd5c3');svQuadX(0,W,0,8,'#8a6a3a');svQuadY(0,D,0,8,'#8a6a3a');
-    ven.forEach(([x0,x1,open],i)=>{svQuadX(x0-.1,x1+.1,22,50,'#6b6252');if(open){svQuadX(x0,x1,24,48,'#c5d6dc');svQuadX(x0+.15,x0+.6,26,46,'rgba(255,255,255,.35)');}else{for(let z=24;z<48;z+=3)svQuadX(x0,x1,z,z+2.2,'#9a9486');svQuadX(x0+.3,x1-.3,30,43,'#f4efe1');svText((x0+x1)/2,0,39.5,'CERRADO',"#b3261e",3.6,false);svText((x0+x1)/2,0,34,'Vuelva usted mañana',"#3a3a3a",2.1,false);}
+    ven.forEach(([x0,x1,open],i)=>{svQuadX(x0-.1,x1+.1,22,50,'#6b6252');if(open){svQuadX(x0,x1,24,48,'#c5d6dc');svQuadX(x0+.15,x0+.6,26,46,'rgba(255,255,255,.35)');}else{for(let z=24;z<48;z+=3)svQuadX(x0,x1,z,z+2.2,'#9a9486');svQuadX(x0+.3,x1-.3,30,43,'#f4efe1');svText((x0+x1)/2,0,39.5,TXHZ.servicios.cerrado,"#b3261e",3.6,false);svText((x0+x1)/2,0,34,TXHZ.servicios.vuelva_usted_manana,"#3a3a3a",2.1,false);}
       svQuadX((x0+x1)/2-.45,(x0+x1)/2+.45,51,58,'#16191d');svText((x0+x1)/2,0,54.5,open?String(212+i*3+Math.floor(tt/11)):'--',open?'#ff5a3c':'#555',4.4,false);});
-    svText(5.5,0,63,'OFICINA DE EMPLEO',"#8a6a3a",6.5,false);
+    svText(5.5,0,63,TXHZ.servicios.oficina_empleo,"#8a6a3a",6.5,false);
     svQuadY(4.9,7.4,18,52,'#6b6252');svQuadY(5.0,7.3,20,50,svSky(night));svRain(5.0,7.3,20,50,tt);
-    svQuadY(.5,2.4,22,50,'#fffdf8');svText(0,1.45,45,'SIN CITA PREVIA',"#b3261e",2.8,true);svText(0,1.45,40,'NO SE ATIENDE',"#b3261e",2.8,true);svText(0,1.45,33,'Sellado cada 90 días',"#555",2,true);svText(0,1.45,29,'Traiga fotocopia',"#555",2,true);
-    svQuadY(2.9,4.6,24,48,'#fffdf8');svText(0,3.75,43,'HORARIO',"#555",2.8,true);svText(0,3.75,38,'9:00 a 13:00',"#555",2.4,true);svText(0,3.75,33,'de lunes a viernes',"#555",2,true);svText(0,3.75,28,'(salvo avería)',"#888",2,true);};
+    svQuadY(.5,2.4,22,50,'#fffdf8');svText(0,1.45,45,TXHZ.servicios.sin_cita_previa,"#b3261e",2.8,true);svText(0,1.45,40,TXHZ.servicios.atiende,"#b3261e",2.8,true);svText(0,1.45,33,TXHZ.servicios.sellado_cada_90_dias,"#555",2,true);svText(0,1.45,29,TXHZ.servicios.traiga_fotocopia,"#555",2,true);
+    svQuadY(2.9,4.6,24,48,'#fffdf8');svText(0,3.75,43,TXHZ.servicios.horario,"#555",2.8,true);svText(0,3.75,38,TXHZ.servicios.n9_00_13_00,"#555",2.4,true);svText(0,3.75,33,TXHZ.servicios.lunes_viernes,"#555",2,true);svText(0,3.75,28,TXHZ.servicios.salvo_averia,"#888",2,true);};
   const decor=()=>{};
   const posts=[];for(const y of [3.4,5.0])for(let i=0;i<7;i++)posts.push([1.2+i*1.4,y]);
   for(const [x,y] of posts)add(x,y+.1,()=>{cyl(x,y,.2,0,2,'#2a2a30','#3a3a44');cyl(x,y,.05,2,22,'#b8bec6','#d5dae0');cyl(x,y,.1,22,24,'#b8bec6','#d5dae0');});

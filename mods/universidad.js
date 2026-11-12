@@ -24,15 +24,15 @@ function uniWhy(k,cen){return uniCon(cen,k,()=>_uniEC(k),true);}
   try{ok=uni?uniCon(cen,k,()=>_es(k),true):_es(k);}finally{UNI.pick=null;}
   if(ok){const gasto=m0-S.money;if(gasto>0){S.money=m0;bkAdd('Matrícula',-gasto);}   // el engine lo apuntó como «Otros»: se deshace y se paga con bkAdd
     if(uni&&ED().cur){ED().cur.centro=cen;const n=CH().name;const g=gasto>0?fmt(gasto):'nada';
-      tell(cen==='privada'?`${n} ha pagado ${g} a Campus Nébula por lo mismo que la pública da por ${fmt(Math.round(P.cost*PM()))}. A cambio: clases por la tarde, veinte en el aula y un tutor que contesta correos. El título es el mismo.`
-        :`${n} se ha matriculado en la Universidad Pública del Río: ${g}. Clases por la mañana, ochenta en el aula y cafetería a precio de barrio.`,'🎓');}}
+      tell(cen==='privada'?huecos(TXHZ.universidad.ha_pagado_campus_nebula_mismo,{nom:n,g,c:fmt(Math.round(P.cost*PM()))})
+        :huecos(TXHZ.universidad.ha_matriculado_universidad_publica_del,{nom:n,g}),'🎓');}}
   return ok;};}
 // el horario de la privada manda mientras se cursa allí
 eduInClassHours=uniSw(eduInClassHours);eduTryGo=uniSw(eduTryGo);eduClash=uniSw(eduClash);
 {const _ob=outBack;outBack=function(kind){if(kind==='clase'){const C=uniCur();if(C){const cen=uniCen(C);const ex=UNI_D.centros[cen].energia||0;const hrs=uniSched(C.k,cen);const dh=hrs[1]-hrs[0];
     if(ex)S.needs.energia=Math.max(0,S.needs.energia-dh*ex);
-    if(Math.random()<.12)tell(cen==='privada'?pickR([`Veinte en el aula y la profe sabe cómo se llama ${CH().name}. Eso también se paga.`,`Clase de tarde en Campus Nébula. Salir a las nueve y llegar a casa a cenar: para eso es la cuota.`])
-      :pickR([`Ochenta en el aula, los últimos sin enchufe. ${CH().name} ha seguido la clase desde la quinta fila.`,`Cola en la cafetería de la pública: café a 1,20. Lo único que no ha subido.`]),'🎓');
+    if(Math.random()<.12)tell(cen==='privada'?huecos(pickR(TXHZ.universidad.veinte_aula_profe_sabe_como_lista),{})
+      :huecos(pickR(TXHZ.universidad.ochenta_aula_ultimos_sin_enchufe_lista),{}),'🎓');
     return uniCon(cen,C.k,()=>_ob.apply(this,arguments));}}return _ob.apply(this,arguments);};}
 // destOf('clase') → el centro que toque; el resto de programas siguen donde iban
 {const _d=destOf;destOf=function(k){if(k==='clase'){const C=uniCur();if(C)return uniLug(uniCen(C));}return _d.apply(this,arguments);};}
@@ -79,18 +79,18 @@ function uNightAfter(night,closed){return()=>{if(night>.3){ctx.fillStyle='rgba(2
 
 // ---- aula grande en gradas de la pública (ochenta personas; en exámenes, un asiento sí y otro no) ----
 function uAulaPub(E){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push({d:d??x+y,f});const W=10.5,D=10,WH=66;const h=S.t/60,wd=dateOf(S.day).wd;const ex=uniExamen();
-  const C=uniCur();const subj=C?EDU_PROGS[C.k].n:'Clase';const NR=7,NC=12;const tz=i=>4+(6-i)*4.5,ty=i=>.5+i*.85,sx=j=>1.6+j*.74;
+  const C=uniCur();const subj=C?EDU_PROGS[C.k].n:TXHZ.universidad.clase;const NR=7,NC=12;const tz=i=>4+(6-i)*4.5,ty=i=>.5+i*.85,sx=j=>1.6+j*.74;
   const cen=uCen(UNI_PUB,h,wd);const slots=[[6,2],[2,8],[5,10]];const AN=[4,6];
   const drawBase=()=>{uRoom(W,D,WH,'#b79c74','#ece3cf','#e3d9c3','rgba(90,60,20,.10)');
     uQ('x',0,W,0,0,10,'#a8885f');uQ('y',0,D,0,0,10,'#9c7d55');
     // ventanal alto en la pared de la izquierda y letrero
     uQ('y',.6,4.6,0,44,62,'#8a6a48');uQ('y',.75,4.45,0,46,60,svSky(night));for(let k=1;k<3;k++)uQ('y',.6+k*1.33-.04,.6+k*1.33+.04,0,46,60,'#8a6a48');
-    uT('y',7.35,0,60.5,'ANFITEATRO B · AFORO 90','#5a4e3a',2.4);
+    uT('y',7.35,0,60.5,TXHZ.universidad.anfiteatro_b_aforo_90,'#5a4e3a',2.4);
     // pizarra
     uQ('y',5.0,9.7,0,18,55,'#6b4a2e');uQ('y',5.15,9.55,0,19.5,53.5,'#2f4a3a');
     uT('y',7.35,0,47.5,subj.length>26?subj.slice(0,25)+'…':subj,'#f1efe6',2.7);
-    if(ex){uT('y',7.35,0,39.5,'EXAMEN FINAL','#f5d76e',3.6);uT('y',7.35,0,32.5,'Móviles apagados','#e9e6da',2.4);uT('y',7.35,0,26.5,'Silencio, por favor','#e9e6da',2.4);}
-    else{uT('y',7.35,0,40,'Tema '+(1+(S.day%9)),'#e9e6da',3);uT('y',7.35,0,33.5,'Entrega: jueves','#e9e6da',2.4);uT('y',7.35,0,27,'Aula llena: bajad a las gradas','#f5d76e',1.9);}
+    if(ex){uT('y',7.35,0,39.5,TXHZ.universidad.examen_final,'#f5d76e',3.6);uT('y',7.35,0,32.5,TXHZ.universidad.moviles_apagados,'#e9e6da',2.4);uT('y',7.35,0,26.5,TXHZ.universidad.silencio_favor,'#e9e6da',2.4);}
+    else{uT('y',7.35,0,40,'Tema '+(1+(S.day%9)),'#e9e6da',3);uT('y',7.35,0,33.5,'Entrega: jueves','#e9e6da',2.4);uT('y',7.35,0,27,TXHZ.universidad.aula_llena_bajad_gradas,'#f5d76e',1.9);}
     // gradas
     for(let i=0;i<NR;i++)sBox(1.3,ty(i),W-.2,ty(i)+.85,0,tz(i),i%2?'#bfae92':'#c9b99c');
     for(let i=0;i<NR;i++)for(const [a,b] of [[1.3,W-.2]]){ctx.strokeStyle='rgba(60,40,10,.12)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(...P(a,ty(i)+.85,tz(i)));ctx.lineTo(...P(b,ty(i)+.85,tz(i)));ctx.stroke();}
@@ -116,16 +116,16 @@ function uAulaPub(E){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push({d:d?
 function uPasillo(E){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push({d:d??x+y,f});const W=13,D=6.5,WH=66;const h=S.t/60,wd=dateOf(S.day).wd;const cen=uCen(UNI_PUB,h,wd);
   const drawBase=()=>{uRoom(W,D,WH,'#d3cbb9','#ece4d2','#e2d9c4','rgba(80,70,50,.12)');uQ('x',0,W,0,0,10,'#7d9bb0');uQ('y',0,D,0,0,10,'#7390a5');
     // puerta del aula
-    uQ('x',.7,2.1,0,0,46,'#6b4a2e');uQ('x',.85,1.95,0,22,40,'#9bb8c4');uT('x',1.4,0,43,'AULA 2','#f1efe6',2.8);
+    uQ('x',.7,2.1,0,0,46,'#6b4a2e');uQ('x',.85,1.95,0,22,40,'#9bb8c4');uT('x',1.4,0,43,TXHZ.universidad.aula_2,'#f1efe6',2.8);
     // tablón
     uQ('x',2.2,7.8,0,22,62,'#8a6a48');uQ('x',2.32,7.68,0,23.5,60.5,'#c79a63');
-    uQ('x',2.5,4.1,0,28,58,'#fff3b8');uT('x',3.3,0,54,'ASAMBLEA','#c0262d',3.0);uT('x',3.3,0,47.5,'jueves 14:00','#3b3247',1.9);uT('x',3.3,0,42.5,'contra la','#3b3247',1.9);uT('x',3.3,0,37.5,'subida','#3b3247',1.9);uT('x',3.3,0,32.5,'de tasas','#3b3247',1.9);
-    uQ('x',4.3,5.9,0,30,58,'#cfe8ff');uT('x',5.1,0,54,'PISO','#2a5a8a',3.2);uT('x',5.1,0,48,'COMPARTIDO','#2a5a8a',2.1);uT('x',5.1,0,42,'habitación','#3b3247',1.9);uT('x',5.1,0,36.5,'290 €/mes','#3b3247',2.1);
-    uQ('x',6.1,7.6,0,32,58,'#ffd6e0');uT('x',6.85,0,54,'SE BUSCA','#a8325a',2.4);uT('x',6.85,0,48.5,'PISO','#a8325a',3.2);uT('x',6.85,0,42.5,'3 estudiantes','#3b3247',1.8);uT('x',6.85,0,37.5,'sin fianza','#3b3247',1.9);
+    uQ('x',2.5,4.1,0,28,58,'#fff3b8');uT('x',3.3,0,54,TXHZ.universidad.asamblea,'#c0262d',3.0);uT('x',3.3,0,47.5,TXHZ.universidad.jueves_14_00,'#3b3247',1.9);uT('x',3.3,0,42.5,TXHZ.universidad.contra,'#3b3247',1.9);uT('x',3.3,0,37.5,'subida','#3b3247',1.9);uT('x',3.3,0,32.5,TXHZ.universidad.tasas,'#3b3247',1.9);
+    uQ('x',4.3,5.9,0,30,58,'#cfe8ff');uT('x',5.1,0,54,TXHZ.universidad.piso,'#2a5a8a',3.2);uT('x',5.1,0,48,TXHZ.universidad.compartido,'#2a5a8a',2.1);uT('x',5.1,0,42,'habitación','#3b3247',1.9);uT('x',5.1,0,36.5,TXHZ.universidad.n290_mes,'#3b3247',2.1);
+    uQ('x',6.1,7.6,0,32,58,'#ffd6e0');uT('x',6.85,0,54,TXHZ.universidad.busca,'#a8325a',2.4);uT('x',6.85,0,48.5,TXHZ.universidad.piso,'#a8325a',3.2);uT('x',6.85,0,42.5,TXHZ.universidad.n3_estudiantes,'#3b3247',1.8);uT('x',6.85,0,37.5,TXHZ.universidad.sin_fianza,'#3b3247',1.9);
     for(let k=0;k<7;k++){const x0=2.5+k*.72,z0=24+(k%3)*.8;uQ('x',x0,x0+.5,0,z0,z0+3.5,['#fff','#f7e08a','#d5f5c8','#f6c1c1'][k%4]);}
     // cafetería
-    uQ('x',8.1,12.4,0,0,62,'#7a6040');uQ('x',8.3,12.2,0,20,48,'#2a2320');uQ('x',8.2,12.3,0,50,62,'#f0d98a');uT('x',10.25,0,56,'CAFETERÍA','#5a3a22',3.4);
-    uQ('x',8.35,10.6,0,26,47,'#2f4a3a');uT('x',9.5,0,43,'Café 1,20','#f1efe6',1.9);uT('x',9.5,0,36.5,'Bocata 2,50','#f1efe6',1.9);uT('x',9.5,0,30,'Menú 6,50','#f5d76e',1.9);
+    uQ('x',8.1,12.4,0,0,62,'#7a6040');uQ('x',8.3,12.2,0,20,48,'#2a2320');uQ('x',8.2,12.3,0,50,62,'#f0d98a');uT('x',10.25,0,56,TXHZ.universidad.cafeteria,'#5a3a22',3.4);
+    uQ('x',8.35,10.6,0,26,47,'#2f4a3a');uT('x',9.5,0,43,TXHZ.universidad.cafe_1_20,'#f1efe6',1.9);uT('x',9.5,0,36.5,TXHZ.universidad.bocata_2_50,'#f1efe6',1.9);uT('x',9.5,0,30,TXHZ.universidad.menu_6_50,'#f5d76e',1.9);
     // taquillas
     for(let k=0;k<5;k++){uQ('y',.7+k*.62,.7+k*.62+.56,0,0,38,['#3f8a8f','#5a7cb0','#3f8a8f','#c9863a','#5a7cb0'][k]);}
     uQ('y',4.2,6.2,0,26,50,'#bfe3f7');for(let k=0;k<2;k++)uQ('y',4.2+k*1-.03,4.2+k*1+.03,0,26,50,'#8a8576');};
@@ -148,16 +148,16 @@ function uPasillo(E){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push({d:d?
 
 // ---- aula de veinte de Nébula: pantalla, portátiles; en exámenes, mesas separadas y silencio ----
 function uAulaPri(E){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push({d:d??x+y,f});const W=9,D=8.4,WH=66;const h=S.t/60,wd=dateOf(S.day).wd;const ex=uniExamen();
-  const C=uniCur();const subj=C?EDU_PROGS[C.k].n:'Clase';const cen=uCen(UNI_PRI,h,wd);
+  const C=uniCur();const subj=C?EDU_PROGS[C.k].n:TXHZ.universidad.clase;const cen=uCen(UNI_PRI,h,wd);
   const desks=[];if(ex){for(let r=0;r<3;r++)for(let c=0;c<4;c++)desks.push([1.1+c*2.0,2.5+r*1.9]);}else{for(let r=0;r<4;r++)for(let c=0;c<5;c++)desks.push([1.1+c*1.55,2.4+r*1.45]);}
   const AN=ex?5:12;
   const drawBase=()=>{uRoom(W,D,WH,'#d8d4cb','#f4f6f7','#e9edef','rgba(60,80,90,.10)');uQ('x',0,W,0,0,8,'#2a8f9a');uQ('y',0,D,0,0,8,'#26838d');
     uQ('x',1.4,7.6,0,22,58,'#2b3036');uQ('x',1.55,7.45,0,23.5,56.5,'#f4f7fb');
     uT('x',4.5,0,51.5,subj.length>30?subj.slice(0,29)+'…':subj,'#1f6f7a',2.2);
-    if(ex){uT('x',4.5,0,42.5,'EXAMEN','#c0262d',4.2);uT('x',4.5,0,34,'Móviles fuera · silencio','#3b3247',2.1);uT('x',4.5,0,28.5,'Quedan '+(25+(S.day*7)%30)+' min','#3b3247',2.1);}
-    else{uT('x',4.5,0,44,'Tema '+(1+(S.day%9)),'#3b3247',3.2);uT('x',4.5,0,37.5,'· Caso práctico en grupos','#3b3247',2);uT('x',4.5,0,32.5,'· Tutoría: martes 12:00','#3b3247',2);uT('x',4.5,0,27.5,'20 plazas, una cada una','#2a8f9a',1.9);}
+    if(ex){uT('x',4.5,0,42.5,TXHZ.universidad.examen,'#c0262d',4.2);uT('x',4.5,0,34,TXHZ.universidad.moviles_fuera_silencio,'#3b3247',2.1);uT('x',4.5,0,28.5,'Quedan '+(25+(S.day*7)%30)+' min','#3b3247',2.1);}
+    else{uT('x',4.5,0,44,'Tema '+(1+(S.day%9)),'#3b3247',3.2);uT('x',4.5,0,37.5,TXHZ.universidad.caso_practico_grupos,'#3b3247',2);uT('x',4.5,0,32.5,TXHZ.universidad.tutoria_martes_12_00,'#3b3247',2);uT('x',4.5,0,27.5,TXHZ.universidad.n20_plazas_cada,'#2a8f9a',1.9);}
     uQ('y',1.0,5.2,0,24,56,'#6b7a88');uQ('y',1.15,5.05,0,25.5,54.5,svSky(night));for(let k=1;k<3;k++)uQ('y',1.15+k*1.3-.04,1.15+k*1.3+.04,0,25.5,54.5,'#6b7a88');
-    uQ('y',5.5,6.9,0,22,42,'#fff');uT('y',6.2,0,37,'CAMPUS','#2a8f9a',2.2);uT('y',6.2,0,31,'NÉBULA','#2a8f9a',2.4);};
+    uQ('y',5.5,6.9,0,22,42,'#fff');uT('y',6.2,0,37,TXHZ.universidad.campus,'#2a8f9a',2.2);uT('y',6.2,0,31,TXHZ.universidad.nebula,'#2a8f9a',2.4);};
   // mesa y profe
   add(8.0,1.7,()=>{sBox(7.4,1.0,8.9,2.0,0,18,'#c9ccd1');sTop(7.4,1.0,8.9,2.0,18.5,'#e9ecef');sBox(7.8,1.3,8.4,1.8,18.5,19.5,'#4a5260');sBox(7.8,1.3,8.4,1.4,19.5,26,'#5a6270');});
   const pp=ex?upp(tt*.06,1.7,7.0):null;
@@ -181,17 +181,17 @@ function uExtPub(E,closed){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push
     // fachada
     sBox(.4,0,12.6,2.0,0,60,'#d9c8a6');sBox(.4,1.9,12.6,2.0,0,6,'#a8885f');sBox(.4,1.9,12.6,2.0,56,60,'#8a3b22');
     for(const x0 of [.9,2.7,8.9,10.7])for(const z0 of (x0<5?[36]:[12,36])){uQ('x',x0,x0+1.3,2.0,z0,z0+14,'#6b5a48');uQ('x',x0+.1,x0+1.2,2.0,z0+1,z0+13,lit?'#ffe9a8':svSky(night));}
-    uT('x',7.6,2.0,52,'UNIVERSIDAD PÚBLICA DEL RÍO','#fff6e0',3.5);
+    uT('x',7.6,2.0,52,TXHZ.universidad.universidad_publica_del_rio,'#fff6e0',3.5);
     // pancarta
-    uQ('x',.9,4.5,2.0,10,28,'#fffdf6');uT('x',2.7,2.0,22.5,'NO A LA SUBIDA','#c0262d',2.3);uT('x',2.7,2.0,15,'DE TASAS','#c0262d',3);
+    uQ('x',.9,4.5,2.0,10,28,'#fffdf6');uT('x',2.7,2.0,22.5,TXHZ.universidad.subida,'#c0262d',2.3);uT('x',2.7,2.0,15,TXHZ.universidad.tasas2,'#c0262d',3);
     // entrada, columnas y escalones
-    uQ('x',5.4,7.6,2.0,0,32,closed?'#6b6f78':'#232b33');if(!closed)uQ('x',5.5,6.5,2.0,2,30,'#33414d');if(closed){for(let z=2;z<30;z+=3.2)uQ('x',5.45,7.55,2.02,z,z+2.2,'#8a8f98');uT('x',6.5,2.03,36,'CERRADO','#c0262d',3.6);}
+    uQ('x',5.4,7.6,2.0,0,32,closed?'#6b6f78':'#232b33');if(!closed)uQ('x',5.5,6.5,2.0,2,30,'#33414d');if(closed){for(let z=2;z<30;z+=3.2)uQ('x',5.45,7.55,2.02,z,z+2.2,'#8a8f98');uT('x',6.5,2.03,36,TXHZ.universidad.cerrado,'#c0262d',3.6);}
     sBox(4.9,2.0,5.2,2.4,0,36,'#c9b890');sBox(7.8,2.0,8.1,2.4,0,36,'#c9b890');sBox(4.8,1.9,8.2,2.5,36,38,'#8a6a4a');
     sBox(4.6,2.0,8.4,2.6,0,6,'#9d927c');sBox(4.6,2.6,8.4,3.2,0,4,'#a99e88');sBox(4.6,3.2,8.4,3.8,0,2,'#b6ab96');};
   // bicicletas
   add(2.0,4.6,()=>{for(let k=0;k<4;k++){const x=.9+k*.6,y=4.5;const [a,b]=P(x,y);ctx.strokeStyle='#2a2a30';ctx.lineWidth=1.2;for(const dx of [-6,6]){ctx.beginPath();ctx.ellipse(a+dx,b-5,5,5.5,0,0,7);ctx.stroke();}capsule(a-6,b-5,a,b-13,1.2,['#c0262d','#3a86ff','#2e8b57','#e9c46a'][k]);capsule(a,b-13,a+6,b-5,1.2,['#c0262d','#3a86ff','#2e8b57','#e9c46a'][k]);capsule(a-6,b-5,a+6,b-5,1.2,'#444');}sBox(.7,4.9,3.4,5.0,0,5,'#6b6f78');},5.0);
   add(10.9,5.5,()=>{sBox(9.4,5.4,12.4,5.55,0,44,'#efe3b8');sBox(9.4,5.4,12.4,5.9,44,47,'#b5432a');for(let k=0;k<5;k++)poly([P(9.4+k*.6,5.9,44),P(10+k*.6,5.9,44),P(10+k*.6,6.0,40),P(9.4+k*.6,6.0,40)],k%2?'#fff':'#b5432a');
-    uQ('x',9.55,12.25,5.56,22,41,'#3b3247');uT('x',10.9,5.58,35,'CAFETERÍA','#f0d98a',2.2);uT('x',10.9,5.58,28.5,'café 1,20 €','#fff',1.7);},10.9+5.5);
+    uQ('x',9.55,12.25,5.56,22,41,'#3b3247');uT('x',10.9,5.58,35,TXHZ.universidad.cafeteria,'#f0d98a',2.2);uT('x',10.9,5.58,28.5,TXHZ.universidad.cafe_1_202,'#fff',1.7);},10.9+5.5);
   add(11.0,7.0,()=>{sBox(9.4,6.7,12.4,7.2,0,12,'#8a6a48');sBox(9.4,6.7,12.4,7.2,12,13,'#b08a5a');sBox(9.8,6.8,10.4,7.0,13,15,'#cfd4d8');},12.4+7.2+.3);
   if(!closed){add(10.7,6.1,()=>svP(10.7,6.1,40,'adult',{pose:'stand',front:true,right:false,shirt:'#ffffff'}),10.7+6.2);
     // escalones: gente sentada
@@ -207,7 +207,7 @@ function uExtPub(E,closed){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push
     cen.slice(0,2).forEach((v,q)=>{const x=4.2+q*.9,y=6.3;add(x,y,()=>uCenFig(v,x,y,{front:true,right:q===0,act:q?'phone':'talk'}));});}
   add(.9,8.9,()=>uTree(.9,8.9,1.1,night),.9+8.9+.5);add(12.1,3.4,()=>uTree(12.1,3.4,1.0,night),12.1+3.4+.5);
   if(closed){add(6.5,8.6,()=>{for(const x of [.6,3.2,6.5,9.8,12.4])sBox(x-.12,8.5,x+.12,8.7,0,30,'#4a4f58');for(let k=0;k<10;k++){const x0=.6+k*1.18;sBox(x0+.3,8.58,x0+1.0,8.62,0,24,'#6b6f78');}sBox(.6,8.5,12.4,8.7,24,26,'#4a4f58');sBox(5.7,8.45,7.3,8.75,12,22,'#fffdf6');},8.8+6.5);
-    add(6.5,8.8,()=>{uT('x',6.5,8.78,17,'CERRADO','#c0262d',2.9);},6.5+8.8+.1);}
+    add(6.5,8.8,()=>{uT('x',6.5,8.78,17,TXHZ.universidad.cerrado,'#c0262d',2.9);},6.5+8.8+.1);}
   const ana=closed?{x:8.7,y:9.4,pose:'stand',front:false,right:true,act:null}:{x:8.6,y:6.2,pose:'stand',front:true,right:true,act:null,prop:'☕'};
   const after=()=>{uRain(tt,night);uNightAfter(night,closed)();};
   return {W,D,floor:'#c9c2b2',wall:'#d9c8a6',out:true,tile:false,drawBase,decor:()=>{},items:it,ana,after};}
@@ -220,13 +220,13 @@ function uExtPri(E,closed){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push
     for(let k=0;k<4;k++){const x0=.8+k*2.4;if(k===2)continue;uQ('x',x0,x0+1.9,2.4,10,41,'#3a4a52');uQ('x',x0+.1,x0+1.8,2.4,11,40,lit?'#ffe9a8':'#8fc9d6');uQ('x',x0+.1,x0+1.8,2.4,25,26,'#3a4a52');}
     uQ('x',4.9,6.1,2.4,0,34,closed?'#6b7480':'#3a4a52');if(!closed){uQ('x',5.0,6.0,2.4,1,33,'#8fc9d6');uQ('x',5.45,5.55,2.4,1,33,'#3a4a52');}else{for(let z=2;z<32;z+=3.2)uQ('x',5.0,6.0,2.42,z,z+2.2,'#9aa3ae');}
     sBox(4.5,2.4,6.5,3.0,34,37,'#2a8f9a');
-    uQ('x',.4,10.6,2.4,43,54,'#2a8f9a');uT('x',5.5,2.4,48.5,'CAMPUS NÉBULA','#ffffff',3.6);
+    uQ('x',.4,10.6,2.4,43,54,'#2a8f9a');uT('x',5.5,2.4,48.5,TXHZ.universidad.campus_nebula,'#ffffff',3.6);
 };
   // cartel de «financia tu matrícula»
   add(2.4,3.2,()=>{sBox(1.5,3.1,3.3,3.25,0,3,'#3a4048');sBox(1.6,3.15,3.2,3.2,3,56,'#2a8f9a');uQ('x',1.65,3.15,3.21,6,53,'#2a8f9a');uQ('x',1.7,3.1,3.21,9,50,'#ffffff');
-    uT('x',2.4,3.22,47,'FINANCIA TU','#2a8f9a',2.2);uT('x',2.4,3.22,40.5,'MATRÍCULA','#2a8f9a',2.5);uT('x',2.4,3.22,32.5,'hasta 60 cuotas','#3b3247',1.8);uT('x',2.4,3.22,26.5,'desde 189 €/mes','#c0262d',1.9);uT('x',2.4,3.22,19.5,'Nébula Crédito','#2a8f9a',1.7);},2.4+3.2+.6);
+    uT('x',2.4,3.22,47,TXHZ.universidad.financia_tu,'#2a8f9a',2.2);uT('x',2.4,3.22,40.5,TXHZ.universidad.matricula,'#2a8f9a',2.5);uT('x',2.4,3.22,32.5,TXHZ.universidad.hasta_60_cuotas,'#3b3247',1.8);uT('x',2.4,3.22,26.5,TXHZ.universidad.desde_189_mes,'#c0262d',1.9);uT('x',2.4,3.22,19.5,TXHZ.universidad.nebula_credito,'#2a8f9a',1.7);},2.4+3.2+.6);
   // cafetería de franquicia
-  add(9.4,5.0,()=>{sBox(8.2,3.8,10.7,5.8,0,26,'#f6f1e4');sBox(8.2,3.8,10.7,5.8,26,29,'#2e6e5a');uQ('x',8.5,10.4,5.8,3,24,'#a8d8df');uQ('x',8.7,10.2,5.8,8,20,'#cfe9ec');uT('x',9.45,5.82,33,'TAZÓN & CO.','#f6f1e4',2.6);uT('x',9.45,5.82,15,'flat white 3,90 €','#2e6e5a',1.8);
+  add(9.4,5.0,()=>{sBox(8.2,3.8,10.7,5.8,0,26,'#f6f1e4');sBox(8.2,3.8,10.7,5.8,26,29,'#2e6e5a');uQ('x',8.5,10.4,5.8,3,24,'#a8d8df');uQ('x',8.7,10.2,5.8,8,20,'#cfe9ec');uT('x',9.45,5.82,33,TXHZ.universidad.tazon_co,'#f6f1e4',2.6);uT('x',9.45,5.82,15,TXHZ.universidad.flat_white_3_90,'#2e6e5a',1.8);
     for(let k=0;k<5;k++)poly([P(8.2+k*.5,5.8,26),P(8.7+k*.5,5.8,26),P(8.7+k*.5,6.2,22),P(8.2+k*.5,6.2,22)],k%2?'#f6f1e4':'#2e6e5a');},9.4+5.9);
   const mesa=(x,y)=>{cyl(x,y,.45,10,11,'#d9d2c2','#f0ece2');cyl(x,y,.07,0,10,'#6b6f78','#6b6f78');};
   const silla=(x,y)=>{sBox(x-.18,y-.18,x+.18,y+.18,8,10,'#2e6e5a');sBox(x-.14,y-.14,x-.08,y-.08,0,8,'#6b6f78');sBox(x+.1,y+.1,x+.16,y+.16,0,8,'#6b6f78');};
@@ -245,7 +245,7 @@ function uExtPri(E,closed){const {tt,night}=E;const it=[],add=(x,y,f,d)=>it.push
     const w1=upp(tt*.05,.8,10);add(w1[0],6.4,()=>svP(w1[0],6.4,97,'adult',{pose:'walk',ph:tt*6,front:true,right:w1[1]}));
     cen.slice(0,2).forEach((v,q)=>{const x=5.6+q*.9,y=5.0;add(x,y,()=>uCenFig(v,x,y,{front:true,right:q===0,act:q?'phone':'talk'}));});}
   add(.8,8.3,()=>uTree(.8,8.3,1.0,night),.8+8.3+.5);add(10.2,2.9,()=>uTree(10.2,2.9,.9,night),10.2+2.9+.5);
-  if(closed){add(5.5,8.3,()=>{for(const x of [.6,3.0,5.5,8.0,10.4])sBox(x-.1,8.3,x+.1,8.5,0,28,'#4a4f58');sBox(.6,8.3,10.4,8.5,22,24,'#4a4f58');for(let k=0;k<9;k++)sBox(.8+k*1.07,8.36,1.5+k*1.07,8.4,0,22,'#8a919a');sBox(4.9,8.25,6.1,8.55,10,19,'#fffdf6');},8.7+5.5);add(5.5,8.7,()=>uT('x',5.5,8.58,14.5,'CERRADO','#c0262d',2.5),5.5+8.8);}
+  if(closed){add(5.5,8.3,()=>{for(const x of [.6,3.0,5.5,8.0,10.4])sBox(x-.1,8.3,x+.1,8.5,0,28,'#4a4f58');sBox(.6,8.3,10.4,8.5,22,24,'#4a4f58');for(let k=0;k<9;k++)sBox(.8+k*1.07,8.36,1.5+k*1.07,8.4,0,22,'#8a919a');sBox(4.9,8.25,6.1,8.55,10,19,'#fffdf6');},8.7+5.5);add(5.5,8.7,()=>uT('x',5.5,8.58,14.5,TXHZ.universidad.cerrado,'#c0262d',2.5),5.5+8.8);}
   const ana=closed?{x:7.6,y:8.9,pose:'stand',front:false,right:true,act:null}:{x:6.0,y:6.2,pose:'stand',front:true,right:true,act:null};
   const after=()=>{uRain(tt,night);uNightAfter(night,closed)();};
   return {W,D,floor:'#dfe3e1',wall:'#f2f4f5',out:true,tile:false,drawBase,decor:()=>{},items:it,ana,after};}

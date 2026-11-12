@@ -1,4 +1,5 @@
 // ---------- vida propia de quien vive en casa (madre, pareja, compis) ----------
+const {textos_mods_hz:TXHZ}=DATA;
 const RV_SIT=new Set(['sofa','silla','sillon','butaca','sofacama','banco','bancoj','mesacoc']);
 const RV_Z={sofa:8,sofacama:8,sillon:8,butaca:8,silla:9,banco:8,bancoj:8,mesacoc:9};
 function rvPlan(h){// [tipos de objeto, act, pose, minutos, peso]
@@ -44,12 +45,12 @@ function rvChoose(r){const h=S.t/60;const home=!(S.sim.work>0);
   if(!tgt.size)return false;let p=null;if(tgt.has(cx+','+cy))p=[];else p=bfs([cx,cy],(x,y)=>tgt.has(x+','+y));if(!p)return false;
   const end=p.length?p[p.length-1]:[cx,cy];const i=tgt.get(end[0]+','+end[1]);
   r.path=p;r.plan={i,act:o.act,pose:o.pose,dur:o.fixed?o.dur:o.dur*(.7+Math.random()*.6),t:S.obj[i].t};return true;}
-function rvAwayWhy(r){const p=r.pid&&(S.people||[]).find(q=>q.k===r.pid);const old=p&&(p.age||50)>=55;return pickR(old?['a la compra','al ambulatorio','a casa de una amiga','a misa','al banco a protestar','al mercado','a dar un paseo','a la farmacia','a ver a la vecina']:['a la compra','a dar una vuelta','al gimnasio','a hacer un recado','a ver a un amigo','a la biblioteca','al parque']);}
+function rvAwayWhy(r){const p=r.pid&&(S.people||[]).find(q=>q.k===r.pid);const old=p&&(p.age||50)>=55;return pickR(old?[TXHZ.resvida.compra,TXHZ.resvida.al_ambulatorio,TXHZ.resvida.casa_amiga,TXHZ.resvida.misa,TXHZ.resvida.al_banco_protestar,TXHZ.resvida.al_mercado,TXHZ.resvida.dar_paseo,TXHZ.resvida.farmacia,TXHZ.resvida.ver_vecina]:[TXHZ.resvida.compra,TXHZ.resvida.dar_vuelta,TXHZ.resvida.al_gimnasio,TXHZ.resvida.hacer_recado,TXHZ.resvida.ver_amigo,TXHZ.resvida.biblioteca,TXHZ.resvida.al_parque]);}
 {const _ur=updateResidents;updateResidents=function(gm){const list=residents();const now=S.day*1440+S.t;
   for(const r of list){if(r.kind==='kid')continue;
     if(r.doing){if(now<r.doing.until&&S.obj[r.doing.i]&&S.obj[r.doing.i].t===r.doing.t){r.next=99;continue;}if(r.doing.from){r.x=r.doing.from[0];r.y=r.doing.from[1];}r.doing=null;r.next=0;}
-    if(r.away){if(now<r.away.until){r.next=99;continue;}const b=r.away.back;r.away=null;r.x=b[0];r.y=b[1];r.path=[];r.next=4;const p=r.pid&&S.people.find(q=>q.k===r.pid);if(p&&Math.random()<.5&&!(S.sim.work>0)&&throttled('vuelta'+r.pid,3e5))toast(`🚪 ${p.n} ha vuelto`);continue;}
-    if(r.plan&&r.plan.away&&(!r.path||!r.path.length)){const pl=r.plan;r.plan=null;r.away={until:now+pl.dur,back:[r.x,r.y]};const p=r.pid&&S.people.find(q=>q.k===r.pid);if(p&&!(S.sim.work>0)&&throttled('sale'+r.pid,3e5))toast(`🚪 ${p.n} se va ${pl.why}`);r.x=-50;r.y=-50;r.next=99;continue;}
+    if(r.away){if(now<r.away.until){r.next=99;continue;}const b=r.away.back;r.away=null;r.x=b[0];r.y=b[1];r.path=[];r.next=4;const p=r.pid&&S.people.find(q=>q.k===r.pid);if(p&&Math.random()<.5&&!(S.sim.work>0)&&throttled('vuelta'+r.pid,3e5))toast(huecos(TXHZ.resvida.ha_vuelto,{p:p.n}));continue;}
+    if(r.plan&&r.plan.away&&(!r.path||!r.path.length)){const pl=r.plan;r.plan=null;r.away={until:now+pl.dur,back:[r.x,r.y]};const p=r.pid&&S.people.find(q=>q.k===r.pid);if(p&&!(S.sim.work>0)&&throttled('sale'+r.pid,3e5))toast(huecos(TXHZ.resvida.va,{p:p.n,pl_why:pl.why}));r.x=-50;r.y=-50;r.next=99;continue;}
     if(r.plan&&(!r.path||!r.path.length)){const pl=r.plan;r.plan=null;if(S.obj[pl.i]&&S.obj[pl.i].t===pl.t){r.doing={...pl,until:now+pl.dur,from:[r.x,r.y]};r.next=99;
         if(pl.pose==='sit'&&RV_SIT.has(pl.t)){r.x=pl.i%N+.52;r.y=(pl.i/N|0)+.52;}continue;}}
     if((!r.path||!r.path.length)&&!r.plan&&(r.next||0)-gm<=0){if(rvChoose(r))r.next=99;}

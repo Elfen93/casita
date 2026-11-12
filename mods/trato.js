@@ -38,7 +38,7 @@ function trEnsure(p){if(!p||p.vid==null)return p;const v=vecinoPorId(p.vid);if(!
 {const _vc=vcConocer;vcConocer=function(){const r=_vc.apply(this,arguments);try{if(r)trEnsure(r);}catch(e){}return r;};}
 {const _rt=roleTxt;roleTxt=function(p){if(p&&p.vid!=null){const v=vecinoPorId(p.vid);return ((v?vcOficio(v):'')||'vecin'+pO(p)).toLowerCase()+', '+p.age+' años';}return _rt.apply(this,arguments);};}
 {const _fl=flirt;flirt=function(p){if(p&&p.vid!=null){trEnsure(p);if(vcMenorP(p)){toast(TRD().romance.menor);return false;}
-    if(!trRomOkP(p)){const v=vecinoPorId(p.vid),pa=v?trTienePareja(v):[];toast(pa.length?trT('tiene_pareja',{quien:pa[0].n}):`${p.n} no está interesad${pO(p)} en ${CH().name} de esa manera`);return false;}}
+    if(!trRomOkP(p)){const v=vecinoPorId(p.vid),pa=v?trTienePareja(v):[];toast(pa.length?trT('tiene_pareja',{quien:pa[0].n}):huecos(TXHZ.trato.esta_interesad_esa_manera,{p:p.n,pO:pO(p)}));return false;}}
   return _fl.apply(this,arguments);};}
 {const _ao=askOut;askOut=function(p){if(p&&p.vid!=null){trEnsure(p);if(vcMenorP(p)||!trRomOkP(p))return;}return _ao.apply(this,arguments);};}
 {const _mi=moveIn;moveIn=function(p){if(p&&p.vid!=null){toast(huecos(TRD().romance.no_vive,{v:p.n}));return;}return _mi.apply(this,arguments);};}
@@ -120,8 +120,8 @@ function trAccion(v,p,a){const T=TT(),ck=v.id+'|'+a.origen+':'+a.id;if(T.cd[ck]=
   p.last=S.day;try{tell(huecos(L[0],vars)+'. '+huecos(L[1],vars),a.e);}catch(e){}
   trCard(a.e,huecos(L[0],vars),huecos(L[1],vars),ok?true:null,p,b,res);}
 // ---------- favores en los dos sentidos, con memoria ----------
-const trFavVars=(v,id)=>{const f=TRD().favores[id],o={v:v.n,c:fmt(hrs(2.5))};if(id==='cuidar'){const k=trCria(v);o.k=k?k.n:'su cría';}
-  if(id==='firmar'){const E=trEdifOf(v);let x=null;if(E){const L=pbVec().filter(q=>q&&q.id!==v.id&&!vcMenor(q,18)&&(trEdifOf(q)||{}).id===E.id);if(L.length)x=L[Math.floor(pbH(v.id+'f')*L.length)];}o.x=x?x.n:'una vecina del bloque';}return o;};
+const trFavVars=(v,id)=>{const f=TRD().favores[id],o={v:v.n,c:fmt(hrs(2.5))};if(id==='cuidar'){const k=trCria(v);o.k=k?k.n:TXHZ.trato.cria;}
+  if(id==='firmar'){const E=trEdifOf(v);let x=null;if(E){const L=pbVec().filter(q=>q&&q.id!==v.id&&!vcMenor(q,18)&&(trEdifOf(q)||{}).id===E.id);if(L.length)x=L[Math.floor(pbH(v.id+'f')*L.length)];}o.x=x?x.n:TXHZ.trato.vecina_del_bloque;}return o;};
 const trFavElegible=(id,v,p)=>{const f=TRD().favores[id];return !!f&&(p.rel||0)>=f.rel&&trReqOk(f.req,v,p);};
 function trMemo(v,id){const f=trFav(v.id);f.hist.push([S.day,TRD().favores[id]?TRD().favores[id].mem:id]);if(f.hist.length>6)f.hist.shift();}
 // pedir: probabilidad según relación, carisma y si te debe una (te la cobras)
@@ -149,7 +149,7 @@ function trCumple(v,p,f,req){const b=sxSnap(p),vars=Object.assign({},req.vars||{
   try{tell(trT('diario_cumple',{n:CH().name,v:v.n,que:f.mem}),f.e);}catch(e){}const L=pickR(f.ok);trCard(f.e,huecos(L[0],vars),huecos(L[1],vars),true,p,b,res);}
 // los favores de ir a su casa (cuidar, mudanza) se cumplen yendo de verdad: sale la visita y, al volver, el resultado
 function trIrComp(v,p){const T=TT(),c=T.comp.find(x=>x.vid===v.id);if(!c||trObs())return;
-  if(S.sim.work>0){toast(trT('no_se_puede',{why:'ahora estás fuera'}));return;}
+  if(S.sim.work>0){toast(trT('no_se_puede',{why:TXHZ.trato.ahora_estas_fuera}));return;}
   const why=outAvail('visita');if(why){toast(trT('no_se_puede',{why}));return;}
   T.run={vid:v.id,id:c.id};if(typeof menu!=='undefined')menu.classList.remove('open');S.outWith=p.k;S.dateOut=false;doOut('visita');}
 {const _ob=outBack;outBack=function(k){const pk=S.outWith,T=S.trato;let asam=null,comp=null;
@@ -182,7 +182,7 @@ function trBloque(v,p){const T=TT(),B=T.bloque,P=TRD().politica,ck=v.id+'|bloque
   const pr=Math.max(.2,Math.min(.9,.4+(p.rel||0)/200+(lvl('carisma')||0)*.04+(LEFT.includes(o)?.25:o==='apolitica'?0:-.1)));
   try{tell(trT('diario_bloque',{n:CH().name,v:v.n}),'🏘️');}catch(e){}
   if(Math.random()>=pr){const L=pickR(P.bloque_ko),res=trFx({rel:-1},v,p,{});trCard('🏘️',huecos(L[0],{v:v.n}),huecos(L[1],{v:v.n}),false,p,b,res);return;}
-  B.ids.push(v.id);const res=trFx({rel:4,mov:.4,sol:.3},v,p,{mem:'se apuntó al sindicato del bloque'}),L=pickR(P.bloque_ok);res.tags.unshift('🏘️ '+B.ids.length+'/3');
+  B.ids.push(v.id);const res=trFx({rel:4,mov:.4,sol:.3},v,p,{mem:TXHZ.trato.apunto_al_sindicato_del_bloque}),L=pickR(P.bloque_ok);res.tags.unshift('🏘️ '+B.ids.length+'/3');
   trBloqueEfecto();trCard('🏘️',huecos(L[0],{v:v.n}),huecos(L[1],{v:v.n}),true,p,b,res);}
 // con tres del bloque dentro hay sindicato de inquilinas (lo que ya mira el mundo: S.pol.tenant) y puede haber huelga de alquileres
 function trBloqueEfecto(){const B=TT().bloque;if(B.ids.length<3||S.owned)return;S.pol=S.pol||{xp:0,inf:0,stages:{},comp:2,red:0};
@@ -199,7 +199,7 @@ function trPagar(v,p,i){const T=TT(),d=T.deudas[i];if(!d||d.dir!=='le'||d.vid!==
   try{tell(trT('diario_devuelve',{n:CH().name,v:v.n,c:fmt(d.amt)}),'💶');}catch(e){}const L=TRF().pagado;trCard('💶',huecos(L[0],{v:v.n}),huecos(L[1],{v:v.n,c:fmt(d.amt)}),true,p,b,{tags:['−'+fmt(d.amt)]});}
 function trDeudasDia(){const T=TT(),F=TRF();for(const d of T.deudas.slice()){const v=vecinoPorId(d.vid),p=vcPer(d.vid);if(!v||!p){T.deudas=T.deudas.filter(x=>x!==d);continue;}
   if(d.dir==='le'){if(S.day>=d.dl&&!d.msg){d.msg=1;phIncoming(p,huecos(F.msg_pagar,{v:v.n,c:fmt(d.amt)}),[F.msg_pagar_si,F.msg_pagar_luego]);}
-    else if(S.day>d.dl+6&&!d.late){d.late=1;p.rel=trClamp((p.rel||0)-6);trFav(v.id).hist.push([S.day,'no le devolviste a tiempo']);try{tell(`${v.n} no ha dicho nada de lo que le debes. Se le nota.`,'💶');}catch(e){}}}
+    else if(S.day>d.dl+6&&!d.late){d.late=1;p.rel=trClamp((p.rel||0)-6);trFav(v.id).hist.push([S.day,TXHZ.trato.devolviste_tiempo]);try{tell(huecos(TXHZ.trato.ha_dicho_nada_debes_nota,{v:v.n}),'💶');}catch(e){}}}
   else if(S.day>=d.dl){if(Math.random()<.88||d.again){bkAdd(F.etiqueta_vuelve,d.amt);T.deudas=T.deudas.filter(x=>x!==d);p.rel=trClamp((p.rel||0)+3);trFav(v.id).hist.push([S.day,F.mem_te_pago]);
       try{tell(trT('diario_te_devuelve',{n:CH().name,v:v.n,c:fmt(d.amt)}),'💶');phIncoming(p,huecos(F.msg_te_devuelve,{v:v.n,c:fmt(d.amt)}),'gen');}catch(e){}}
     else{d.again=1;d.dl=S.day+3;phIncoming(p,huecos(F.msg_olvida,{v:v.n}),'gen');}}}}
@@ -220,7 +220,7 @@ function trMemoria(v,p){const T=TT(),F=TRF(),f=T.f[v.id]||{te:0,le:0,hist:[]};co
   if(fc)x+=`<div class="trq"><div>${vcEsc(trT('prometido',{que:huecos(fc.corto,cp.vars||{}).toLowerCase()}))} <i>(${vcEsc(F.hasta)})</i></div><div class="trqb"><button class="btn" data-tr="comp:go">${vcEsc(F.ir_ya)}</button></div></div>`;
   return x;}
 function trOpciones(v,p){const T=TT(),F=TRF(),D=TRD(),out=[];const {acc,nota}=trAcciones(v,p);
-  for(const a of acc.slice(0,2))out.push({id:'a:'+a.origen+':'+a.id,t:`${a.e} ${a.n}`});
+  for(const a of acc.slice(0,2))out.push({id:'a:'+a.origen+':'+a.id,t:huecos(TXHZ.trato.txt,{a_e:a.e,a:a.n})});
   const favs=Object.keys(D.favores).filter(id=>D.favores[id].dir==='pedir'&&trFavElegible(id,v,p));
   if(favs.length&&T.cd[v.id+'|pedir']!==S.day)out.push({id:'favor',t:F.pedir_favor});
   if(trRomOkP(p)&&p.adult!==false&&canLove(p)&&(p.rel||0)>=20&&!TRK_ROM.includes(p.stage)&&p.stage!=='ex')out.push({id:'lig',t:F.ligar});
@@ -282,9 +282,9 @@ function trNota(p){const f=TT().f[p.vid]||{},L=[];if(f.te>0)L.push(f.te===1?TRF(
     const j=blk.indexOf('<div class="minibars">');if(j>=0)blk=blk.slice(0,j)+st+(nota?`<div class="sub" style="font-size:11px;color:#7a4fa0">${vcEsc(nota)}</div>`:'')+blk.slice(j);
     if(rom){const k=blk.indexOf('</div>',blk.indexOf('<div class="minibars">'))+6;blk=blk.slice(0,k)+`<div class="minibars"><i style="width:${Math.round(p.love||0)}%;background:#e88aa8"></i></div>`+blk.slice(k);}
     const B=(a,t)=>`<button class="mini" data-act="${a}" data-p="${p.k}">${t}</button>`;let bt='';
-    if(['conocida','amiga'].includes(p.stage)&&canLove(p))bt+=B('flirt','💘 Ligar');
-    if(p.stage==='cita'||p.stage==='rollo')bt+=B('date','🌹 Cita')+B('stay','🌙 Que se quede')+B('ask','❤️ Pedir salir');
-    if(p.stage==='pareja')bt+=B('date','🌹 Cita')+B('stay','🌙');
+    if(['conocida','amiga'].includes(p.stage)&&canLove(p))bt+=B('flirt',TXHZ.trato.ligar);
+    if(p.stage==='cita'||p.stage==='rollo')bt+=B('date',TXHZ.trato.cita)+B('stay',TXHZ.trato.quede)+B('ask',TXHZ.trato.pedir_salir);
+    if(p.stage==='pareja')bt+=B('date',TXHZ.trato.cita)+B('stay','🌙');
     if(rom)bt+=B('break','💔');
     if(bt){const m=blk.lastIndexOf('</div></div></div>');if(m>=0)blk=blk.slice(0,m)+bt+blk.slice(m);}
     h=h.slice(0,s)+blk+h.slice(e);}}catch(e){console.error(e);}return h;};}
@@ -294,7 +294,7 @@ function trHoraLibre(v,wd,win){let lo=win?win[0]:10,hi=win?win[1]:21.5;const t=v
   if(t&&Array.isArray(t.h)&&pbDia(t.dias,wd)){const a=t.h[0],b=t.h[1];if(b<=a)return null;const ws=[[lo,Math.min(hi,a-1)],[Math.max(lo,b+1.5),hi]].filter(w=>w[1]-w[0]>=.4);if(!ws.length)return null;const w=pickR(ws);return w[0]+Math.random()*(w[1]-w[0]);}
   return hi-lo>=.25?lo+Math.random()*(hi-lo):null;}
 function trSitioCurro(v){const l=v.trabajo&&v.trabajo.lugar;return l&&l!=='fuera'&&PLACES[l]?placeName(l):TRD().buscan.sitio_curro;}
-function trQuien(p){const o=(S.people||[]).find(q=>q.vid!=null&&q!==p&&!vcMenorP(q)&&(q.rel||0)>=30&&q.ideo&&q.ideo!=='apolitica');return o?o.n:'unas vecinas';}
+function trQuien(p){const o=(S.people||[]).find(q=>q.vid!=null&&q!==p&&!vcMenorP(q)&&(q.rel||0)>=30&&q.ideo&&q.ideo!=='apolitica');return o?o.n:TXHZ.trato.unas_vecinas;}
 function trPlanDia(){const T=TT();T.plan=null;const wd=dateOf(S.day).wd,D=TRD(),B=D.buscan,C=[];
   for(const p of S.people||[]){if(p.vid==null||vcMenorP(p)||TRK_ROM.includes(p.stage)||p.dead)continue;const v=vecinoPorId(p.vid);if(!v)continue;const rel=p.rel||0;if(rel<35||rel>=85)continue;
     if((T.last[p.k]||-99)>S.day-4||T.req.some(r=>r.vid===v.id)||T.comp.some(c=>c.vid===v.id))continue;

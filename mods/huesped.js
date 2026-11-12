@@ -49,9 +49,9 @@ function huTick(){const now=S.day*1440+S.t;
 // echarla desde su menú es echarla de verdad: no vuelve a entrar por la puerta al minuto
 {const _e=GEST.echar.run;GEST.echar.run=function(p){const era=S.lodger&&p&&p.k===S.lodger;const r=_e.apply(this,arguments);if(era){S.lodger=null;S.lodgerEnd=null;p.rel=Math.max(0,p.rel-12);return huecos(HU_T.echar,{p:p.n});}return r;};}
 // los textos dicen dónde duerme de verdad: [dónde duerme, qué deja al irse]
-const HU_T={cama:['en la cama que sobraba','la cama hecha'],sofa:['en el sofá','el sofá hecho'],comp:['en la misma cama, cada cual en una punta','su lado de la cama hecho'],
-  sillon:['en el sillón, con una manta','la manta doblada en el sillón'],silla:['en una silla, con la cabeza sobre la mesa','la silla en su sitio'],nada:['en el suelo, sobre dos mantas','las mantas dobladas en un rincón'],
-  semana_fin:'{p} ya tiene una habitación: {c} a la semana, compartiendo con cuatro desconocidos. Ha dejado las llaves en la mesa.',
-  echar:'{p} recoge la maleta sin decir nada. No tenía adónde ir; eso no ha cambiado.'};
+const HU_T={cama:[TXHZ.huesped.cama_sobraba,TXHZ.huesped.cama_hecha],sofa:[TXHZ.huesped.sofa,TXHZ.huesped.sofa_hecho],comp:[TXHZ.huesped.misma_cama_cada_cual_punta,TXHZ.huesped.lado_cama_hecho],
+  sillon:[TXHZ.huesped.sillon_manta,TXHZ.huesped.manta_doblada_sillon],silla:[TXHZ.huesped.silla_cabeza_sobre_mesa,TXHZ.huesped.silla_sitio],nada:[TXHZ.huesped.suelo_sobre_dos_mantas,TXHZ.huesped.mantas_dobladas_rincon],
+  semana_fin:TXHZ.huesped.semana_fin,
+  echar:TXHZ.huesped.echar};
 function huDonde(p){try{const r=(S.res||[]).find(x=>x.pid===p.k)||{pid:p.k,kind:'guest',stay:true};const i=huSitios(r)[0];if(i==null)return HU_T.nada;const t=S.obj[i].t;
   return i===huCamaAna()?HU_T.comp:BEDS.includes(t)?HU_T.cama:HU_SOFA.includes(t)?HU_T.sofa:t==='silla'?HU_T.silla:HU_T.sillon;}catch(e){return HU_T.sofa;}}

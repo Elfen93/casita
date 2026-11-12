@@ -191,6 +191,22 @@ Los textos sueltos de los módulos de `mods/` de la «a» a la «g» (`agenda` �
 - Se queda en el código lo que es una clave hacia otro módulo (el id de un lugar, una acción, un tipo de objeto), el dibujo (`SCENES`, `MDRAW`, `LOOKS`, colores y rótulos pintados en el canvas) y los trozos de HTML que son estructura sin texto propio.
 - `datos.py` comprueba que cada sección es un módulo de `build.json`, que el módulo la lee, que las claves son legibles y que ningún texto está vacío, lleva `${…}` o tiene llaves sin cerrar. `t/t_txt_p0b.js` comprueba que cada texto de más de 12 caracteres que había en esos módulos antes de moverlos sigue existiendo, igual, en el código o aquí.
 <!-- /p0b -->
+<!-- p0c begin: textos de los módulos de la «h» a la «z» -->
+### movil.json
+Todo lo que dice el móvil (`mods/movil.js`). Los pesos de cada mensaje, las condiciones para que salga (en paro, en huelga, de noche…) y el azar son código; el texto, aquí. Huecos: `{n}` el personaje, `{o}` su terminación, `{kid}` «hijo/hija/hije», `{nov}` «novio/novia/novie», `{po}` y `{po2}` la terminación de la otra persona, `{p}` su nombre.
+| Sección | Qué es |
+|---|---|
+| `apps` | Las aplicaciones de la pantalla de inicio: `[clave, emoji, nombre, color]` (`APPS`). |
+| `plantillas` | Los mensajes que escribe la gente, por tipo de persona (`madre`, `amor`, `compi`, `vecina`, `amiga`, `ex`, `conocida`) y mensaje: `t` el texto y `r` el tipo de respuesta (una clave de `interacciones.movil_respuestas`) o la lista de respuestas `[etiqueta, relación, acción, lo que contesta, lo que escribe]`. |
+| `libre` | Lo que contesta la gente cuando escribes tú, por palabra clave (`perdon`, `gracias`, `estudio`, `plan`, `afecto`…): un objeto con una entrada por tipo de persona (`madre`, `amor`, `compi`, `amiga`) y `otro` para el resto; cadena = una frase, lista = al azar. `rapidas` son las respuestas a los tres botones de «¿Qué tal?»; `sin_plan`, a un plan que no puede ser. |
+| `noticias` | Las noticias del día: cada bloque lleva su emoji (`e`), la frase o lista de frases (`frases`, que se elige por el día) y el subtítulo (`sub`). `crisis_alta`, `crisis_media` y `crisis_baja` son `[emoji, titular, subtítulo]`. |
+| `feed`, `publicar` | Publicaciones de la gente (por tipo de persona) y lo que publica el personaje. |
+| `llamada`, `avisos`, `ui` | Las llamadas, los avisos cortos y todas las etiquetas del móvil (mensajes, banco, red social). |
+
+### textos_mods_hz.json
+Los textos sueltos (`tell`, `toast`, `chapter`, etiquetas y texto dentro de las fichas HTML) de los módulos `mods/` de la «h» a la «z» (hogar, hogares, huelga, huesped, intimo, jornada, lectura, libros, marginal, mente, obras, patrimonio, peso, poblacion, productos, relaciones, reparto, resvida, rutina, servicios, social_fx, texto, tocar, trato, universidad, vecinos, visitas, voces…). Una sección por módulo, con su nombre; dentro, una clave por texto. El código los lee con `TXHZ.modulo.clave` (`TXHZ` se declara en `mods/resvida.js`). Las cadenas con cifras o nombres llevan huecos `{clave}` y el código las rellena con `huecos(TXHZ.hogar.calentador_muerto,{enero:…,quien:…})`; las variantes al azar son listas (`pickR(TXHZ.mente.…_lista)`). Cuando una frase cambia según el caso, cada caso es su propia clave y el código elige entre ellas. `datos.py` comprueba que cada clave que lee el código existe y que cada hueco del texto lo rellena alguien.
+Quedan en el código, a propósito: las palabras clave con las que `phFree` entiende lo que escribe el jugador (`te echo de menos`, `buenas noches`…), los identificadores y las claves de estado que se comparan (`solo en días libres`, `amig`+terminación…), y el esqueleto HTML (etiquetas, clases y estilos).
+<!-- p0c end -->
 
 ## Lo que todavía está en el código
 
@@ -198,6 +214,8 @@ Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con co
 
 - **Sucesos con decisiones**: consecuencias (`CQ`), golpes e incidentes (`GOLPES`, `PERSONAL`, `INCID`), hitos (`BEATS`), arcos de ideología (`ARCS`), rasgos ocultos de la gente (`HID`), aspiraciones y objetivos (`ASP`, `GOALS`), dilemas de la comunidad (los textos de `UT_DIL` ya están en `textos_mods_ag.json`; los efectos siguen en `UT_FX`).
 - **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los módulos de la «h» en adelante y las plantillas de mensajes y noticias del móvil de esos módulos (los de la «a» a la «g» están en `textos_mods_ag.json`).
+- **Sucesos con decisiones**: consecuencias (`CQ`), golpes e incidentes (`GOLPES`, `PERSONAL`, `INCID`), hitos (`BEATS`), arcos de ideología (`ARCS`), rasgos ocultos de la gente (`HID`), aspiraciones y objetivos (`ASP`, `GOALS`), dilemas de la comunidad (`UT_DIL`).
+- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de cada módulo (los módulos de la «h» a la «z» y el móvil ya salieron: `movil.json` y `textos_mods_hz.json`).
 - **Escenas** (`SCENES`): los interiores se dibujan con código; sus carteles y su gente van dentro.
 - **Aspecto**: peinados, caras, ropa y retratos (`LOOKS`, `LOOK_SRC`), y el dibujo de cada mueble (`MDRAW`).
 - Tablas menores por objeto (`BACKD`, `ACTS`, `ELECTRIC`, `SMALL_ITEMS`, `MUEB_NEW`) y los eslóganes de las ideologías en las pancartas.

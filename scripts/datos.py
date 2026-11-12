@@ -565,7 +565,83 @@ def comprobar(d):
                 if '${' in t or '`' in t:E.append('%s: sobra un ${…} o una comilla invertida: los huecos son {clave}'%ruta)
                 if re.sub(r'\{\w+\}','',t).count('{')+re.sub(r'\{\w+\}','',t).count('}'):E.append('%s: llaves sin cerrar o hueco mal escrito'%ruta)
     # --- fin p0b ---
+    # --- p0c begin: textos de los módulos h–z (movil.json y textos_mods_hz.json) ---
+    p0c_textos(d,E)
+    # --- p0c end ---
     return E
+
+# --- p0c begin: validaciones de los textos que el código lee de data/movil.json y data/textos_mods_hz.json ---
+def _p0c_huecos(t):return set(re.findall(r'\{(\w+)\}',t))
+def _p0c_cierre(t):return t.count('{')==t.count('}')==len(re.findall(r'\{\w+\}',t))
+def _p0c_textos_de(v):
+    if isinstance(v,str):yield v
+    elif isinstance(v,list):
+        for x in v:yield from _p0c_textos_de(x)
+    elif isinstance(v,dict):
+        for k,x in v.items():
+            if k!='_':yield from _p0c_textos_de(x)
+def _p0c_cierra(src,i):
+    d=0;j=i;q=None
+    while j<len(src):
+        c=src[j]
+        if q:
+            if c=='\\':j+=1
+            elif c==q:q=None
+        elif c in '\'"`':q=c
+        elif c in '([{':d+=1
+        elif c in ')]}':
+            d-=1
+            if d==0:return j
+        j+=1
+    return -1
+def _p0c_claves(obj):
+    """claves de primer nivel de un objeto literal {a:1,b,c:f(x)}"""
+    claves=[];d=0;ini=1;q=None;i=1
+    while i<len(obj)-1:
+        c=obj[i]
+        if q:
+            if c=='\\':i+=1
+            elif c==q:q=None
+        elif c in '\'"`':q=c
+        elif c in '([{':d+=1
+        elif c in ')]}':d-=1
+        elif c==',' and d==0:
+            claves.append(obj[ini:i]);ini=i+1
+        i+=1
+    claves.append(obj[ini:len(obj)-1])
+    return [re.match(r'\s*([\w$]+)',x).group(1) for x in claves if x.strip()]
+def p0c_textos(d,E):
+    hz=d.get('textos_mods_hz');mv=d.get('movil')
+    for nom,dat in (('textos_mods_hz',hz),('movil',mv)):
+        if dat is None:continue
+        for t in _p0c_textos_de(dat):
+            if not _p0c_cierre(t):E.append('%s: huecos mal cerrados en «%s»'%(nom,t[:60]))
+    if hz is None and mv is None:return
+    carpeta=os.path.join(R,'mods')
+    for f in sorted(os.listdir(carpeta)):
+        if not f.endswith('.js'):continue
+        src=open(os.path.join(carpeta,f),encoding='utf-8').read()
+        # TXHZ.modulo.clave existe
+        for m in re.finditer(r'TXHZ\.(\w+)\.(\w+)',src):
+            mod,k=m.group(1),m.group(2)
+            if hz is None or mod not in hz or k not in hz[mod]:E.append('mods/%s: TXHZ.%s.%s no existe en data/textos_mods_hz.json'%(f,mod,k))
+        # TXMV.ruta existe (hasta el primer corchete)
+        for m in re.finditer(r'TXMV((?:\.\w+)+)',src):
+            o=mv
+            for p in m.group(1).split('.')[1:]:
+                if not isinstance(o,dict) or p not in o:E.append('mods/%s: TXMV%s no existe en data/movil.json'%(f,m.group(1)));break
+                o=o[p]
+        # huecos(TXHZ.mod.clave,{…}): cada hueco del texto lo rellena el código (salvo {n} y {o}, que son automáticos)
+        for m in re.finditer(r'huecos\(\s*(?:pickR\()?TXHZ\.(\w+)\.(\w+)\)?\s*,\s*\{',src):
+            i=m.end()-1;j=_p0c_cierra(src,i)
+            if j<0:continue
+            dadas=set(_p0c_claves(src[i:j+1]))|{'n','o'}
+            try:v=hz[m.group(1)][m.group(2)]
+            except Exception:continue
+            for t in _p0c_textos_de(v):
+                for h in _p0c_huecos(t):
+                    if h not in dadas:E.append('mods/%s: TXHZ.%s.%s lleva {%s} y el código no lo rellena'%(f,m.group(1),m.group(2),h))
+# --- p0c end ---
 
 # ---------- formato ----------
 def una(v):return json.dumps(v,ensure_ascii=False,separators=(', ',': '))
