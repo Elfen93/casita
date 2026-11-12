@@ -1,6 +1,6 @@
 // =================== LA JORNADA: el trabajo como sitio donde pasan cosas, no como 8 horas en negro ===================
 const JN=()=>{if(!S.jn)S.jn={extra:0,cov:0,abuse:0,said:0,shift:0,log:[]};return S.jn;};
-const jnBoss=()=>S.office&&S.office.boss||(S.office&&(S.office.boss=pickR(TXHZ.jornada.montse_lista)));
+const jnBoss=()=>{if(!S.office)return undefined;const b=S.office.boss;if(b)return typeof b==='string'?b:b.n;return S.office.boss=pickR(TXHZ.jornada.montse_lista);};
 Object.assign(DLG,{
   j_hora:{t:()=>DT.j_hora.t,x:()=>huecos(DT.j_hora.x,{jefe:jnBoss()}),
     o:()=>{const O=DT.j_hora.o;return [{t:O[0].t,s:O[0].s,f:()=>{JN().extra++;S.needs.energia=Math.max(0,S.needs.energia-12);S.rep=Math.min(100,(S.rep??70)+2);if(JN().extra%5===0)tell(huecos(O[0].tell,{h:JN().extra,hora:fmt(Math.round(salary()/8)),total:fmt(Math.round(JN().extra*salary()/8))}),'⏰');}},

@@ -17,7 +17,7 @@ function hidBadges(p){const r=(p.rev||[]).map(k=>HID[k]).filter(Boolean);return 
 // quién manda
 const BOSSN=DATA.personas.jefes_nombres;
 const BOSST=DATA.personas.jefes_trato;
-function boss(){const o=office();if(!o.boss){const g=Math.random()<.5?'f':'m';o.boss={n:pickR(BOSSN[g]),g};}return o.boss;}
+function boss(){const o=office();if(typeof o.boss==='string'){const n=o.boss;o.boss={n,g:BOSSN.f.includes(n)||/a$/.test(n)?'f':'m'};}if(!o.boss||!o.boss.n){const g=Math.random()<.5?'f':'m';o.boss={n:pickR(BOSSN[g]),g};}return o.boss;}
 const bossT=()=>{const b=boss();const t=(BOSST[S.track]||['la jefa','el jefe'])[b.g==='f'?0:1];return S.track==='reparto'?'la app':`${t}, ${b.n},`;};
 const bossS=()=>S.track==='reparto'?'la app':boss().n;
 const compiN=()=>{const c=P_('compi');return c?c.n:TXN.interfaz_ana.una_companera;};

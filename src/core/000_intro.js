@@ -3,7 +3,7 @@
 // <<DATA>>
 // une a una tabla de data/ la parte que es lógica (funciones), entrada a entrada
 // texto con huecos: {clave} se cambia por v.clave; sin dato, {n} es el nombre del personaje y {o} la terminación de su género
-function huecos(s,v){return s.replace(/\{(\w+)\}/g,(m,k)=>v&&v[k]!=null?v[k]:k==='n'?CH().name:k==='o'?oa():m);}
+function huecos(s,v){return s.replace(/\{(\w+)\}/g,(m,k,i,t)=>{if(v&&v[k]!=null)return v[k];if(k==='n')return CH().name;if(k==='o')return oa();if(k==='jefe'){try{const j=bossT().replace(/,$/,(t[i+m.length]===','||t[i+m.length]==='.')?'':',');return i===0||/[.!?»:]\s*$/.test(t.slice(0,i))?j[0].toUpperCase()+j.slice(1):j;}catch(e){return 'quien manda';}}return m;});}
 const TXN=DATA.textos_nucleo; // textos sueltos del núcleo, una sección por archivo (data/textos_nucleo.json)
 // lo mismo para una lista de fichas con id: porId(lista,{id:{campo:función}})
 function porId(lista,fns){for(const k in fns){const f=lista.find(x=>x.id===k);if(!f)throw new Error('porId: falta «'+k+'» en data/');Object.assign(f,fns[k]);}return lista;}
