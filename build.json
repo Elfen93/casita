@@ -61,6 +61,7 @@
   "servicios.js",
   "hogares.js",
   "escuela.js",
-  "universidad.js"
+  "universidad.js",
+  "rotulos.js"
  ]
 }
