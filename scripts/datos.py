@@ -285,7 +285,7 @@ def ciudad(d,E,dentro,mismas):
             if f not in p:E.append('lugares.solo_mapa.%s: falta %s'%(kk,f))
         if p.get('outs'):E.append('lugares.solo_mapa.%s: sin salidas ni escena interior'%kk)
         poner(kk,p.get('barrio'),p.get('rb'),'lugares.solo_mapa.'+kk)
-    if not 6<=len(L.get('solo_mapa',{}))<=12:E.append('lugares.solo_mapa: entre 6 y 12 lugares nuevos, hay %d'%len(L.get('solo_mapa',{})))
+    if not 0<=len(L.get('solo_mapa',{}))<=12:E.append('lugares.solo_mapa: como mucho 12 lugares solo de mapa, hay %d'%len(L.get('solo_mapa',{})))
     for kk,e in BA.get('edificios',{}).items():
         if kk in ids:E.append('barrio.edificios.%s: el id ya es un lugar'%kk)
         poner(kk,e.get('barrio'),e.get('rb'),'barrio.edificios.'+kk)
@@ -783,6 +783,33 @@ def formatear(d):
         p=os.path.join(D,f+'.json');t=texto(secs);assert json.loads(t)==secs
         if open(p,encoding='utf-8').read()!=t:open(p,'w',encoding='utf-8').write(t);n+=1
     return n
+
+# --- t133 begin: data/barrios_vida.json (interiores de los lugares de mapa, salidas de barrio, efectos por barrio) ---
+def _t133(d,E):
+    B=d.get('barrios_vida')
+    if not B:return
+    L=d.get('lugares',{});lug=L.get('lugares',{});out=L.get('salidas',{});C=d.get('ciudad',{});bar=C.get('barrios',{})
+    for sec in ('plantillas','piezas','interiores','salidas','barrios','sucesos','textos'):
+        if not isinstance(B.get(sec),dict) or not B[sec]:E.append('barrios_vida.%s: falta o vacía'%sec)
+    for k,i in B.get('interiores',{}).items():
+        if k not in lug:E.append('barrios_vida.interiores.%s: no es un lugar'%k);continue
+        if i.get('plantilla') not in B.get('plantillas',{}):E.append('barrios_vida.interiores.%s: plantilla desconocida'%k)
+        for p in i.get('piezas',[]):
+            if isinstance(p,dict) and p.get('t') not in B.get('piezas',{}):E.append('barrios_vida.interiores.%s: pieza «%s» sin definir'%(k,p.get('t')))
+    for k,s in B.get('salidas',{}).items():
+        if k not in out:E.append('barrios_vida.salidas.%s: no existe en lugares.salidas'%k)
+        if not s.get('kind'):E.append('barrios_vida.salidas.%s: sin kind'%k)
+        if not any(k in (x.get('outs') or []) for x in lug.values()):E.append('barrios_vida.salidas.%s: ningún lugar la ofrece'%k)
+    for b in bar:
+        if b not in B.get('barrios',{}):E.append('barrios_vida.barrios.%s: falta'%b)
+        sc=B.get('sucesos',{}).get(b,{})
+        if not (2<=len(sc.get('anuales',[]))<=3):E.append('barrios_vida.sucesos.%s: entre 2 y 3 anuales'%b)
+        f=B.get('barrios',{}).get(b,{}).get('ficha',{})
+        if not f.get('gana') or not f.get('pierde'):E.append('barrios_vida.barrios.%s.ficha: gana y pierde'%b)
+_t133_comprobar=comprobar
+def comprobar(d):
+    E=_t133_comprobar(d);_t133(d,E);return E
+# --- t133 end ---
 
 if __name__=='__main__':
     d=cargar()

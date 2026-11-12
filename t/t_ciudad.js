@@ -11,7 +11,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  ok(C.orden.length>=5&&C.orden.length<=7,'entre 5 y 7 barrios');
  const todos=[...Object.keys(PLACES).filter(k=>k!=='casaV'&&k!=='casa2'),...Object.keys(DATA.lugares.solo_mapa),...Object.keys(DATA.personas.edificios)];
  for(const k of todos){const b=cdBarrioDe(k);ok(b&&C.barrios[b],'sin barrio: '+k);const r=cdRect(k);ok(r&&r.length===4,'sin rectángulo local: '+k);const p=cdPuerta(k);ok(p&&p.b===b&&p.p.length===2&&p.c,'sin puerta: '+k);}
- const nx=Object.keys(DATA.lugares.solo_mapa).length;ok(nx>=6&&nx<=12,'lugares nuevos entre 6 y 12 ('+nx+')');
+ const nx=Object.keys(DATA.lugares.solo_mapa).length;ok(nx<=12,'lugares solo de mapa: como mucho 12 ('+nx+')');
  for(const k in DATA.lugares.solo_mapa){ok(!SCENES[k]&&!PLACES[k],'lugar nuevo con escena: '+k);ok(!(DATA.lugares.solo_mapa[k].outs||[]).length,'lugar nuevo con salidas: '+k);}
  for(const b of C.orden){ok(cdEspeciales(b).some(s=>s.t==='parada'),'barrio sin parada: '+b);}
  // la vivienda del jugador: cada tipo cae en su barrio con casa y vecinas
@@ -61,7 +61,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
   bmFicha('colegio');ok(card.querySelector('#brin'),'ficha del colegio con Mirar dentro');card.querySelector('#brin').onclick();R();R();ok(BM.obs==='colegio'&&CW.sc&&CW.sc.id==='colegio','mirar dentro del colegio (abierto en su sitio del barrio)');
   document.getElementById('brback').click();R();ok(!BM.obs&&BM.v==='barrio','vuelve al barrio');
   document.getElementById('brciudad').click();R();ok(BM.v==='ciudad','vuelve a la ciudad');
-  bmVerBarrio('casco');R();bmFicha('mercado');ok(card.querySelector('#brx')&&!card.querySelector('#brin')&&/Sin interior/.test(card.innerHTML),'mercado: ficha sin interior');
+  const _sm=SCENES.mercado,_pm=PLACES.mercado;/* t133: ya no hay solo_mapa reales: se simula uno */DATA.lugares.solo_mapa.mercado=_pm;delete PLACES.mercado;delete SCENES.mercado;bmVerBarrio('casco');R();bmFicha('mercado');const _fm=card.innerHTML;SCENES.mercado=_sm;PLACES.mercado=_pm;delete DATA.lugares.solo_mapa.mercado;ok(card.querySelector('#brx')&&!card.querySelector('#brin')&&/Sin interior/.test(card.innerHTML),'mercado: ficha sin interior');
   ok(/Abierto/.test(card.innerHTML)&&/8:30/.test(card.innerHTML),'mercado: ficha con horario');
   bmClose();R();ok(!BM.on,'cierra');}
  if(snap()!==s0)bad.push('abrir y cerrar el mapa cambia S.sim, S.t o el dinero');

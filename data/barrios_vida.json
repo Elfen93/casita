@@ -1,0 +1,668 @@
+{
+  "_": "Barrios con vida (mods/barrios_vida.js): los interiores genéricos de los 12 lugares nuevos (plantillas + piezas), lo que cuesta cada salida y las tablas por barrio. `plantillas`: tamaño, suelo, pared y estilo de cada tipo de sitio. `piezas`: la forma y el color de cada tipo de pieza (cajas, mesas, puestos…). `interiores`: por lugar, su plantilla, sus piezas (x,y en casillas; w,d tamaño), carteles, personal anónimo, dónde se pone la gente (`cli`, `posts`) y su afluencia. `salidas`: lo que hace cada salida nueva y su coste en horas de salario. `barrios`: tabla por barrio. `sucesos`: lo que pasa a lo largo del año. `textos`: el resto.",
+
+  "alquiler_por_barrio": false,
+
+  "plantillas": {
+    "bar": {"W": 10, "D": 8, "estilo": "azulejo", "suelo": "#cdb79a", "pared": "#efe0bf", "WH": 70, "tile": true},
+    "tienda": {"W": 11, "D": 8, "estilo": "liso", "suelo": "#d8cdb8", "pared": "#f1e8d4", "WH": 70, "tile": true},
+    "oficina": {"W": 11, "D": 8, "estilo": "liso", "suelo": "#cfcabc", "pared": "#e6e0cf", "WH": 70, "tile": true},
+    "nave": {"W": 12, "D": 8, "estilo": "chapa", "suelo": "#a9a49a", "pared": "#aab2b8", "WH": 84, "tile": false},
+    "local": {"W": 10, "D": 8, "estilo": "liso", "suelo": "#cbb89b", "pared": "#e9dcc6", "WH": 68, "tile": true},
+    "solar": {"W": 12, "D": 8, "estilo": "solar", "suelo": "#cdbf9f", "pared": "#8a7a62", "WH": 0, "tile": false, "fuera": true}
+  },
+
+  "piezas": {
+    "mostrador": {"f": "caja", "h": 22, "c": "#8a5a3a", "top": "#d9c7a8", "tope": 2},
+    "barra": {"f": "caja", "h": 24, "c": "#6b3d2a", "top": "#c9a27a", "tope": 2},
+    "vitrina": {"f": "caja", "h": 20, "c": "#e9e4d8", "top": "#bfe3f7", "tope": 8, "cristal": true},
+    "maquina": {"f": "caja", "h": 20, "c": "#3b3f46", "top": "#7cc8f0", "tope": 10},
+    "mesa": {"f": "mesa", "h": 15, "c": "#a0754c", "r": 0.42, "sillas": 2},
+    "mesaalta": {"f": "mesa", "h": 22, "c": "#6b4a2e", "r": 0.32, "sillas": 0},
+    "mesalarga": {"f": "mesalarga", "h": 15, "c": "#b59a73", "sillas": 3},
+    "silla": {"f": "silla", "c": "#8a6a4a"},
+    "taburete": {"f": "taburete", "c": "#c0392b"},
+    "banco": {"f": "banco", "c": "#8a6a4a"},
+    "estante": {"f": "estante", "h": 36, "c": "#c9c3b8"},
+    "estante_libros": {"f": "estante", "h": 36, "c": "#a0754c", "libros": true},
+    "puesto": {"f": "puesto", "h": 16, "c": "#b5543c", "c2": "#fffdf8"},
+    "ventanilla": {"f": "ventanilla", "h": 22, "c": "#8a7a66", "top": "#b5a58c"},
+    "cabina": {"f": "cabina", "h": 36, "c": "#6a7c8c"},
+    "escritorio": {"f": "escritorio", "c": "#d9d2c3"},
+    "copiadora": {"f": "caja", "h": 26, "c": "#e8e2d4", "top": "#3b3f46", "tope": 3},
+    "palet": {"f": "palet", "h": 12, "c": "#b08850"},
+    "rack": {"f": "rack", "h": 56, "c": "#e8832a"},
+    "cinta": {"f": "cinta", "h": 12, "c": "#4a4e57"},
+    "carretilla": {"f": "carretilla", "c": "#f0b429"},
+    "coche": {"f": "coche", "c": "#c0392b"},
+    "foso": {"f": "foso", "c": "#2b2b33"},
+    "porteria": {"f": "porteria", "c": "#fffdf8"},
+    "valla": {"f": "valla", "h": 14, "c": "#8a7a62"},
+    "lona": {"f": "lona", "h": 34, "c": "#d9a441", "c2": "#4a7a9a"},
+    "contenedor": {"f": "caja", "h": 26, "c": "#3f8a5a", "top": "#2e6b44", "tope": 2},
+    "arbol": {"f": "arbol"},
+    "planta": {"f": "planta"},
+    "fuente": {"f": "fuente", "c": "#c9c3b8"},
+    "escaparate": {"f": "escaparate", "h": 46, "c": "#e85d3f"},
+    "detector": {"f": "detector", "c": "#3b3f46"},
+    "pizarra": {"f": "pizarra", "c": "#2f4a3a"},
+    "caja": {"f": "caja", "h": 14, "c": "#c8a46a", "top": "#d6b47a", "tope": 2},
+    "mueble": {"f": "caja", "h": 20, "c": "#8a6a4a", "top": "#a98a62", "tope": 2}
+  },
+
+  "interiores": {
+    "cafe_brindis": {
+      "plantilla": "bar",
+      "suelo": "#e8d9c4",
+      "pared": "#f3ead9",
+      "rotulo": "BRINDIS",
+      "rot_c": "#8a5a3a",
+      "ana": [6.2, 5.8],
+      "piezas": [
+        {"t": "estante", "x": 1.3, "y": 0.05, "w": 5.4, "d": 0.4, "c": "#d9c7a8"},
+        {"t": "mostrador", "x": 1.3, "y": 1.5, "w": 5.4, "d": 0.9},
+        {"t": "maquina", "x": 2.0, "y": 1.6, "w": 0.7, "d": 0.6},
+        {"t": "maquina", "x": 4.6, "y": 1.6, "w": 0.7, "d": 0.6, "c": "#c0392b"},
+        {"t": "mesa", "x": 1.5, "y": 4.6},
+        {"t": "mesa", "x": 1.5, "y": 6.3},
+        {"t": "mesa", "x": 4.6, "y": 4.2},
+        {"t": "mesa", "x": 7.6, "y": 3.0},
+        {"t": "mesa", "x": 8.3, "y": 5.4},
+        {"t": "planta", "x": 9.2, "y": 1.0},
+        {"t": "planta", "x": 0.7, "y": 7.4}
+      ],
+      "carteles": [{"lado": "fondo", "pos": 7.3, "w": 2.2, "txt": "WIFI · ENCHUFES", "c": "#fffdf8", "tc": "#2e6b44", "z": 40, "h": 14, "sz": 2.8}, {"lado": "izq", "pos": 5.6, "w": 1.6, "txt": "LATTE 3,10", "c": "#fffdf8", "tc": "#8a5a3a", "z": 34, "h": 12, "sz": 2.6}],
+      "personal": [{"x": 3.6, "y": 0.95, "rol": "adult", "right": true, "act": "type", "sh": "#8a5a3a"}],
+      "cli": [[0.8, 3.2, 9.2, 7.4]],
+      "posts": [{"x": 2.6, "y": 1.0}, {"x": 5.2, "y": 1.0}],
+      "afluencia": {"pk": [[8, 10, 0.9], [16, 20, 0.8]], "base": 0.35, "we": 0.9, "lo": 4, "hi": 11}
+    },
+    "glorieta": {
+      "plantilla": "bar",
+      "suelo": "#d9c4a0",
+      "pared": "#f1e2c8",
+      "rotulo": "LA GLORIETA",
+      "rot_c": "#a5533e",
+      "ana": [6.5, 5.8],
+      "piezas": [
+        {"t": "vitrina", "x": 1.3, "y": 0.7, "w": 4.4, "d": 0.8},
+        {"t": "estante", "x": 1.3, "y": 0.05, "w": 4.4, "d": 0.4, "c": "#c9a27a"},
+        {"t": "barra", "x": 1.3, "y": 1.7, "w": 4.4, "d": 0.8},
+        {"t": "mesa", "x": 1.7, "y": 4.7},
+        {"t": "mesa", "x": 1.7, "y": 6.5},
+        {"t": "mesa", "x": 4.4, "y": 4.5},
+        {"t": "mesa", "x": 4.6, "y": 6.4},
+        {"t": "mesa", "x": 7.6, "y": 3.4},
+        {"t": "mesa", "x": 8.2, "y": 5.8},
+        {"t": "planta", "x": 9.2, "y": 1.0}
+      ],
+      "carteles": [{"lado": "fondo", "pos": 6.4, "w": 2.6, "txt": "DESAYUNOS DE DOMINGO", "c": "#fffdf8", "tc": "#a5533e", "z": 38, "h": 14, "sz": 2.5}, {"lado": "izq", "pos": 5.5, "w": 1.7, "txt": "CHURROS", "c": "#fffdf8", "tc": "#a5533e", "z": 34, "h": 12, "sz": 2.8}],
+      "personal": [{"x": 3.5, "y": 1.25, "rol": "adult", "right": true, "sh": "#fffdf8"}],
+      "cli": [[0.8, 3.3, 9.2, 7.4]],
+      "posts": [{"x": 2.8, "y": 1.2}],
+      "afluencia": {"pk": [[8.5, 11, 1], [16, 19, 0.8]], "base": 0.35, "we": 1, "lo": 4, "hi": 12}
+    },
+    "bar_esperanza": {
+      "plantilla": "bar",
+      "suelo": "#b89c7c",
+      "pared": "#c9a98c",
+      "rotulo": "LA ESPERANZA",
+      "rot_c": "#7a1f1f",
+      "ana": [5.2, 5.8],
+      "piezas": [
+        {"t": "estante", "x": 1.5, "y": 0.05, "w": 5.2, "d": 0.4, "c": "#6b3d2a"},
+        {"t": "barra", "x": 1.5, "y": 1.5, "w": 5.2, "d": 0.9},
+        {"t": "taburete", "x": 2.3, "y": 2.9},
+        {"t": "taburete", "x": 3.3, "y": 2.9},
+        {"t": "taburete", "x": 4.3, "y": 2.9},
+        {"t": "taburete", "x": 5.3, "y": 2.9},
+        {"t": "maquina", "x": 7.8, "y": 0.5, "w": 0.9, "d": 0.7, "c": "#7a1f1f"},
+        {"t": "mesa", "x": 2.0, "y": 5.0},
+        {"t": "mesa", "x": 2.4, "y": 6.7},
+        {"t": "mesa", "x": 7.3, "y": 4.8},
+        {"t": "silla", "x": 6.6, "y": 4.4},
+        {"t": "silla", "x": 7.8, "y": 4.4},
+        {"t": "silla", "x": 6.6, "y": 5.2},
+        {"t": "silla", "x": 7.8, "y": 5.2}
+      ],
+      "carteles": [{"lado": "fondo", "pos": 7.0, "w": 2.4, "txt": "PARTIDA A LAS 6", "c": "#fffdf8", "tc": "#7a1f1f", "z": 40, "h": 14, "sz": 2.8}, {"lado": "izq", "pos": 2.0, "w": 1.6, "txt": "HOY NO SE FÍA", "c": "#fffdf8", "tc": "#3b3247", "z": 40, "h": 12, "sz": 2.6}],
+      "personal": [{"x": 3.6, "y": 0.95, "rol": "adult", "right": true, "sh": "#7a1f1f"}],
+      "cli": [[0.8, 3.4, 9.2, 7.4]],
+      "posts": [{"x": 2.8, "y": 1.0}, {"x": 4.8, "y": 1.0}],
+      "afluencia": {"pk": [[12, 15, 0.7], [17.5, 24, 1]], "base": 0.35, "we": 1, "lo": 4, "hi": 13}
+    },
+    "bar_cruce": {
+      "plantilla": "bar",
+      "W": 12,
+      "suelo": "#d2bd9e",
+      "pared": "#e9d8b4",
+      "rotulo": "EL CRUCE",
+      "rot_c": "#b5543c",
+      "ana": [7.5, 5.8],
+      "piezas": [
+        {"t": "estante", "x": 1.5, "y": 0.05, "w": 5.6, "d": 0.4, "c": "#8a5a3a"},
+        {"t": "barra", "x": 1.5, "y": 1.4, "w": 5.6, "d": 0.9},
+        {"t": "maquina", "x": 8.6, "y": 0.6, "w": 0.9, "d": 0.7, "c": "#3b3f46"},
+        {"t": "mesalarga", "x": 2.0, "y": 3.6, "w": 3.2, "d": 0.9, "sillas": 0},
+        {"t": "banco", "x": 2.0, "y": 4.6, "w": 3.2, "d": 0.5},
+        {"t": "banco", "x": 2.0, "y": 3.0, "w": 3.2, "d": 0.5},
+        {"t": "mesalarga", "x": 6.4, "y": 3.6, "w": 3.2, "d": 0.9, "sillas": 0},
+        {"t": "banco", "x": 6.4, "y": 4.6, "w": 3.2, "d": 0.5},
+        {"t": "banco", "x": 6.4, "y": 3.0, "w": 3.2, "d": 0.5},
+        {"t": "mesalarga", "x": 10.2, "y": 3.2, "w": 1.1, "d": 2.4, "sillas": 0}
+      ],
+      "carteles": [{"lado": "fondo", "pos": 8.0, "w": 3.3, "txt": "MENÚ 10 €", "c": "#fffdf8", "tc": "#b5543c", "z": 42, "h": 16, "sz": 3.6}, {"lado": "izq", "pos": 5.0, "w": 1.8, "txt": "SE ACABÓ EL SEGUNDO", "c": "#fffdf8", "tc": "#3b3247", "z": 34, "h": 12, "sz": 2.2}],
+      "personal": [{"x": 3.2, "y": 0.95, "rol": "adult", "right": true, "sh": "#b5543c"}],
+      "cli": [[0.8, 5.4, 11.2, 7.4]],
+      "posts": [{"x": 3.8, "y": 1.0}, {"x": 6.0, "y": 1.0}],
+      "afluencia": {"pk": [[7, 9, 0.7], [12.5, 14.5, 1]], "base": 0.15, "we": 0.1, "lo": 4, "hi": 13}
+    },
+    "mercado": {
+      "plantilla": "tienda",
+      "suelo": "#c9bfa6",
+      "pared": "#e6d9b8",
+      "rotulo": "MERCADO DE ABASTOS",
+      "rot_c": "#7a5a2a",
+      "ana": [5.5, 5.8],
+      "piezas": [
+        {"t": "puesto", "x": 0.9, "y": 0.5, "w": 2.6, "d": 0.9, "c": "#2e8b57", "n": "fruta"},
+        {"t": "puesto", "x": 4.0, "y": 0.5, "w": 2.6, "d": 0.9, "c": "#3a86ff", "n": "pescado"},
+        {"t": "puesto", "x": 7.1, "y": 0.5, "w": 2.6, "d": 0.9, "c": "#c0392b", "n": "carne"},
+        {"t": "puesto", "x": 1.2, "y": 3.2, "w": 2.2, "d": 0.9, "c": "#e9a23b", "n": "verdura"},
+        {"t": "puesto", "x": 6.6, "y": 3.2, "w": 2.2, "d": 0.9, "c": "#7a4fa0", "n": "encurtidos"},
+        {"t": "caja", "x": 9.7, "y": 1.8, "w": 0.8, "d": 0.8},
+        {"t": "caja", "x": 9.7, "y": 2.8, "w": 0.8, "d": 0.8, "c": "#2e8b57"},
+        {"t": "planta", "x": 0.7, "y": 7.3}
+      ],
+      "carteles": [{"lado": "fondo", "pos": 5.0, "w": 1.2, "txt": "CERRADO A LAS 14:30", "c": "#fffdf8", "tc": "#7a5a2a", "z": 44, "h": 12, "sz": 2.2}, {"lado": "izq", "pos": 2.4, "w": 1.8, "txt": "SE TRASPASA", "c": "#fffdf8", "tc": "#c0392b", "z": 36, "h": 14, "sz": 3}],
+      "personal": [{"x": 2.2, "y": 0.2, "rol": "adult", "right": true, "sh": "#2e8b57"}, {"x": 5.3, "y": 0.2, "rol": "adult", "right": true, "sh": "#3a86ff"}],
+      "cli": [[0.7, 4.6, 10.3, 7.3]],
+      "posts": [{"x": 8.4, "y": 0.15}, {"x": 2.2, "y": 2.9}],
+      "afluencia": {"pk": [[9, 13, 1]], "base": 0.05, "we": 0.9, "lo": 4, "hi": 13}
+    },
+    "gran_plaza": {
+      "plantilla": "tienda",
+      "W": 12,
+      "suelo": "#e4e0d8",
+      "pared": "#dfe8f0",
+      "rotulo": "GRAN PLAZA",
+      "rot_c": "#2a6fa8",
+      "ana": [5.5, 6.0],
+      "piezas": [
+        {"t": "escaparate", "x": 0.8, "y": 0.1, "w": 2.6, "d": 0.5, "c": "#e85d3f", "n": "moda"},
+        {"t": "escaparate", "x": 3.7, "y": 0.1, "w": 2.6, "d": 0.5, "c": "#3a86ff", "n": "calzado"},
+        {"t": "escaparate", "x": 6.6, "y": 0.1, "w": 2.6, "d": 0.5, "c": "#9b5de5", "n": "móviles"},
+        {"t": "fuente", "x": 5.5, "y": 3.4},
+        {"t": "banco", "x": 3.0, "y": 4.4, "w": 1.6, "d": 0.5},
+        {"t": "banco", "x": 7.0, "y": 4.4, "w": 1.6, "d": 0.5},
+        {"t": "planta", "x": 1.0, "y": 3.2},
+        {"t": "planta", "x": 10.2, "y": 3.2},
+        {"t": "planta", "x": 1.0, "y": 7.2},
+        {"t": "planta", "x": 10.2, "y": 7.2}
+      ],
+      "carteles": [{"lado": "izq", "pos": 2.2, "w": 2.4, "txt": "CINE · SALA 4", "c": "#fffdf8", "tc": "#2a6fa8", "z": 40, "h": 16, "sz": 3}, {"lado": "izq", "pos": 5.6, "w": 2.0, "txt": "REBAJAS -50 %", "c": "#fffdf8", "tc": "#c0392b", "z": 38, "h": 14, "sz": 3}],
+      "personal": [{"x": 2.1, "y": 0.95, "rol": "adult", "right": true, "sh": "#e85d3f"}, {"x": 8.0, "y": 0.95, "rol": "adult", "right": true, "sh": "#9b5de5"}],
+      "cli": [[0.8, 2.0, 10.2, 7.4]],
+      "posts": [],
+      "afluencia": {"pk": [[11, 14, 0.8], [17, 21, 1]], "base": 0.35, "we": 1, "lo": 5, "hi": 14}
+    },
+    "juzgados": {
+      "plantilla": "oficina",
+      "suelo": "#c4c0b6",
+      "pared": "#d7d9de",
+      "rotulo": "JUZGADOS",
+      "rot_c": "#5a5f6e",
+      "ana": [5.5, 5.9],
+      "piezas": [
+        {"t": "ventanilla", "x": 0.9, "y": 0.5, "w": 2.6, "d": 0.8},
+        {"t": "ventanilla", "x": 4.2, "y": 0.5, "w": 2.6, "d": 0.8},
+        {"t": "ventanilla", "x": 7.5, "y": 0.5, "w": 2.6, "d": 0.8},
+        {"t": "banco", "x": 1.4, "y": 3.6, "w": 2.4, "d": 0.5},
+        {"t": "banco", "x": 4.4, "y": 3.6, "w": 2.4, "d": 0.5},
+        {"t": "banco", "x": 7.4, "y": 3.6, "w": 2.4, "d": 0.5},
+        {"t": "banco", "x": 1.4, "y": 5.0, "w": 2.4, "d": 0.5},
+        {"t": "banco", "x": 4.4, "y": 5.0, "w": 2.4, "d": 0.5},
+        {"t": "banco", "x": 7.4, "y": 5.0, "w": 2.4, "d": 0.5},
+        {"t": "detector", "x": 9.6, "y": 6.6},
+        {"t": "planta", "x": 0.6, "y": 7.3}
+      ],
+      "carteles": [{"lado": "izq", "pos": 2.0, "w": 2.8, "txt": "SALA 2 · LANZAMIENTOS", "c": "#fffdf8", "tc": "#5a5f6e", "z": 44, "h": 16, "sz": 2.4}, {"lado": "izq", "pos": 5.4, "w": 2.0, "txt": "SALA 3 · FAMILIA", "c": "#fffdf8", "tc": "#5a5f6e", "z": 44, "h": 16, "sz": 2.4}],
+      "personal": [{"x": 2.2, "y": 0.2, "rol": "adult", "right": true, "act": "type", "sh": "#5a5f6e"}, {"x": 8.8, "y": 0.2, "rol": "adult", "right": true, "act": "type", "sh": "#5a5f6e"}],
+      "cli": [[0.7, 2.4, 10.3, 7.3]],
+      "posts": [{"x": 5.5, "y": 0.2}],
+      "afluencia": {"pk": [[9.5, 12.5, 1]], "base": 0.1, "we": 0, "lo": 4, "hi": 12}
+    },
+    "naves": {
+      "plantilla": "nave",
+      "suelo": "#a9a49a",
+      "pared": "#aab2b8",
+      "rotulo": "NAVES · LOGÍSTICA",
+      "rot_c": "#e8832a",
+      "ana": [6.0, 5.8],
+      "piezas": [
+        {"t": "rack", "x": 0.9, "y": 0.2, "w": 2.4, "d": 0.9},
+        {"t": "rack", "x": 3.7, "y": 0.2, "w": 2.4, "d": 0.9},
+        {"t": "rack", "x": 6.5, "y": 0.2, "w": 2.4, "d": 0.9},
+        {"t": "palet", "x": 10.0, "y": 0.6, "w": 1.0, "d": 1.0},
+        {"t": "palet", "x": 10.0, "y": 1.9, "w": 1.0, "d": 1.0},
+        {"t": "cinta", "x": 2.2, "y": 3.4, "w": 5.6, "d": 0.7},
+        {"t": "carretilla", "x": 9.6, "y": 4.2},
+        {"t": "palet", "x": 0.9, "y": 4.8, "w": 1.0, "d": 1.0},
+        {"t": "palet", "x": 0.9, "y": 6.1, "w": 1.0, "d": 1.0},
+        {"t": "escritorio", "x": 10.0, "y": 6.2},
+        {"t": "caja", "x": 8.4, "y": 5.2, "w": 0.8, "d": 0.8}
+      ],
+      "carteles": [{"lado": "izq", "pos": 3.0, "w": 2.6, "txt": "ETT AURORA · FICHAJE", "c": "#f0b429", "tc": "#2b2b33", "z": 46, "h": 14, "sz": 2.6}],
+      "personal": [{"x": 10.6, "y": 7.0, "rol": "adult", "right": true, "sh": "#f0b429"}],
+      "cli": [[0.8, 4.2, 11.2, 7.4]],
+      "posts": [{"x": 7.4, "y": 4.4}, {"x": 4.4, "y": 4.4}, {"x": 2.0, "y": 4.4}],
+      "afluencia": {"pk": [[6, 9, 1], [13, 16, 0.8]], "base": 0.12, "we": 0.1, "lo": 4, "hi": 11}
+    },
+    "itv": {
+      "plantilla": "nave",
+      "suelo": "#b4b2aa",
+      "pared": "#b9c4cc",
+      "rotulo": "ITV",
+      "rot_c": "#2a6fa8",
+      "ana": [2.0, 6.4],
+      "piezas": [
+        {"t": "foso", "x": 3.6, "y": 1.2, "w": 5.6, "d": 1.8},
+        {"t": "coche", "x": 4.6, "y": 1.7, "w": 1.0, "d": 1.0, "c": "#c0392b"},
+        {"t": "coche", "x": 2.4, "y": 5.2, "w": 1.0, "d": 1.0, "c": "#3a86ff"},
+        {"t": "coche", "x": 8.6, "y": 5.6, "w": 1.0, "d": 1.0, "c": "#fffdf8"},
+        {"t": "escritorio", "x": 0.9, "y": 0.6},
+        {"t": "palet", "x": 10.2, "y": 0.6, "w": 1.0, "d": 1.0, "c": "#3b3f46"},
+        {"t": "caja", "x": 0.8, "y": 3.2, "w": 0.8, "d": 0.8},
+        {"t": "contenedor", "x": 10.6, "y": 3.4, "w": 1.0, "d": 1.4}
+      ],
+      "carteles": [{"lado": "izq", "pos": 2.2, "w": 2.6, "txt": "ITV · CITA PREVIA", "c": "#fffdf8", "tc": "#2a6fa8", "z": 46, "h": 16, "sz": 2.8}, {"lado": "izq", "pos": 5.6, "w": 2.0, "txt": "SU TURNO: 23", "c": "#2b2b33", "tc": "#ff5a3c", "z": 44, "h": 14, "sz": 2.8}],
+      "personal": [{"x": 6.4, "y": 0.4, "rol": "adult", "right": true, "sh": "#2a6fa8"}],
+      "cli": [[0.8, 4.0, 11.2, 7.4]],
+      "posts": [{"x": 7.4, "y": 3.6}],
+      "afluencia": {"pk": [[8, 10, 1], [12, 14, 0.7]], "base": 0.15, "we": 0.5, "lo": 4, "hi": 10}
+    },
+    "locutorio": {
+      "plantilla": "local",
+      "suelo": "#c9b99a",
+      "pared": "#e1d2b6",
+      "rotulo": "LOCUTORIO MEDINA",
+      "rot_c": "#2e6b44",
+      "ana": [5.2, 5.8],
+      "piezas": [
+        {"t": "cabina", "x": 0.6, "y": 1.2, "w": 1.0, "d": 1.0},
+        {"t": "cabina", "x": 0.6, "y": 2.4, "w": 1.0, "d": 1.0},
+        {"t": "cabina", "x": 0.6, "y": 3.6, "w": 1.0, "d": 1.0},
+        {"t": "cabina", "x": 0.6, "y": 4.8, "w": 1.0, "d": 1.0},
+        {"t": "mostrador", "x": 3.2, "y": 0.9, "w": 4.6, "d": 0.8},
+        {"t": "escritorio", "x": 3.4, "y": 0.1},
+        {"t": "copiadora", "x": 8.6, "y": 0.9, "w": 0.9, "d": 0.8},
+        {"t": "estante", "x": 3.2, "y": 0.05, "w": 4.6, "d": 0.4, "c": "#c9c3b8"},
+        {"t": "planta", "x": 9.2, "y": 6.9}
+      ],
+      "carteles": [{"lado": "fondo", "pos": 3.2, "w": 4.6, "txt": "GIROS · LLAMADAS · COPIAS · WIFI", "c": "#2e6b44", "tc": "#fffdf8", "z": 44, "h": 14, "sz": 2.2}, {"lado": "fondo", "pos": 8.2, "w": 1.4, "txt": "SALDO FIADO", "c": "#fffdf8", "tc": "#c0392b", "z": 30, "h": 12, "sz": 2.2}],
+      "personal": [{"x": 5.4, "y": 0.5, "rol": "adult", "right": true, "act": "type", "sh": "#2e6b44"}],
+      "cli": [[2.2, 3.0, 9.4, 7.4]],
+      "posts": [{"x": 4.4, "y": 0.5}],
+      "afluencia": {"pk": [[10, 13, 0.6], [17, 21, 1]], "base": 0.3, "we": 0.8, "lo": 4, "hi": 9}
+    },
+    "asociacion": {
+      "plantilla": "local",
+      "suelo": "#c8b496",
+      "pared": "#e3d1bd",
+      "rotulo": "ASOCIACIÓN LA UNIÓN",
+      "rot_c": "#a5533e",
+      "ana": [5.0, 6.0],
+      "piezas": [
+        {"t": "mesalarga", "x": 2.6, "y": 3.2, "w": 4.8, "d": 1.0, "sillas": 4},
+        {"t": "pizarra", "x": 0.8, "y": 0.1, "w": 2.2, "d": 0.2},
+        {"t": "estante_libros", "x": 7.8, "y": 0.05, "w": 1.8, "d": 0.4},
+        {"t": "mostrador", "x": 7.8, "y": 1.4, "w": 1.8, "d": 0.7},
+        {"t": "maquina", "x": 8.2, "y": 1.45, "w": 0.6, "d": 0.5},
+        {"t": "caja", "x": 1.0, "y": 6.4, "w": 0.8, "d": 0.8},
+        {"t": "caja", "x": 1.9, "y": 6.6, "w": 0.8, "d": 0.8, "c": "#e9a23b"},
+        {"t": "planta", "x": 9.2, "y": 6.8}
+      ],
+      "carteles": [
+        {"lado": "fondo", "pos": 3.6, "w": 3.4, "txt": "BANCO DE TIEMPO", "c": "#2f4a3a", "tc": "#fffdf8", "z": 40, "h": 16, "sz": 2.8},
+        {"lado": "izq", "pos": 2.4, "w": 2.2, "txt": "AGUA CORTADA: APÚNTATE", "c": "#fffdf8", "tc": "#c0392b", "z": 40, "h": 16, "sz": 2.2},
+        {"lado": "izq", "pos": 5.4, "w": 1.8, "txt": "MARTES 18:00", "c": "#fffdf8", "tc": "#a5533e", "z": 40, "h": 14, "sz": 2.6}
+      ],
+      "personal": [],
+      "cli": [[0.8, 2.0, 9.4, 7.4]],
+      "posts": [{"x": 8.8, "y": 0.9}],
+      "afluencia": {"pk": [[17.5, 20.5, 1]], "base": 0.1, "we": 0.7, "lo": 4, "hi": 11}
+    },
+    "descampado": {
+      "plantilla": "solar",
+      "suelo": "#cdbf9f",
+      "pared": "#8a7a62",
+      "rotulo": "SE VENDE",
+      "rot_c": "#c0392b",
+      "ana": [6.0, 5.0],
+      "piezas": [
+        {"t": "valla", "x": 0.1, "y": 0.1, "w": 11.8, "d": 0.1},
+        {"t": "valla", "x": 0.1, "y": 0.1, "w": 0.1, "d": 7.8},
+        {"t": "porteria", "x": 1.0, "y": 3.6},
+        {"t": "porteria", "x": 11.0, "y": 3.6},
+        {"t": "arbol", "x": 10.8, "y": 1.0},
+        {"t": "contenedor", "x": 0.4, "y": 6.6, "w": 1.2, "d": 1.0},
+        {"t": "palet", "x": 9.8, "y": 6.7, "w": 1.0, "d": 0.9},
+        {"t": "caja", "x": 2.6, "y": 0.8, "w": 0.7, "d": 0.7}
+      ],
+      "domingo": [
+        {"t": "lona", "x": 1.6, "y": 1.0, "w": 2.0, "d": 1.2, "c": "#d9a441"},
+        {"t": "lona", "x": 4.2, "y": 1.0, "w": 2.0, "d": 1.2, "c": "#4a7a9a"},
+        {"t": "lona", "x": 6.8, "y": 1.0, "w": 2.0, "d": 1.2, "c": "#c0392b"},
+        {"t": "lona", "x": 9.0, "y": 1.8, "w": 1.8, "d": 1.2, "c": "#2e8b57"}
+      ],
+      "carteles": [],
+      "personal": [],
+      "cli": [[1.8, 2.8, 10.2, 7.4]],
+      "posts": [],
+      "afluencia": {"pk": [[10, 13, 0.9], [17, 20, 1]], "base": 0.2, "we": 1, "lo": 4, "hi": 12}
+    }
+  },
+
+  "salidas": {
+    "mercado_compra": {
+      "kind": "mercado",
+      "factor": 0.78,
+      "unidades": 14,
+      "nut": 4,
+      "tell": [
+        "{n} compra en el mercado: fruta con tierra, pescado de ayer a hoy y la carnicera que pesa de más a quien no mira. {c}, un {pct} % menos que en el súper. A las dos y media, persianas.",
+        "Mercado de abastos. {n} vuelve con {c} de verdura que sabe a verdura. Los puestos cierran cuando sus dueñas se jubilan y aquí quedan pocos."
+      ]
+    },
+    "mercado_cierre": {"kind": "mercado", "factor": 0.3, "unidades": 7, "nut": 1, "tell": ["A la hora de cerrar, los puestos malvenden lo que no aguanta hasta mañana. {n} se lleva {c} de fruta blanda y pescado del día."]},
+    "juicio_desahucio": {
+      "kind": "juicio",
+      "base": 0.3,
+      "por_mov": 0.004,
+      "sindicato": 0.15,
+      "compania": 0.12,
+      "aplaza": ["La jueza aplaza el lanzamiento un mes. Había treinta personas en el pasillo y se nota. {n} sale con la vecina del brazo.", "Suspendido por falta de notificación. El abogado de oficio sonríe por primera vez. {n} no entiende de leyes, pero sí de cuántos eran."],
+      "sigue": [
+        "Sala 2, siete minutos. La orden sigue adelante y la fecha del lanzamiento queda apuntada. {n} acompaña a la vecina hasta el portal; no hay nada que decir.",
+        "El fondo no ha venido, ha mandado a un procurador. Gana el papel. {n} sale del juzgado con las manos en los bolsillos y la vecina sin casa dentro de un mes."
+      ]
+    },
+    "juzgado_tramite": {
+      "kind": "tramite",
+      "coste_h": 1.2,
+      "dias": 30,
+      "con": ["Justicia gratuita y escrito de oposición: {c} en tasas, copias y bolsas de plástico para los papeles. El lanzamiento se suspende {d} días. Solo es tiempo, pero es tiempo."],
+      "sin": ["Papeleo en el juzgado: {c} de tasas y copias, y una cola de planta baja. {n} sale con un sello, que vale más de lo que parece."]
+    },
+    "plaza_cine": {"kind": "gasto", "coste_h": 2, "concepto": "Salida", "animo": 1, "tell": ["Cine en Gran Plaza: {c} entre entrada y palomitas. Dos horas de aire acondicionado y nadie que te pida nada. Sale hacia el aparcamiento con la cartera más ligera."]},
+    "plaza_vuelta": {
+      "kind": "gasto",
+      "coste_h": 1.1,
+      "concepto": "Salida",
+      "tell": ["{n} entra a mirar y sale con una bolsa: {c}. En Gran Plaza todo está pensado para eso, incluida la salida, que pasa por la caja.", "Vuelta por Gran Plaza. Cadenas de todo, música de ascensor y {c} gastados sin darse cuenta."]
+    },
+    "brindis_cafe": {"kind": "gasto", "coste_h": 0.45, "bar": 1, "concepto": "Salida", "tell": ["Café en Brindis: {c} con leche de avena. El local es bonito y el ruido de las cápsulas, constante."]},
+    "brindis_portatil": {"kind": "portatil", "coste_h": 0.45, "bar": 1, "concepto": "Salida", "tell": ["{n} se queda dos horas y media con un solo café ({c}) y el portátil enchufado. El único enchufe libre del barrio se paga así."]},
+    "glorieta_desayuno": {"kind": "gasto", "coste_h": 0.8, "bar": 1, "meal": 0.7, "concepto": "Salida", "tell": ["Desayuno en La Glorieta: tostada, zumo y {c}. A la mesa de al lado, una cuidadora espera el autobús con la abuela de otra."]},
+    "glorieta_merienda": {"kind": "gasto", "coste_h": 0.7, "bar": 1, "meal": 0.5, "concepto": "Salida", "tell": ["Churros y chocolate en La Glorieta por {c}. Se oyen más idiomas que cuando uno llega."]},
+    "futbol": {"kind": "futbol", "tell": ["Fútbol en el descampado, dos porterías de palés. Se juega hasta que se va la luz o se pierde el balón.", "Partido de las Eras: dos equipos de lo que haya. {n} vuelve sucia, cansada y con ganas de repetir."]},
+    "mercadillo_eras": {
+      "kind": "mercadillo",
+      "coste_h": 0.8,
+      "lavadora_h": 10,
+      "nevera_h": 14,
+      "lavadora": ["En el mercadillo hay una lavadora de segunda mano por {c}, con garantía de palabra. Funciona. Es un tercio de lo que costaba arreglar la otra."],
+      "nevera": ["Una nevera de segunda mano, {c}, entre una tele de tubo y una bici sin sillín. La del vendedor se la llevan entre dos."],
+      "nada": ["Mercadillo de los domingos: ropa de otros, libros sin tapa y regateo. {n} se lleva algo por {c}."]
+    },
+    "locutorio_giro": {"kind": "giro", "envia_h": 5, "comision": 0.07, "min_h": 0.4, "tell": ["{n} envía {e} a la familia. Medina cobra {c} de comisión y no pregunta nada. Cuando llega, llaman para decir que ha llegado."]},
+    "locutorio_llamar": {"kind": "gasto", "coste_h": 0.4, "concepto": "Otros", "tell": ["Llamada de media hora y saldo recargado: {c}. En la cabina 3 alguien habla bajito en tres idiomas distintos."]},
+    "locutorio_papeles": {"kind": "papeles", "coste_h": 0.5, "dias_red": 3, "tell": ["Copias, impresiones y una cita previa en la web que nadie sabe encontrar: {c}. Medina lo hace en cinco minutos y no pone cara."]},
+    "asamblea_barrio": {
+      "kind": "asamblea",
+      "mov": 1.2,
+      "tell": [
+        "Asamblea de La Unión. Sillas de plástico, café de termo y la lista de quién tiene el agua cortada. Salen tres tareas y un teléfono del ayuntamiento que no contesta.",
+        "Martes de asociación: una vecina cuenta su carta del fondo, otra tiene el contrato, un chaval trae el altavoz. Se acuerda ir al pleno. Se acuerda también quién lleva las tortillas."
+      ],
+      "bloque": ["{v} apunta a su bloque al sindicato de inquilinas: «si somos tres, nos hacen caso». Va por {k}/3."]
+    },
+    "banco_tiempo": {
+      "kind": "banco_tiempo",
+      "tell": [],
+      "deja": ["{n} deja una hora en el banco de tiempo: ayuda a una vecina con unos papeles. En la pizarra, su nombre y un «+1»."],
+      "cobra": ["{n} gasta una hora del banco de tiempo: un vecino viene y {arreglo}. Nadie habla de dinero."],
+      "arreglos": {"boiler": "le mira el calentador y lo deja funcionando", "wash": "le cambia la goma de la lavadora, que era lo único que fallaba", "fridge": "le arregla el motor de la nevera", "nada": "le cuida a la abuela mientras hace la compra"}
+    },
+    "esperanza_cana": {"kind": "gasto", "coste_h": 0.8, "bar": 1, "concepto": "Salida", "tell": ["Cañas en La Esperanza, a euro cincuenta: {c} entre tapa y rondas. En la barra se sabe qué piso queda libre y a quién han subido el alquiler."]},
+    "esperanza_mus": {"kind": "mus", "coste_h": 0.6, "bar": 1, "piso_dias": 12, "tell": ["Mus a las seis. {n} pierde la ronda ({c}) y gana un dato: el portal del 14 se queda vacío en dos semanas, y el casero es de los que no usan agencia."]},
+    "ett_manana": {
+      "kind": "ett",
+      "pago_h": 3.6,
+      "riesgo": 0.04,
+      "tell": [
+        "Jornada de ETT en las naves: cinco horas descargando camiones de madrugada. Pagan {c}: la agencia se queda su parte y la cotización va por horas sueltas. Mañana, ya veremos.",
+        "{n} descarga palés cinco horas. La ETT ficha, la ETT cobra, la ETT paga {c}. Ni contrato fijo ni nombre en la nómina de la nave."
+      ]
+    },
+    "ett_tarde": {
+      "kind": "ett",
+      "pago_h": 3.6,
+      "riesgo": 0.04,
+      "tell": [
+        "Jornada de ETT en las naves: cinco horas descargando camiones de madrugada. Pagan {c}: la agencia se queda su parte y la cotización va por horas sueltas. Mañana, ya veremos.",
+        "{n} descarga palés cinco horas. La ETT ficha, la ETT cobra, la ETT paga {c}. Ni contrato fijo ni nombre en la nómina de la nave."
+      ]
+    },
+    "cruce_menu": {"kind": "gasto", "coste_h": 1.3, "bar": 1, "meal": 0.65, "concepto": "Menú", "tell": ["Menú del Cruce por {c}: macarrones, filete con patatas y flan. A las dos y diez ya no queda segundo."]},
+    "cruce_bocata": {"kind": "gasto", "coste_h": 0.5, "bar": 1, "meal": 0.5, "concepto": "Menú", "tell": ["Café y bocata de tortilla en El Cruce: {c}. Los camiones esperan fuera con el motor en marcha."]},
+    "itv_pasar": {"kind": "itv", "coste_h": 4.4, "validez": 365, "multa_h": 12, "tell": ["ITV pasada: {c} y dos horas de cola dando la vuelta a la nave. Quien llega tarde paga otra cita. Sello hasta el año que viene."]}
+  },
+
+  "barrios": {
+    "casco": {
+      "compra": 1.12,
+      "bar": 1.15,
+      "ruido": 3,
+      "seguridad": 3,
+      "policia": {"p": 0.01, "pobre": 1.4, "rico": 0.5, "txt_pobre": "Control de identidad en la plaza, a {n} y a otros dos. Papeles, diez minutos y un «gracias, disculpe». A los turistas ni los miran.", "txt_rico": "Dos policías pasan por la plaza. A los de las terrazas ni los miran."},
+      "servicios": 5,
+      "red": 1.2,
+      "presion": 0.06,
+      "abandono": 2,
+      "control": 0,
+      "visitas_casero": 0.006,
+      "pie": {"ambulatorio": 14, "cole": 8, "parada": 2},
+      "ficha": {"gana": "Todo a pie, mercado y juzgados a la vuelta, tranvía cada pocos minutos.", "pierde": "Cada renovación sube más: los fondos compran portales y los turistas pagan la noche. Terrazas hasta las dos."}
+    },
+    "ensanche": {
+      "compra": 1.08,
+      "bar": 1.3,
+      "ruido": 1,
+      "seguridad": 4,
+      "policia": {"p": 0.006, "pobre": 1.5, "rico": 0.4, "txt_pobre": "Patrulla en el portal: «un aviso». {n} enseña el contrato y se lo devuelven con cara de duda.", "txt_rico": "Un coche patrulla da la vuelta a la manzana, por si acaso."},
+      "servicios": 4,
+      "red": 0.7,
+      "presion": 0.03,
+      "abandono": 1,
+      "control": 0.3,
+      "visitas_casero": 0.004,
+      "pie": {"ambulatorio": 22, "cole": 15, "parada": 4},
+      "ficha": {"gana": "Ascensor, fibra y aceras anchas. Obra de día y silencio de noche.", "pierde": "Pocos bares, ningún vecino de siempre y la plaza prometida sigue siendo un solar. Cafés a tres euros."}
+    },
+    "pinares": {
+      "compra": 1.15,
+      "bar": 1.35,
+      "ruido": 0,
+      "seguridad": 5,
+      "policia": {"p": 0.006, "pobre": 4, "rico": 0.3, "txt_pobre": "Dos agentes piden la documentación a {n} en la puerta de su casa: «un aviso de un vecino». Tardan diez minutos en creer que vive ahí.", "txt_rico": "Un coche de seguridad privada pasa dos veces por tu calle. No es por ti."},
+      "servicios": 3,
+      "red": 0.8,
+      "presion": 0.02,
+      "abandono": 0,
+      "control": 1,
+      "visitas_casero": 0.002,
+      "pie": {"ambulatorio": 30, "cole": 7, "parada": 9},
+      "ficha": {"gana": "Silencio, jardines y una avería arreglada en días: la comunidad paga rápido.", "pierde": "La comunidad también mira. Quien no parece de allí es parada en la puerta, y los vecinos escriben notas por un toldo."}
+    },
+    "ribera": {
+      "compra": 1.0,
+      "bar": 1.0,
+      "ruido": 2,
+      "seguridad": 3,
+      "policia": {"p": 0.008, "pobre": 1.2, "rico": 0.8, "txt_pobre": "Control en la salida del metro. {n} enseña los papeles y llega tarde.", "txt_rico": "Un agente en la esquina, sin prisa. Aquí saluda."},
+      "servicios": 4,
+      "red": 1.1,
+      "presion": 0.04,
+      "abandono": 2,
+      "control": 0.1,
+      "visitas_casero": 0.01,
+      "pie": {"ambulatorio": 6, "cole": 5, "parada": 4},
+      "ficha": {"gana": "Se conoce todo el mundo: quien fía en el súper, quien arregla la persiana. Ambulatorio y cole a pie.", "pierde": "Los pisos viejos no se arreglan y el alquiler sube porque el centro ya no cabe."}
+    },
+    "eras": {
+      "compra": 1.06,
+      "bar": 0.85,
+      "ruido": 2,
+      "seguridad": 2,
+      "policia": {
+        "p": 0.02,
+        "pobre": 2,
+        "rico": 1,
+        "txt_pobre": "Furgón en la parada: control de identidad a todo el que parece lo que parece. {n} enseña los papeles, espera diez minutos y pierde el autobús, que sí que pasó.",
+        "txt_rico": "Se ve el furgón desde la ventana. Esta vez no es por tu portal."
+      },
+      "servicios": 2,
+      "red": 1.35,
+      "presion": 0,
+      "abandono": 6,
+      "control": 0,
+      "visitas_casero": 0.008,
+      "pie": {"ambulatorio": 38, "cole": 6, "parada": 5},
+      "ficha": {"gana": "Vida de calle: comedor, asociación, locutorio y quien baja a ayudarte con la compra. Alquiler a dos tercios de la media.", "pierde": "Redadas y controles a quien parece lo que parece, averías que tardan semanas y un autobús que a veces no pasa."}
+    },
+    "poligono": {
+      "compra": 1.04,
+      "bar": 0.9,
+      "ruido": 2,
+      "seguridad": 2,
+      "policia": {"p": 0.004, "pobre": 1, "rico": 1, "txt_pobre": "Control de la policía en el cruce: papeles, el seguro y la ITV.", "txt_rico": "Una patrulla pasa por el polígono. Nadie levanta la cabeza."},
+      "servicios": 1,
+      "red": 0.6,
+      "presion": 0,
+      "abandono": 4,
+      "control": 0,
+      "visitas_casero": 0.004,
+      "pie": {"ambulatorio": 45, "cole": 40, "parada": 6},
+      "ficha": {"gana": "Hay curro y los turnos se cobran. Camiones de día, menú a diez euros.", "pierde": "De noche no pasa nada ni nadie. Sin transporte, sin tienda y sin más sitio donde comer que el menú."}
+    }
+  },
+
+  "pesos": {"animo_seguridad": 0.3, "animo_servicios": 0.3, "animo_ruido": 0.2, "animo_red": 1.0, "energia_ruido": 1.2, "corte_energia": 1, "corte_higiene": 2},
+
+  "sucesos": {
+    "casco": {
+      "anuales": [
+        {
+          "id": "casco_fiestas",
+          "m": 4,
+          "dm": 15,
+          "e": "🎆",
+          "t": "Fiestas del Casco: verbena en la plaza, mercado con puestos extra y bares hasta las cinco. {n} baila, canta y no duerme. Al día siguiente, la plaza amanece con vasos hasta el ayuntamiento.",
+          "fx": {"social": 18, "diversion": 18, "energia": -14}
+        },
+        {"id": "casco_turistico", "m": 6, "dm": 10, "e": "🧳", "t": "Plaga de pisos turísticos: otro portal de la calle ha cambiado los felpudos por cajitas de llaves. Los vecinos de toda la vida se van; {n} oye maletas con ruedas a las siete.", "fx": {"animo": -2, "energia": -4, "renta_pct": 0.03}},
+        {"id": "casco_franquicia", "m": 10, "dm": 6, "e": "🏪", "t": "Abre una franquicia en el bajo de la esquina donde estuvo la mercería cuarenta años. Café a cuatro euros y la mercera se jubila de golpe.", "fx": {"animo": -1, "social": -2}}
+      ],
+      "fijos": [
+        {"id": "casco_carterista", "p": 0.012, "e": "👜", "t": "En la plaza, un tirón entre turistas. {n} nota la mano a tiempo, pero pierde la cartera con {c}.", "fx": {"dinero_h": -1}},
+        {"id": "casco_ruido", "p": 0.04, "e": "🔊", "t": "Obra del hotel de al lado, a las ocho en punto. Taladro de la mañana, hasta que se acaba la subvención.", "fx": {"energia": -5}},
+        {"id": "casco_encuesta", "p": 0.01, "e": "🕵️", "t": "Un tipo de un fondo pasa por el portal con una carpeta: «estamos interesados en el edificio». Nadie sabe de qué.", "fx": {"animo": -1}}
+      ]
+    },
+    "ensanche": {
+      "anuales": [
+        {"id": "ens_plaza", "m": 2, "dm": 20, "e": "🏗️", "t": "La promotora anuncia otra vez la plaza. Esta vez con vallas, y sin fecha.", "fx": {"animo": -1}},
+        {"id": "ens_inaugura", "m": 8, "dm": 14, "e": "🛍️", "t": "Inauguran un súper de cadena en el bajo del bloque. Hay cola, globos y descuento solo el primer día.", "fx": {"diversion": 6, "dinero_h": -0.5}},
+        {"id": "ens_corte", "m": 1, "dm": 9, "e": "🚰", "t": "Corte de agua por obras de conexión de la calle de al lado. Seis horas sin grifo; la promotora pide disculpas por burofax.", "fx": {"corte": 1}}
+      ],
+      "fijos": [
+        {"id": "ens_obra", "p": 0.03, "e": "🚧", "t": "Grúa y hormigonera desde las siete. En el Ensanche, lo que se construye se oye antes de verse.", "fx": {"energia": -3}},
+        {"id": "ens_cartel", "p": 0.01, "e": "📣", "t": "Cartel de la promotora en el portal: «prohibido tender en balcones». Nadie recuerda haber firmado eso.", "fx": {"animo": -1}}
+      ]
+    },
+    "pinares": {
+      "anuales": [
+        {"id": "pin_fiesta", "m": 5, "dm": 24, "e": "🌲", "t": "Fiesta de la comunidad de Los Pinares: paella en la urbanización, castillo hinchable y reparto de multas por ruido a las once.", "fx": {"social": 8, "diversion": 6, "animo": -1}},
+        {"id": "pin_redada", "m": 9, "dm": 18, "e": "🚓", "t": "Patrulla vecinal y policía en la entrada: «vecinos preocupados». {n} nota que las miradas se detienen más en quien lleva uniforme de limpieza.", "fx": {"animo": -2, "social": -3}},
+        {"id": "pin_derrama", "m": 2, "dm": 11, "e": "📬", "t": "Derrama de la comunidad: nuevas cámaras, verja nueva y jardinero. {c} para todas, vote quien vote.", "fx": {"dinero_h": -2}}
+      ],
+      "fijos": [{"id": "pin_nota", "p": 0.025, "e": "📝", "t": "Nota anónima en el felpudo: «el toldo no es del color de la urbanización». Firmado: la comunidad.", "fx": {"animo": -1, "social": -2}}]
+    },
+    "ribera": {
+      "anuales": [
+        {"id": "rib_fiestas", "m": 7, "dm": 16, "e": "🎉", "t": "Fiestas de La Ribera: paella en el parque del río, verbena y el concurso de tortillas que gana siempre la misma. {n} acaba cantando con gente del bloque.", "fx": {"social": 20, "diversion": 18, "energia": -12}},
+        {"id": "rib_agua", "m": 0, "dm": 23, "e": "🚰", "t": "Corte de agua en la manzana por una tubería de los setenta. Cisterna en la esquina y cola con cubos hasta que reparan.", "fx": {"corte": 2}},
+        {"id": "rib_desalojo", "m": 10, "dm": 3, "e": "📦", "t": "Desalojan a una familia del bloque del fondo. Los vecinos se juntan en la puerta y les guardan los muebles en el garaje.", "fx": {"social": 6, "animo": -2, "mov": 1}}
+      ],
+      "fijos": [
+        {"id": "rib_persiana", "p": 0.02, "e": "🔧", "t": "La vecina del segundo aparece con herramientas: «te arreglo la persiana». Hay barrios donde se dice así, y otros donde se llama a un técnico.", "fx": {"social": 6, "animo": 1}},
+        {"id": "rib_ruido", "p": 0.03, "e": "🔊", "t": "Fiesta en el piso de arriba hasta las cuatro. Paredes finas y un portero eléctrico que no se calla.", "fx": {"energia": -5}}
+      ]
+    },
+    "eras": {
+      "anuales": [
+        {
+          "id": "eras_fiestas",
+          "m": 8,
+          "dm": 7,
+          "e": "🪅",
+          "t": "Fiestas de Las Eras: cada calle monta su mesa, hay cuscús junto al guiso y el concurso de pelota es a cara de perro. Nadie ha dejado de hablar de la gente de la otra calle. Hasta el año que viene.",
+          "fx": {"social": 22, "diversion": 20, "energia": -12}
+        },
+        {"id": "eras_redada", "m": 2, "dm": 27, "e": "🚓", "t": "Redada en Calle Olivo: furgones y controles de identidad a la salida del locutorio. Se cierran las persianas y se abren los portales a quien corre.", "fx": {"animo": -3, "social": -2, "mov": 1.2}},
+        {"id": "eras_corte", "m": 11, "dm": 5, "e": "🚰", "t": "Cortan el agua en el bloque por una deuda de la comunidad con la empresa. La asociación lleva garrafas y una lista de quién no tiene casa.", "fx": {"corte": 4, "mov": 0.8}}
+      ],
+      "fijos": [
+        {"id": "eras_bus", "p": 0.06, "e": "🚌", "t": "El autobús de las Eras no pasa: avería, sin sustituto y sin aviso. {n} llega tarde y a pie.", "fx": {"rep": -3}, "req": "laboral"},
+        {"id": "eras_ayuda", "p": 0.025, "e": "🥘", "t": "Una vecina llama a la puerta con un táper y noticias: «quedaban ocho raciones y somos siete». Aquí el barrio entra sin pedir permiso.", "fx": {"social": 8, "animo": 1}}
+      ]
+    },
+    "poligono": {
+      "anuales": [
+        {"id": "pol_paro", "m": 0, "dm": 14, "e": "📦", "t": "Cierran una nave del polígono. Treinta despedidos en el comedor del bar El Cruce, que invita a café a quien aguante la cola.", "fx": {"animo": -2, "mov": 1}},
+        {"id": "pol_feria", "m": 4, "dm": 22, "e": "🔧", "t": "Feria del motor en el aparcamiento. Hay hot-dogs, concesionarios y un sorteo de neumáticos.", "fx": {"diversion": 6}},
+        {"id": "pol_incendio", "m": 7, "dm": 8, "e": "🔥", "t": "Incendio en un almacén de palets. La nube negra se ve desde el barrio.", "fx": {"energia": -3, "animo": -1}}
+      ],
+      "fijos": [{"id": "pol_camiones", "p": 0.03, "e": "🚛", "t": "Camiones de madrugada, claxon incluido.", "fx": {"energia": -4}}, {"id": "pol_noche", "p": 0.015, "e": "🌙", "t": "Sin transporte de noche: media hora a pie por la avenida sin farolas.", "fx": {"animo": -2}}]
+    }
+  },
+
+  "textos": {
+    "ficha_titulo": "Vivir aquí",
+    "ficha_alquiler": "Alquiler ×{f} la media de la ciudad",
+    "ficha_ejemplo": "Un piso de ejemplo: {r} a la semana",
+    "ficha_tuyo": " · el tuyo: {r}",
+    "ficha_sin_vivienda": "Aquí no hay vivienda de alquiler para el personaje",
+    "ett_accidente": "Un palé se le cae sobre el pie a {n}. La ETT no tiene parte y la nave no la conoce.",
+    "itv_multa": "Multa de {c}: la ITV de la furgoneta estaba caducada. A quien reparte, por no tener tiempo de hacer cola.",
+    "ficha_trayecto": "Al curro ({sitio}): {m} min",
+    "ficha_trayecto_sin": "Al curro: sin trabajo fijo ahora.",
+    "ficha_pie": "A pie: parada {parada} min, cole {cole} min, ambulatorio {amb} min.",
+    "ficha_bueno": "Lo bueno: {t}",
+    "ficha_cuesta": "Lo que cuesta: {t}",
+    "ficha_efectos": "Compra ×{compra}, bar ×{bar}, ruido {ruido}/3, seguridad {seg}/5, {red}.",
+    "casa_linea": "{b}: alquiler ×{f}, al curro {m} min, compra ×{compra}, ruido {ruido}/3.",
+    "aviso_alquiler": "Con el piso nuevo, el alquiler sale a ×{f} de la media del barrio.",
+    "renueva_barrio": "El casero reajusta el contrato al barrio: ×{f}.",
+    "presion_casco": "Los fondos y los pisos turísticos suben el precio de la zona: otro {pct} % por encima de la subida normal.",
+    "corte_inicio": "Sin agua en casa durante {d} días: cubo, garrafas y vecinas.",
+    "corte_fin": "Vuelve el agua.",
+    "casero_visita": "El casero entra «a revisar algo». Otra vez, en este barrio, la llave no es solo suya.",
+    "red_visita": "{v} llama a la puerta: «¿necesitas algo?». Aquí el barrio se mete en tu vida, para bien y para mal.",
+    "hrs_unidad": "h",
+    "hecho_ya": "Ya has estado hoy.",
+    "sin_dinero": "No llega para eso.",
+    "sin_mov": "No hay nada que acompañar hoy."
+  }
+}
