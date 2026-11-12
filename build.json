@@ -57,6 +57,7 @@
   "banco3.js",
   "patrimonio.js",
   "aula.js",
-  "poblacion.js"
+  "poblacion.js",
+  "servicios.js"
  ]
 }
