@@ -50,6 +50,11 @@ def censo(P,lug,ideo,E,dentro):
         for k in ('rol','historia','trabajo','estudia','lazos'):
             if k not in v:E.append(q+': falta «%s»'%k)
         if v.get('estudia') not in ESTUDIA:E.append(q+'.estudia: «%s» no vale'%v.get('estudia'))
+        ce=v.get('centro')
+        if v.get('estudia') in ('cole','instituto'):
+            if ce not in ({'cole':('colegio','concertado'),'instituto':('instituto','concertado')}[v['estudia']]):E.append(q+'.centro: «%s» no vale para %s'%(ce,v['estudia']))
+            elif ce not in lug:E.append(q+'.centro: «%s» no existe en lugares'%ce)
+        elif ce is not None:E.append(q+'.centro: solo quien estudia en cole o instituto')
         for o,t in v.get('lazos',[]):
             if o not in por:E.append(q+'.lazos: «%s» no existe'%o)
             if o==i:E.append(q+'.lazos: lazo consigo misma')
