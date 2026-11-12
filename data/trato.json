@@ -113,6 +113,90 @@
     },
     "mozo de almacén (ETT)": {
       "acciones": [{"id": "ett", "e": "📦", "n": "Preguntar por la ETT", "rel": 15, "ok": [["{v} te cuenta lo de la ETT", "Llaman la víspera por la tarde. Cinco horas, sin contrato fijo, y el que dice que no, no vuelve a estar en la lista."]], "fx": {"pista": 1, "rel": 3, "social": 3}}]
+    },
+    "repartidor": {
+      "acciones": [
+        {
+          "id": "tarifa",
+          "e": "🚲",
+          "n": "Preguntar cuánto paga la plataforma",
+          "rel": 15,
+          "ok": [["{v} te enseña la pantalla", "Dos euros veinte por pedido, menos lo que se come la lluvia. Hay un grupo de mensajería donde se pasan los trucos y las multas."]],
+          "fx": {"rel": 3, "social": 3, "pista": "empleo"}
+        }
+      ]
+    },
+    "conductora": {"acciones": [{"id": "linea", "e": "🚌", "n": "Preguntar por la línea", "rel": 15, "ok": [["{v} habla de la concesión", "Cuenta las paradas, los horarios y quién se sube enfadado. De la nueva concesión sabe más que el ayuntamiento."]], "fx": {"rel": 3, "chisme": 1}}]},
+    "cuidadora": {
+      "acciones": [
+        {
+          "id": "cuidados",
+          "e": "🩺",
+          "n": "Preguntar por quien cuida",
+          "rel": 20,
+          "ok": [["{v} te cuenta a quién cuida", "Una persona mayor que no sale de casa, una familia que paga a medias y un horario que no existe en ningún papel. Aquí el cuidado es un favor con sueldo."]],
+          "fx": {"rel": 3, "chisme": 1}
+        }
+      ]
+    },
+    "auxiliar de ayuda a domicilio": {
+      "acciones": [{"id": "rutas", "e": "🚶", "n": "Preguntar por su ruta", "rel": 20, "ok": [["{v} repasa las casas del día", "Once casas, once llaves y los desplazamientos sin pagar. Sabe quién está solo de verdad y lo lleva apuntado en la cabeza."]], "fx": {"rel": 3, "chisme": 1}}]
+    },
+    "cocinera": {"acciones": [{"id": "menu", "e": "🍲", "n": "Preguntar qué hay de comer", "rel": 10, "ok": [["{v} te enseña la olla", "Hay lentejas para ciento veinte y pan del día anterior. Si te quedas hasta el final, te cae un tupper."]], "fx": {"rel": 3, "despensa": 1}}]},
+    "encargada de obra": {"acciones": [{"id": "tajo", "e": "🏗️", "n": "Preguntar si hay tajo en la obra", "rel": 30, "ok": [["{v} mira la hoja del día", "Faltan oficiales y sobran papeles. Lo de las horas extra lo lleva otra gente, y no sabe quién."]], "fx": {"rel": 2, "pista": "empleo"}}]},
+    "electricista": {
+      "acciones": [
+        {"id": "cable", "e": "⚡", "n": "Preguntar por un enchufe", "rel": 15, "ok": [["{v} te da un consejo", "Que no hagas la chapuza tú, que la haga alguien con papeles y que pidas factura. A él le pasó una vez con una derivación y lo cuenta con las manos."]], "fx": {"rel": 3, "social": 2}}
+      ]
+    },
+    "encargada de súper": {
+      "acciones": [
+        {"id": "plantilla", "e": "📋", "n": "Preguntar por la plantilla", "rel": 25, "ok": [["{v} baja la voz", "Quién ha pedido el turno, quién ha cobrado menos y a quién le han puesto cámara. Sabe más del cuadrante que quien lo firma."]], "fx": {"rel": 2, "chisme": 1, "pista": "empleo"}}
+      ]
+    },
+    "pescadera": {"acciones": [{"id": "lonja", "e": "🐟", "n": "Preguntar qué está bueno hoy", "rel": 10, "ok": [["{v} sabe de qué lonja viene", "Lo del mostrador y lo que se vende más barato a las dos, cuando cierra. De cada pieza te dice cómo cocinarla."]], "fx": {"rel": 3, "despensa": 1}}]},
+    "dueña de bar": {
+      "acciones": [
+        {"id": "local", "e": "🍺", "n": "Preguntar cómo va el local", "rel": 20, "ok": [["{v} seca un vaso sin mirarlo", "Que el alquiler sube y el fondo dueño del local lo avisa por correo. Que la barra aguanta, pero la persiana ya ha empezado a bajarse."]], "fx": {"rel": 3, "chisme": 1}}
+      ]
+    },
+    "policía nacional": {"nota": "De servicio no cuenta nada, y fuera de servicio, menos. Si la conversación se pone seria, mira la hora."},
+    "médica": {"nota": "Fuera de la consulta, nada. Ni un vistazo a la garganta en el rellano.", "acciones": []},
+    "jueza": {"nota": "Fuera del juzgado no habla de casos. Solo dice «cumplo la ley» con una voz que no suena a orgullo ni a disculpa."},
+    "letrada de la Administración de Justicia": {"nota": "Firma lanzamientos con la misma pluma con que firma citaciones. Pregúntale por el tiempo; es más seguro."},
+    "funcionaria del SEPE": {"nota": "Tiene un cartel de «cita previa» que no se quita ni en el bar. Tampoco te dará cita fuera de la ventanilla."},
+    "portera": {
+      "acciones": [
+        {
+          "id": "portal",
+          "e": "🔑",
+          "n": "Preguntar quién entra y sale",
+          "rel": 25,
+          "ok": [["{v} sabe a qué hora llega cada cual", "A qué hora entra la señora del tercero, qué paquetes se acumulan y quién lleva dos meses sin bajar la basura. La portería es el mejor periódico de la calle."]],
+          "fx": {"rel": 3, "chisme": 1}
+        }
+      ]
+    },
+    "dueña de locutorio": {
+      "acciones": [{"id": "giros", "e": "📞", "n": "Preguntar cómo va el negocio", "rel": 20, "ok": [["{v} mira la persiana", "Antes eran colas de giros; ahora, un par de llamadas y papeles de alguien. Cierra en enero, aunque no lo dice en voz alta."]], "fx": {"rel": 3, "chisme": 1}}]
+    },
+    "socia de la cooperativa": {
+      "acciones": [
+        {
+          "id": "coop2",
+          "e": "🍞",
+          "n": "Preguntar cómo se decide en la cooperativa",
+          "rel": 20,
+          "ok": [["{v} te cuenta la asamblea", "Una persona, un voto y un horno que se estropea cada primavera. Se discute dos horas y luego se hace lo que votó la que se queja más."]],
+          "fx": {"rel": 3, "pista": "empleo"}
+        }
+      ]
+    },
+    "auxiliar administrativa": {
+      "acciones": [{"id": "cita", "e": "🗂️", "n": "Preguntar cuánto tarda una cita", "rel": 15, "ok": [["{v} abre la agenda", "Treinta días para el médico de familia, cuarenta y cinco para el especialista. Y lo que no está en la agenda lo apunta a lápiz."]], "fx": {"rel": 2, "chisme": 1}}]
+    },
+    "dueña de cafetería": {
+      "acciones": [{"id": "cuenta", "e": "☕", "n": "Preguntar cuántos cafés hacen falta", "rel": 20, "ok": [["{v} lleva la cuenta en una libreta", "Doscientos al día para no perder. Los de los portátiles tardan tres horas y piden un solo café."]], "fx": {"rel": 3, "chisme": 1}}]
     }
   },
 

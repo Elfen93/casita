@@ -11,7 +11,7 @@ const POB={
  obra:{pk:[[8,15,1]],base:.1,we:.15,lo:4,hi:13,helmet:[8,15]},
  super:{pk:[[9,14,.7],[17,20,1]],base:.3,we:.9,lo:4,hi:12},
  bar:{pk:[[8,11,.45],[13,15,1],[20,24,1]],base:.3,we:1,lo:4,hi:14},
- torre:{pk:[[8,10,.8],[13,15,.6],[17,19,.6]],base:.2,we:.15,lo:4,hi:10},
+ torre:{pk:[[8,10,.8],[13,15,.6],[17,19,.6]],base:.2,we:.15,lo:4,hi:12},
  residencia:{pk:[[10,13,.8],[17,19,.8]],base:.5,we:1,lo:4,hi:10},
  biblioteca:{pk:[[10,13,.7],[16,20,1]],base:.3,we:.5,lo:4,hi:10},
  parque:{pk:[[10,13,.8],[17,20,1]],base:.4,we:1,lo:5,hi:14},
@@ -45,7 +45,7 @@ const pbPuesto=v=>{const p=v.trabajo&&v.trabajo.puesto;return Array.isArray(p)?(
 // pared o figura de la propia escena. Así nadie queda sobre una mesa, un mostrador u otra figura, sea cual sea la variante o la hora.
 const ZON={
  obra:{cli:[[.7,.6,10.3,7.3]],posts:[{x:7.95,y:2.6,up:26,work:1},{x:3.6,y:1.7},{x:6.2,y:1.5},{x:4.1,y:2.4},{x:2.8,y:2.7},{x:5.6,y:6.9},{x:8.9,y:4.3}]},
- super:{cli:[[1.8,.9,11.3,9.3]],posts:[{x:2.5,y:7.1,m:/caj/,act:'type'},{x:5.7,y:7.1,m:/caj/,act:'type'},{x:8.9,y:7.1,m:/caj/,act:'type'},{x:4.6,y:3.8,m:/repon/},{x:7.6,y:3.8,m:/repon/},{x:3.2,y:3.8},{x:6.0,y:3.8},{x:4.6,y:4.8},{x:5.5,y:5.0},{x:3.2,y:5.0},{x:10.4,y:2.2}]},
+ super:{cli:[[1.8,.9,11.3,9.3]],posts:[{x:2.5,y:7.1,m:/caj/,act:'type'},{x:5.7,y:7.1,m:/caj/,act:'type'},{x:8.9,y:7.1,m:/caj/,act:'type'},{x:4.6,y:3.8,m:/repon/},{x:7.6,y:3.8,m:/repon/},{x:3.2,y:3.8},{x:6.0,y:3.8},{x:4.6,y:4.8},{x:5.5,y:5.0},{x:10.4,y:2.2}]},
  bar:{cli:[[.7,2.7,9.3,7.3]],posts:[{x:7.4,y:.9},{x:1.6,y:.85},{x:2.4,y:.85},{x:7.5,y:1.7}]},
  torre:{cli:[[.7,.7,11.3,8.3]],posts:[{x:2.4,y:4.2,m:/inform/},{x:1.6,y:5.8,m:/limpi/},{x:2.8,y:6.4},{x:3.0,y:3.4},{x:1.6,y:3.2}]},
  residencia:{cli:[[.7,.7,9.3,7.3]],posts:[{x:4.2,y:5.4},{x:1.9,y:3.0},{x:6.0,y:5.8},{x:3.0,y:5.6}]},
@@ -104,9 +104,10 @@ function crowd(E,key,r){const c=POB[key];if(!c)return [];r=r||{};const tt=E.tt||
   const adultosH=new Set(list.filter(q=>pbAdult(q.v)&&q.v.hogar!=null).map(q=>q.v.hogar));
   list=list.filter(q=>{const v=q.v;if(pbAdult(v))return true;const conAdulta=v.hogar!=null&&adultosH.has(v.hogar);
     if(conAdulta)return true;return typeof v.edad==='number'&&v.edad>=12?true:parqueTarde;});
-  // tope de 12: quien trabaja y las adultas primero, y ninguna criatura se queda sin la adulta que la traía
-  if(list.length>12){const ad=list.filter(q=>pbAdult(q.v)),me=list.filter(q=>!pbAdult(q.v));const adK=ad.slice(0,Math.max(4,12-me.length));const hk=new Set(adK.map(q=>q.v.hogar));
-    list=adK.concat(me.filter(q=>(q.v.hogar!=null&&hk.has(q.v.hogar))||(typeof q.v.edad==='number'&&q.v.edad>=12)||parqueTarde)).slice(0,12);}
+  // tope por escena (hasta 12, y no más que el aforo `hi` del sitio): quien trabaja y las adultas primero, y ninguna criatura se queda sin la adulta que la traía
+  const cap=Math.min(12,Math.max(6,c.hi));
+  if(list.length>cap){const ad=list.filter(q=>pbAdult(q.v)),me=list.filter(q=>!pbAdult(q.v));const adK=ad.slice(0,Math.max(4,cap-me.length));const hk=new Set(adK.map(q=>q.v.hogar));
+    list=adK.concat(me.filter(q=>(q.v.hogar!=null&&hk.has(q.v.hogar))||(typeof q.v.edad==='number'&&q.v.edad>=12)||parqueTarde)).slice(0,cap);}
   const lv=pbLevel(c,h,wd);
   const n=Math.min(14,Math.max(4,Math.round(c.lo+(c.hi-c.lo)*lv),list.length+2));
   const ns=NPCS();const known=(Array.isArray(S.people)?S.people:[]).filter(p=>p&&p.ch&&p.n&&p.vid==null); // los vecinos del censo que ya conoces salen por su horario (vecinosEn), no al azar
@@ -119,14 +120,14 @@ function crowd(E,key,r){const c=POB[key];if(!c)return [];r=r||{};const tt=E.tt||
   const units=[];const byH=new Map();
   for(const q of list){if(q.v.hogar==null){units.push([q]);continue;}if(!byH.has(q.v.hogar)){const u=[];byH.set(q.v.hogar,u);units.push(u);}byH.get(q.v.hogar).push(q);}
   for(const u of units)u.sort((a,b)=>(pbAdult(b.v)?1:0)-(pbAdult(a.v)?1:0)||(a.motivo==='trabajo'?-1:1));
-  const okR=(x,y)=>g.free(x,y,.22)&&!g.near(x,y,.55,.35);
+  const okR=(x,y)=>g.free(x,y,.22)&&!g.near(x,y,.55,.55);
   const cells2=()=>{const Z=(ZON[key]||{cli:[[.7,.7,g.W-.7,g.D-.7]]}).cli,o=[];for(const z of Z)for(let x=z[0];x<=z[2]+1e-6;x+=.5)for(let y=z[1];y<=z[3]+1e-6;y+=.5)if(okR(x,y))o.push([x,y]);return o;};let C2=null;
   const spotR=(s,gap)=>{C2=C2||cells2();for(let t=0;t<40;t++){const q=C2[Math.floor(pbH(s+'R'+t)*C2.length)%C2.length];if(!q)return null;if(taken.every(z=>Math.hypot(z[0]-q[0],z[1]-q[1])>gap)){taken.push([q[0],q[1]]);return [q[0],q[1]];}}return null;};
   const Zc=ZON[key]||{posts:[]};const used=new Set();
   const parada=((E.w&&E.w.crisis)||0)>=60,lunch=!parada&&h>=13.5&&h<14.75,working=!parada&&!lunch&&!(E.night>.45);
   const postFor=pu=>{const ps=Zc.posts||[];const ord=ps.map((p,i)=>[p,i]).filter(([p,i])=>!used.has(i)&&(!p.work||working));
     const mine=ord.filter(([p])=>p.m&&p.m.test(pu||'')),oth=ord.filter(([p])=>!p.m);
-    for(const [p,i] of mine.concat(oth)){if(p.up?!g.near(p.x,p.y,.6,.4):(g.free(p.x,p.y,.08)&&!g.near(p.x,p.y,.55,.35))){if(taken.every(z=>Math.hypot(z[0]-p.x,z[1]-p.y)>.8)){used.add(i);return p;}}}return null;};
+    for(const [p,i] of mine.concat(oth)){if(p.up?!g.near(p.x,p.y,.6,.4):(g.free(p.x,p.y,.08)&&!g.near(p.x,p.y,.55,.55))){if(taken.every(z=>Math.hypot(z[0]-p.x,z[1]-p.y)>.8)){used.add(i);return p;}}}const q=spotR(seed+'w'+(pu||''),.8);return q?{x:q[0],y:q[1]}:null;};
   const RING=[[.75,0],[-.75,0],[0,.75],[0,-.75],[.7,.7],[-.7,.7],[.7,-.7],[-.7,-.7],[.6,.2],[-.6,.2],[.2,.6],[.2,-.6]];
   const OFF=[[.75,0],[-.75,.1],[0,.75],[.7,.7]];
   const place=(u,i0,ax,ay,pts,rot)=>{ // casilla libre para el resto de la unidad, pegada a quien llegó primero

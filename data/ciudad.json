@@ -25,7 +25,8 @@
         {"n": "Calle de la Fuente", "a": [0.0, 80.0], "b": [120.0, 80.0], "w": 5},
         {"n": "Calle Real", "a": [30.0, 0.0], "b": [30.0, 100.0], "w": 4},
         {"n": "Calle del Pósito", "a": [90.0, 0.0], "b": [90.0, 100.0], "w": 4},
-        {"n": "Calle de la Estación", "a": [70.0, 50.0], "b": [70.0, 100.0], "w": 4}
+        {"n": "Calle de la Estación", "a": [70.0, 50.0], "b": [70.0, 100.0], "w": 4},
+        {"n": "Calle del Peso", "a": [0.0, 34.0], "b": [120.0, 34.0], "w": 4}
       ],
       "puertas": {
         "parroquia": [14.0, 20.0, "Calle Postas"],
@@ -39,7 +40,13 @@
         "b_fuente": [45.0, 80.0, "Calle de la Fuente"],
         "casa": [15.0, 80.0, "Calle de la Fuente"],
         "casaV": [59.9, 80.0, "Calle de la Fuente"],
-        "casa2": [79.1, 80.0, "Calle de la Fuente"]
+        "casa2": [79.1, 80.0, "Calle de la Fuente"],
+        "b_mayor21": [77.5, 50.0, "Calle Mayor"],
+        "b_mayor34": [97.5, 50.0, "Calle Mayor"],
+        "b_peso5": [7.5, 34.0, "Calle del Peso"],
+        "b_peso18": [37.5, 34.0, "Calle del Peso"],
+        "c_peso40": [62.5, 34.0, "Calle del Peso"],
+        "c_fuente14": [97.5, 80.0, "Calle de la Fuente"]
       },
       "casa": {"casa": [5.0, 55.9, 25.0, 75.9], "casaV": [54.4, 67.9, 65.4, 75.9], "casa2": [73.6, 67.9, 84.6, 75.9]},
       "arboles": [[24.0, 10.0], [24.0, 40.0], [80.0, 40.0], [80.0, 60.0], [16.0, 90.0], [100.0, 60.0], [104.0, 90.0], [60.0, 90.0]]
@@ -62,7 +69,19 @@
         {"n": "Calle Nueva", "a": [30.0, 50.0], "b": [30.0, 100.0], "w": 4},
         {"n": "Calle del Cuarto", "a": [90.0, 50.0], "b": [90.0, 100.0], "w": 4}
       ],
-      "puertas": {"uni_privada": [15.0, 50.0, "Avenida de las Torres"], "gran_plaza": [44.0, 50.0, "Avenida de las Torres"], "torre": [75.0, 50.0, "Avenida de las Torres"], "obra": [74.0, 80.0, "Calle de la Grúa"], "cafe_brindis": [45.0, 80.0, "Calle de la Grúa"]},
+      "puertas": {
+        "uni_privada": [15.0, 50.0, "Avenida de las Torres"],
+        "gran_plaza": [44.0, 50.0, "Avenida de las Torres"],
+        "torre": [75.0, 50.0, "Avenida de las Torres"],
+        "obra": [74.0, 80.0, "Calle de la Grúa"],
+        "cafe_brindis": [45.0, 80.0, "Calle de la Grúa"],
+        "b_torres10": [27.5, 50.0, "Avenida de las Torres"],
+        "b_torres32": [89.0, 50.0, "Avenida de las Torres"],
+        "b_torres56": [111.0, 50.0, "Avenida de las Torres"],
+        "b_grua6": [9.0, 80.0, "Calle de la Grúa"],
+        "b_grua30": [99.0, 80.0, "Calle de la Grúa"],
+        "c_grua50": [111.5, 80.0, "Calle de la Grúa"]
+      },
       "arboles": [[24.0, 60.0], [24.0, 92.0], [100.0, 60.0], [100.0, 24.0], [16.0, 10.0], [48.0, 10.0], [80.0, 10.0], [110.0, 90.0]]
     },
     "pinares": {
@@ -91,7 +110,12 @@
         "glorieta": [108.0, 80.0, "Calle de las Encinas"],
         "casa": [47.0, 80.0, "Calle de las Encinas"],
         "casaV": [64.9, 80.0, "Calle de las Encinas"],
-        "casa2": [78.4, 80.0, "Calle de las Encinas"]
+        "casa2": [78.4, 80.0, "Calle de las Encinas"],
+        "c_fragua20": [31.5, 20.0, "Calle Fragua"],
+        "c_fragua42": [66.5, 20.0, "Calle Fragua"],
+        "c_fragua64": [91.5, 20.0, "Calle Fragua"],
+        "b_pinos14": [33.0, 50.0, "Avenida de los Pinos"],
+        "c_pinos90": [95.5, 50.0, "Avenida de los Pinos"]
       },
       "casa": {"casa": [37.0, 56.4, 57.0, 76.4], "casaV": [59.4, 68.4, 70.4, 76.4], "casa2": [72.9, 68.4, 83.9, 76.4]},
       "arboles": [[12.0, 30.0], [12.0, 64.0], [12.0, 88.0], [40.0, 92.0], [60.0, 92.0], [80.0, 92.0], [110.0, 30.0], [110.0, 10.0], [80.0, 8.0], [40.0, 8.0], [100.0, 40.0]]
@@ -113,7 +137,8 @@
         {"n": "Camino del Tejar", "a": [0.0, 88.0], "b": [120.0, 88.0], "w": 4},
         {"n": "Calle del Molino", "a": [30.0, 0.0], "b": [30.0, 50.0], "w": 4},
         {"n": "Paseo del Río", "a": [90.0, 0.0], "b": [90.0, 100.0], "w": 5},
-        {"n": "Travesía de la Vía", "a": [70.0, 50.0], "b": [70.0, 100.0], "w": 4}
+        {"n": "Travesía de la Vía", "a": [70.0, 50.0], "b": [70.0, 100.0], "w": 4},
+        {"n": "Calle de la Rueda", "a": [24.0, 72.0], "b": [120.0, 72.0], "w": 4}
       ],
       "puertas": {
         "colegio": [42.0, 20.0, "Calle Huerta"],
@@ -130,7 +155,12 @@
         "uni_publica": [104.0, 88.0, "Camino del Tejar"],
         "casa": [13.0, 88.0, "Camino del Tejar"],
         "casaV": [30.9, 88.0, "Camino del Tejar"],
-        "casa2": [44.3, 88.0, "Camino del Tejar"]
+        "casa2": [44.3, 88.0, "Camino del Tejar"],
+        "b_rueda12": [33.5, 72.0, "Calle de la Rueda"],
+        "b_rueda36": [59.5, 72.0, "Calle de la Rueda"],
+        "b_rueda58": [78.5, 72.0, "Calle de la Rueda"],
+        "c_rueda80": [99.5, 72.0, "Calle de la Rueda"],
+        "c_huerta19": [79.5, 20.0, "Calle Huerta"]
       },
       "casa": {"casa": [3.0, 64.4, 23.0, 84.4], "casaV": [25.4, 76.4, 36.4, 84.4], "casa2": [38.8, 76.4, 49.8, 84.4]},
       "arboles": [[16.0, 16.0], [16.0, 28.0], [80.0, 28.0], [80.0, 60.0], [104.0, 60.0], [76.0, 94.0]]
@@ -159,7 +189,13 @@
         "c_noria": [91.4, 88.0, "Calle Noria"],
         "casa": [15.0, 88.0, "Calle Noria"],
         "casaV": [32.9, 88.0, "Calle Noria"],
-        "casa2": [59.1, 88.0, "Calle Noria"]
+        "casa2": [59.1, 88.0, "Calle Noria"],
+        "b_pozo14": [9.0, 60, "Calle del Pozo"],
+        "b_pozo34": [37.0, 60, "Calle del Pozo"],
+        "b_pozo70": [92.0, 60, "Calle del Pozo"],
+        "c_pozo90": [104.5, 60, "Calle del Pozo"],
+        "b_noria44": [72.0, 88.0, "Calle Noria"],
+        "c_noria70": [103.5, 88.0, "Calle Noria"]
       },
       "casa": {"casa": [5.0, 64.9, 25.0, 84.9], "casaV": [27.4, 76.9, 38.4, 84.9], "casa2": [53.6, 76.9, 64.6, 84.9]},
       "arboles": [[100.0, 44.0], [110.0, 56.0], [100.0, 72.0], [112.0, 80.0], [68.0, 94.0], [16.0, 96.0]]
@@ -176,7 +212,15 @@
       "cuesta": "Sin transporte de noche y sin más sitio donde comer que el menú.",
       "plano": [10, 10, 15, 15],
       "calles": [{"n": "Avenida del Metal", "a": [0.0, 50.0], "b": [100.0, 50.0], "w": 6}, {"n": "Camino de Servicio", "a": [50.0, 0.0], "b": [50.0, 100.0], "w": 5}, {"n": "Calle del Acero", "a": [0.0, 84.0], "b": [100.0, 84.0], "w": 5}],
-      "puertas": {"naves": [20.0, 50.0, "Avenida del Metal"], "bar_cruce": [66.0, 50.0, "Avenida del Metal"], "sindicato": [82.0, 50.0, "Avenida del Metal"], "coop": [14.0, 84.0, "Calle del Acero"], "itv": [68.0, 84.0, "Calle del Acero"]},
+      "puertas": {
+        "naves": [20.0, 50.0, "Avenida del Metal"],
+        "bar_cruce": [66.0, 50.0, "Avenida del Metal"],
+        "sindicato": [82.0, 50.0, "Avenida del Metal"],
+        "coop": [14.0, 84.0, "Calle del Acero"],
+        "itv": [68.0, 84.0, "Calle del Acero"],
+        "c_acero8": [24.5, 84.0, "Calle del Acero"],
+        "c_metal30": [31.5, 50.0, "Avenida del Metal"]
+      },
       "arboles": [[40.0, 10.0], [80.0, 10.0], [90.0, 70.0], [40.0, 94.0], [90.0, 94.0]]
     }
   },

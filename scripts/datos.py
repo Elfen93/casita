@@ -39,7 +39,9 @@ def censo(P,lug,ideo,E,dentro):
         if bool(h.get('puerta'))!=bloque:E.append(q+'.puerta: solo y siempre en bloques')
         if not(h.get('n') and h.get('d')):E.append(q+': faltan n o d')
         dentro(q+'.miembros',h.get('miembros',[]),por,'personas.vecinos')
-        if not h.get('miembros'):E.append(q+': sin miembros')
+        if not h.get('miembros'):
+            if not(isinstance(h.get('vacio'),str) and h['vacio']):E.append(q+': sin miembros (un hogar vacío lleva su texto en «vacio»)')
+        elif h.get('vacio'):E.append(q+': tiene miembros y «vacio»')
         if len(set(h.get('miembros',[])))!=len(h.get('miembros',[])):E.append(q+'.miembros: repetidos')
         if h.get('miembros') and not any(por[m]['edad']>=18 for m in h['miembros'] if m in por):E.append(q+': no hay ninguna persona adulta')
     mis={m:k for k,h in ho.items() for m in h.get('miembros',[])}
@@ -86,6 +88,77 @@ def censo(P,lug,ideo,E,dentro):
                 for l2,a2,b2,d2 in v['donde']:
                     if a<b2 and a2<b and set(ds)&set(d2):E.append(q+'.trabajo: trabaja fuera y «%s» %d-%d lo pisa'%(l2,a2,b2))
             elif not any(l2==lg and a2<=a and b<=b2 and set(ds)<=set(d2) for l2,a2,b2,d2 in v['donde']):E.append(q+'.trabajo: no cuadra con donde (%s %d-%d)'%(lg,a,b))
+
+    censo_ciudad(P,lug,E,vs,por,ho)
+
+def _norm(s):
+    import unicodedata
+    return ''.join(c for c in unicodedata.normalize('NFD',str(s).lower()) if unicodedata.category(c)!='Mn')
+def _clave(n):
+    t=[x for x in str(n).split() if _norm(x) not in ('sor','don','dona')]
+    return _norm(t[0]) if t else ''
+def situacion(v):
+    """trabaja, jubilada, parada, cuidados, estudia, menor (por la edad, el oficio y el trabajo)"""
+    o=(v.get('oficio') or [''])[0] or ''
+    if v['edad']<16:return 'menor'
+    if v.get('estudia'):return 'estudia'
+    if 'jubilad' in _norm(o):return 'jubilada'
+    if _norm(o).startswith('parad'):return 'parada'
+    if _norm(o).startswith('cuidador') and 'en casa' in _norm(o):return 'cuidados'
+    return 'trabaja' if v.get('trabajo') else 'otra'
+def censo_ciudad(P,lug,E,vs,por,ho):
+    """El censo grande (t140): nombres sin repetir, nadie en dos sitios, trabajo en todos los lugares, escolarización y proporciones."""
+    # nombres: ni entre sí ni con las listas del juego
+    L=set()
+    for k in ('nombres','nombres_peques','jefes_nombres'):
+        for lst in P.get(k,{}).values():L|={_norm(x) for x in lst}
+    for k in ('amistades','companeros'):L|={_norm(x[0]) for x in P.get(k,[])}
+    for k in ('madres','vecindario','obreros'):L|={_norm(x) for x in P.get(k,[])}
+    vistos={}
+    for v in vs:
+        c=_clave(v['n'])
+        if c in vistos:E.append('personas.vecinos: el nombre «%s» se repite (%s y %s)'%(v['n'],vistos[c],v['id']))
+        vistos[c]=v['id']
+        if c in L:E.append('personas.vecinos.%s: el nombre «%s» ya está en las listas de nombres del juego'%(v['id'],v['n']))
+    if len({_norm(v['n']) for v in vs})!=len(vs):E.append('personas.vecinos: nombres repetidos')
+    # nadie en dos sitios a la misma hora (trabajo, «donde» y clase)
+    for v in vs:
+        iv=[(d[0],d[1],d[2],set(d[3])) for d in v['donde']]
+        t=v.get('trabajo')
+        if t:iv.append((t['lugar'],t['h'][0],t['h'][1],set(t['dias'])))
+        if v.get('estudia')=='cole':iv.append(('clase',9,14,set(range(5))))
+        if v.get('estudia')=='instituto':iv.append(('clase',8.5,14.5,set(range(5))))
+        for i,(l1,a1,b1,d1) in enumerate(iv):
+            for l2,a2,b2,d2 in iv[i+1:]:
+                if l1!=l2 and a1<b2 and a2<b1 and d1&d2:E.append('personas.vecinos.%s: en dos sitios a la vez (%s %g-%g y %s %g-%g)'%(v['id'],l1,a1,b1,l2,a2,b2))
+    # cada lugar con escena, alguien que trabaje allí
+    con={v['trabajo']['lugar'] for v in vs if v.get('trabajo')}
+    for k in lug:
+        if k in ('casaV','casa2','parque','descampado'):continue
+        if k not in con:E.append('personas.vecinos: nadie trabaja en «%s»'%k)
+    # escolarización
+    for v in vs:
+        e=v['edad']
+        if 3<=e<=15 and v.get('estudia') not in ('cole','instituto'):E.append('personas.vecinos.%s: menor de %d sin colegio ni instituto'%(v['id'],e))
+        if e in (16,17) and not(v.get('estudia') or v.get('trabajo')):E.append('personas.vecinos.%s: %d años sin estudios ni trabajo'%(v['id'],e))
+        if v.get('estudia')=='cole' and e>11:E.append('personas.vecinos.%s: cole con %d años'%(v['id'],e))
+        if v.get('estudia')=='instituto' and e<12:E.append('personas.vecinos.%s: instituto con %d años'%(v['id'],e))
+    # proporciones
+    n=len(vs);c={}
+    for v in vs:c[situacion(v)]=c.get(situacion(v),0)+1
+    act=c.get('trabaja',0)+c.get('parada',0)+c.get('otra',0)
+    if not 180<=n<=300:E.append('personas.vecinos: el censo tiene %d personas (de 180 a 300)'%n)
+    if not 0.15<=c.get('jubilada',0)/n<=0.25:E.append('personas.vecinos: jubiladas %.0f%% (de 15 a 25)'%(100*c.get('jubilada',0)/n))
+    if act and not 0.08<=c.get('parada',0)/act<=0.16:E.append('personas.vecinos: paro %.1f%% de la población activa (de 8 a 16)'%(100*c.get('parada',0)/act))
+    menores=[v for v in vs if v['edad']<18]
+    if not 33<=len(menores)<=48:E.append('personas.vecinos: %d menores (de 33 a 48)'%len(menores))
+    if not 12<=c.get('estudia',0)<=24:E.append('personas.vecinos: %d personas que estudian (de 12 a 24, sin contar menores)'%c.get('estudia',0))
+    # nada romántico con menores
+    for v in vs:
+        if v['edad']<18 and any(t in('pareja','ex') for _,t in v['lazos']):E.append('personas.vecinos.%s: menor con lazo de pareja o ex'%v['id'])
+    # el barrio de cada hogar: un hogar vacío no tiene gente
+    for k,h in ho.items():
+        if h.get('vacio') and h.get('miembros'):E.append('personas.hogares.%s: vacío con miembros'%k)
 
 # ---------- tratar con los vecinos (mods/trato.js) ----------
 TR_FX=('rel','social','diversion','hambre','energia','coste_h','fiar_h','presta_h','presto_h','pista','despensa','agua','hijos_hap','mov','sol','te','chisme')

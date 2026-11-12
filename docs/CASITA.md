@@ -113,7 +113,7 @@ Estado: ✅ funciona · 🟡 funciona pero corto · ⬜ pendiente.
 | Gobierno progresista y conservador en la vida diaria | `ciclos`, `fiscal` | 🟡 impuestos y pulso sí; faltan efectos en vivienda, servicios y calle |
 | Deseos del personaje, objetivos, temporadas, final | núcleo, `deseos`, `final` | ✅ |
 | Mundo: lugares visitables y escenas interiores con gente según la hora; nombres en pantalla que no se pisan | núcleo (`047`), `gym`, `aula`, `poblacion`, `rotulos`, `servicios`, `escuela`, `universidad` | 🟡 un solo barrio; el mapa del barrio existe en el código (`barrioItems`) pero no se pinta: solo se ve un lugar cuando el personaje está en él (por eso el recreo y las aulas de colegio e instituto aún no se ven jugando: T-111) |
-| Censo del barrio: 46 vecinos en 15 hogares (trabajo, historia, lazos, niños y adolescentes) y sus casas por dentro | `data/personas.json`, `poblacion`, `hogares` | 🟡 se les ve en su sitio y en su casa, pero aún no se les puede conocer; «Ir a su casa» usa el censo solo cuando la persona tenga `hogar` |
+| Censo de la ciudad: 263 vecinos en 113 hogares y 38 edificios de cinco barrios (trabajo repartido por todos los lugares, historia, lazos, niños, adolescentes y universitarias) y sus casas por dentro | `data/personas.json`, `poblacion`, `hogares` | 🟡 se les ve en su sitio y en su casa, pero aún no se les puede conocer; «Ir a su casa» usa el censo solo cuando la persona tenga `hogar` |
 | Otras ciudades y barrios | — | ⬜ |
 | Envejecer, calendario anual de fiestas | — | ⬜ |
 
