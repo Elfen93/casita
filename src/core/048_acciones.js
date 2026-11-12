@@ -33,7 +33,7 @@ function tryBaby(p){const L=LIFE();if(S.baby){toast('Ya hay un bebé en camino')
   S.money-=cost;S.baby={mode,start:S.day,due:S.day+(mode==='adopcion'?55:38),with:p?p.k:null};
   chapter('bebe1',mode==='adopcion'?'Papeles':'Positivo',mode==='adopcion'?`${c.name}${p?' y '+p.n:''} han empezado los trámites de adopción. Entrevistas, informes y mucha espera.`:mode==='clinica'?`${c.name} ha decidido ser madre por su cuenta. Clínica, pruebas… y positivo.`.replace('madre',ga('madre','padre','madre o padre')):`Positivo. ${mode==='ana'?c.name:p.n} está embarazad${mode==='ana'?oa():pO(p)}. Nadie ha dormido esta noche.`);
   toast(mode==='adopcion'?'📋 Trámites de adopción en marcha':'🍼 ¡Viene un bebé!',true);sfx('level');}
-const KIDNAMES={f:['Lola','Vera','Martina','Alma','Noa','Olivia','Jimena'],m:['Leo','Mateo','Bruno','Pau','Hugo','Nil','Dani']};
+const KIDNAMES=DATA.personas.nombres_peques;
 function babyBorn(){const b=S.baby;S.baby=null;const g=pickR(['f','m']);const n=pickR(KIDNAMES[g]);const p=b.with?(S.people||[]).find(q=>q.k===b.with):null;
   const ch={...randomChar(),g,name:n,skin:Math.random()<.5?CH().skin:(p?p.ch.skin:CH().skin),hair:Math.random()<.5?CH().hair:(p?p.ch.hair:CH().hair),style:g==='f'?pickR(['coleta','media','rizos']):pickR(['corto','rizos']),beard:'no',glasses:false};
   S.kids=S.kids||[];S.kids.push({n,g,born:S.day,ch});S.leaveUntil=S.day+16;

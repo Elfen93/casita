@@ -1,0 +1,201 @@
+{
+  "_": "Los gobiernos, el ciclo de cada sistema, los impuestos de cada uno y los textos de banco y calle. Campos en data/README.md.",
+
+  "gobiernos": {
+    "progresista": {"n": "Gobierno progresista", "e": "🌹", "fx": "Sube el salario mínimo, control de alquileres, más ayudas · algo más de inflación y menos ofertas"},
+    "conservador": {"n": "Gobierno conservador", "e": "🏛️", "fx": "Bajan impuestos e IBI, más policía en las calles · menos paro y menos ayudas"},
+    "liberal": {"n": "Gobierno liberal", "e": "🗽", "fx": "Desregulación: más ofertas de trabajo y negocios · más despidos y alquileres libres"},
+    "austeridad": {"n": "Gobierno tecnócrata de austeridad", "e": "✂️", "fx": "Recortes por orden de los acreedores: menos paro, oposiciones congeladas, la crisis se alarga"},
+    "centro": {"n": "Gobierno de coalición", "e": "⚖️", "fx": "Ni fu ni fa"},
+    "consejos": {"n": "Consejos de trabajadoras", "e": "🚩", "fx": "Autogestión: alquiler social, empresas en manos de quien trabaja · escasez y bloqueo exterior"},
+    "comunas": {"n": "Federación de comunas", "e": "🏴", "fx": "Asambleas por todas partes, alquileres abolidos, apoyo mutuo · escasez y caos"},
+    "mercado": {"n": "Socialismo de mercado", "e": "⭐", "fx": "El Estado manda sobre el capital: obras, industria y sueldos que suben · poca voz en el trabajo y control social"}
+  },
+
+  "ciclos": {
+    "liberal": {
+      "t": "Acumulación",
+      "v": 3.2,
+      "sig": [
+        "Los pisos del barrio suben un 15 % al año. En el bar dicen que «esto no baja nunca».",
+        "El banco ofrece hipotecas al 100 % y créditos para el coche sin preguntar. «Esta vez es diferente», dice el de la sucursal.",
+        "Hay grúas por todas partes y pisos vacíos comprados para revender. Los sueldos, igual que hace cinco años."
+      ]
+    },
+    "conservador": {
+      "t": "Acumulación",
+      "v": 2.6,
+      "sig": ["La bolsa en máximos. Los sueldos no. En la tele hablan de «recuperación».", "Las empresas tienen beneficios récord y no saben dónde meterlos: compran pisos.", "Medio barrio vive del crédito. Los avisos de impago empiezan a llegar a los portales."]
+    },
+    "centro": {"t": "Acumulación", "v": 2, "sig": ["Todo va «bien»: crece el PIB, el alquiler y la deuda de las familias.", "El dinero de las empresas no va a fábricas, va a pisos y a la bolsa.", "En el banco hay más prisa por cobrar que por prestar. Mala señal."]},
+    "austeridad": {"t": "Espiral deuda-recesión", "v": 3, "sig": ["Cierra el centro de salud por las tardes. «Ajustes».", "Tres de cada diez jóvenes del barrio se han ido a buscarse la vida lejos.", "Recortan, la economía cae, la deuda pesa más y vuelven a recortar."]},
+    "progresista": {
+      "t": "Compresión de beneficios",
+      "v": 2.6,
+      "sig": ["Hay trabajo para casi todo el mundo y los sindicatos aprietan: los sueldos suben.", "La patronal avisa: «con estos costes no se puede invertir». Los precios empiezan a subir.", "Las empresas aplazan inversiones y sacan dinero fuera. En la prensa, «huida de capitales»."]
+    },
+    "mercado": {"t": "Sobreinversión", "v": 2.4, "sig": ["Han abierto otro polígono. La mitad de las naves siguen vacías.", "Las fábricas compiten bajando precios hasta no ganar nada. Lo llaman «involución».", "El ayuntamiento debe más de lo que recauda en diez años. Las obras se paran a medias."]},
+    "consejos": {"t": "Burocratización", "v": 1.6, "sig": ["El delegado ya no viene al tajo: «tiene reuniones».", "Cola de dos horas por zapatos; en el portal de al lado los venden sin cola, más caros.", "A la asamblea van cada vez menos. Los mismos de siempre deciden por todos."], "boost": null},
+    "comunas": {
+      "t": "Descoordinación",
+      "v": 1.6,
+      "sig": ["La comuna de al lado tiene tractores; la vuestra, tres azadas. Nadie coordina.", "Para decidir lo del agua hacen falta cinco asambleas y nadie quiere ir a la quinta.", "Unas comunas prosperan y otras se vacían. Empieza a haber «comunas ricas»."],
+      "boost": null
+    }
+  },
+
+  "smi_anual": 17094,
+
+  "fiscal": {
+    "centro": {
+      "k": "centro",
+      "tr": [[12450, 0.19], [20200, 0.24], [35200, 0.3], [60000, 0.37], [300000, 0.45], [1000000000000, 0.47]],
+      "ssw": 0.065,
+      "sse": 0.315,
+      "min": 5550,
+      "smiTo": 17094,
+      "iva": {"sup": 0.04, "red": 0.1, "gen": 0.21},
+      "ah": [[6000, 0.19], [50000, 0.21], [200000, 0.23], [300000, 0.27], [1000000000000, 0.3]],
+      "ibi": 1,
+      "soc": 0.15,
+      "hold": 0.0125,
+      "gana": "Nadie en especial: es el sistema tal como está.",
+      "pierde": "Quien vive de su sueldo paga por nómina y por IVA; quien vive de rentas, bastante menos."
+    },
+    "conservador": {
+      "k": "conservador",
+      "tr": [[12450, 0.19], [20200, 0.24], [35200, 0.29], [60000, 0.35], [1000000000000, 0.43]],
+      "ssw": 0.065,
+      "sse": 0.315,
+      "min": 6000,
+      "smiTo": 17094,
+      "iva": {"sup": 0.04, "red": 0.1, "gen": 0.21},
+      "ah": [[6000, 0.19], [1000000000000, 0.21]],
+      "ibi": 0.7,
+      "soc": 0.12,
+      "hold": 0.0125,
+      "gana": "Rentas altas, herencias, propietarias, empresas. Algo las clases medias altas.",
+      "pierde": "Con sueldo bajo casi no se nota la bajada; sí se notan los recortes que vienen después."
+    },
+    "liberal": {
+      "k": "liberal",
+      "tr": [[15000, 0.15], [1000000000000, 0.25]],
+      "ssw": 0.065,
+      "sse": 0.315,
+      "min": 7000,
+      "smiTo": 17094,
+      "iva": {"sup": 0.04, "red": 0.1, "gen": 0.21},
+      "ah": [[1000000000000, 0.19]],
+      "ibi": 0.6,
+      "soc": 0.1,
+      "hold": 0,
+      "gana": "Quien más gana: el tipo casi único premia a los sueldos y patrimonios altos.",
+      "pierde": "Los servicios: menos recaudación, más copago y más espera."
+    },
+    "austeridad": {
+      "k": "austeridad",
+      "tr": [[12450, 0.19], [20200, 0.24], [35200, 0.3], [60000, 0.37], [300000, 0.45], [1000000000000, 0.47]],
+      "ssw": 0.07,
+      "sse": 0.315,
+      "min": 5150,
+      "smiTo": 0,
+      "iva": {"sup": 0.05, "red": 0.12, "gen": 0.23},
+      "ah": [[6000, 0.19], [50000, 0.21], [200000, 0.23], [300000, 0.27], [1000000000000, 0.3]],
+      "ibi": 1.2,
+      "soc": 0.15,
+      "hold": 0.0125,
+      "gana": "Los acreedores: se paga la deuda primero.",
+      "pierde": "Todo el mundo por IVA, y los sueldos bajos, que vuelven a pagar IRPF."
+    },
+    "progresista": {
+      "k": "progresista",
+      "tr": [[12450, 0.18], [20200, 0.23], [35200, 0.3], [60000, 0.38], [100000, 0.46], [300000, 0.49], [1000000000000, 0.52]],
+      "ssw": 0.065,
+      "sse": 0.315,
+      "min": 5550,
+      "smiTo": 20000,
+      "iva": {"sup": 0, "red": 0.1, "gen": 0.21},
+      "ah": [[6000, 0.21], [50000, 0.23], [200000, 0.27], [1000000000000, 0.3]],
+      "ibi": 1.1,
+      "soc": 0.19,
+      "hold": 0.025,
+      "gana": "Sueldos bajos y medios, inquilinas, quien usa lo público.",
+      "pierde": "Rentas altas, grandes patrimonios, banca y energéticas (que intentarán repercutirlo)."
+    },
+    "consejos": {
+      "k": "consejos",
+      "tr": [[12450, 0.19], [20200, 0.24], [35200, 0.3], [60000, 0.37], [300000, 0.45], [1000000000000, 0.47]],
+      "ssw": 0.06,
+      "sse": 0,
+      "min": 5550,
+      "smiTo": 17094,
+      "iva": {"sup": 0, "red": 0.04, "gen": 0.1},
+      "ah": [[1000000000000, 0]],
+      "ibi": 0,
+      "soc": 0,
+      "hold": 0,
+      "gana": "Quien trabaja: sin IRPF hasta un sueldo alto, sin IVA en lo básico.",
+      "pierde": "Ya no hay dueños ni rentistas a quien cobrar; la caja común depende de que se produzca.",
+      "caja": true
+    },
+    "comunas": {
+      "k": "comunas",
+      "tr": [[12450, 0.19], [20200, 0.24], [35200, 0.3], [60000, 0.37], [300000, 0.45], [1000000000000, 0.47]],
+      "ssw": 0.06,
+      "sse": 0,
+      "min": 5550,
+      "smiTo": 17094,
+      "iva": {"sup": 0, "red": 0.04, "gen": 0.1},
+      "ah": [[1000000000000, 0]],
+      "ibi": 0,
+      "soc": 0,
+      "hold": 0,
+      "gana": "Quien trabaja: sin IRPF hasta un sueldo alto, sin IVA en lo básico.",
+      "pierde": "Ya no hay dueños ni rentistas a quien cobrar; la caja común depende de que se produzca.",
+      "caja": true
+    },
+    "mercado": {
+      "k": "mercado",
+      "tr": [[12450, 0.15], [35200, 0.25], [80000, 0.35], [1000000000000, 0.45]],
+      "ssw": 0.065,
+      "sse": 0.315,
+      "min": 5550,
+      "smiTo": 20000,
+      "iva": {"sup": 0.04, "red": 0.09, "gen": 0.13},
+      "ah": [[1000000000000, 0.2]],
+      "ibi": 0.8,
+      "soc": 0.25,
+      "hold": 0.03,
+      "gana": "Los sueldos suben cada año y nadie rescata a especuladores; el Estado decide dónde va el capital.",
+      "pierde": "Los hogares se quedan una parte pequeña del pastel; tu voz en el trabajo pesa poco."
+    }
+  },
+
+  "fases_consejos": [[0, "🏠 Vivienda", "Alquiler social y fin de los desahucios"], [5, "🔧 Trabajo", "Sin jefe: asambleas, cargos elegidos y revocables, sin horas extra"], [12, "🧺 Compra y banco", "Precios regulados, banca pública… y escasez por el bloqueo"]],
+
+  "quejas_consejos": [
+    "Dos horas de cola en el economato por un paquete de café. Al final, achicoria.",
+    "La asamblea de escalera ha durado tres horas para decidir quién friega el portal. Le ha tocado a quien no fue.",
+    "En el economato no hay zapatos del 43. «La semana que viene», dicen. Llevan tres semanas.",
+    "Ha vuelto a cortarse la luz dos horas: falta combustible por el bloqueo.",
+    "El delegado de distrito ya no baja a las asambleas. Dicen que tiene «coordinación». Habrá que revocarlo.",
+    "La vecina del cuarto vende en el portal tabaco del de antes. Más caro. Todo el mundo lo sabe.",
+    "El autobús nuevo pasa cada diez minutos y es gratis. Va lleno, pero pasa.",
+    "Han abierto la biblioteca hasta medianoche. Está llena de gente que antes no pisaba una.",
+    "Clases de electricidad gratis en el ateneo los martes. Hay lista de espera.",
+    "El cuñado de alguien dice en el bar que «con el mercado había de todo». Le recuerdan cuánto costaba."
+  ],
+
+  "quejas_mercado": [
+    "Inauguran otra línea de tren. Los sueldos suben, pero el piso sigue siendo pequeño.",
+    "El comité de la fábrica ha aprobado el plan de producción. Nadie preguntó a la plantilla.",
+    "Otra nave nueva en el polígono. La de al lado sigue vacía.",
+    "La cámara nueva de la esquina «es por seguridad», dicen."
+  ],
+
+  "banco": {
+    "priv": {"dep": "Depósito a plazo", "depSub": "interés fijo · si lo rompes antes, 2 % de penalización", "loan": "Préstamo personal", "loanSub": "para lo que quieras… a su precio", "brk": 0.02, "tax": true},
+    "pub": {"dep": "Depósito público", "depSub": "interés fijo · se puede sacar antes sin penalización", "loan": "Préstamo público", "loanSub": "para vivienda, estudios o herramientas · sin letra pequeña", "brk": 0, "tax": false},
+    "est": {"dep": "Bonos del Estado", "depSub": "financian trenes y fábricas · sacar antes cuesta un 1 %", "loan": "Crédito del Estado", "loanSub": "para quien produce: estudios, taller, vivienda", "brk": 0.01, "tax": true}
+  }
+}

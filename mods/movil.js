@@ -26,22 +26,7 @@ function phTemplates(p){const r=phRole(p),h=S.t/60,c=CH(),n=c.name,o=oa(),L=[];c
   else if(r==='ex'){add('Hola… ¿qué tal estás?','ex',1);add('He visto una peli que te habría gustado. Ya está, solo eso.','ex',.6);}
   else{add('¡Hola! ¿Qué tal todo?','gen',1);add('¿Te apetece quedar algún día? ☕','canas',1);add('[Enlace: «10 trucos para llegar a fin de mes» ¡el 7 te sorprenderá!]','risa',.6);}
   return L;}
-const PH_REP={
-  gen:[['🙂 Contestar con cariño',3,null,'¡Ja, ja! Sí, un desastre 🙃','Jajaja, ¡qué me dices! 😄'],['👍 Un «ok»',0,null,'👍','ok'],['🙈 Dejar en visto',-2,null,null,null]],
-  carino:[['❤️ Responder con cariño',5,null,'Que sí, tranqui. Te quiero 😘','Sí, mamá, tranquila. Te quiero ❤️'],['🙄 «Que sí, pesad{o}»',-1,null,'Vale, vale…'],['📞 Llamar',6,'call',null,null]],
-  domingo:[['🥘 «Allí estaré»',7,null,'¡Pues no llegues tarde! 🥰'],['😬 «No puedo, tengo lío»',-3,null,'Bueno… otro domingo 😔']],
-  audio:[['🎧 Escucharlo entero',5,null,'¿Lo has oído? Es importante 😤','Escuchado entero, eh 😅'],['⏩ A 2x',2,null,null,'Escuchado (a 2x) 😇'],['👍 Responder sin escuchar',-2,null,'¿Lo has escuchado? 🤨','👍']],
-  amor:[['😍 Ponerse tiern{o}',5,'love','🥰🥰','Y yo en ti, todo el rato 🥰'],['😏 Responder con picardía',4,'love','😳 Calla','¿Ah, sí? ¿Y qué piensas exactamente? 😏'],['📞 Llamar',4,'call',null]],
-  cena:[['🏠 «Ven a casa»',5,'home','¡Voy! Llevo vino 🍷'],['🍝 «Vamos a cenar fuera»',6,'out','Reservo en el italiano 🍝'],['😮‍💨 «Hoy no puedo»',-3,null,'Vale… mañana entonces 😔']],
-  dormir:[['🌙 «Vente»',6,'stay','Voy para allá 😘'],['😴 «Hoy necesito dormir sol{o}»',-1,null,'Lo entiendo, descansa 💤']],
-  apoyo:[['🫂 Dar ánimos',6,null,'Gracias… de verdad 🫶','Ánimo, de verdad. Aquí me tienes 🫂'],['📞 Llamar para desahogarse',7,'call',null,null],['🤷 «Así es la vida»',-3,null,'Ya…']],
-  risa:[['😂 Reírse',3,null,'JAJAJA te lo dije','JAJAJAJA me muero 😂'],['🔁 Mandar otro meme',4,null,'😂 Para ya que estoy en el bus','[Meme de un jefe diciendo «somos una familia»]'],['😐 No hacer caso',-1,null,null,null]],
-  queja:[['✊ «Hay que organizarse»',4,'org','Tienes razón. Lo hablo con el resto.'],['😮‍💨 «Pues aguantar…»',1,null,'Ya, qué remedio.'],['🤐 Cambiar de tema',-1,null,'Ok…','Oye, ¿y tú qué tal el finde?']],
-  asamblea:[['✊ «Allí estaré»',5,'org','¡Así me gusta! 💪'],['😬 «No me la juego»',-2,null,'Bueno, tú verás…']],
-  canas:[['🍻 «¡Vamos ahora!»',6,'out','¡Bajo en 10 minutos!'],['📅 «Mejor otro día»',1,null,'¡Te tomo la palabra!'],['🏠 «Vente a casa»',5,'home','¡Voy!']],
-  regalo:[['🥰 «¡Muchas gracias!»',6,null,'¡De nada, cariño!','¡Muchas gracias, de verdad!'],['🍪 Devolverle el táper con galletas',8,null,'¡Ay, qué apañad{o}!','Le dejé el táper con galletas 🍪']],
-  ex:[['🙂 Contestar cordial',2,null,'Me alegro de que estés bien.','Bien, tirando. Me alegro de saber de ti.'],['🚫 No contestar',0,null,null,null],['💬 «¿Quedamos para hablar?»',4,'out','Vale… mejor en persona.']],
-};
+const PH_REP=DATA.interacciones.movil_respuestas;
 function phRepOpts(k){const g=s=>s&&s.replace(/\{o\}/g,oa());return (Array.isArray(k)?k:(PH_REP[k]||PH_REP.gen)).map(([t,rel,act,back,say])=>{const q=t.match(/«([^»]+)»/);return [g(t),rel,act,g(back),say===undefined?(q?g(q[1]):null):g(say)];});}
 function phPush(pk,m){const P=PH();const th=P.th[pk]||(P.th[pk]=[]);th.push(m);if(th.length>40)th.splice(0,th.length-40);}
 function phIncoming(p,txt,k){phPush(p.k,{f:'t',t:txt,k,m:phNow(),open:!!(Array.isArray(k)||PH_REP[k])});const P=PH();P.un[p.k]=(P.un[p.k]||0)+1;phBadge();

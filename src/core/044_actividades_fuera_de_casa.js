@@ -1,16 +1,12 @@
 // ---------- actividades fuera de casa ----------
-const OUT={
-  amigos:{n:'Salir con amigos',e:'🍻',dur:200,h:[17,22],why:'social y diversión'},
-  sindicato:{n:'Asamblea sindical',e:'✊',dur:150,wd:[3],h:[18,20],flex:1,req:()=>S.union&&S.union.member&&!S.jobless&&!TR().self,why:'organizar la plantilla'},
-  militancia:{n:'Reunión política',e:'📢',dur:160,wd:[1,4],h:[18,21],flex:1,req:()=>S.ideo&&S.ideo!=='apolitica',why:'su movimiento'},
-  manifestacion:{n:'Manifestación',e:'📣',dur:190,req:()=>W_().manif&&W_().manif.day===S.day,h:[11,13],why:'salir a la calle'},
-  voluntariado:{n:'Voluntariado',e:'🥫',dur:180,days:'libre',h:[10,13],why:'ayudar y conocer gente'},
-  deporte:{n:'Salir a correr',e:'🏃',dur:60,h:[7,21],why:'salud y despejarse'},
-  networking:{n:'Afterwork y networking',e:'🥂',dur:150,wd:[3],h:[18,20],why:'contactos y ofertas'},
-  misa:{n:'Misa y vermú',e:'⛪',dur:150,wd:[6],h:[10,12],why:'comunidad'},
-  biblioteca:{n:'Estudiar en la biblioteca',e:'📚',dur:180,h:[10,19],why:'lógica y oposiciones'},
-  comedor:{n:'Comedor social',e:'🍲',dur:100,h:[8,22],req:()=>false,why:'comer cuando no queda nada'},
-  piquete:{n:'Piquete de huelga',e:'🪧',dur:180,req:()=>(S.strike&&S.strike.on&&S.strike.join)||(W_().gs===S.day&&ID().strike>=.5),h:[7,11],why:'la huelga'}};
+const OUT=DATA.lugares.salidas;
+// cuándo se puede ir a cada una (req) es lógica y se queda aquí
+conLogica(OUT,{
+  sindicato:{req:()=>S.union&&S.union.member&&!S.jobless&&!TR().self},
+  militancia:{req:()=>S.ideo&&S.ideo!=='apolitica'},
+  manifestacion:{req:()=>W_().manif&&W_().manif.day===S.day},
+  comedor:{req:()=>false},
+  piquete:{req:()=>(S.strike&&S.strike.on&&S.strike.join)||(W_().gs===S.day&&ID().strike>=.5)}});
 function outName(k){if(k==='militancia'){const n=ID().org_n;return n?capF(n.replace(/^(el|la) /,'')):'Reunión política';}if(k==='voluntariado')return isI('conservadora')?'Voluntariado en la parroquia':isI('anarquista')?'Despensa solidaria':'Banco de alimentos';return OUT[k].n;}
 function outAvail(k){const o=OUT[k],h=S.t/60,d=dateOf(S.day);
   if(S.sim.work>0||S.jail>0)return 'ahora no está en casa';if(o.req&&!o.req())return 'no toca';

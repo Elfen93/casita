@@ -1,18 +1,11 @@
 const mknob=(a,b,z,col='#e9c46a')=>{if(lvis(0,1)){const [x,y]=LP(a,b,z);circ(x,y,1.3,col);}};
 // =================== FREGAR: cocinar ensucia; los platos se acumulan; se friega en el fregadero (o donde se pueda) ===================
-OBJ.fregadero={n:'Fregadero',e:'🚰',p:150,h:25,c:'#dfe3e6',ins:.06,decor:1,cat:'cocina',need:{},pas:'para fregar los platos'};
-if(OBJ.lavavaj&&!OBJ.lavavaj.need)OBJ.lavavaj.need={};
-if(typeof MUEB_NEW!=='undefined')MUEB_NEW.push('fregadero');if(typeof OBJ_ZONES!=='undefined')OBJ_ZONES.fregadero=['cocina'];if(typeof GROUP!=='undefined')GROUP.fregadero='cocina';if(typeof CRAFT!=='undefined')CRAFT.fregadero=['font',1,5];if(typeof BACKD!=='undefined')BACKD.fregadero=.06;
+if(typeof MUEB_NEW!=='undefined')MUEB_NEW.push('fregadero');if(typeof BACKD!=='undefined')BACKD.fregadero=.06;
 MDRAW.fregadero=(o,i,tt,u)=>{const cab=O_COL(o,'#ece6d8'),top=o.q===4?'#efece6':'#c9c3b8';
   lp(.04,.1,.96,.92,0,22,cab);lp(.02,.06,.98,.95,22,25,top);lfB(.08,.48,.921,3,19,shade(cab,.95));lfB(.52,.92,.921,3,19,shade(cab,.95));mknob(.44,.922,15,'#9aa5ad');mknob(.56,.922,15,'#9aa5ad');
   ltop(.2,.25,.8,.75,25.2,'#a9b3ba');ltop(.24,.29,.76,.71,24.6,'#8d979e');
   lp(.47,.12,.53,.18,25,38,'#b8c2c8');lp(.47,.12,.53,.36,36,39,'#b8c2c8');
   const n=Math.min(6,Math.round(S.sucios||0));for(let k=0;k<n;k++){const [x,y]=LP(.35+(k%3)*.13,.4+(k>2?.16:0),26+k*.6);circ(x,y,2.4,'#f4f1ea');}};
-const FREGAR=['fregar','🧽','Fregar los platos',15,null,0,0,{diversion:-.03},'fregar'];
-ACTV.fregadero=[FREGAR];
-ACTV.encimera=(ACTV.encimera||[]).concat([['fregar','🧽','Fregar (en el barreño)',20,null,0,0,{diversion:-.04},'fregar']]);
-ACTV.lavabo=(ACTV.lavabo||[]).concat([['fregar','🧽','Fregar en el lavabo',25,null,0,0,{diversion:-.05},'fregar']]);
-ACTV.lavavaj=[['poner','🫧','Poner el lavavajillas',6,null,0,0,{},'fregar']];
 // cada comida cocinada deja platos
 {const _up=update;update=function(gm){const u0=S.sim.use;const r=_up.apply(this,arguments);try{const u=S.sim.use;
   if(u0&&u0!==u&&['fogon','encimera','micro','barbacoa'].includes(u0.type)&&(u0.goal==='hambre'||u0.act)&&u0.act!=='fregar'&&u0.goal!=='_comer'){S.sucios=Math.min(20,(S.sucios||0)+(u0.type==='fogon'?(u0.act==='tapers'?4:2):1));}}catch(e){}return r;};}

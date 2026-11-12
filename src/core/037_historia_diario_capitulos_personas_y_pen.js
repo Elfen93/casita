@@ -12,11 +12,11 @@ function chapter(id,title,txt){const st=storyState();if(st.chap[id])return;st.n+
 function newToday(){S.today={d:S.day,work:null,used:{},built:[],skills:[],ev:[],moodS:0,moodN:0,calls:[],harvest:0,weeds:0,out:null};}
 function tally(k,v){const td=S.today;if(!td)return;if(k==='used')td.used[v]=(td.used[v]||0)+1;else if(Array.isArray(td[k])){if(!td[k].includes(v))td[k].push(v);}else td[k]=v;}
 // personas de su vida
-const FRIENDS=[['Lucía','a'],['Sergio','o'],['Nuria','a'],['Iván','o'],['Marta','a'],['Álex','e'],['Bea','a'],['Rubén','o']];
-function initPeople(){const f=pickR(FRIENDS),c=pickR([['Raúl','o'],['Elena','a'],['Toni','o'],['Sofía','a']]);
-  S.people=[{k:'madre',n:pickR(['Rosa','Pilar','Maite','Concha','Lola','Isabel']),r:'su madre',mi:'mamá',e:'👩‍🦳',rel:72},
+const FRIENDS=DATA.personas.amistades;
+function initPeople(){const PP=DATA.personas;const f=pickR(FRIENDS),c=pickR(PP.companeros);
+  S.people=[{k:'madre',n:pickR(PP.madres),r:'su madre',mi:'mamá',e:'👩‍🦳',rel:72},
     {k:'amiga',n:f[0],r:`su mejor amig${f[1]}`,mi:f[0],e:'🫶',rel:66,g:f[1]},
-    {k:'vecina',n:pickR(['Carmen','Paco','Manoli','Antonio']),r:'del piso de al lado',mi:null,e:'🏘️',rel:35},
+    {k:'vecina',n:pickR(PP.vecindario),r:'del piso de al lado',mi:null,e:'🏘️',rel:35},
     {k:'compi',n:c[0],r:`su compañer${c[1]} de trabajo`,mi:c[0],e:'💼',rel:40,g:c[1]}];}
 const P_=k=>(S.people||[]).find(p=>p.k===k);
 function relLabel(r){return r>=80?'muy unidos':r>=60?'buena relación':r>=40?'se llevan bien':r>=22?'algo distantes':'apenas se hablan';}

@@ -33,21 +33,22 @@ askOut=function(p){const pt0=partner();if(pt0&&pt0!==p){toast(`Primero tendría 
 // la chispa se enfría si no se ven
 {const _cd=conexDaily;conexDaily=function(){const r=_cd.apply(this,arguments);try{for(const p of S.people||[]){if(p.chispa&&!isRom(p)&&S.day-(p.chispaDay||0)>10){p.chispa=Math.max(0,p.chispa-1);p.chispaDay=S.day;}}}catch(e){}return r;};}
 // ---- gestos con quien está delante ----
-const GEST={
-  charlar:{e:'💬',n:'Charlar',ok:()=>true,run:p=>{talkTo(p);popBubble('💬');bubbleFor(p,pickR(['Ya ves…','¡Jajaja!','¿En serio?','Qué me dices']));return `${CH().name} y ${p.n} se ponen al día.`;}},
-  chiste:{e:'😂',n:'Contar un chiste',ok:()=>true,run:p=>{const q=lvl('carisma')+Math.random()*4;if(q>3){p.rel=Math.min(100,p.rel+5);S.needs.diversion=Math.min(100,S.needs.diversion+10);bubbleFor(p,'😂');return `${p.n} se ríe de verdad.`;}p.rel=Math.max(0,p.rel-1);bubbleFor(p,'😐');return `${p.n} sonríe por compromiso.`;}},
-  abrazar:{e:'🫂',n:'Abrazar',ok:p=>p.rel>=40||isRom(p)||p.k==='madre',run:p=>{p.rel=Math.min(100,p.rel+4);if(p.love!=null)p.love=Math.min(100,p.love+2);S.needs.social=Math.min(100,S.needs.social+10);bubbleFor(p,'🫂');return `Un abrazo largo con ${p.n}.`;}},
-  ligar:{e:'💘',n:'Ligar',ok:p=>p.k.startsWith('p')&&!isRom(p)&&p.stage!=='ex'&&canLove(p),run:p=>{flirt(p);return null;}},
-  besar:{e:'💋',n:'Besar',ok:p=>p.k.startsWith('p')&&p.stage!=='ex'&&canLove(p)&&(isRom(p)||(p.chispa||0)>=2),run:p=>{
+// nombre e icono de cada gesto: data/interacciones.json (gestos). Aquí, cuándo se puede (ok), lo que cuesta (cost) y lo que pasa (run)
+const GEST=conLogica(DATA.interacciones.gestos,{
+  charlar:{ok:()=>true,run:p=>{talkTo(p);popBubble('💬');bubbleFor(p,pickR(['Ya ves…','¡Jajaja!','¿En serio?','Qué me dices']));return `${CH().name} y ${p.n} se ponen al día.`;}},
+  chiste:{ok:()=>true,run:p=>{const q=lvl('carisma')+Math.random()*4;if(q>3){p.rel=Math.min(100,p.rel+5);S.needs.diversion=Math.min(100,S.needs.diversion+10);bubbleFor(p,'😂');return `${p.n} se ríe de verdad.`;}p.rel=Math.max(0,p.rel-1);bubbleFor(p,'😐');return `${p.n} sonríe por compromiso.`;}},
+  abrazar:{ok:p=>p.rel>=40||isRom(p)||p.k==='madre',run:p=>{p.rel=Math.min(100,p.rel+4);if(p.love!=null)p.love=Math.min(100,p.love+2);S.needs.social=Math.min(100,S.needs.social+10);bubbleFor(p,'🫂');return `Un abrazo largo con ${p.n}.`;}},
+  ligar:{ok:p=>p.k.startsWith('p')&&!isRom(p)&&p.stage!=='ex'&&canLove(p),run:p=>{flirt(p);return null;}},
+  besar:{ok:p=>p.k.startsWith('p')&&p.stage!=='ex'&&canLove(p)&&(isRom(p)||(p.chispa||0)>=2),run:p=>{
     if(!isRom(p)){const c=.3+(p.love||0)/150+lvl('carisma')*.04;if(Math.random()<c){p.love=Math.min(100,p.love+12);p.chispa=(p.chispa||0)+1;p.chispaDay=S.day;bubbleFor(p,'💋');popBubble('💋');sfx('level');if(p.chispa>=3&&p.love>=40){setStage(p,'cita');chapter('cita1','Primera cita',`Un beso en el pasillo lo ha cambiado todo: ${CH().name} y ${p.n} han empezado a salir.`);}return `${CH().name} y ${p.n} se han besado. ${p.stage==='cita'?'Ya no hay vuelta atrás.':'Nadie ha dicho nada después. No hacía falta.'}`;}
       p.rel=Math.max(0,p.rel-8);p.fails=(p.fails||0)+1;bubbleFor(p,'😳');return `${CH().name} se ha lanzado y ${p.n} se ha apartado. Incomodísimo.`;}
     p.love=Math.min(100,p.love+4);S.needs.social=Math.min(100,S.needs.social+8);S.needs.diversion=Math.min(100,S.needs.diversion+6);bubbleFor(p,'💋');popBubble('💕');return null;}},
-  cama:{e:'🔥',n:'Ir a la cama',ok:p=>p.k.startsWith('p')&&canLove(p)&&(['rollo','pareja','convive','casada'].includes(p.stage)||(p.stage==='cita'&&(p.love||0)>=55)),run:p=>intimo(p)},
-  hotel:{e:'🏨',n:'Escapada a un hotel',cost:()=>Math.round(9*Math.max(5,90*Dm().pay/8)),ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2),run:p=>escapada(p,'hotel')},
-  sucasa:{e:'🔑',n:'Ir a su casa',ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2)&&ownPlace(p),run:p=>escapada(p,'sucasa')},
-  discutir:{e:'😠',n:'Discutir',ok:()=>true,run:p=>{p.rel=Math.max(0,p.rel-8);if(p.love!=null)p.love=Math.max(0,p.love-5);p.wear=Math.min(100,(p.wear||0)+6);p.wearWhy='broncas';bubbleFor(p,'😠');popBubble('😠');S.needs.social=Math.max(0,S.needs.social-5);return `${CH().name} y ${p.n} han discutido por ${pickR(['los platos','política','dinero','quién no contesta los mensajes','una tontería que no era una tontería'])}.`;}},
-  echar:{e:'🚪',n:'Pedir que se vaya',ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return r&&r.kind==='guest';},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.until=S.day*1440+S.t;r.stay=false;}p.rel=Math.max(0,p.rel-3);return `${p.n} se marcha.`;}},
-};
+  cama:{ok:p=>p.k.startsWith('p')&&canLove(p)&&(['rollo','pareja','convive','casada'].includes(p.stage)||(p.stage==='cita'&&(p.love||0)>=55)),run:p=>intimo(p)},
+  hotel:{cost:()=>Math.round(9*Math.max(5,90*Dm().pay/8)),ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2),run:p=>escapada(p,'hotel')},
+  sucasa:{ok:p=>p.k.startsWith('p')&&canLove(p)&&p.stage!=='ex'&&(isRom(p)||(p.chispa||0)>=2)&&ownPlace(p),run:p=>escapada(p,'sucasa')},
+  discutir:{ok:()=>true,run:p=>{p.rel=Math.max(0,p.rel-8);if(p.love!=null)p.love=Math.max(0,p.love-5);p.wear=Math.min(100,(p.wear||0)+6);p.wearWhy='broncas';bubbleFor(p,'😠');popBubble('😠');S.needs.social=Math.max(0,S.needs.social-5);return `${CH().name} y ${p.n} han discutido por ${pickR(['los platos','política','dinero','quién no contesta los mensajes','una tontería que no era una tontería'])}.`;}},
+  echar:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return r&&r.kind==='guest';},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.until=S.day*1440+S.t;r.stay=false;}p.rel=Math.max(0,p.rel-3);return `${p.n} se marcha.`;}},
+});
 function bubbleFor(p,txt){const r=(S.res||[]).find(x=>x.pid===p.k);if(!r)return;r.bub={t:txt,until:performance.now()+2200};}
 {const _dr3=drawResident;drawResident=function(r){const out=_dr3(r);try{if(r.bub&&performance.now()<r.bub.until&&!r.away){const [u,v]=w2v(r.x,r.y);const [bx,by]=P(u,v,0);label(r.bub.t,bx,by-80,'rgba(255,253,248,.95)','#3b3247',10);}}catch(e){}return out;};}
 // ir a la cama juntos

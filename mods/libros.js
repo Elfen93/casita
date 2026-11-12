@@ -1,17 +1,11 @@
 // =================== LIBROS Y OFICIOS: librería, biblioteca, estantería, manuales, escribir y pintar (despacio, como en la vida) ===================
 const LB=()=>{const C=COL();C.own=C.own||[];C.lent=C.lent||null;C.reading=C.reading||null;C.man=C.man||[];C.wr=C.wr||0;C.art=C.art||0;C.fama=C.fama||0;C.proj=C.proj||null;C.sub=C.sub||[];C.pub=C.pub||[];C.obras=C.obras||[];C.inc=C.inc||0;C.tx=C.tx||[];return C;};
 // catálogo: [título, minutos, emoji, categoría, precio, efecto]  cat: novela | ensayo | manual(sk) | oficio(wr|art) | texto(prog)
-const BOOKCAT=[
-  ['Cien años de soledad',420,'📗','novela',12,{wr:.6}],['Las uvas de la ira',360,'📙','novela',11,{wr:.5}],['Una novela negra de kiosko',150,'📓','novela',4,{wr:.15}],['Nada, de Carmen Laforet',260,'📕','novela',10,{wr:.5}],['La colmena',300,'📘','novela',10,{wr:.5}],['Tiempo de silencio',320,'📔','novela',11,{wr:.6}],['Los santos inocentes',180,'📒','novela',9,{wr:.5}],['Crónica de una muerte anunciada',150,'📗','novela',9,{wr:.4}],['Beloved',380,'📕','novela',13,{wr:.6}],['Trilogía de la ocupación',420,'📘','novela',16,{wr:.4}],
-  ['El capital (versión cómic)',240,'📕','ensayo',14,{}],['La mano invisible (que te quita el sueldo)',220,'📒','ensayo',12,{}],['Historia del movimiento obrero',300,'📚','ensayo',16,{}],['Chavs: la demonización de la clase obrera',340,'📙','ensayo',15,{}],['Feminismo para el 99 %',200,'📗','ensayo',10,{}],['Los condenados de la tierra',360,'📘','ensayo',13,{}],['Poesía de Gloria Fuertes',120,'📔','novela',8,{wr:.3}],
-  ['Manual de fontanería para torpes',180,'🔧','manual',18,{sk:'font'}],['Electricidad doméstica sin sustos',200,'⚡','manual',19,{sk:'elec'}],['El arte de cocinar con poco',160,'🍲','manual',12,{sk:'cocina'}],['Carpintería de banco',220,'🪚','manual',21,{sk:'carp'}],['Huerto urbano en macetas',150,'🌱','manual',14,{sk:'jard'}],['Cómo hablar en público sin morir',200,'🎤','manual',13,{sk:'carisma'}],['Lógica para la vida diaria',240,'🧠','manual',15,{sk:'logica'}],['Armonía para guitarristas de barrio',260,'🎸','manual',17,{sk:'musica'}],
-  ['Mientras escribo',260,'✍️','oficio',13,{wr:1.2}],['El oficio de escribir: cuadernos',300,'✍️','oficio',15,{wr:1.2}],['Cómo no escribir una novela',200,'✍️','oficio',11,{wr:.9}],['Taller de escritura: 52 ejercicios',360,'✍️','oficio',17,{wr:1.4}],
-  ['Dibujo: la mano y el ojo',220,'🎨','oficio',18,{art:1.2}],['Color: teoría y práctica',260,'🎨','oficio',22,{art:1.2}],['Composición para pintores',240,'🎨','oficio',19,{art:1.0}],['Cuadernos de Van Gogh (cartas)',300,'🎨','oficio',14,{art:.7,wr:.3}],
-];
+const BOOKCAT=DATA.libros.catalogo;
 const BK=n=>BOOKCAT.find(b=>b[0]===n);
 // precio en horas de salario mínimo (un libro: 2–3 horas), no en «precio del mundo»
 const bookPrice=(base,mul=1)=>Math.round(base/12*HW()*2.4*mul);
-BOOKS.length=0;for(const n of ['Una novela negra de kiosko','El arte de cocinar con poco','Poesía de Gloria Fuertes'])BOOKS.push([n,BK(n)[1],BK(n)[2]]); // los que ya tenía en casa
+for(const n of DATA.libros.en_casa)BOOKS.push([n,BK(n)[1],BK(n)[2]]); // los que ya tenía en casa
 // manuales de estudio por programa
 function manualFor(k){const P=EDU_PROGS[k];if(!P)return null;return {n:'Manual · '+P.n.replace(/^(FP medio|FP superior|Grado|Curso|Máster) · ?/,'').replace(/ \(.*\)/,''),p:P.cert?18:P.lv==='grado'||P.lv==='master'?48:30};}
 const ownsBook=n=>LB().own.includes(n)||BOOKS.some(b=>b[0]===n)||LB().lent===n;
@@ -24,11 +18,6 @@ curBook=function(){const C=LB();const un=n=>!C.libDone.includes(n);if(C.reading&
       if(C.lent===n){C.lent=null;C.lentDue=null;tell(`Ha devuelto «${n}» a la biblioteca. Gratis, como debería ser todo lo que enseña.`,'📚');}
       if(!curBook())setTimeout(()=>tell(`${CH().name} se ha quedado sin nada que leer. Toca librería, biblioteca o mercadillo.`,'📚'),500);}}catch(e){}return r;};}
 // ---- la librería y la biblioteca: salidas ----
-Object.assign(OUT,{
-  libreria:{n:'Ir a la librería',e:'📚',dur:60,h:[10,20],why:'mirar lomos, oler papel, gastar lo que no debería'},
-  mercadillo:{n:'Mercadillo de libros usados',e:'📦',dur:90,h:[10,14],wd:[5,6],why:'libros a dos duros, subrayados por otra gente'},
-  presta:{n:'Biblioteca: devolver y pedir',e:'🏛️',dur:50,h:[9,20],why:'devolver lo prestado y llevarse otro, gratis'},
-});
 {const _oc=outCost;outCost=function(k){if(['libreria','mercadillo','presta'].includes(k))return 0;return _oc.apply(this,arguments);};}
 let shopEl=null;function closeShop(){if(shopEl)shopEl.classList.remove('on');}
 function openShop(kind){const C=LB();if(!shopEl){shopEl=document.createElement('div');shopEl.id='shopmenu';document.body.appendChild(shopEl);}
@@ -68,22 +57,14 @@ function autoBuyBook(k){const C=LB();if(k==='presta'&&C.lent)libReturn();const i
     const items=BOOKCAT.filter(b=>!ownsBook(b[0])&&!C.libDone.includes(b[0])&&(k==='presta'||bookPrice(b[4])<S.money*.1));if(items.length){const b=pickR(items);if(k==='presta'){C.lent=b[0];C.lentDue=S.day+21;tell(`${CH().name} ha pasado por la biblioteca y se ha llevado «${b[0]}».`,'🏛️');}else{const p=bookPrice(b[4]);S.money-=p;C.own.push(b[0]);C.tx.push(['libro',-p,S.day]);tell(`${CH().name} ha entrado en la librería "solo a mirar". ${fmt(p)}. «${b[0]}».`,'📚');}C.reading=b[0];}
     S.outDay=S.day;S.needs.diversion=Math.min(100,S.needs.diversion+8);}}}catch(e){}return _au.apply(this,arguments);};}
 // ---- estantería y librería: elegir, ordenar, estudiar ----
-OBJ.estant.need={diversion:.3};OBJ.estant.verb='Leyendo';OBJ.estant.b='📖';
-ACTV.estant=[['leer','📖','Seguir con su libro',60,'logica',0,0,{diversion:.12},'libro'],['elegir','🔎','Elegir qué leer',2,null,0,0,{},'elegir'],['ordenar','🧹','Ordenar los libros',20,null,0,0,{diversion:.2},'ordenar']];
-ACTV.libros.push(['elegir','🔎','Elegir qué leer',2,null,0,0,{},'elegir']);
-ACTV.libros.push(['estudiar','📝','Estudiar con el manual',60,'logica',0,0,{},'estudiar']);
-ACTV.escritorio.push(['escribir','✍️','Escribir',90,null,0,0,{diversion:.05,energia:-.03},'escribir']);
-ACTV.compu.push(['escribir','✍️','Escribir',90,null,0,0,{diversion:.05,energia:-.03},'escribir']);
-ACTV.escritorio.push(['enviar','📮','Enviar lo escrito',20,null,0,0,{},'enviar']);
-ACTV.compu.push(['enviar','📮','Enviar lo escrito',20,null,0,0,{},'enviar']);
 function pickBookMenu(){const C=LB();const un=[...C.own,...(C.lent?[C.lent]:[]),...BOOKS.map(b=>b[0])].filter(n=>!C.libDone.includes(n));if(!un.length){toast('No tiene nada sin leer');return;}
   if(!objMenuEl)openObjMenu(0);let h=`<div class="omt">📚 ¿Qué lee?</div>`;for(const n of un){const b=BK(n);const pr=Math.round((C.lib[n]||0)/b[1]*100);h+=`<button class="oma" data-pk="${n}"><span>${b[2]}</span><span class="omn"><b>${n}</b><small>${pr?pr+'% leído':'sin empezar'}${C.lent===n?' · préstamo':''}</small></span></button>`;}
   objMenuEl.innerHTML=h;objMenuEl.classList.add('on');objMenuEl.style.left='50%';objMenuEl.style.top='40%';objMenuEl.style.transform='translate(-50%,0)';
   objMenuEl.querySelectorAll('[data-pk]').forEach(bt=>bt.onclick=()=>{C.reading=bt.dataset.pk;closeObjMenu();objMenuEl.style.transform='';toast('📖 '+bt.dataset.pk);});}
 {const _om=openObjMenu;openObjMenu=function(i){const r=_om.apply(this,arguments);try{if(objMenuEl)objMenuEl.style.transform='';}catch(e){}return r;};}
 // ---- escribir: un proyecto largo, un oficio que se aprende, un mercado que no quiere ----
-const WR_KINDS={relato:{n:'un relato',h:8,e:'📄'},articulo:{n:'un artículo',h:4,e:'📰'},novela:{n:'una novela',h:260,e:'📘'},poemario:{n:'un poemario',h:60,e:'📜'}};
-const WR_TITLES=['Turno de noche','Las persianas del bloque','Lo que no se dice en la cola','Agua de grifo','Sin contrato','Un piso con vistas al patio','La última letra','Barrio sur','Nadie llamó','Las manos de mi madre','Domingo de cocido','Fin de mes'];
+const WR_KINDS=DATA.libros.escritos;
+const WR_TITLES=DATA.libros.titulos;
 function wrStart(kind){const C=LB();if(C.proj){toast('Ya tiene algo a medias: '+C.proj.t);return;}C.proj={k:kind,t:pickR(WR_TITLES),h:0,need:WR_KINDS[kind].h,since:S.day,rev:0};tell(`${CH().name} ha empezado ${WR_KINDS[kind].n}: «${C.proj.t}». ${kind==='novela'?'Nadie se lo ha pedido. Así empiezan todas.':''}`,'✍️');}
 function wrQuality(p){const C=LB();const read=C.libDone.filter(n=>{const b=BK(n);return b&&(b[3]==='novela'||b[3]==='oficio');}).length;const base=C.wr*.22+Math.min(2,read*.2)+Math.min(.9,(p.rev||0)*.3)+(T('artista')?.4:0)+(T('despistada')?-.3:0)-(p.k==='novela'?.6:0);const r=base+(seedRng('wq'+p.t+p.since)()-.5)*.9;return r<.6?0:r<1.6?1:r<2.6?2:3;}
 {const _af2=actFinish;actFinish=function(u,frac){const a=ACT_DEF(u.type,u.act);const fx=a&&a[8];if(!['escribir','enviar','elegir','ordenar','estudiar','pintar','vender'].includes(fx))return _af2.apply(this,arguments);
@@ -134,9 +115,7 @@ function wrSubmit(p,how){const C=LB();const n=CH().name;C.proj=null;
   if(C.inc-(C.incTaxed||0)>=600*PM()){const t=Math.round((C.inc-(C.incTaxed||0))*.19);bkAdd('Hacienda',-t);C.incTaxed=C.inc;tell(`Hacienda: retención del 19 % sobre lo que ha ganado escribiendo o pintando: ${fmt(t)}. Para eso ${n} tuvo que darse de alta como autónom${oa()}, con una cuota que pagaría aunque no vendiera nada.`,'🏛️');}
   }catch(e){console.error(e);}return r;};}
 // ---- pintar: el caballete ----
-OBJ.caballete={n:'Caballete',e:'🎨',p:120,h:44,c:'#a0714f',ins:.2,need:{diversion:.4},verb:'Pintando',b:'🎨',decor:1,cat:'estudio'};
-if(typeof MUEB_NEW!=='undefined')MUEB_NEW.push('caballete');if(typeof OBJ_ZONES!=='undefined')OBJ_ZONES.caballete=['estudio','salon','dormitorio','taller','libre'];if(typeof GROUP!=='undefined')GROUP.caballete='ocio';if(typeof CRAFT!=='undefined')CRAFT.caballete=['carp',0,3];if(typeof ONOBJ!=='undefined')ONOBJ.add('caballete');
-ACTV.caballete=[['pintar','🎨','Pintar',120,null,0,2,{diversion:.06,energia:-.03},'pintar'],['vender','🛍️','Vender cuadros',2,null,0,0,{},'vender']];
+if(typeof MUEB_NEW!=='undefined')MUEB_NEW.push('caballete');if(typeof ONOBJ!=='undefined')ONOBJ.add('caballete');
 MDRAW.caballete=(o,i,tt,u,anaOn)=>{const w=O_COL(o,'#a0714f');lp(.18,.5,.22,.54,0,42,w);lp(.78,.5,.82,.54,0,42,w);lp(.48,.78,.52,.82,0,36,w);lp(.2,.5,.8,.52,22,24,w);
   const C=(typeof LB==='function')?LB():null;const cur=C&&C.cur_art;const pr=cur?Math.min(1,cur.h/cur.need):0;const [a,b]=LP(.5,.5,0);
   poly([LP(.24,.48,24),LP(.76,.48,24),LP(.76,.48,42),LP(.24,.48,42)],'#f1ece0');if(pr>0){const cols=['#c9524a','#5a7fb0','#d8a640','#5f9a5a','#8b5e8b'];const r=seedRng('cu'+(cur.t||''));const k=Math.ceil(pr*5);for(let j=0;j<k;j++){const x0=.27+r()*.4,z0=26+r()*12;poly([LP(x0,.479,z0),LP(x0+.08+r()*.1,.479,z0),LP(x0+.08+r()*.1,.479,z0+3+r()*5),LP(x0,.479,z0+3+r()*5)],cols[j%5]);}}

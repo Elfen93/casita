@@ -1,5 +1,5 @@
 // ---------- Soul Crusher: la vida no avisa (pero a veces sí sale bien) ----------
-const COMPANIES=['Grupo Ofimax','Consultora Nébula','Logística Pardo','Soluciones Tándem','Cooperativa Arcadia','Datanova','Hermanos Ruiz S.L.','Brillo Servicios','Kappa Digital','Talleres Ébano','Estudio Lumbre','Mercantil Vega'];
+const COMPANIES=DATA.profesiones.empresas;
 function office(){if(!S.office){const T0=TR();S.office={n:pickR(T0.cos),org:5,griev:10,tox:T0.tox[0]+Math.random()*(T0.tox[1]-T0.tox[0]),known:0.6};}return S.office;}
 const TOX=()=>Dm().soul?office().tox:0.3;
 function toxLabel(t){return t<0.25?'😊 sano':t<0.45?'🙂 llevadero':t<0.65?'😐 tenso':t<0.8?'😣 tóxico':'☠️ muy tóxico';}

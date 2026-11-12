@@ -44,6 +44,8 @@ Un solo archivo HTML con todo dentro. Sin servidor, sin dependencias en tiempo d
 casita/
   build.py            une todo → casita.html (desarrollo) e index.html + sw.js (publicación)
   build.json          orden de los módulos
+  data/*.json         el contenido: lugares, gente, trabajos, objetos, libros, estudios, interacciones,
+                      ideologías, gobiernos y reglas (data/README.md). Lo comparten el juego web y Godot
   src/head.html, src/tail.html
   src/core/NNN_*.js   núcleo: 99 archivos numerados (motor, dibujo, casa, trabajo, mundo…)
   mods/*.js           57 módulos que amplían el núcleo, en el orden de build.json
@@ -51,9 +53,14 @@ casita/
   p3d/, q3d/          librería 3D y modelos de los personajes
   pwa/                registro del service worker
   scripts/test.py     lanza una prueba en Chrome sin pantalla
+  scripts/datos.py    comprueba data/ (lo llama build.py) y le da formato
+  scripts/comparar.py dice si un cambio que no debía notarse se nota (120 días de 11 partidas con el azar sembrado)
   t/                  pruebas (t_casa.js es la regresión básica) y utilidades de captura
+  godot/              (frente B) el proyecto de Godot, cuando exista
   docs/               esta documentación
 ```
+
+**Contenido y lógica van separados.** `build.py` incrusta `data/*.json` como `const DATA={archivo:{sección:…}}` y el código lee de ahí con el nombre de siempre (`const PLACES=DATA.lugares.lugares`). Añadir un lugar, un objeto, un libro o una frase es editar `data/`; el código solo se toca si hace falta lógica nueva. Cuando una ficha necesita una función (una condición, un efecto), la ficha va en `data/` y la función en el código, unida con `conLogica(tabla,{id:{campo:función}})`.
 
 **Cómo amplía un módulo al núcleo.** Envuelve funciones globales:
 
@@ -61,7 +68,7 @@ casita/
 {const _f=dailyEvents;dailyEvents=function(){const r=_f.apply(this,arguments);try{/* lo nuevo */}catch(e){}return r;};}
 ```
 
-Normas: no se reasignan funciones declaradas con `const`; el estado nuevo vive en `S.algo` y se crea si falta; todo lo que toca dinero pasa por `bkAdd(etiqueta, ±cantidad)`; los precios de servicios se expresan en horas de salario mínimo con `hrs(n)`.
+Normas: no se reasignan funciones declaradas con `const`; el estado nuevo vive en `S.algo` y se crea si falta; todo lo que toca dinero pasa por `bkAdd(etiqueta, ±cantidad)`; los precios de servicios se expresan en horas de salario mínimo con `hrs(n)`; el contenido va en `data/` y un módulo no cambia al cargar lo que ya está allí (nada de `OBJ.x.p=…`: se cambia el dato).
 
 **Puntos de enganche más usados:** `update(gm)` (cada minuto de juego), `dailyEvents()` (cada medianoche), `worldWeekly()` (cada lunes), `payRent()`, `finishWork()`, `vidaTab()` / `genteTab()` / `openMenu()` (interfaz), `tell(texto, icono)` (Historia) y `toast()` (aviso breve).
 
@@ -71,7 +78,7 @@ Normas: no se reasignan funciones declaradas con `const`; el estado nuevo vive e
 
 ```
 cd casita
-python3 build.py
+python3 build.py                                # comprueba data/ y la sintaxis, y construye
 python3 scripts/test.py t/t_casa.js 120        # regresión: debe dar "errs":[]
 python3 scripts/test.py t/t_loquesea.js 10     # prueba propia del cambio
 echo "- Qué cambió." >> docs/CHANGELOG.md
@@ -115,7 +122,8 @@ Abreviaturas del estado que más aparecen: `S` (partida), `S.sim` (el personaje 
 
 | Decisión | Por qué |
 |---|---|
-| Todo en un HTML, módulos que envuelven funciones | Se publica con un `git push`, funciona sin conexión y permite añadir sin reescribir. Coste: los datos están mezclados con el código (ver paso 0). |
+| Todo en un HTML, módulos que envuelven funciones | Se publica con un `git push`, funciona sin conexión y permite añadir sin reescribir. |
+| El contenido en `data/*.json`, incrustado al construir | Un solo sitio para cada dato, legible sin saber programar, y el mismo para el juego web y para Godot. JSON porque los dos lo leen sin librerías. Sigue siendo un solo HTML sin red. |
 | Euros y precios reales en todas las dificultades | La dificultad está en el sueldo y el alquiler, no en inflar precios. |
 | Precios de servicios en horas de salario mínimo | Se mantienen proporcionados aunque cambien dificultad o sueldos. |
 | Los cambios de gobierno llegan por fases y con ventana «Qué ha cambiado» | Antes una revolución era una bandera; ahora se nota en el alquiler, el curro y la nevera. |
@@ -126,12 +134,19 @@ Abreviaturas del estado que más aparecen: `S` (partida), `S.sim` (el personaje 
 | Con consejos y socialismo de mercado no hay huelgas | No hay patrón (consejos) o el sindicato es oficial (mercado). |
 | No usar el conector de Zapier | Es de la empresa del autor. |
 | Godot y no Unity para el salto gráfico | Se puede compilar y exportar desde un servidor sin pantalla, es libre y exporta a Android y web. |
+| Godot en este mismo repositorio, en `godot/` | Los dos juegos leen el mismo `data/` y se publican juntos; con dos repos habría que copiar los datos y se desincronizarían. |
+| Empezar con arte libre | Paquetes libres de calidad (CC0 o con atribución, apuntada en el README) para edificios, muebles y animaciones. Los de pago se valoran cuando la prueba pequeña convenza. |
 | La fábrica usa modelos baratos para volumen y el modelo caro solo integra | Ver `docs/COSTE.md`. |
 
 ## 7. El plan
 
 ### Paso 0 — Datos fuera del código
-Sacar el contenido (lugares, personas, profesiones, objetos, libros, programas de estudio, interacciones, textos por ideología y gobierno) a una carpeta `data/` en un formato legible. El juego web pasa a leer de ahí sin cambiar por fuera. Es la pieza que comparten los dos frentes.
+Sacar el contenido a una carpeta `data/` en un formato legible. El juego web pasa a leer de ahí sin cambiar por fuera. Es la pieza que comparten los dos frentes.
+
+- ✅ **Primera pasada (12 nov 2026):** 107 secciones en 11 archivos: lugares y salidas, viviendas, personas, profesiones, objetos y lo que se hace con ellos, libros, estudios, interacciones, ideologías, gobiernos (ciclos e impuestos) y reglas básicas. Comprobado con `scripts/comparar.py`: 11 partidas de 120 días con el azar sembrado dan el mismo estado, el mismo diario y las mismas pantallas que antes.
+- ⬜ **Segunda pasada:** lo que mezcla texto con condiciones y efectos: dilemas, consecuencias, golpes, hitos y arcos; los textos sueltos de `tell()`/`toast()`/`chapter()`; las plantillas del móvil; los carteles y la gente de las escenas. Hace falta antes un formato de texto con huecos (`{nombre}`, género) que valga también para Godot. Lista completa al final de `data/README.md`.
+
+La fábrica y la prueba de Godot ya pueden empezar con lo que hay: lo que necesitan (lugares, gente, trabajos, objetos, necesidades, interacciones) está en `data/`.
 
 ### Frente A — La fábrica de contenido (juego web)
 Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`docs/FABRICA.md`, plantilla en `docs/prompts/PLANTILLA.md`, tareas en `docs/BACKLOG.md`). Primera tanda:
@@ -142,12 +157,12 @@ Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`do
 Reglas de la fábrica: 2 o 3 agentes por tanda; cada agente lee este documento y solo los que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica.
 
 ### Frente B — Godot
-1. Montar Godot en modo sin pantalla y un proyecto en `godot/` dentro de este mismo repo.
+1. Montar Godot en modo sin pantalla y un proyecto en `godot/` dentro de este mismo repo (decidido).
 2. **Prueba pequeña:** un barrio en 3D, la casa, el personaje con sus necesidades y tres o cuatro interacciones, leyendo `data/`.
 3. Publicarla en la web (`/godot/`) para compararla en el móvil con el juego actual.
 4. Si convence, **migrar por bloques**: vida diaria → trabajo y dinero → política. El juego web sigue vivo mientras tanto.
 
-Arte: empezar con paquetes libres de calidad (edificios, muebles, animaciones) y valorar más adelante alguno de pago. El salto gráfico depende más del arte que del motor.
+Arte: se empieza con paquetes libres de calidad (edificios, muebles, animaciones), decidido; más adelante se valora alguno de pago. El salto gráfico depende más del arte que del motor.
 
 ### Pendiente fuera de los frentes
 - Progresista y conservador en la vida diaria (vivienda, servicios, calle).
@@ -160,6 +175,7 @@ Arte: empezar con paquetes libres de calidad (edificios, muebles, animaciones) y
 
 | Documento | Para qué |
 |---|---|
+| `data/README.md` | Qué hay en cada archivo de datos, qué significa cada campo y qué queda por sacar. |
 | `docs/BIBLIA.md` | Tono, mirada, normas de escritura y de programación. |
 | `docs/SISTEMAS.md` | Diseño de gobiernos, impuestos, ciclos, presión exterior y pulso de actores. |
 | `docs/FABRICA.md` | Roles, formato de tarea y ciclo de trabajo de los agentes. |

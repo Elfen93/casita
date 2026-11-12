@@ -1,91 +1,8 @@
 // ---------- muebles: catálogo ampliado (cocina, baño, dormitorio, salón, estudio, deco y jardín) ----------
 // quick: se usa para necesidades leves (tentempié, lavarse la cara); bed: sirve para dormir; table: mesa con sillas;
 // food: coste de comida al usarlo para comer; wx: depende del tiempo; lux/pobre: muebles que marcan clase
-Object.assign(OBJ,{
-  // cocina
-  encimera:{n:'Encimera',e:'🔪',p:240,h:25,c:'#e9e3d6',ins:.06,need:{hambre:0.9},quick:1,food:0.6,verb:'Preparando un bocadillo',b:'🥪',sk:'cocina',decor:1,cat:'cocina'},
-  micro:{n:'Microondas',e:'♨️',p:150,h:38,c:'#ececec',ins:.15,need:{hambre:1.25},quick:1,food:0.8,verb:'Calentando un táper',b:'🍲',cat:'cocina'},
-  lavavaj:{n:'Lavavajillas',e:'🫧',p:380,h:26,c:'#dfe5e8',ins:.1,decor:1,cat:'cocina',pas:'cocinar rinde un 10% más'},
-  cafetera:{n:'Cafetera',e:'☕',p:90,h:32,c:'#3b3f46',ins:.25,need:{diversion:0.45,hambre:0.3},food:0.2,verb:'Tomándose un café',b:'☕',cat:'cocina'},
-  mesacoc:{n:'Mesa de cocina',e:'🍴',p:160,h:23,c:'#e8e2d4',ins:.08,decor:2,table:1,cat:'cocina'},
-  // baño
-  banera:{n:'Bañera',e:'🛁',p:700,h:16,c:'#f4f6f7',ins:.05,need:{higiene:2.3,diversion:0.3},verb:'Dándose un baño de espuma',b:'🛁',decor:1,cat:'bano'},
-  lavabo:{n:'Lavabo',e:'🚰',p:160,h:30,c:'#f4f6f7',ins:.2,need:{higiene:1.1},quick:1,verb:'Lavándose la cara',b:'💦',decor:1,cat:'bano'},
-  lavadora:{n:'Lavadora',e:'🧺',p:420,h:35,c:'#f2f4f5',ins:.1,need:{higiene:0.8},quick:1,verb:'Poniendo una lavadora',b:'👕',cat:'bano'},
-  // dormitorio
-  camamat:{n:'Cama de matrimonio',e:'🛏️',p:780,h:16,c:'#a35d6a',ins:.03,need:{energia:0.21},bed:1,verb:'Durmiendo a lo ancho',b:'💤',decor:2,cat:'dorm'},
-  litera:{n:'Litera',e:'🪜',p:520,h:50,c:'#5b8fb9',ins:.05,need:{energia:0.16},bed:1,verb:'Durmiendo en la litera',b:'💤',cat:'dorm'},
-  colchon:{n:'Colchón en el suelo',e:'🛌',p:45,h:6,c:'#e8e4d8',ins:.08,need:{energia:0.12},bed:1,pobre:1,verb:'Durmiendo en el colchón',b:'💤',decor:-2,cat:'dorm'},
-  armario:{n:'Armario',e:'🚪',p:320,h:58,c:'#9c6845',ins:.06,need:{diversion:0.35,social:0.15},verb:'Probándose ropa',b:'👗',decor:1,cat:'dorm'},
-  comoda:{n:'Cómoda',e:'🗄️',p:210,h:32,c:'#b07a4f',ins:.06,decor:3,cat:'dorm'},
-  mesilla:{n:'Mesilla de noche',e:'🕯️',p:70,h:34,c:'#a47148',ins:.25,decor:1,light:true,cat:'dorm'},
-  cuna:{n:'Cuna',e:'🍼',p:260,h:26,c:'#f4efe6',ins:.12,decor:3,cat:'dorm'},
-  // salón
-  sillon:{n:'Sillón orejero',e:'💺',p:380,h:40,c:'#4f7a6a',ins:.15,need:{diversion:0.5},verb:'Arrellanada en el sillón',b:'😌',decor:1,cat:'salon'},
-  butaca:{n:'Butaca de lectura',e:'📖',p:300,h:30,c:'#d08c45',ins:.15,need:{diversion:0.45},sk:'logica',verb:'Leyendo en la butaca',b:'📖',decor:1,cat:'salon'},
-  sofacama:{n:'Sofá cama hundido',e:'🛋️',p:110,h:24,c:'#8b7d68',ins:.05,need:{energia:0.11,diversion:0.3},bed:1,pobre:1,verb:'Durmiendo en el sofá cama',b:'💤',decor:-1,cat:'salon'},
-  estant:{n:'Estantería',e:'🗃️',p:190,h:58,c:'#c49a6c',ins:.3,decor:3,cat:'salon'},
-  mesabaja:{n:'Mesa baja',e:'🫖',p:120,h:13,c:'#8a5a3b',ins:.15,decor:2,cat:'salon',pas:'sofá, sillón y tele rinden un 10% más'},
-  consola:{n:'Videoconsola',e:'🎮',p:520,h:40,c:'#1c1f24',ins:.08,need:{diversion:1.05,social:0.2},verb:'Jugando a la consola',b:'🎮',cat:'salon'},
-  tocadisc:{n:'Tocadiscos',e:'🎶',p:340,h:24,c:'#7a5236',ins:.12,need:{diversion:0.6},sk:'musica',verb:'Escuchando vinilos',b:'🎶',decor:2,cat:'salon'},
-  chimenea:{n:'Chimenea',e:'🔥',p:1100,h:46,c:'#c9b8a6',ins:.04,need:{diversion:0.45,social:0.1},verb:'Mirando el fuego',b:'🔥',decor:4,light:true,cat:'salon'},
-  acuario:{n:'Acuario',e:'🐠',p:450,h:44,c:'#6ec1e4',ins:.1,need:{diversion:0.4},verb:'Mirando los peces',b:'🐠',decor:3,cat:'salon'},
-  piano:{n:'Piano de cola',e:'🎹',p:5200,h:30,c:'#15151a',ins:.06,need:{diversion:0.9},sk:'musica',verb:'Tocando el piano',b:'🎹',decor:6,lux:1,cat:'salon'},
-  muebar:{n:'Mueble bar',e:'🥃',p:1500,h:56,c:'#5a3825',ins:.06,need:{social:0.45,diversion:0.4},verb:'Sirviéndose una copa',b:'🥃',decor:3,lux:1,cat:'salon'},
-  butano:{n:'Estufa de butano',e:'🧯',p:75,h:30,c:'#d9d4c8',ins:.25,need:{diversion:0.2},pobre:1,verb:'Calentándose las manos',b:'🔥',cat:'salon'},
-  // estudio
-  escritorio:{n:'Escritorio',e:'✏️',p:280,h:24,c:'#b08060',ins:.06,need:{diversion:0.35},sk:'logica',verb:'Estudiando',b:'📝',decor:1,cat:'estudio'},
-  pizarra:{n:'Pizarra',e:'📋',p:140,h:54,c:'#f4f6f7',ins:.1,need:{diversion:0.3,social:0.15},sk:'carisma',verb:'Ensayando una presentación',b:'🗣️',cat:'estudio'},
-  coser:{n:'Máquina de coser',e:'🧵',p:260,h:44,c:'#2b2f36',ins:.1,need:{diversion:0.5},verb:'Cosiendo y arreglando ropa',b:'🧵',cat:'estudio'},
-  // deco
-  cuadro:{n:'Cuadro',e:'🖼️',p:150,h:46,c:'#b08d57',ins:.3,decor:3,cat:'deco'},
-  poster:{n:'Póster',e:'📜',p:25,h:44,c:'#c0392b',ins:.3,decor:1,cat:'deco'},
-  espejopie:{n:'Espejo de pie',e:'🪞',p:240,h:56,c:'#c7a46b',ins:.3,need:{social:0.5},sk:'carisma',verb:'Mirándose al espejo',b:'💁',decor:2,cat:'deco'},
-  lamparco:{n:'Lámpara de arco',e:'💡',p:180,h:50,c:'#c9a24a',ins:.3,decor:3,light:true,cat:'deco'},
-  lampapel:{n:'Lámpara de papel',e:'🏮',p:60,h:36,c:'#f7efe0',ins:.3,decor:2,light:true,cat:'deco'},
-  cortinas:{n:'Cortinas',e:'🪟',p:90,h:54,c:'#c45b5b',ins:.3,decor:2,cat:'deco'},
-  alfpersa:{n:'Alfombra persa',e:'🟫',p:260,h:1,c:'#a8323e',ins:.04,decor:4,flat:true,cat:'deco'},
-  alfred:{n:'Alfombra redonda',e:'🟠',p:90,h:1,c:'#e9a23b',ins:.04,decor:2,flat:true,cat:'deco'},
-  alfyute:{n:'Alfombra de yute',e:'🟨',p:60,h:1,c:'#cdb58a',ins:.04,decor:2,flat:true,cat:'deco'},
-  monstera:{n:'Monstera',e:'🌿',p:140,h:34,c:'#2f7a3f',ins:.3,decor:4,green:1,need:{diversion:0.25},verb:'Limpiando las hojas',b:'💧',sk:'jard',cat:'deco'},
-  kentia:{n:'Palmera de interior',e:'🌴',p:180,h:44,c:'#3f8f4a',ins:.3,decor:4,green:1,need:{diversion:0.25},verb:'Regando la palmera',b:'💧',sk:'jard',cat:'deco'},
-  jaula:{n:'Jaula con periquito',e:'🐦',p:130,h:52,c:'#c9a24a',ins:.3,need:{diversion:0.35,social:0.25},verb:'Hablando con el periquito',b:'🐦',decor:2,cat:'deco'},
-  // jardín
-  hamaca:{n:'Hamaca',e:'🏝️',p:160,h:34,c:'#e76f51',ins:.1,need:{diversion:0.55},wx:1,verb:'Meciéndose en la hamaca',b:'🍃',decor:1,cat:'garden'},
-  columpio:{n:'Columpio',e:'🎠',p:220,h:56,c:'#8a5d39',ins:.1,need:{diversion:0.65},wx:1,verb:'Columpiándose',b:'😄',decor:1,cat:'garden'},
-  elastica:{n:'Cama elástica',e:'🤸',p:350,h:14,c:'#3a86ff',ins:.05,need:{diversion:0.75},wx:1,verb:'Saltando en la cama elástica',b:'🤸',cat:'garden'},
-  caseta:{n:'Caseta del perro',e:'🐕',p:280,h:38,c:'#b5653a',ins:.1,need:{social:0.55,diversion:0.3},verb:'Jugando con el perro',b:'🐶',decor:2,cat:'garden'},
-  tendedero:{n:'Tendedero',e:'👕',p:40,h:32,c:'#c0c6cc',ins:.1,need:{higiene:0.6},quick:1,wx:1,verb:'Tendiendo la ropa',b:'👕',cat:'garden'},
-  compost:{n:'Compostera',e:'♻️',p:70,h:22,c:'#7a5230',ins:.12,need:{diversion:0.2},sk:'jard',verb:'Echando restos al compost',b:'♻️',green:1,cat:'garden'},
-  parrilla:{n:'Parrilla de obra',e:'🧱',p:650,h:30,c:'#b5553a',ins:.06,need:{hambre:1.5,social:0.25},food:2,wx:1,sk:'cocina',verb:'Asando en la parrilla',b:'🥩',decor:2,cat:'garden'},
-});
 const MUEB_NEW=['encimera','micro','lavavaj','cafetera','mesacoc','banera','lavabo','lavadora','camamat','litera','colchon','armario','comoda','mesilla','cuna','sillon','butaca','sofacama','estant','mesabaja','consola','tocadisc','chimenea','acuario','piano','muebar','butano','escritorio','pizarra','coser','cuadro','poster','espejopie','lamparco','lampapel','cortinas','alfpersa','alfred','alfyute','monstera','kentia','jaula','hamaca','columpio','elastica','caseta','tendedero','compost','parrilla'];
-// suelos y paredes nuevos
-Object.assign(FLOORS,{
-  10:{n:'Terrazo',c:'#e7e1d6',p:16,pat:'terrazo'},11:{n:'Hidráulico',c:'#ece2cc',p:20,pat:'hidra'},12:{n:'Linóleo',c:'#b9c98f',p:7,pat:'lino'},
-  13:{n:'Hormigón pulido',c:'#a9aba7',p:13,pat:'horm'},14:{n:'Césped artificial',c:'#72c25c',p:9,pat:'artif'},15:{n:'Tarima oscura',c:'#5a3a26',p:18,pat:'planks'},
-  16:{n:'Espiga',c:'#c08a55',p:24,pat:'espiga'},17:{n:'Barro cocido',c:'#b8653f',p:11,pat:'check'},18:{n:'Damero',c:'#f2f1ec',p:15,pat:'damero'},19:{n:'Corcho',c:'#c79a62',p:10,pat:'corcho'}});
-FLOOR_ORDER.splice(FLOOR_ORDER.indexOf(3)+1,0,15,16,10,11,18,17,12,13,19);FLOOR_ORDER.splice(FLOOR_ORDER.indexOf(0),0,14);
-WALLCOLS.push(['#e8d7c3','Arena'],['#a9bfa3','Salvia'],['#d98e6e','Terracota'],['#f2bfa6','Melocotón'],['#4b6b8a','Azul petróleo'],['#7e3b46','Burdeos'],['#e2bb4f','Mostaza'],
-  ['#f1e4cc','Papel de rayas','rayas','#d6b88a'],['#e3ece4','Papel de flores','flores','#e58fa0'],['#efe6d5','Papel de rombos','rombos','#b8956a'],['#eef3f6','Azulejo blanco','azulejo','#b8c6cf'],
-  ['#8fb8d6','Papel de lunares','lunares','#f4f8fb'],['#2f4a3f','Papel selva','hojas','#5e9a66'],['#d8c8e8','Papel de cuadros','cuadros','#b49ad0']);
 // dónde va cada cosa, cómo se agrupa, oficio para montarlo o fabricarlo, desgaste, respaldo contra la pared…
-Object.assign(OBJ_ZONES,{encimera:['cocina'],micro:['cocina','salon'],lavavaj:['cocina'],cafetera:['cocina','salon','estudio'],mesacoc:['cocina'],banera:['bano'],lavabo:['bano'],lavadora:['bano','cocina','pasillo','taller'],
-  camamat:['dormitorio'],litera:['dormitorio'],colchon:['dormitorio','salon','libre'],armario:['dormitorio','pasillo'],comoda:['dormitorio','salon','pasillo'],mesilla:['dormitorio'],cuna:['dormitorio'],
-  sillon:['salon','dormitorio','estudio'],butaca:['salon','estudio','dormitorio'],sofacama:['salon','libre','dormitorio'],estant:['salon','estudio','dormitorio','pasillo'],mesabaja:['salon'],consola:['salon','dormitorio'],tocadisc:['salon','estudio','dormitorio'],
-  chimenea:['salon'],acuario:['salon','estudio','dormitorio'],piano:['salon','estudio'],muebar:['salon'],butano:['salon','dormitorio','estudio','cocina','bano'],escritorio:['estudio','dormitorio','salon'],pizarra:['estudio','taller'],coser:['estudio','taller','dormitorio'],
-  cuadro:['salon','dormitorio','estudio','pasillo','cocina'],poster:['dormitorio','estudio','salon','taller'],espejopie:['dormitorio','bano'],lamparco:['salon','estudio','dormitorio'],lampapel:['dormitorio','salon','estudio'],cortinas:['salon','dormitorio','estudio','cocina'],
-  alfpersa:['salon','dormitorio','estudio'],alfred:['salon','dormitorio','estudio'],alfyute:['salon','dormitorio','estudio','pasillo'],monstera:['salon','estudio','dormitorio','pasillo'],kentia:['salon','estudio','pasillo','dormitorio'],jaula:['salon','cocina','estudio'],
-  hamaca:['jardin'],columpio:['jardin'],elastica:['jardin'],caseta:['jardin'],tendedero:['jardin','taller'],compost:['jardin'],parrilla:['jardin']});
-Object.assign(ZONE_OF,{banera:'bano',camamat:'dormitorio',litera:'dormitorio',escritorio:'estudio'});
-Object.assign(GROUP,{encimera:'cocina',micro:'cocina',lavavaj:'cocina',cafetera:'cocina',mesacoc:'cocina',banera:'bano',lavabo:'bano',lavadora:'bano',camamat:'dorm',litera:'dorm',colchon:'dorm',armario:'dorm',comoda:'dorm',mesilla:'dorm',cuna:'dorm',
-  sillon:'ocio',butaca:'ocio',sofacama:'ocio',consola:'ocio',tocadisc:'ocio',piano:'ocio',muebar:'ocio',escritorio:'ocio',pizarra:'ocio',coser:'ocio'});
-Object.assign(CRAFT,{encimera:['carp',1,4],micro:['elec',1,8],lavavaj:['font',2,9],cafetera:['elec',0,5],mesacoc:['carp',0,2],banera:['font',3,8],lavabo:['font',1,6],lavadora:['font',2,9],camamat:['carp',1,5],litera:['carp',1,5],colchon:['carp',0,1],
-  armario:['carp',1,5],comoda:['carp',1,4],mesilla:['carp',0,2],cuna:['carp',1,4],sillon:['carp',1,6],butaca:['carp',1,5],sofacama:['carp',1,5],estant:['carp',0,3],mesabaja:['carp',0,2],consola:['elec',1,10],tocadisc:['elec',1,7],
-  chimenea:['alba',2,7],acuario:['font',1,6],piano:['carp',3,10],muebar:['carp',1,6],butano:['font',1,9],escritorio:['carp',0,3],pizarra:['carp',0,2],coser:['elec',1,8],cuadro:['carp',0,2],poster:['carp',0,0],espejopie:['carp',1,5],
-  lamparco:['elec',1,4],lampapel:['elec',0,2],cortinas:['carp',0,1],alfpersa:['carp',0,6],alfred:['carp',0,3],alfyute:['carp',0,2],monstera:['jard',0,1],kentia:['jard',0,2],jaula:['carp',0,3],hamaca:['carp',0,2],columpio:['carp',1,3],
-  elastica:['carp',1,7],caseta:['carp',0,3],tendedero:['carp',0,1],compost:['jard',0,1],parrilla:['alba',1,4]});
-Object.assign(WEARMUL,{camamat:0.09,litera:0.09,colchon:0.12,sofacama:0.15,sillon:0.35,butaca:0.4,consola:0.4,tocadisc:0.45,piano:0.3,escritorio:0.45,coser:0.5,armario:0.5,chimenea:0.3,acuario:0.4,hamaca:0.4,columpio:0.5,elastica:0.5});
 Object.assign(BACKD,{encimera:.06,micro:.15,lavavaj:.1,cafetera:.25,banera:.04,lavabo:.2,lavadora:.1,camamat:.02,litera:.05,armario:.1,comoda:.28,mesilla:.25,sillon:.15,sofacama:.1,estant:.3,consola:.3,tocadisc:.3,chimenea:.04,
   acuario:.28,muebar:.3,escritorio:.2,pizarra:.38,cuadro:.42,poster:.44,cortinas:.4,coser:.2});
 for(const t of ['micro','lavavaj','cafetera','lavadora','consola','tocadisc','acuario','mesilla','lamparco','lampapel','coser'])ELECTRIC.add(t);
@@ -94,8 +11,6 @@ for(const t of ['mesacoc','escritorio'])SEATED.add(t);
 for(const t of ['mesacoc','cafetera','micro','mesilla','cuadro','poster','lamparco','lampapel','cortinas','alfpersa','alfred','alfyute','monstera','kentia','jaula','butano','mesabaja','tendedero','compost','hamaca','columpio','caseta','elastica','parrilla','estant','comoda','cuna','lavabo'])SMALL_ITEMS.add(t);
 Object.assign(ACTS,{encimera:'stir',micro:'stir',cafetera:'eat',lavabo:'shower',lavadora:'stir',armario:'talk',consola:'phone',acuario:'watch',piano:'type',muebar:'eat',escritorio:'book',pizarra:'paint',coser:'type',espejopie:'talk',
   jaula:'talk',caseta:'stir',tendedero:'paint',compost:'dig',parrilla:'stir',chimenea:'watch',butano:'watch',monstera:'stir',kentia:'stir',tocadisc:'watch'});
-{const fv=(k,...t)=>{FAVS[k]=(FAVS[k]||[]).concat(t);};fv('perezosa','sillon','consola');fv('solitaria','butaca','consola','acuario');fv('artista','tocadisc','piano');fv('naturaleza','monstera','kentia','jaula','acuario','compost');
-  fv('sociable','muebar','caseta','jaula');fv('manitas','coser');fv('trabajadora','escritorio','pizarra');fv('derrochadora','armario','muebar');fv('ahorradora','coser');fv('ordenada','armario');fv('cocinillas','cafetera');}
 // camas: la lógica de dormir (siesta, despertador, seguir dormida de noche) vale para todas
 function isBedT(t){return t==='cama'||!!(OBJ[t]&&OBJ[t].bed);}
 function bedUse(u){return !!u&&isBedT(u.type)&&(u.type==='cama'||u.goal==='energia');}

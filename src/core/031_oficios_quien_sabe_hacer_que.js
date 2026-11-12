@@ -1,8 +1,6 @@
 // ---------- oficios: quién sabe hacer qué ----------
 // [oficio, nivel para instalar/montar uno comprado, nivel para fabricarlo desde cero]
-const CRAFT={silla:['carp',0,0],mesa:['carp',0,2],alfombra:['carp',0,3],banco:['carp',0,3],libros:['carp',1,3],cama:['carp',1,4],espejo:['carp',2,5],sofa:['carp',1,6],guitarra:['carp',0,8],
-  lampara:['elec',1,3],farola:['elec',3,5],telefono:['elec',0,6],tele:['elec',1,9],compu:['elec',2,10],nevera:['elec',2,10],fogon:['elec',3,9],
-  vater:['font',2,7],ducha:['font',3,8],flores:['jard',0,0],planta:['jard',0,1],arbol:['jard',0,2],seto:['jard',1,2],huerto:['jard',0,1],bancoj:['carp',0,3],barbacoa:['alba',1,4],fuente:['alba',2,6]};
+const CRAFT=DATA.profesiones.oficio_por_objeto;
 const SKN=k=>SKILLS.find(x=>x[0]===k);
 const skLabel=k=>{const x=SKN(k);return x[1]+' '+x[2];};
 function stepReq(st){

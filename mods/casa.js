@@ -1,39 +1,14 @@
 // =================== LA CASA COBRA VIDA: actividades por objeto, progreso, calidad y colecciones ===================
 const COL=()=>{if(!S.col)S.col={rec:[],lib:{},libDone:[],can:[],arte:[],cur:{},curDone:[],plat:0};const c=S.col;c.rec=c.rec||[];c.lib=c.lib||{};c.libDone=c.libDone||[];c.can=c.can||[];c.arte=c.arte||[];c.cur=c.cur||{};c.curDone=c.curDone||[];return c;};
-const RECIPES=[['Tortilla de patatas',0,'🍳'],['Arroz a la cubana',0,'🍚'],['Lentejas de la abuela',1,'🥣'],['Macarrones con chorizo',1,'🍝'],['Pisto manchego',2,'🫑'],['Mafé senegalés',2,'🥜'],['Croquetas caseras',3,'🧆'],['Yassa de pollo',3,'🍗'],['Paella de domingo',4,'🥘'],['Ramen casero',5,'🍜'],['Cocido madrileño',5,'🍲'],['Thieboudienne',6,'🐟'],['Pulpo a feira',6,'🐙'],['Menú degustación de táper',8,'🍱']];
-const BOOKS=[['El capital (versión cómic)',240,'📕'],['Cien años de soledad',420,'📗'],['Manual de fontanería para torpes',180,'📘'],['Las uvas de la ira',360,'📙'],['Una novela negra de kiosko',150,'📓'],['La mano invisible (que te quita el sueldo)',220,'📒'],['Poesía de Gloria Fuertes',120,'📔'],['Historia del movimiento obrero',300,'📚'],['El arte de cocinar con poco',160,'🍲'],['Cómo hablar en público sin morir',200,'🎤']];
-const COURSES=[['Ofimática básica',300,'logica'],['Programación para principiantes',600,'logica'],['Inglés para el curro',480,'carisma'],['Electricidad doméstica',420,'elec'],['Manipulador de alimentos',180,'cocina'],['Primeros auxilios',240,'carisma']];
-const SONGW=['Alquiler','Turno de noche','Domingo','Mi barrio','Sin contrato','Tu ventana','La última cuota','Bajo el puente','Verano en el bloque','Huelga de corazones','Persianas','Metro de las 6'];
-const ARTW=['Chaqueta con parches','Bolso de tela reciclada','Pantalón remendado con arte','Camiseta pintada a mano','Cojín de retales'];
+const RECIPES=DATA.libros.recetas;
+const BOOKS=[]; // los llena mods/libros.js con DATA.libros.en_casa
+const COURSES=DATA.libros.cursos;
+const SONGW=DATA.libros.canciones;
+const ARTW=DATA.libros.prendas;
 const Q=['💩','🙂','😋','🤩'],QN=['un desastre','normal','muy bueno','espectacular'];
 function qRoll(sk,bonus=0){const l=sk?lvl(sk):3,r=Math.random()+bonus;const v=l*.28+r*1.6-.4;return v<.35?0:v<1.25?1:v<2.4?2:3;}
 // [clave, emoji, nombre, minutos, habilidad, nivel mínimo, coste, ritmo de necesidades por minuto, final()]
-const ACTV={
-  fogon:[['rapido','🍳','Algo rápido',20,'cocina',0,0,{}],['receta','🥘','Cocinar una receta',45,'cocina',0,0,{diversion:.15},'receta'],['nueva','📖','Probar receta nueva',60,'cocina',1,4,{diversion:.2},'nueva'],['tapers','🥡','Tápers para la semana',70,'cocina',2,6,{},'tapers']],
-  encimera:[['bocata','🥪','Bocadillo',10,null,0,0,{}],['ensalada','🥗','Ensalada fresca',20,'cocina',1,2,{diversion:.05},'sano']],
-  nevera:[['picar','🧀','Picar algo',8,null,0,0,{}],['mirar','👀','Mirar qué hay',3,null,0,0,{},'mirar']],
-  libros:[['leer','📖','Seguir con su libro',60,'logica',0,0,{diversion:.12},'libro'],['hojear','📰','Hojear algo',15,null,0,0,{diversion:.15}]],
-  butaca:[['leer','📖','Seguir con su libro',60,'logica',0,0,{diversion:.14},'libro']],
-  compu:[['navegar','🌐','Navegar',30,null,0,0,{diversion:.1}],['jugar','🎮','Echar unas partidas',60,null,0,0,{diversion:.35,energia:-.05}],['curso','🎓','Curso online',60,'logica',0,0,{},'curso'],['curro','💼','Buscar curro',20,null,0,0,{},'curro']],
-  escritorio:[['estudiar','📝','Estudiar',45,'logica',0,0,{}],['curso','🎓','Curso online',60,'logica',0,0,{},'curso']],
-  guitarra:[['practicar','🎸','Practicar',40,'musica',0,0,{diversion:.15}],['componer','✍️','Componer una canción',90,'musica',2,0,{diversion:.2},'cancion'],['tocar','🎶','Tocar para la casa',30,'musica',3,0,{diversion:.3,social:.3},'concierto']],
-  piano:[['practicar','🎹','Practicar escalas',40,'musica',0,0,{diversion:.12}],['componer','✍️','Componer una canción',90,'musica',2,0,{diversion:.2},'cancion'],['tocar','🎶','Tocar para la casa',30,'musica',3,0,{diversion:.3,social:.3},'concierto']],
-  espejo:[['arreglarse','💇','Arreglarse',12,null,0,0,{diversion:.3},'guapo'],['discurso','🎤','Ensayar un discurso',35,'carisma',0,0,{}],['entrevista','👔','Ensayar una entrevista',30,'carisma',1,0,{},'entrevista']],
-  espejopie:[['arreglarse','💇','Arreglarse',12,null,0,0,{diversion:.3},'guapo'],['discurso','🎤','Ensayar un discurso',35,'carisma',0,0,{}]],
-  sofa:[['tirarse','🛋️','Tirarse en el sofá',40,null,0,0,{}],['peli','🍿','Ver una peli',110,null,0,0,{diversion:.25},'peli'],['siesta','😴','Siesta en el sofá',50,null,0,0,{energia:.5},'siesta']],
-  tele:[['tele','📺','Ver la tele',40,null,0,0,{}],['serie','🍿','Maratón de serie',120,null,0,0,{diversion:.2,energia:-.04},'serie'],['noticias','🗞️','Ver las noticias',20,null,0,0,{},'noticias'],['futbol','⚽','Ver el fútbol',100,null,0,0,{diversion:.25,social:.05},'futbol']],
-  consola:[['jugar','🎮','Jugar',50,null,0,0,{}],['online','🎧','Jugar online con amigos',60,null,0,0,{social:.25},'online']],
-  cama:[['dormir','🛏️','Dormir',0,null,0,0,{}],['siesta','😴','Siesta corta',45,null,0,0,{},'siesta'],['techo','💭','Mirar al techo y pensar',20,null,0,0,{diversion:.1},'techo']],
-  camamat:[['dormir','🛏️','Dormir',0,null,0,0,{}],['siesta','😴','Siesta corta',45,null,0,0,{},'siesta'],['techo','💭','Mirar al techo y pensar',20,null,0,0,{diversion:.1},'techo']],
-  ducha:[['rapida','🚿','Ducha rápida',10,null,0,0,{}],['cantar','🎤','Ducha cantando',22,'musica',0,0,{diversion:.35},'cantar']],
-  banera:[['bano','🛁','Baño',35,null,0,0,{}],['sales','🫧','Baño con sales y velas',60,null,0,3,{diversion:.35,energia:.1},'relax']],
-  planta:[['regar','💧','Regar',8,'jard',0,0,{}],['hablar','🌱','Hablarle a la planta',6,null,0,0,{diversion:.6},'planta']],
-  monstera:[['regar','💧','Limpiar hojas',10,'jard',0,0,{}],['hablar','🌱','Hablarle a la planta',6,null,0,0,{diversion:.6},'planta']],
-  coser:[['arreglar','🧵','Arreglar ropa',40,null,0,0,{}],['customizar','✂️','Customizar una prenda',90,null,0,5,{diversion:.2},'arte']],
-  tocadisc:[['escuchar','💿','Escuchar vinilos',40,'musica',0,0,{}],['bailar','💃','Bailar en el salón',15,null,0,0,{diversion:1,energia:-.3},'bailar']],
-  cafetera:[['cafe','☕','Un café',8,null,0,0,{}],['tertulia','🗣️','Café y charla con quien esté',25,null,0,0,{social:.6,diversion:.2},'tertulia']],
-  pizarra:[['presentacion','📊','Ensayar presentación',35,'carisma',0,0,{}],['plan','🗺️','Planear la semana',20,'logica',0,0,{},'plan']],
-};
+const ACTV=DATA.objetos.actividades;
 const ACT_DEF=(t,k)=>(ACTV[t]||[]).find(a=>a[0]===k);
 const actLocked=a=>a[5]&&a[4]&&lvl(a[4])<a[5];
 function curBook(){const C=COL();for(const [n,len] of BOOKS)if(!C.libDone.includes(n))return [n,len];return null;}

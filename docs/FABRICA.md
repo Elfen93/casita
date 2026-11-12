@@ -9,6 +9,7 @@ Cómo trabajan varios agentes a la vez sin pisarse.
 ```
 build.py          junta todo → casita.html (dev) e index.html + sw.js (PWA)
 build.json        orden de los módulos
+data/*.json       el contenido (data/README.md); scripts/datos.py lo comprueba y lo formatea
 src/head.html     HTML + CSS del juego
 src/core/NNN_*.js el motor, partido por secciones (tocar lo mínimo)
 src/tail.html     cierre
@@ -47,7 +48,8 @@ No tocar: src/core, movil.js.
 
 Reglas:
 - Cada agente trabaja en **su worktree** (rama `fab/T-042-instituto`) y entrega un diff + capturas + resultado de tests. No publica.
-- Un agente, un módulo nuevo o uno existente; nunca dos agentes en el mismo fichero.
+- Un agente, un módulo nuevo o uno existente; nunca dos agentes en el mismo fichero. Vale también para `data/`: dos tareas que tocan el mismo archivo de datos no van en la misma tanda.
+- El contenido (fichas, nombres, frases de lista) se entrega en `data/`, con `python3 scripts/datos.py --fmt` pasado; el módulo lleva solo la lógica.
 - Si necesita un cambio en `src/core`, lo pide a la integradora con la línea exacta.
 - Textos nuevos: etiqueta `// GUION:revisar` hasta que guion los lea.
 - La integradora junta en `main`, corre `test.py all`, publica (GitHub Pages + artifact) y apunta en `CHANGELOG.md`.

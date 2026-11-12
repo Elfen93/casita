@@ -1,6 +1,5 @@
 // =================== DESEOS CON LOS PIES EN EL SUELO: se quiere lo que se puede tener según dónde vive y lo que gana ===================
-// una piscina de obra cuesta lo que cuesta: unos 3.000 € por casilla (6 casillas ≈ 18.000 €)
-if(FLOORS[9]&&FLOORS[9].water)FLOORS[9].p=3000;
+// una piscina de obra cuesta lo que cuesta: unos 3.000 € por casilla (6 casillas ≈ 18.000 €): suelo 9 en data/objetos.json
 const GARDEN_T=new Set(['huerto','bancoj','barbacoa','fuente','arbol','seto','farola','flores']);
 function wantOK(w){if(!w)return false;const own=S.owned;const all=HT().build==='all';const sp=spare();const t=w.steps&&w.steps[0]&&(w.steps[0].t||w.steps[0].v);
   if(w.key==='pool')return own&&all&&sp>=25000;

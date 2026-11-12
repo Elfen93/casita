@@ -1,5 +1,5 @@
 // ---------- calidad y desgaste ----------
-const TIERS=[{n:'Muy mala',e:'🪵',price:0.25,eff:0.55,wear:2.8,decor:-1,txt:'casera, hecha por una principiante'},{n:'Mala',e:'🔩',price:0.4,eff:0.7,wear:2.1,decor:0,txt:'casera y con fallos'},{n:'Básico',e:'🥉',price:0.6,eff:0.8,wear:1.7,decor:0,txt:'barato, rinde menos y se gasta rápido'},{n:'Normal',e:'🥈',price:1,eff:1,wear:1,decor:0,txt:'equilibrado'},{n:'Premium',e:'🥇',price:1.9,eff:1.3,wear:0.45,decor:2,txt:'caro, rinde +30%, dura el doble y decora'}];
+const TIERS=DATA.objetos.calidades;
 let buyTier=3; // 2 Básico · 3 Normal · 4 Premium · 5 = que lo fabrique Ana
 const priceOf=(t,q)=>Math.round(OBJ[t].p*TIERS[q??3].price*PM()*(S.shortage>S.day?1.3:1));
 const condOf=o=>o.c==null?100:o.c;
@@ -9,7 +9,7 @@ function sellValue(o){return Math.round(priceOf(o.t,o.q)*0.5*(0.3+0.7*condOf(o)/
 function gainSkill(k,amt){const b=skillInfo(S.skills[k]).lv;S.skills[k]+=amt*Dm().xp*traitXP(k);const a=skillInfo(S.skills[k]).lv;
   if(a>b){const nm=SKILLS.find(x=>x[0]===k);tally('skills',`${nm[2]} (nivel ${a})`);if(a===5||a===10)tell(`${a===10?'Ya domina':'Empieza a dominar'} ${nm[2].toLowerCase()}: nivel ${a}.`,nm[1]);toast(`⭐ Ana subió ${nm[2]} a nivel ${a}`,true);sfx('level');popBubble('⭐');const s=S.sim;for(let q=0;q<5;q++)emit('emoji',s.x+(Math.random()-.5)*.6,s.y+(Math.random()-.5)*.6,40+q*6,{vz:30,life:1.5,txt:'⭐',size:.8});}}
 // los muebles que se usan durante horas se gastan más despacio por minuto
-const WEARMUL={cama:0.09,sofa:0.35,compu:0.4,tele:0.4,libros:0.45,guitarra:0.45,banco:0.5,telefono:0.6,espejo:0.6};
+const WEARMUL=DATA.objetos.desgaste;
 const ELECTRIC=new Set(['tele','compu','nevera','fogon','telefono','lampara','farola']);
 function replaceWant(i,q,why){const o=S.obj[i];return {key:'rep-'+i,name:'Cambiar '+OBJ[o.t].n.toLowerCase(),emoji:'🔁',why:why||'',kind:'fix',steps:[{k:'replace',i,q}]};}
 function addJobStep(step,name,emoji,cmd){

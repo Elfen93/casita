@@ -3,22 +3,11 @@ const HP=()=>{if(!S.hp){const ch=S.char||{};const f=ch.g==='f';let base={delgada
 const ovw=()=>HP().peso-HP().base;
 const gymFee=()=>hrs(HP().gymGood?9:3);
 const hpHas=k=>HP().list.some(x=>x.k===k);
-const HP_DEF={
-  hiper:{n:'Hipertensión',e:'🩺',d:'Pastilla diaria de por vida. La tensión no avisa.',med:8,chronic:true},
-  diab:{n:'Diabetes tipo 2',e:'💉',d:'Controles, dieta, medicación. Reversible si cambia la vida; la vida no siempre deja.',med:14,chronic:true},
-  lumbar:{n:'Lumbalgia crónica',e:'🦴',d:'La espalda de quien carga, friega o está de pie ocho horas. Baja, rehabilitación, vuelta a lo mismo.',med:4,chronic:false},
-  carpo:{n:'Túnel carpiano',e:'🖐️',d:'Ocho horas de ratón. Hormigueo de noche. Muñequera y, si no, cirugía.',med:3,chronic:false},
-  vista:{n:'Vista cansada',e:'👓',d:'Pantallas. Gafas nuevas: eso no lo cubre la pública.',med:0,chronic:true},
-  anemia:{n:'Anemia',e:'🩸',d:'Comer poco y mal durante meses. Mareos, frío, cansancio que no se va durmiendo.',med:3,chronic:false},
-  ansiedad:{n:'Ansiedad',e:'🫀',d:'El corazón a mil sin motivo. Lo diagnostican en cinco minutos y recetan lo mismo a todo el barrio.',med:5,chronic:false},
-};
+const HP_DEF=DATA.reglas.salud;
 // ---- ingesta: todo lo que sube el hambre cuenta; de dónde viene, también ----
 {const _up=update;update=function(gm){const h0=S.needs.hambre;const r=_up.apply(this,arguments);try{const H=HP();const d=S.needs.hambre-h0;if(d>1){const u=S.sim.use;const src=S.sim.outingActive?(S.sim.outingActive==='comedor'?.9:1.3):u&&(u.type==='fogon'||u.type==='encimera')?(u.act==='sano'?.7:.9):u&&u.type==='nevera'?1.15:u&&u.type==='micro'?1.2:S.sim.work>0?(S.tapers!=null&&S.lastTaper===S.day?.9:1.25):1.1;H.in+=d*src*(H.diet?.85:1);}}catch(e){}return r;};}
 // ---- gimnasio y calistenia ----
-Object.assign(OUT,{
-  gimnasio:{n:'Ir al gimnasio',e:'🏋️',dur:90,h:[6.5,22],why:'pesas, cinta, espejo',req:()=>!!HP().gymMember},
-  calistenia:{n:'Barras del parque',e:'🤸',dur:60,h:[7,21],why:'dominadas con los del barrio, gratis'},
-});
+conLogica(OUT,{gimnasio:{req:()=>!!HP().gymMember}});
 {const _oc=outCost;outCost=function(k){if(k==='gimnasio'||k==='calistenia')return 0;return _oc.apply(this,arguments);};}
 {const _ob=outBack;outBack=function(k){const H=HP();const nd=S.needs;const add=(n,v)=>nd[n]=Math.max(0,Math.min(100,nd[n]+v));const n=CH().name;
   if(k==='gimnasio'){H.gym++;H.gymMonth++;H.burn+=H.gymGood?26:22;S.fit=Math.min(100,(S.fit||0)+(H.gymGood?7:6));if(H.gymGood)add('higiene',40);add('diversion',10);add('energia',-15);add('higiene',-30);add('social',6);if(hpHas('lumbar')&&Math.random()<.3){const x=H.list.find(q=>q.k==='lumbar');x.sev=Math.max(0,x.sev-1);}

@@ -3646,15 +3646,15 @@ function sceneCam(sc,key){if(sceneKey===key)return;sceneKey=key;const wh=sc.out?
 
 
 // =================== VIDA SOCIAL: amistades, amor, familia ===================
-const ORIENT={hombres:'Hombres',mujeres:'Mujeres',ambos:'Hombres y mujeres',nadie:'Nadie (arromántica)'};
-const RELSTYLE={estable:'Busca pareja estable',libre:'Relaciones libres',soltera:'Soltería feliz'};
-const KIDSW={si:'Quiere hijos',quiza:'Ya se verá',no:'No quiere hijos'};
-const BODAW={si:'Quiere casarse',igual:'Le da igual',no:'No cree en el matrimonio'};
-const STAGE={conocida:'Conocida',amiga:'Amistad',cita:'Citas',rollo:'Amigos con derecho',pareja:'Pareja',convive:'Viven juntos',casada:'Casados',ex:'Ex'};
+const ORIENT=DATA.personas.orientacion;
+const RELSTYLE=DATA.personas.estilo_relacion;
+const KIDSW=DATA.personas.quiere_hijos;
+const BODAW=DATA.personas.quiere_boda;
+const STAGE=DATA.personas.etapas;
 function defaultLife(g){const r=Math.random();return {orient:g==='f'?(r<.72?'hombres':r<.86?'mujeres':'ambos'):g==='m'?(r<.75?'mujeres':r<.88?'hombres':'ambos'):(r<.5?'ambos':r<.75?'mujeres':'hombres'),rel:pickR(['estable','estable','libre','soltera']),kids:pickR(['si','quiza','no']),boda:pickR(['si','igual','no'])};}
 const LIFE=()=>S.life||(S.life=defaultLife(CH().g));
 const likes=(orient,g)=>orient==='ambos'?g!=='x'||true:orient==='hombres'?g==='m':orient==='mujeres'?g==='f':false;
-const LEFT=['marxista','anarquista','socialdemocrata','ecologista'],RIGHT=['liberal','libertaria','conservadora'];
+const LEFT=DATA.ideologias.izquierda,RIGHT=DATA.ideologias.derecha;
 function compatOf(p){let c=50;const a=S.ideo,b=p.ideo;if(a===b&&a!=='apolitica')c+=18;else if((LEFT.includes(a)&&RIGHT.includes(b))||(RIGHT.includes(a)&&LEFT.includes(b)))c-=16*(isI('marxista','anarquista','libertaria')?1.4:1);
   const L=LIFE();if(L.kids!=='quiza'&&p.kids!=='quiza')c+=L.kids===p.kids?10:-14;if(L.rel===p.relStyle)c+=8;return Math.max(5,Math.min(95,c+(p.spark||0)));}
 const canLove=p=>p.adult!==false&&likes(LIFE().orient,p.g)&&likes(p.orient,CH().g);
@@ -3666,12 +3666,12 @@ function newPerson(where,romantic){
   const og=CH().g;const orient=romantic?(og==='f'?(g==='m'?pickR(['mujeres','mujeres','ambos']):pickR(['mujeres','ambos'])):og==='m'?(g==='f'?pickR(['hombres','hombres','ambos']):pickR(['hombres','ambos'])):'ambos'):pickR(['hombres','mujeres','ambos','mujeres','hombres']);
   const ideo=Math.random()<.35&&S.ideo?S.ideo:pickR(IDEO_ORDER);
   const p={k:'p'+(S.pid=(S.pid||100)+1),n:ch.name,g,ch,age:ch.age,ideo,orient,relStyle:pickR(['estable','estable','libre','soltera']),kids:pickR(['si','quiza','no']),boda:pickR(['si','igual','no']),
-    job:pickR(['enfermera','profe','camarera','programadora','electricista','cajera','abogada','diseñadora','repartidora','bombera','funcionaria','fontanera']),rel:15+Math.random()*15,love:0,stage:'conocida',met:where,metDay:S.day,spark:Math.round((Math.random()-.5)*20),e:'🙂',r:'',mi:null};
+    job:pickR(Object.keys(DATA.personas.oficios)),rel:15+Math.random()*15,love:0,stage:'conocida',met:where,metDay:S.day,spark:Math.round((Math.random()-.5)*20),e:'🙂',r:'',mi:null};
   if(romantic){p.love=10+Math.random()*15;}
   p.r=`${roleTxt(p)}`;S.people.push(p);
   if(S.people.length>18){const drop=S.people.filter(q=>q.k.startsWith('p')&&!['pareja','convive','casada','rollo','cita'].includes(q.stage)).sort((a,b)=>a.rel-b.rel)[0];if(drop)S.people.splice(S.people.indexOf(drop),1);}
   return p;}
-function roleTxt(p){const jobF={enfermera:['enfermera','enfermero'],profe:['profe','profe'],camarera:['camarera','camarero'],programadora:['programadora','programador'],electricista:['electricista','electricista'],cajera:['cajera','cajero'],abogada:['abogada','abogado'],diseñadora:['diseñadora','diseñador'],repartidora:['repartidora','repartidor'],bombera:['bombera','bombero'],funcionaria:['funcionaria','funcionario'],fontanera:['fontanera','fontanero']}[p.job]||[p.job,p.job];return (p.g==='m'?jobF[1]:jobF[0])+', '+p.age+' años';}
+function roleTxt(p){const jobF=DATA.personas.oficios[p.job]||[p.job,p.job];return (p.g==='m'?jobF[1]:jobF[0])+', '+p.age+' años';}
 const isPartner=p=>['pareja','convive','casada'].includes(p.stage);
 const partner=()=>(S.people||[]).find(isPartner);
 const liveIn=()=>(S.people||[]).find(p=>p.stage==='convive'||p.stage==='casada');

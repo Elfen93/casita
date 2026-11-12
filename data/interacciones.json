@@ -1,0 +1,108 @@
+{
+  "_": "Lo que se hace con la gente: gestos, menú por persona, frases de convivencia, respuestas del móvil y agenda. Campos en data/README.md.",
+
+  "gestos": {
+    "charlar": {"e": "💬", "n": "Charlar"},
+    "chiste": {"e": "😂", "n": "Contar un chiste"},
+    "abrazar": {"e": "🫂", "n": "Abrazar"},
+    "ligar": {"e": "💘", "n": "Ligar"},
+    "besar": {"e": "💋", "n": "Besar"},
+    "cama": {"e": "🔥", "n": "Ir a la cama"},
+    "hotel": {"e": "🏨", "n": "Escapada a un hotel"},
+    "sucasa": {"e": "🔑", "n": "Ir a su casa"},
+    "discutir": {"e": "😠", "n": "Discutir"},
+    "echar": {"e": "🚪", "n": "Pedir que se vaya"},
+    "quedarse": {"e": "🌙", "n": "Pedirle que se quede a dormir"},
+    "irse": {"e": "🚶", "n": "Que se vaya a casa (sin dormir)"}
+  },
+
+  "menu_persona": {
+    "gest": "🤝 Interactuar aquí",
+    "call": "☎️ Llamar",
+    "out": "🍻 Quedar para tomar algo",
+    "home": "🏠 Invitar a casa",
+    "stay": "🌙 Que se quede a dormir",
+    "date": "🌹 Ir de cita",
+    "flirt": "💘 Ligar",
+    "ask": "❤️ Pedirle salir",
+    "movein": "🏠 Proponer vivir juntos",
+    "wed": "💍 Casarse",
+    "hecho": "📜 Pareja de hecho",
+    "break": "💔 Romper"
+  },
+
+  "convivencia_frases": {
+    "madre": [["¿Has comido?", "Sí, mamá."], ["Baja la basura cuando salgas.", "Vale…"], ["Tu tía pregunta por ti.", "Dile que estoy bien."], ["Esto de la luz es un robo.", "Ya ves."], ["¿Y esa cara?", "Nada, el curro."], ["Te he guardado un táper.", "Gracias, mamá ❤️"]],
+    "pareja": [["¿Qué cenamos?", "Lo que haya."], ["Ven aquí.", "🥰"], ["¿Me pasas el mando?", "Toma."], ["Hoy el jefe…", "Cuéntame."], ["Te quiero, tont{o}.", "Y yo."], ["¿Salimos el finde?", "Si llega el sueldo…"]],
+    "mate": [
+      ["¿De quién es este plato?", "Mío, perdón."],
+      ["El casero ha escrito otra vez.", "Qué quiere ahora."],
+      ["Hay cerveza en la nevera.", "Eres un ángel."],
+      ["¿Te toca limpiar a ti?", "…Sí."],
+      ["He oído que suben el alquiler.", "Otra vez no."],
+      ["¿Vienes a la mani el sábado?", "Si no curro, sí."]
+    ],
+    "guest": [["Qué piso más apañado.", "Lo que da el sueldo."], ["¿Tienes algo de beber?", "Mira en la nevera."], ["Pon música, anda.", "Marchando."], ["¿Y tu madre, qué tal?", "Igual que siempre."]],
+    "x": [["Vaya día.", "Ni me hables."], ["¿Has visto las noticias?", "Prefiero no."], ["Mañana madrugo.", "Yo también."]]
+  },
+
+  "convivencia_dialogos": [
+    ["¿Tú también vives aquí?", "Desde hace un mes."],
+    ["El baño está libre.", "Gracias."],
+    ["¿Un café?", "Venga."],
+    ["Esta tele se oye fatal.", "Es de la época de Franco."],
+    ["¿Qué tal el curro?", "Pues eso. Curro."],
+    ["¿Has visto mis llaves?", "En la mesa."],
+    ["Qué frío hace.", "Y la calefacción, ni tocarla."]
+  ],
+
+  "movil_respuestas": {
+    "gen": [["🙂 Contestar con cariño", 3, null, "¡Ja, ja! Sí, un desastre 🙃", "Jajaja, ¡qué me dices! 😄"], ["👍 Un «ok»", 0, null, "👍", "ok"], ["🙈 Dejar en visto", -2, null, null, null]],
+    "carino": [["❤️ Responder con cariño", 5, null, "Que sí, tranqui. Te quiero 😘", "Sí, mamá, tranquila. Te quiero ❤️"], ["🙄 «Que sí, pesad{o}»", -1, null, "Vale, vale…"], ["📞 Llamar", 6, "call", null, null]],
+    "domingo": [["🥘 «Allí estaré»", 7, null, "¡Pues no llegues tarde! 🥰"], ["😬 «No puedo, tengo lío»", -3, null, "Bueno… otro domingo 😔"]],
+    "audio": [["🎧 Escucharlo entero", 5, null, "¿Lo has oído? Es importante 😤", "Escuchado entero, eh 😅"], ["⏩ A 2x", 2, null, null, "Escuchado (a 2x) 😇"], ["👍 Responder sin escuchar", -2, null, "¿Lo has escuchado? 🤨", "👍"]],
+    "amor": [["😍 Ponerse tiern{o}", 5, "love", "🥰🥰", "Y yo en ti, todo el rato 🥰"], ["😏 Responder con picardía", 4, "love", "😳 Calla", "¿Ah, sí? ¿Y qué piensas exactamente? 😏"], ["📞 Llamar", 4, "call", null]],
+    "cena": [["🏠 «Ven a casa»", 5, "home", "¡Voy! Llevo vino 🍷"], ["🍝 «Vamos a cenar fuera»", 6, "out", "Reservo en el italiano 🍝"], ["😮‍💨 «Hoy no puedo»", -3, null, "Vale… mañana entonces 😔"]],
+    "dormir": [["🌙 «Vente»", 6, "stay", "Voy para allá 😘"], ["😴 «Hoy necesito dormir sol{o}»", -1, null, "Lo entiendo, descansa 💤"]],
+    "apoyo": [["🫂 Dar ánimos", 6, null, "Gracias… de verdad 🫶", "Ánimo, de verdad. Aquí me tienes 🫂"], ["📞 Llamar para desahogarse", 7, "call", null, null], ["🤷 «Así es la vida»", -3, null, "Ya…"]],
+    "risa": [["😂 Reírse", 3, null, "JAJAJA te lo dije", "JAJAJAJA me muero 😂"], ["🔁 Mandar otro meme", 4, null, "😂 Para ya que estoy en el bus", "[Meme de un jefe diciendo «somos una familia»]"], ["😐 No hacer caso", -1, null, null, null]],
+    "queja": [["✊ «Hay que organizarse»", 4, "org", "Tienes razón. Lo hablo con el resto."], ["😮‍💨 «Pues aguantar…»", 1, null, "Ya, qué remedio."], ["🤐 Cambiar de tema", -1, null, "Ok…", "Oye, ¿y tú qué tal el finde?"]],
+    "asamblea": [["✊ «Allí estaré»", 5, "org", "¡Así me gusta! 💪"], ["😬 «No me la juego»", -2, null, "Bueno, tú verás…"]],
+    "canas": [["🍻 «¡Vamos ahora!»", 6, "out", "¡Bajo en 10 minutos!"], ["📅 «Mejor otro día»", 1, null, "¡Te tomo la palabra!"], ["🏠 «Vente a casa»", 5, "home", "¡Voy!"]],
+    "regalo": [["🥰 «¡Muchas gracias!»", 6, null, "¡De nada, cariño!", "¡Muchas gracias, de verdad!"], ["🍪 Devolverle el táper con galletas", 8, null, "¡Ay, qué apañad{o}!", "Le dejé el táper con galletas 🍪"]],
+    "ex": [["🙂 Contestar cordial", 2, null, "Me alegro de que estés bien.", "Bien, tirando. Me alegro de saber de ti."], ["🚫 No contestar", 0, null, null, null], ["💬 «¿Quedamos para hablar?»", 4, "out", "Vale… mejor en persona."]]
+  },
+
+  "agenda": [
+    ["gimnasio", "🏋️", "Gimnasio", "out"],
+    ["calistenia", "🤸", "Barras del parque", "out"],
+    ["deporte", "🏃", "Salir a correr", "out"],
+    ["sindicato", "✊", "Asamblea sindical", "out"],
+    ["militancia", "🏴", "Reunión política", "out"],
+    ["clase", "🎓", "Ir a clase", "out"],
+    ["biblioteca", "📚", "Biblioteca", "out"],
+    ["amigos", "🍻", "Quedar con amigos", "out"],
+    ["terapia", "🧠", "Terapia", "out"],
+    ["voluntariado", "🤲", "Voluntariado", "out"],
+    ["misa", "⛪", "Misa y vermú", "out"],
+    ["libreria", "📖", "Librería", "out"],
+    ["mercadillo", "📦", "Mercadillo", "out"],
+    ["networking", "🥂", "Afterwork", "out"],
+    ["estudiar", "📝", "Estudiar en casa", "home", ["escritorio", "libros", "compu"], "estudiar"],
+    ["escribir", "✍️", "Escribir", "home", ["escritorio", "compu"], "escribir"],
+    ["pintar", "🎨", "Pintar", "home", ["caballete"], "pintar"],
+    ["leer", "📖", "Leer", "home", ["estant", "libros", "butaca", "sofa"], "leer"],
+    ["tapers", "🥡", "Tápers para la semana", "home", ["fogon"], "tapers"],
+    ["limpiar", "🧽", "Limpiar", "home", ["fogon", "vater", "nevera"], "limpiar"],
+    ["curso", "🎓", "Curso online", "home", ["compu", "escritorio"], "curso"],
+    ["practicar", "🎸", "Practicar música", "home", ["guitarra", "piano"], "practicar"],
+    ["madre", "☎️", "Llamar a su madre", "home", ["telefono"], "madre"],
+    ["siesta", "😴", "Siesta", "home", ["cama", "camamat", "sofa"], "siesta"],
+    ["peli", "🍿", "Peli", "home", ["sofa"], "peli"],
+    ["huerto", "🥕", "Cuidar el huerto", "home", ["huerto"], "cuidar"],
+    ["cuento", "🧒", "Rato con los críos", "kid"],
+    ["nada", "🛋️", "Libre", "free"]
+  ],
+
+  "agenda_horas": [[7, "7:00"], [9, "9:00"], [11, "11:00"], [13, "13:00"], [15, "15:00"], [17, "17:00"], [18.5, "18:30"], [20, "20:00"], [21.5, "21:30"]]
+}

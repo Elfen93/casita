@@ -1,8 +1,5 @@
 // =================== OPCIONES CON CADA PERSONA: un menú claro en vez de iconos sueltos ===================
-OUT.parque={n:'Paseo por el parque',e:'🌳',dur:90,h:[8,21],why:'hablar con calma, aire libre'};
-OUT.visita={n:'Ir a su casa',e:'🏡',dur:160,h:[10,22],why:'verse en su terreno'};
-if(typeof OUT_LIVE!=='undefined'){OUT_LIVE.parque={social:.22,diversion:.15};OUT_LIVE.visita={social:.3,diversion:.14,hambre:.05};}
-const PE_LBL={gest:'🤝 Interactuar aquí',call:'☎️ Llamar',out:'🍻 Quedar para tomar algo',home:'🏠 Invitar a casa',stay:'🌙 Que se quede a dormir',date:'🌹 Ir de cita',flirt:'💘 Ligar',ask:'❤️ Pedirle salir',movein:'🏠 Proponer vivir juntos',wed:'💍 Casarse',hecho:'📜 Pareja de hecho',break:'💔 Romper'};
+const PE_LBL=DATA.interacciones.menu_persona;
 {const _ob=outBack;outBack=function(k){if(k!=='parque'&&k!=='visita')return _ob.apply(this,arguments);try{const p=(S.people||[]).find(q=>q.k===S.outWith);const n=CH().name;S.outWith=null;S.dateOut=false;if(!p)return;
   p.rel=Math.min(100,(p.rel||0)+(k==='visita'?6:5));p.last=S.day;if(p.love!=null&&['cita','rollo','pareja','convive','casada'].includes(p.stage))p.love=Math.min(100,p.love+4);
   tell(k==='parque'?pickR([`Paseo con ${p.n} por el parque. Dos vueltas al estanque y una conversación que no habrían tenido en un bar.`,`${n} y ${p.n} han acabado sentados en un banco viendo a la gente pasear perros. Nadie miró el móvil.`]):pickR([`${n} ha estado en casa de ${p.n}. Café, fotos viejas en la estantería y un sofá que se hunde.`,`En casa de ${p.n} se nota cómo vive: ${pickR(['todo ordenado al milímetro','ropa en todas las sillas','plantas por todas partes','la tele siempre puesta'])}. Ha sido una buena tarde.`]),k==='parque'?'🌳':'🏡');}catch(e){}};}

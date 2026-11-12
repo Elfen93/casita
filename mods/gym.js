@@ -1,6 +1,4 @@
 // =================== GIMNASIOS: el low cost de nave y el club bueno con piscina; y el local político con Lenin en la pared ===================
-PLACES.gym={n:'FitBarrio 24h',e:'🏋️',r:[-12,23,-6,25],h:30,c:'#2b2b33',acc:'#b5ff3a',d:'Nave con máquinas, espejos y nadie que te explique nada. Barato. Permanencia de un año.',outs:['gimnasio']};
-PLACES.gymbueno={n:'Club Aqua',e:'🏊',r:[34,-12,40,-5],h:34,c:'#dfe8ec',glass:1,d:'Piscina climatizada, clases dirigidas, toallas que huelen a suavizante. Cuota de quien puede.',outs:['gimnasio']};
 {const _d=destOf;destOf=function(k){if(k==='gimnasio'){const H=typeof HP==='function'?HP():null;return H&&H.gymGood?'gymbueno':'gym';}if(k==='calistenia')return 'parque';return _d.apply(this,arguments);};}
 // ---- helpers comunes ----
 const gH=i=>Math.abs(hash(i));
@@ -89,12 +87,7 @@ SCENES['gymbueno']=function(E){const {tt,night,npc}=E;const it=[],add=(x,y,f)=>i
   const after=()=>{const [a,b]=P(3.6,6.4,-4);ctx.save();ctx.globalCompositeOperation='lighter';const g=ctx.createRadialGradient(a,b,0,a,b,120);g.addColorStop(0,'rgba(120,200,255,.12)');g.addColorStop(1,'rgba(120,200,255,0)');ctx.fillStyle=g;ctx.fillRect(a-150,b-80,300,160);ctx.restore();};
   return {W,D,floor:'#d8c9a8',wall:'#eef3f5',out:false,tile:false,drawBase,decor,items:it,ana,after};};
 // ---- el local político: retratos, libros y símbolos según la corriente ----
-const POL_X={
-  marxista:{col:'#c0262d',fg:'#f2c230',who:[['LENIN','bald'],['MARX','beard'],['ROSA LUXEMBURG','bun'],['GRAMSCI','glasses']],books:['EL CAPITAL','¿QUÉ HACER?','EL ESTADO Y LA REVOLUCIÓN','MANIFIESTO COMUNISTA','REFORMA O REVOLUCIÓN','CUADERNOS DE LA CÁRCEL','LA IDEOLOGÍA ALEMANA','LOS CONDENADOS DE LA TIERRA'],sym:'☭',banner:'PROLETARIOS DE TODOS LOS PAÍSES, UNÍOS'},
-  anarquista:{col:'#1d1d1d',fg:'#c0262d',who:[['DURRUTI','cap'],['KROPOTKIN','beard'],['EMMA GOLDMAN','glasses'],['FEDERICA MONTSENY','bun']],books:['LA CONQUISTA DEL PAN','EL APOYO MUTUO','HOMENAJE A CATALUÑA','DIOS Y EL ESTADO','MUJERES LIBRES','EL ÚNICO Y SU PROPIEDAD'],sym:'Ⓐ',banner:'NI DIOS NI AMO NI PATRÓN'},
-  ecologista:{col:'#2f7a3a',fg:'#e9c46a',who:[['BERTA CÁCERES','bun'],['CHICO MENDES','beard'],['RACHEL CARSON','short'],['VANDANA SHIVA','bun']],books:['PRIMAVERA SILENCIOSA','DECRECIMIENTO','LA COMUNA DE LA TIERRA','MENOS ES MÁS','ECOLOGÍA SOCIAL'],sym:'🌻',banner:'NO HAY JUSTICIA SOCIAL SIN JUSTICIA CLIMÁTICA'},
-  socialdemocrata:{col:'#d1242f',fg:'#fff',who:[['OLOF PALME','short'],['PABLO IGLESIAS P.','beard'],['CLARA CAMPOAMOR','bun']],books:['EL ESTADO DEL BIENESTAR','LA TERCERA VÍA (CRÍTICA)','LOS AÑOS DEL PACTO'],sym:'🌹',banner:'TRABAJO, DERECHOS, DIGNIDAD'},
-};
+const POL_X=DATA.ideologias.local;
 function polPortrait(y,z,name,kind,T){const w=.9,hgt=18;poly([P(0,y,z),P(0,y+w,z),P(0,y+w,z+hgt),P(0,y,z+hgt)],'#3b3247');poly([P(0,y+.05,z+1),P(0,y+w-.05,z+1),P(0,y+w-.05,z+hgt-1),P(0,y+.05,z+hgt-1)],T.col);
   const [a,b]=P(0,y+w/2,z+hgt*.58);ctx.save();ctx.translate(a,b);ctx.transform(1,-.5,0,1,0,0);const sk='#e9c9a8';
   // cara estilizada tipo cartel (duotono)

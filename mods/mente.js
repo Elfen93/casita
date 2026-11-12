@@ -40,11 +40,10 @@ function mtDaily(){const m=MT();const nd=S.needs;let d=0;const why=[];
 // aspiraciones que caducan cuentan como fallo
 {const _ac2=aspCheck;aspCheck=function(){const A=S.asp;const before=A?A.active.slice():[];const dn=A?Object.keys(A.done||{}).length:0;const r=_ac2.apply(this,arguments);try{if(A){const after=A.active;const dn2=Object.keys(A.done||{}).length;const dropped=before.filter(id=>!after.includes(id)&&!(A.done||{})[id]);if(dropped.length&&dn2===dn){A.failed=(A.failed||0)+dropped.length;for(const id of dropped){const a=ASP.find(x=>x.id===id);if(a&&throttled('aspfail',2e5))tell(`Lo de «${a.t()}» ya no va a pasar. ${CH().name} lo sabe.`,'💭');}}}}catch(e){}return r;};}
 // ---- salidas: terapia, bar (beber), el camello ----
-Object.assign(OUT,{
-  terapia:{n:'Terapia (privada)',e:'🧠',dur:70,h:[9,20],why:'hablar con alguien que cobra por escuchar',req:()=>!(MT().ther&&MT().ther.on&&MT().ther.pub)&&(MT().an<60||(MT().ther&&MT().ther.on))},
-  beber:{n:'Beber en el bar',e:'🍷',dur:150,h:[18,23],why:'olvidarse un rato',req:()=>MT().an<50||MT().alc>=2},
-  pillar:{n:'Ir a pillar',e:'💊',dur:40,h:[16,23],why:'lo que sea con tal de no sentir esto',req:()=>!!MT().deal||MT().an<40},
-});
+conLogica(OUT,{
+  terapia:{req:()=>!(MT().ther&&MT().ther.on&&MT().ther.pub)&&(MT().an<60||(MT().ther&&MT().ther.on))},
+  beber:{req:()=>MT().an<50||MT().alc>=2},
+  pillar:{req:()=>!!MT().deal||MT().an<40}});
 function outCost2(k){if(k==='terapia')return hrs(7);if(k==='beber')return Math.round((12+MT().alc*4)*PM());if(k==='pillar')return Math.round((25+MT().tol*6)*PM());return null;}
 {const _oc=outCost;outCost=function(k){const c=outCost2(k);return c!=null?c:_oc.apply(this,arguments);};}
 {const _ob3=outBack;outBack=function(k){const m=MT();const nd=S.needs;const add=(n,v)=>nd[n]=Math.max(0,Math.min(100,nd[n]+v));

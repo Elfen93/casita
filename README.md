@@ -3,6 +3,7 @@
 Simulador de vida isométrico, en castellano, sobre vivir siendo clase trabajadora. Se juega en el móvil: https://elfen93.github.io/casita/
 
 - **`docs/CASITA.md` — documento maestro: empieza por aquí.**
+- `data/README.md` — el contenido del juego (lugares, gente, trabajos, objetos…) y qué significa cada campo.
 - `docs/BIBLIA.md` — qué es el juego, cómo se escribe, cómo se programa.
 - `docs/FABRICA.md` — cómo trabajamos (varios agentes en paralelo).
 - `docs/BACKLOG.md` — qué viene.

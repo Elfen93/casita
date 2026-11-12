@@ -35,4 +35,3 @@ SCENES['aula']=function(E){const {tt,night}=E;const it=[],add=(x,y,f)=>it.push({
   return {W,D,floor:'#d9d2c2',wall:'#e8e1cf',out:false,tile:false,drawBase,decor,items:it,ana,after};};
 // ir a clase entra en el aula (el centro de adultos está en el edificio de la biblioteca)
 {const _bib=SCENES['biblioteca'];SCENES['biblioteca']=function(E){if(S.sim&&S.sim.outingActive==='clase')return SCENES['aula'](E);return _bib.apply(this,arguments);};}
-if(PLACES.biblioteca&&!/adultos/.test(PLACES.biblioteca.d||''))PLACES.biblioteca.d=(PLACES.biblioteca.d||'')+' En la planta de arriba, las aulas del centro de adultos.';

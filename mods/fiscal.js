@@ -1,20 +1,8 @@
 // =================== IMPUESTOS DE VERDAD: nómina bruta/neta, IRPF por tramos, IVA, IBI, declaración y «tu año fiscal» ===================
 // Modelo España 2026 simplificado. La moneda del juego es el euro.
-const FS_SMI=17094,FS_EUR=()=>1;
-const FS_REF={k:'centro',tr:[[12450,.19],[20200,.24],[35200,.30],[60000,.37],[300000,.45],[1e12,.47]],ssw:.065,sse:.315,min:5550,smiTo:FS_SMI,iva:{sup:.04,red:.10,gen:.21},ah:[[6000,.19],[50000,.21],[200000,.23],[300000,.27],[1e12,.30]],ibi:1,soc:.15,hold:.0125,
-  gana:'Nadie en especial: es el sistema tal como está.',pierde:'Quien vive de su sueldo paga por nómina y por IVA; quien vive de rentas, bastante menos.'};
-const FS_GOV={centro:FS_REF,
-  conservador:{...FS_REF,k:'conservador',tr:[[12450,.19],[20200,.24],[35200,.29],[60000,.35],[1e12,.43]],min:6000,ah:[[6000,.19],[1e12,.21]],ibi:.7,soc:.12,
-    gana:'Rentas altas, herencias, propietarias, empresas. Algo las clases medias altas.',pierde:'Con sueldo bajo casi no se nota la bajada; sí se notan los recortes que vienen después.'},
-  liberal:{...FS_REF,k:'liberal',tr:[[15000,.15],[1e12,.25]],min:7000,ah:[[1e12,.19]],ibi:.6,soc:.10,hold:0,
-    gana:'Quien más gana: el tipo casi único premia a los sueldos y patrimonios altos.',pierde:'Los servicios: menos recaudación, más copago y más espera.'},
-  austeridad:{...FS_REF,k:'austeridad',ssw:.07,min:5150,smiTo:0,iva:{sup:.05,red:.12,gen:.23},ibi:1.2,
-    gana:'Los acreedores: se paga la deuda primero.',pierde:'Todo el mundo por IVA, y los sueldos bajos, que vuelven a pagar IRPF.'},
-  progresista:{...FS_REF,k:'progresista',tr:[[12450,.18],[20200,.23],[35200,.30],[60000,.38],[100000,.46],[300000,.49],[1e12,.52]],smiTo:20000,iva:{sup:0,red:.10,gen:.21},ah:[[6000,.21],[50000,.23],[200000,.27],[1e12,.30]],ibi:1.1,soc:.19,hold:.025,
-    gana:'Sueldos bajos y medios, inquilinas, quien usa lo público.',pierde:'Rentas altas, grandes patrimonios, banca y energéticas (que intentarán repercutirlo).'},
-  consejos:{...FS_REF,k:'consejos',caja:true,ssw:.06,sse:0,iva:{sup:0,red:.04,gen:.10},ibi:0,soc:0,hold:0,ah:[[1e12,0]],
-    gana:'Quien trabaja: sin IRPF hasta un sueldo alto, sin IVA en lo básico.',pierde:'Ya no hay dueños ni rentistas a quien cobrar; la caja común depende de que se produzca.'}};
-FS_GOV.comunas={...FS_GOV.consejos,k:'comunas'};
+const FS_EUR=()=>1;
+const FS_SMI=DATA.gobiernos.smi_anual;
+const FS_GOV=DATA.gobiernos.fiscal,FS_REF=FS_GOV.centro;
 const FSP=()=>FS_GOV[W_().gov]||FS_REF;
 const FS=()=>{if(!S.fs)S.fs={yr:null,prev:null,last:null,decl:null};const f=S.fs;const y=dateOf(S.day).year;if(!f.yr)f.yr={y,bruto:0,ss:0,irpf:0,neto:0,emp:0,valor:0,iva:0,ibi:0,sind:0,shifts:0};return f;};
 function fsScale(base,tr){let c=0,lo=0;for(const [hi,r] of tr){if(base<=lo)break;c+=(Math.min(base,hi)-lo)*r;lo=hi;}return c;}

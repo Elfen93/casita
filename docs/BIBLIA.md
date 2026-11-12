@@ -36,10 +36,11 @@ No es Los Sims con pobreza. Es un juego sobre **de dónde viene el dinero y adó
   {const _f=nombre;nombre=function(...a){/* antes */const r=_f.apply(this,a);/* después */return r;};}
   ```
   Las `const` del núcleo no se pueden reasignar; para esas, buscar el multiplicador o el hook que ya exista (`payMul`, `reserveMoney`, `OUT`, `ACTV`, `DLG`, `SCENES`, `PLACES`, `HOMES`, `OBJ`).
+- **Contenido**: nombres, precios, catálogos, frases de lista y tablas van en `data/*.json` (qué hay y qué significa cada campo: `data/README.md`), no en el código. Las tablas de siempre (`PLACES`, `OUT`, `OBJ`, `ACTV`, `TRACKS`, `IDEOS`, `GOVS`…) salen de ahí. Un módulo no añade ni cambia fichas al cargar: se editan los datos. Si una ficha necesita una función, la ficha va en `data/` y la función aquí: `conLogica(OUT,{clase:{req:()=>!!ED().cur}})`.
 - **Estado**: todo lo que debe sobrevivir al guardado va en `S` (se serializa a JSON; nada de funciones ni clases). Cada módulo tiene su bolsa con getter perezoso: `const XX=()=>{if(!S.xx)S.xx={...};return S.xx;}`.
 - **Tiempo**: `S.day`, `S.t` (minutos), `dateOf(S.day)` → `{wd,dm,m}`, `dayType(day)` → work/weekend/fest/vac, `SHIFT.start/end`, `festivo(day)`.
 - **Ganchos útiles**: `dailyEvents` (una vez al día), `payRent` (semanal, lunes 8:00), `update(gm)` (cada tick, gm minutos), `autonomy()` (cuando Ana no tiene nada que hacer), `outBack(k)` (al volver de una salida), `actFinish(u,frac)` (al acabar una actividad de objeto), `vidaTab()`, `genteTab()`, `openMenu(tab)`, `bindSociety()` (para enganchar botones de Vida).
-- **Salidas**: `OUT[k]={n,e,dur,h:[ini,fin],why,req?,wd?}`, `destOf(k)` → escena, `outAvail(k)` → null o motivo, `doOut(k)`.
+- **Salidas**: `OUT[k]={n,e,dur,h:[ini,fin],why,wd?}` en `data/lugares.json` (y `req` con `conLogica`), `destOf(k)` → escena, `outAvail(k)` → null o motivo, `doOut(k)`.
 - **Objetos**: `OBJ[t]`, `ACTV[t]=[[clave,emoji,nombre,min,habilidad,nivelMin,coste,ritmos{need:+/-min},efecto]]`, `MDRAW[t]` para dibujarlo, `findObjs(pred)`, `usable(o)`.
 - **Gente**: `S.people` (cada uno `{k,n,g,rel,love,stage,ch,…}`), `partner()`, `liveIn()`, `P_('madre')`, residentes en `S.res`.
 - **Escenas**: `SCENES[key]=E=>({W,D,drawBase,decor,items:[{d,f}],ana,after})` con primitivas `sBox, poly, P, LP, cyl, sPerson, emoji, label`. Mirar `SCENES['gym']` como plantilla corta y `SCENES['sindicato']` como larga.
@@ -57,7 +58,7 @@ No es Los Sims con pobreza. Es un juego sobre **de dónde viene el dinero y adó
 ## 6. Definición de «hecho»
 
 Una tarea está hecha cuando:
-1. `python3 build.py` pasa (sintaxis).
+1. `python3 build.py` pasa (datos y sintaxis).
 2. `python3 scripts/test.py all` pasa sin errores (`errs:[]`, `werrs:[]`).
 3. Tiene su test en `t/` si añade sistema, o una captura en `docs/capturas/` si es visual.
 4. Los textos cumplen el punto 2 y 3 de esta biblia.

@@ -1,12 +1,6 @@
 // =================== CONVIVENCIA: la gente de casa habla entre sí y con Ana por su cuenta ===================
-const CV_LINES={
-  madre:[['¿Has comido?','Sí, mamá.'],['Baja la basura cuando salgas.','Vale…'],['Tu tía pregunta por ti.','Dile que estoy bien.'],['Esto de la luz es un robo.','Ya ves.'],['¿Y esa cara?','Nada, el curro.'],['Te he guardado un táper.','Gracias, mamá ❤️']],
-  pareja:[['¿Qué cenamos?','Lo que haya.'],['Ven aquí.','🥰'],['¿Me pasas el mando?','Toma.'],['Hoy el jefe…','Cuéntame.'],['Te quiero, tont'+'{o}.','Y yo.'],['¿Salimos el finde?','Si llega el sueldo…']],
-  mate:[['¿De quién es este plato?','Mío, perdón.'],['El casero ha escrito otra vez.','Qué quiere ahora.'],['Hay cerveza en la nevera.','Eres un ángel.'],['¿Te toca limpiar a ti?','…Sí.'],['He oído que suben el alquiler.','Otra vez no.'],['¿Vienes a la mani el sábado?','Si no curro, sí.']],
-  guest:[['Qué piso más apañado.','Lo que da el sueldo.'],['¿Tienes algo de beber?','Mira en la nevera.'],['Pon música, anda.','Marchando.'],['¿Y tu madre, qué tal?','Igual que siempre.']],
-  x:[['Vaya día.','Ni me hables.'],['¿Has visto las noticias?','Prefiero no.'],['Mañana madrugo.','Yo también.']],
-};
-const CV_PAIR=[['¿Tú también vives aquí?','Desde hace un mes.'],['El baño está libre.','Gracias.'],['¿Un café?','Venga.'],['Esta tele se oye fatal.','Es de la época de Franco.'],['¿Qué tal el curro?','Pues eso. Curro.'],['¿Has visto mis llaves?','En la mesa.'],['Qué frío hace.','Y la calefacción, ni tocarla.']];
+const CV_LINES=DATA.interacciones.convivencia_frases;
+const CV_PAIR=DATA.interacciones.convivencia_dialogos;
 function cvRole(p){if(!p)return 'x';if(p.k==='madre')return 'madre';if(['pareja','convive','casada','rollo','cita'].includes(p.stage))return 'pareja';return 'guest';}
 function cvSay(r,txt,ms){r.bub={t:txt,until:performance.now()+(ms||2600)};}
 function cvAnaSay(txt){try{popBubble(txt);}catch(e){}}

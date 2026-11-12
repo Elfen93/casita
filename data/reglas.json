@@ -1,0 +1,99 @@
+{
+  "_": "Reglas básicas: necesidades, dificultades, calendario, tiempo, salud y frases del diario. Campos en data/README.md.",
+
+  "necesidades": [["hambre", "🍔", "Hambre", 0.075], ["energia", "⚡", "Energía", 0.055], ["higiene", "🧼", "Higiene", 0.045], ["vejiga", "🚽", "Vejiga", 0.09], ["diversion", "🎉", "Diversión", 0.06], ["social", "💬", "Social", 0.04]],
+
+  "peso_necesidad": {"vejiga": 1.5, "hambre": 1.25, "energia": 1.15, "higiene": 0.85, "diversion": 0.7, "social": 0.6},
+
+  "verbo_necesidad": {"hambre": "comer", "energia": "dormir", "higiene": "ducharse", "vejiga": "ir al baño", "diversion": "divertirse", "social": "charlar con alguien"},
+
+  "pista_necesidad": {"hambre": "una 🧊 nevera o un 🍳 fogón", "energia": "una 🛏️ cama", "higiene": "una 🚿 ducha", "vejiga": "un 🚽 váter", "diversion": "algo divertido (📺 🎸 📚)", "social": "un ☎️ teléfono, 🪞 espejo o 💻 ordenador"},
+
+  "ordenes": [["hambre", "🍽️", "Comer"], ["energia", "🛏️", "Dormir"], ["higiene", "🚿", "Ducharse"], ["vejiga", "🚽", "Baño"], ["diversion", "🎉", "Divertirse"], ["social", "💬", "Socializar"]],
+
+  "dificultades": {
+    "facil": {"n": "Fácil", "e": "🌱", "pay": 1.35, "price": 0.85, "rent": 0.65, "food": 0, "money": 2000, "goal": 1, "xp": 1, "shifts": 1, "skillAdd": 0, "desc": "Sueldos generosos y todo barato: la casa crece en pocos días."},
+    "normal": {"n": "Normal", "e": "🙂", "pay": 1.15, "price": 1, "rent": 0.85, "food": 2, "money": 1000, "goal": 0.6, "xp": 0.7, "shifts": 4, "skillAdd": 0, "desc": "Hay que ahorrar unas semanas para cada mejora; ascender lleva varias semanas."},
+    "dificil": {"n": "Difícil", "e": "😓", "pay": 1.05, "price": 1, "rent": 0.95, "food": 3, "money": 500, "goal": 0.4, "xp": 0.45, "shifts": 8, "skillAdd": 1, "desc": "Meses de ahorro para una reforma; cada ascenso pide más habilidad."},
+    "realista": {"n": "Realista", "e": "🏚️", "pay": 1, "price": 1, "rent": 1, "food": 4, "money": 200, "goal": 0.25, "xp": 0.3, "shifts": 20, "skillAdd": 1, "desc": "Como la vida misma: años de ahorro para ampliar la casa y meses para cada ascenso. Si no mejora sus habilidades, se estanca."},
+    "soul": {
+      "n": "Soul Crusher",
+      "e": "💀",
+      "pay": 1,
+      "price": 1,
+      "rent": 1.05,
+      "food": 4,
+      "money": 100,
+      "goal": 0.15,
+      "xp": 0.25,
+      "shifts": 25,
+      "skillAdd": 2,
+      "soul": true,
+      "desc": "Hiperrealista y cruel: precios e intereses que suben sin avisar, despidos, recortes, horas extra sin pagar, ascensos que se llevan otros y averías. Esforzarse no garantiza nada… aunque a veces sale bien: ofertas de otras empresas, negociar con carisma, trabajitos y algo de suerte."
+    }
+  },
+
+  "dificultades_orden": ["facil", "normal", "dificil", "realista", "soul"],
+
+  "dias": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+
+  "dias_corto": ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+
+  "meses": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+
+  "festivos": [[0, 1, "Año Nuevo"], [0, 6, "Reyes"], [2, 8, "Día de la Mujer"], [3, 18, "Semana Santa"], [4, 1, "Día del Trabajo"], [7, 15, "Fiesta de verano"], [9, 12, "Fiesta nacional"], [11, 25, "Navidad"]],
+
+  "tipo_dia": {"work": "Día de trabajo", "weekend": "Día libre", "fest": "Festivo", "vac": "Vacaciones"},
+
+  "estaciones": {"pri": {"n": "Primavera", "e": "🌸", "lawn": "#86c06c"}, "ver": {"n": "Verano", "e": "☀️", "lawn": "#a3bb5f"}, "oto": {"n": "Otoño", "e": "🍂", "lawn": "#a8a35c"}, "inv": {"n": "Invierno", "e": "❄️", "lawn": "#8fa487"}},
+
+  "tiempo": {"sol": {"e": "☀️", "n": "Soleado"}, "nubes": {"e": "⛅", "n": "Nublado"}, "lluvia": {"e": "🌧️", "n": "Lluvia"}, "tormenta": {"e": "⛈️", "n": "Tormenta"}, "nieve": {"e": "🌨️", "n": "Nieve"}, "calor": {"e": "🥵", "n": "Calor"}},
+
+  "tiempo_prob": {"pri": [["sol", 4], ["nubes", 3], ["lluvia", 3]], "ver": [["sol", 5], ["calor", 3], ["nubes", 1], ["tormenta", 1]], "oto": [["nubes", 4], ["lluvia", 4], ["sol", 2], ["tormenta", 0.7]], "inv": [["nubes", 4], ["sol", 2.5], ["lluvia", 2], ["nieve", 1.6]]},
+
+  "salud": {
+    "hiper": {"n": "Hipertensión", "e": "🩺", "d": "Pastilla diaria de por vida. La tensión no avisa.", "med": 8, "chronic": true},
+    "diab": {"n": "Diabetes tipo 2", "e": "💉", "d": "Controles, dieta, medicación. Reversible si cambia la vida; la vida no siempre deja.", "med": 14, "chronic": true},
+    "lumbar": {"n": "Lumbalgia crónica", "e": "🦴", "d": "La espalda de quien carga, friega o está de pie ocho horas. Baja, rehabilitación, vuelta a lo mismo.", "med": 4, "chronic": false},
+    "carpo": {"n": "Túnel carpiano", "e": "🖐️", "d": "Ocho horas de ratón. Hormigueo de noche. Muñequera y, si no, cirugía.", "med": 3, "chronic": false},
+    "vista": {"n": "Vista cansada", "e": "👓", "d": "Pantallas. Gafas nuevas: eso no lo cubre la pública.", "med": 0, "chronic": true},
+    "anemia": {"n": "Anemia", "e": "🩸", "d": "Comer poco y mal durante meses. Mareos, frío, cansancio que no se va durmiendo.", "med": 3, "chronic": false},
+    "ansiedad": {"n": "Ansiedad", "e": "🫀", "d": "El corazón a mil sin motivo. Lo diagnostican en cinco minutos y recetan lo mismo a todo el barrio.", "med": 5, "chronic": false}
+  },
+
+  "diario_actividad": {
+    "_out_sindicato": ["fue a la asamblea del sindicato"],
+    "_out_militancia": ["fue a una reunión política"],
+    "_out_manifestacion": ["salió a la manifestación"],
+    "_out_voluntariado": ["echó una mano como voluntaria"],
+    "_out_deporte": ["salió a correr"],
+    "_out_networking": ["fue a un afterwork de networking"],
+    "_out_misa": ["fue a misa y luego al vermú"],
+    "_out_biblioteca": ["estudió en la biblioteca"],
+    "_out_piquete": ["estuvo en el piquete"],
+    "tele": ["vio la tele", "se enganchó a una serie"],
+    "libros": ["leyó un buen rato", "se perdió en un libro"],
+    "guitarra": ["tocó la guitarra", "ensayó unos acordes"],
+    "fogon": ["cocinó algo casero", "se metió en la cocina"],
+    "compu": ["estuvo con el ordenador", "se pasó horas delante del ordenador"],
+    "telefono": ["habló por teléfono"],
+    "sofa": ["se tiró en el sofá"],
+    "banco": ["cacharreó en el banco de trabajo"],
+    "planta": ["cuidó las plantas"],
+    "flores": ["regó las flores"],
+    "huerto": ["trabajó en el huerto", "se manchó las manos de tierra en el huerto"],
+    "espejo": ["ensayó frente al espejo"],
+    "bancoj": ["tomó el aire en el jardín"],
+    "barbacoa": ["hizo una barbacoa"],
+    "_weed": ["quitó malas hierbas"]
+  },
+
+  "diario_apertura": {
+    "sol": ["Hizo sol.", "Lució el sol todo el día.", "Día de cielo limpio."],
+    "nubes": ["Día gris.", "El cielo se quedó nublado todo el día."],
+    "lluvia": ["Llovió sin parar.", "Amaneció lloviendo.", "La lluvia golpeó los cristales todo el día."],
+    "tormenta": ["Hubo tormenta: truenos y apagones.", "Cayó una buena tormenta."],
+    "nieve": ["¡Nevó!", "La nieve lo cubrió todo."],
+    "calor": ["Hizo un calor pegajoso.", "El calor no dio tregua."]
+  }
+}

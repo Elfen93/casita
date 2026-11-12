@@ -1,20 +1,8 @@
 // =================== LOS CICLOS: cada sistema tiene su auge, la tensión que acumula, sus señales y su crisis. Más el exterior y el pulso de los actores ===================
-GOVS.mercado={n:'Socialismo de mercado',e:'⭐',fx:'El Estado manda sobre el capital: obras, industria y sueldos que suben · poca voz en el trabajo y control social'};
-if(typeof FS_GOV!=='undefined')FS_GOV.mercado={...FS_REF,k:'mercado',tr:[[12450,.15],[35200,.25],[80000,.35],[1e12,.45]],iva:{sup:.04,red:.09,gen:.13},ah:[[1e12,.20]],ibi:.8,soc:.25,hold:.03,smiTo:20000,
-  gana:'Los sueldos suben cada año y nadie rescata a especuladores; el Estado decide dónde va el capital.',pierde:'Los hogares se quedan una parte pequeña del pastel; tu voz en el trabajo pesa poco.'};
 const CY=()=>{if(!S.cy)S.cy={ten:0,ph:'auge',sig:0,ext:30,hp:1,wage:1,bias:null,since:S.day,last:null,crises:0};return S.cy;};
 const cyKey=()=>{const w=W_();return w.era==='consejos'||w.era==='comunas'?w.era:w.gov;};
 // la ficha de cada sistema: nombre de su tensión, velocidad, señales y lo que hace en el auge
-const CYS={
-  liberal:{t:'Acumulación',v:3.2,sig:[`Los pisos del barrio suben un 15 % al año. En el bar dicen que «esto no baja nunca».`,`El banco ofrece hipotecas al 100 % y créditos para el coche sin preguntar. «Esta vez es diferente», dice el de la sucursal.`,`Hay grúas por todas partes y pisos vacíos comprados para revender. Los sueldos, igual que hace cinco años.`]},
-  conservador:{t:'Acumulación',v:2.6,sig:[`La bolsa en máximos. Los sueldos no. En la tele hablan de «recuperación».`,`Las empresas tienen beneficios récord y no saben dónde meterlos: compran pisos.`,`Medio barrio vive del crédito. Los avisos de impago empiezan a llegar a los portales.`]},
-  centro:{t:'Acumulación',v:2,sig:[`Todo va «bien»: crece el PIB, el alquiler y la deuda de las familias.`,`El dinero de las empresas no va a fábricas, va a pisos y a la bolsa.`,`En el banco hay más prisa por cobrar que por prestar. Mala señal.`]},
-  austeridad:{t:'Espiral deuda-recesión',v:3,sig:[`Cierra el centro de salud por las tardes. «Ajustes».`,`Tres de cada diez jóvenes del barrio se han ido a buscarse la vida lejos.`,`Recortan, la economía cae, la deuda pesa más y vuelven a recortar.`]},
-  progresista:{t:'Compresión de beneficios',v:2.6,sig:[`Hay trabajo para casi todo el mundo y los sindicatos aprietan: los sueldos suben.`,`La patronal avisa: «con estos costes no se puede invertir». Los precios empiezan a subir.`,`Las empresas aplazan inversiones y sacan dinero fuera. En la prensa, «huida de capitales».`]},
-  mercado:{t:'Sobreinversión',v:2.4,sig:[`Han abierto otro polígono. La mitad de las naves siguen vacías.`,`Las fábricas compiten bajando precios hasta no ganar nada. Lo llaman «involución».`,`El ayuntamiento debe más de lo que recauda en diez años. Las obras se paran a medias.`]},
-  consejos:{t:'Burocratización',v:1.6,sig:[`El delegado ya no viene al tajo: «tiene reuniones».`,`Cola de dos horas por zapatos; en el portal de al lado los venden sin cola, más caros.`,`A la asamblea van cada vez menos. Los mismos de siempre deciden por todos.`]},
-  comunas:{t:'Descoordinación',v:1.6,sig:[`La comuna de al lado tiene tractores; la vuestra, tres azadas. Nadie coordina.`,`Para decidir lo del agua hacen falta cinco asambleas y nadie quiere ir a la quinta.`,`Unas comunas prosperan y otras se vacían. Empieza a haber «comunas ricas».`]}};
-CYS.consejos.boost=CYS.comunas.boost=null;
+const CYS=DATA.gobiernos.ciclos;
 const cyS=()=>CYS[cyKey()]||CYS.centro;
 // el precio de los pisos sigue al ciclo
 {const _hp=housePrice;housePrice=function(){return Math.round(_hp.apply(this,arguments)*(S.cy?S.cy.hp:1)/10)*10;};}

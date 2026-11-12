@@ -1,9 +1,7 @@
 // =================== LA APP DEL BANCO, REHECHA: lo que hace falta en el juego, y distinta según el sistema ===================
 // Pestañas: Inicio · Movimientos · Ahorro · Deudas. Banco Atlántico (privado), Banca Pública (consejos/comunas), Banco Estatal (socialismo de mercado).
 {const _lr=loanRate;loanRate=function(){return (typeof bkMode==='function'&&bkMode()==='est')?.04:_lr();};}
-const BKM={priv:{dep:'Depósito a plazo',depSub:'interés fijo · si lo rompes antes, 2 % de penalización',loan:'Préstamo personal',loanSub:'para lo que quieras… a su precio',brk:.02,tax:true},
-  pub:{dep:'Depósito público',depSub:'interés fijo · se puede sacar antes sin penalización',loan:'Préstamo público',loanSub:'para vivienda, estudios o herramientas · sin letra pequeña',brk:0,tax:false},
-  est:{dep:'Bonos del Estado',depSub:'financian trenes y fábricas · sacar antes cuesta un 1 %',loan:'Crédito del Estado',loanSub:'para quien produce: estudios, taller, vivienda',brk:.01,tax:true}};
+const BKM=DATA.gobiernos.banco;
 const TERM={3:.8,6:1,12:1.25};
 function bkDep(v,m){const b=BP();if(b.dep)return toast('Ya hay uno abierto');v=Math.round(v);if(v<20)return toast('Mínimo 20 €');if(S.money<v)return toast('No hay tanto en la cuenta');bpDeposit(v,m);if(b.dep)b.dep.rate=+(depRate()*TERM[m]).toFixed(4);phRender();}
 function bkBreak(){const b=BP();if(!b.dep)return;const M=BKM[bkMode()];const v=Math.round(b.dep.v*(1-M.brk));bkAdd('Ingreso',v);if(M.brk)tell(`${CH().name} ha sacado el dinero antes de tiempo: ${fmt(b.dep.v-v)} de penalización.`,'🏦');else toast('Sacado del depósito, sin penalización');b.dep=null;phRender();}

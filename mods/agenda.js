@@ -1,10 +1,8 @@
 // =================== MI SEMANA: un horario como el de la vida real, y Ana lo cumple (si la vida la deja) ===================
 const AG=()=>{if(!S.ag)S.ag={plan:{},done:{},on:true};S.ag.plan=S.ag.plan||{};S.ag.done=S.ag.done||{};return S.ag;};
-const AG_SLOTS=[[7,'7:00'],[9,'9:00'],[11,'11:00'],[13,'13:00'],[15,'15:00'],[17,'17:00'],[18.5,'18:30'],[20,'20:00'],[21.5,'21:30']];
+const AG_SLOTS=DATA.interacciones.agenda_horas;
 // qué se puede planear: salidas y cosas de casa (estas necesitan el mueble)
-const AG_ITEMS=[
-  ['gimnasio','🏋️','Gimnasio','out'],['calistenia','🤸','Barras del parque','out'],['deporte','🏃','Salir a correr','out'],['sindicato','✊','Asamblea sindical','out'],['militancia','🏴','Reunión política','out'],['clase','🎓','Ir a clase','out'],['biblioteca','📚','Biblioteca','out'],['amigos','🍻','Quedar con amigos','out'],['terapia','🧠','Terapia','out'],['voluntariado','🤲','Voluntariado','out'],['misa','⛪','Misa y vermú','out'],['libreria','📖','Librería','out'],['mercadillo','📦','Mercadillo','out'],['networking','🥂','Afterwork','out'],
-  ['estudiar','📝','Estudiar en casa','home',['escritorio','libros','compu'],'estudiar'],['escribir','✍️','Escribir','home',['escritorio','compu'],'escribir'],['pintar','🎨','Pintar','home',['caballete'],'pintar'],['leer','📖','Leer','home',['estant','libros','butaca','sofa'],'leer'],['tapers','🥡','Tápers para la semana','home',['fogon'],'tapers'],['limpiar','🧽','Limpiar','home',['fogon','vater','nevera'],'limpiar'],['curso','🎓','Curso online','home',['compu','escritorio'],'curso'],['practicar','🎸','Practicar música','home',['guitarra','piano'],'practicar'],['madre','☎️','Llamar a su madre','home',['telefono'],'madre'],['siesta','😴','Siesta','home',['cama','camamat','sofa'],'siesta'],['peli','🍿','Peli','home',['sofa'],'peli'],['huerto','🥕','Cuidar el huerto','home',['huerto'],'cuidar'],['cuento','🧒','Rato con los críos','kid'],['nada','🛋️','Libre','free']];
+const AG_ITEMS=DATA.interacciones.agenda;
 const agItem=k=>AG_ITEMS.find(x=>x[0]===k);
 function agAvail(it){if(it[3]==='out')return !!OUT[it[0]]&&!(OUT[it[0]].req&&!OUT[it[0]].req());if(it[3]==='home')return findObjs((d,t)=>it[4].includes(t)&&ACTV[t]&&ACTV[t].some(a=>a[0]===it[5])).length>0;if(it[3]==='kid')return (S.kids||[]).length>0;return true;}
 // ---- ejecutar ----

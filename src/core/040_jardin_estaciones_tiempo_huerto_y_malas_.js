@@ -1,8 +1,8 @@
 // ---------- jardín: estaciones, tiempo, huerto y malas hierbas ----------
-const SEASONS={pri:{n:'Primavera',e:'🌸',lawn:'#86c06c'},ver:{n:'Verano',e:'☀️',lawn:'#a3bb5f'},oto:{n:'Otoño',e:'🍂',lawn:'#a8a35c'},inv:{n:'Invierno',e:'❄️',lawn:'#8fa487'}};
+const SEASONS=DATA.reglas.estaciones;
 function seasonOf(day){const m=dateOf(day??S.day).m;return m>=2&&m<=4?'pri':m>=5&&m<=7?'ver':m>=8&&m<=10?'oto':'inv';}
-const WX={sol:{e:'☀️',n:'Soleado'},nubes:{e:'⛅',n:'Nublado'},lluvia:{e:'🌧️',n:'Lluvia'},tormenta:{e:'⛈️',n:'Tormenta'},nieve:{e:'🌨️',n:'Nieve'},calor:{e:'🥵',n:'Calor'}};
-const WXP={pri:[['sol',4],['nubes',3],['lluvia',3]],ver:[['sol',5],['calor',3],['nubes',1],['tormenta',1]],oto:[['nubes',4],['lluvia',4],['sol',2],['tormenta',.7]],inv:[['nubes',4],['sol',2.5],['lluvia',2],['nieve',1.6]]};
+const WX=DATA.reglas.tiempo;
+const WXP=DATA.reglas.tiempo_prob;
 const TEMP={pri:[12,22],ver:[24,36],oto:[10,20],inv:[1,12]};
 function rollWeather(){
   const s=seasonOf(),opts=WXP[s];let tot=opts.reduce((a,b)=>a+b[1],0),r=Math.random()*tot,k='sol';
@@ -14,9 +14,7 @@ function rollWeather(){
 const lawnBase=()=>{const s=seasonOf();let c=SEASONS[s].lawn;if(S.weather&&S.weather.k==='calor')c=mixHex(c,'#c2b46a',.3);if(S.snow>0)c=mixHex(c,'#eef3f6',Math.min(.82,S.snow/3*.85));return c;};
 let LAWN='#86c06c',WEEDSET=new Set();
 // cultivos
-const CROPS={lechuga:{n:'Lechugas',e:'🥬',d:7,s:['pri','oto'],y:3,col:'#8fd16a'},tomate:{n:'Tomates',e:'🍅',d:12,s:['ver','pri'],y:5,col:'#e04b3a'},fresa:{n:'Fresas',e:'🍓',d:9,s:['pri'],y:3,col:'#e0344f'},
-  calabacin:{n:'Calabacines',e:'🥒',d:10,s:['ver'],y:4,col:'#4f8a3c'},pimiento:{n:'Pimientos',e:'🫑',d:11,s:['ver'],y:4,col:'#3f9b3a'},calabaza:{n:'Calabazas',e:'🎃',d:16,s:['oto'],y:6,col:'#e8892e'},
-  zanahoria:{n:'Zanahorias',e:'🥕',d:11,s:['oto','inv','pri'],y:4,col:'#ef8a2e'},habas:{n:'Habas',e:'🫛',d:14,s:['inv'],y:3,col:'#6aa84f'},ajos:{n:'Ajos',e:'🧄',d:15,s:['inv','oto'],y:3,col:'#f2efe6'}};
+const CROPS=DATA.objetos.cultivos;
 const seedFor=()=>{const s=seasonOf();const ok=Object.keys(CROPS).filter(k=>CROPS[k].s.includes(s));return pickR(ok);};
 function gardenDaily(){
   const s=seasonOf(),W=(S.weather||{}).k,dry={ver:34,pri:24,oto:20,inv:10}[s]+(W==='calor'?16:0),dead=[],rot=[];

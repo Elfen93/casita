@@ -22,26 +22,5 @@ function drawEntorno(night,tt,phase){ // phase 0: detrás de la parcela · 1: de
 }
 
 // =================== RASGOS AMPLIADOS ===================
-Object.assign(TRAITS,{
-  multitarea:{n:'Multitarea',e:'🔀',cat:'mente',d:'Hace varias cosas a la vez: aprende un poco de todo más rápido, pero se dispersa y a veces se le olvida algo.'},
-  milideas:{n:'Mil ideas',e:'💡',cat:'mente',d:'Siempre tiene un proyecto nuevo en la cabeza. Le sobra creatividad, le cuesta acabar: cambia de plan a menudo.',no:'constante'},
-  constante:{n:'Constante',e:'🧱',cat:'mente',d:'Lo que empieza, lo acaba. Termina antes las obras y sus planes no cambian.',no:'milideas'},
-  curiosa:{n:'Curiosa',e:'🔎',cat:'mente',d:'Quiere entenderlo todo: lee, pregunta y aprende lógica más rápido.'},
-  dondegentes:{n:'Don de gentes',e:'🤝',cat:'gente',d:'Sabe tratar con la gente aunque no la busque: carisma más rápido, negocia y liga mejor.'},
-  romantica:{n:'Romántica',e:'💘',cat:'gente',d:'Se enamora con facilidad y cuida mucho a su pareja. Las rupturas le duelen el doble.'},
-  independiente:{n:'Independiente',e:'🧭',cat:'gente',d:'No necesita a nadie para estar bien. Echa menos de menos y le pesa menos estar sola.'},
-  fiestera:{n:'Fiestera',e:'🎉',cat:'estilo',d:'Le encanta salir: queda con amigos a menudo y se divierte más fuera… y gasta más.',no:'casera'},
-  casera:{n:'Casera',e:'🛋️',cat:'estilo',d:'Donde mejor está es en casa. Sale poco y disfruta más del sofá, la cocina y sus cosas.',no:'fiestera'},
-  deportista:{n:'Deportista',e:'🏃',cat:'estilo',d:'Necesita moverse: sale a correr a menudo, se cansa menos y enferma menos.'},
-  nocturna:{n:'Nocturna',e:'🦉',cat:'estilo',d:'Rinde de noche y le cuesta madrugar. Se acuesta tarde y se despierta peor.',no:'madrugadora'},
-  madrugadora:{n:'Madrugadora',e:'🐓',cat:'estilo',d:'Se levanta con energía y llega pronto, pero por la noche se apaga.',no:'nocturna'},
-  optimista:{n:'Optimista',e:'🌤️',cat:'animo',d:'Ve el vaso medio lleno: su ánimo aguanta mejor los golpes.',no:'pesimista'},
-  pesimista:{n:'Pesimista',e:'🌧️',cat:'animo',d:'Espera lo peor. Su ánimo baja antes, pero los golpes la pillan preparada: ahorra un poco más.',no:'optimista'},
-  impulsiva:{n:'Impulsiva',e:'⚡',cat:'animo',d:'Decide en caliente: liga, compra y se planta sin pensarlo mucho. A veces sale bien.'},
-  tozuda:{n:'Tozuda',e:'🐂',cat:'animo',d:'Cuesta muchísimo que cambie de ideas, para bien y para mal.'}});
-Object.assign(TRAITS.trabajadora,{cat:'trabajo'});Object.assign(TRAITS.perezosa,{cat:'trabajo'});Object.assign(TRAITS.puntual,{cat:'trabajo'});Object.assign(TRAITS.despistada,{cat:'trabajo'});Object.assign(TRAITS.manitas,{cat:'trabajo'});
-Object.assign(TRAITS.ahorradora,{cat:'dinero'});Object.assign(TRAITS.derrochadora,{cat:'dinero'});
-Object.assign(TRAITS.sociable,{cat:'gente'});Object.assign(TRAITS.solitaria,{cat:'gente'});
-Object.assign(TRAITS.cocinillas,{cat:'estilo'});Object.assign(TRAITS.naturaleza,{cat:'estilo'});Object.assign(TRAITS.artista,{cat:'mente'});Object.assign(TRAITS.ordenada,{cat:'estilo'});
-const TRAIT_CATS=[['trabajo','💼 Trabajo'],['dinero','💰 Dinero'],['gente','🫂 Con la gente'],['mente','🧠 Cabeza'],['estilo','🏡 Estilo de vida'],['animo','🌦️ Carácter']];
+const TRAIT_CATS=DATA.personas.rasgos_categorias;
 const TRAIT_MAX=5;

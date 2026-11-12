@@ -2,14 +2,8 @@
 function pushI(k,amt,why){if(!IDEOS[k]||!amt)return;const c=ex();c.drift[k]=(c.drift[k]||0)+amt;if(why&&amt>0){c.why[k]=c.why[k]||{};c.why[k][why]=(c.why[k][why]||0)+amt;}}
 const LEANL=()=>isI('anarquista')?'anarquista':isI('marxista')?'marxista':isI('ecologista')?'ecologista':isI('socialdemocrata')?'socialdemocrata':Math.random()<.5?'socialdemocrata':'marxista';
 const LEANR=()=>isI('libertaria')?'libertaria':isI('conservadora')?'conservadora':'liberal';
-const SHIFT_TXT={
-  'L>R':['Ya no se reconoce en las asambleas. Le parecen gente que no ha tenido que pagar una hipoteca.','Dice que ha madurado. Sus antiguas compañeras dicen que se ha acomodado. Las dos cosas pueden ser verdad.'],
-  'R>L':['Algo se rompió. Durante años creyó que el esfuerzo bastaba; ahora sabe quién se queda con lo que ella produce.','Ha descubierto que lo que le pasaba no era mala suerte: tenía nombre y apellidos.'],
-  '>A':['Se ha quemado. Ni asambleas, ni debates, ni telediario: ahora solo quiere paz.','Ya no cree en nada de eso. Tantas reuniones para nada.'],
-  'A>':['Por primera vez en su vida, la política le parece algo que va con ella.','Se acabó mirar hacia otro lado.'],
-  'L>L':['Sigue en el mismo lado, pero ya no cree en el mismo camino.'],'R>R':['Sigue en el mismo lado, pero ya no cree en el mismo camino.']};
-const WHYTXT={explotacion:'lo que ha visto en el trabajo',despido:'el despido',huelga:'la huelga',pobreza:'no llegar a fin de mes',dinero:'el dinero que ahora tiene',ascenso:'su nuevo puesto',
-  pareja:'su pareja',amistades:'su gente',crisis:'la crisis',represion:'la represión',familia:'la familia',cansancio:'el cansancio',vivienda:'la vivienda',cuidados:'los cuidados',derrota:'las derrotas'};
+const SHIFT_TXT=DATA.ideologias.cambio;
+const WHYTXT=DATA.ideologias.motivos;
 function driftWeekly(){const c=ex(),cur=S.ideo||'apolitica';
   for(const k in c.drift)c.drift[k]*=.965;
   const w=W_(),cl=classOf();

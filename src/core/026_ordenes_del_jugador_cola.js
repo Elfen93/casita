@@ -1,5 +1,5 @@
 // ---------- órdenes del jugador (cola) ----------
-const CMDS=[['hambre','🍽️','Comer'],['energia','🛏️','Dormir'],['higiene','🚿','Ducharse'],['vejiga','🚽','Baño'],['diversion','🎉','Divertirse'],['social','💬','Socializar']];
+const CMDS=DATA.reglas.ordenes;
 function busyWithCmd(){const s=S.sim;return (s.use&&s.use.cmd)||(s.cmd&&(s.path.length||s.target!=null))||s.leaving;}
 function enqueue(c){
   const s=S.sim;s.queue=s.queue||[];

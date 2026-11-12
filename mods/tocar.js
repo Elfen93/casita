@@ -1,40 +1,5 @@
 // =================== TODO SE PUEDE TOCAR: cada objeto con sus cosas que hacer, y el toque acierta aunque el mueble sea alto ===================
-const _bed=[['dormir','🛏️','Dormir',0,null,0,0,{}],['siesta','😴','Siesta corta',45,null,0,0,{},'siesta'],['techo','💭','Mirar al techo y pensar',20,null,0,0,{diversion:.1},'techo'],['leercama','📖','Leer en la cama',40,'logica',0,0,{diversion:.12},'libro'],['movil','📱','Móvil en la cama',25,null,0,0,{diversion:.3,energia:-.05},'movil']];
-const _seat=[['sentarse','🪑','Sentarse un rato',20,null,0,0,{diversion:.15}],['leer','📖','Seguir con su libro',60,'logica',0,0,{diversion:.14},'libro'],['movil','📱','Mirar el móvil',20,null,0,0,{diversion:.3},'movil'],['siesta','😴','Cabezadita',40,null,0,0,{energia:.4},'siesta']];
-Object.assign(ACTV,{
-  vater:[['usar','🚽','Ir al baño',5,null,0,0,{}],['movil','📱','Baño con móvil (se le va la hora)',20,null,0,0,{diversion:.3},'movil'],['limpiar','🧽','Limpiar el baño',25,null,0,0,{diversion:-.1},'limpiar']],
-  telefono:[['llamar','☎️','Llamar a alguien',15,null,0,0,{social:.8},'llamar'],['madre','👩‍🦳','Llamar a su madre',20,null,0,0,{social:.6},'madre']],
-  banco:[['brico','🛠️','Bricolaje',40,'carp',0,0,{}],['arreglar','🔧','Arreglar lo que esté roto',45,'carp',1,0,{},'arreglar']],
-  flores:[['regar','💧','Regar',8,'jard',0,0,{}],['ramo','💐','Cortar un ramo',10,null,0,0,{diversion:.4},'ramo']],
-  huerto:[['cuidar','🌱','Cuidar el huerto',40,'jard',0,0,{}],['cosechar','🥕','Cosechar',20,'jard',0,0,{},'cosechar']],
-  bancoj:[['aire','🌤️','Tomar el aire',20,null,0,0,{diversion:.3}],['leer','📖','Leer fuera',45,'logica',0,0,{diversion:.12},'libro']],
-  barbacoa:[['asar','🔥','Hacer una barbacoa',90,'cocina',0,6,{hambre:.6,diversion:.3,social:.3},'bbq']],
-  parrilla:[['asar','🔥','Asar en la parrilla',70,'cocina',0,5,{hambre:.6,diversion:.3,social:.3},'bbq']],
-  micro:[['taper','🥡','Calentar un táper',6,null,0,0,{},'taper'],['palomitas','🍿','Palomitas',5,null,0,0,{diversion:.3,hambre:.5}]],
-  lavabo:[['cara','💦','Lavarse la cara',4,null,0,0,{}],['dientes','🪥','Lavarse los dientes',5,null,0,0,{}],['afeitar','🪒','Afeitarse / depilarse',15,null,0,0,{},'guapo']],
-  lavadora:[['lavar','🧺','Poner una lavadora',12,null,0,0,{},'lavar']],
-  armario:[['ropa','👗','Probarse ropa',15,null,0,0,{diversion:.3},'guapo'],['ordenar','🧹','Ordenar el armario',30,null,0,0,{diversion:.1},'ordenarropa']],
-  sillon:_seat,litera:_bed,colchon:_bed,sofacama:[..._bed,['sentarse','🪑','Sentarse un rato',20,null,0,0,{diversion:.15}]],
-  chimenea:[['fuego','🔥','Mirar el fuego',30,null,0,0,{diversion:.4}],['lena','🪵','Echar leña',5,null,0,0,{}]],
-  acuario:[['mirar','🐟','Mirar los peces',15,null,0,0,{diversion:.5}],['dar','🥫','Dar de comer a los peces',4,null,0,0,{}]],
-  muebar:[['copa','🥃','Una copa',15,null,0,0,{diversion:.4},'copa'],['copas','🍸','Copas con quien esté',40,null,0,0,{social:.6,diversion:.4},'copas']],
-  butano:[['calor','🔥','Calentarse las manos',15,null,0,0,{energia:.1}]],
-  kentia:[['regar','💧','Regar',8,'jard',0,0,{}],['hablar','🌱','Hablarle a la planta',6,null,0,0,{diversion:.6},'planta']],
-  jaula:[['hablar','🦜','Hablar con el periquito',10,null,0,0,{diversion:.5,social:.3}],['limpiar','🧹','Limpiar la jaula',12,null,0,0,{}]],
-  hamaca:[['mecerse','🌴','Mecerse',30,null,0,0,{diversion:.4,energia:.2}],['siesta','😴','Siesta en la hamaca',50,null,0,0,{energia:.5},'siesta']],
-  columpio:[['columpiarse','🎠','Columpiarse',15,null,0,0,{diversion:.8}]],
-  elastica:[['saltar','🤸','Saltar',20,null,0,0,{diversion:.9,energia:-.3},'fit']],
-  caseta:[['perro','🐕','Jugar con el perro',20,null,0,0,{diversion:.7,social:.3}],['pasear','🦮','Sacar al perro',40,null,0,0,{diversion:.4,social:.3,energia:-.1},'pasear']],
-  tendedero:[['tender','🧺','Tender la ropa',12,null,0,0,{}]],
-  compost:[['echar','🪱','Echar restos al compost',5,'jard',0,0,{}]],
-});
-ACTV.ducha.push(['larga','🛀','Ducha larga, agua caliente',20,null,0,0,{diversion:.3,energia:.1},'duchalarga'],['afeitar','🪒','Afeitarse / depilarse',15,null,0,0,{},'guapo']);
-ACTV.cama.push(_bed[3],_bed[4]);ACTV.camamat.push(_bed[3],_bed[4]);
-ACTV.sofa.push(['movil','📱','Mirar el móvil',20,null,0,0,{diversion:.3},'movil'],['leer','📖','Seguir con su libro',60,'logica',0,0,{diversion:.14},'libro']);
-ACTV.nevera.push(['limpiar','🧽','Limpiar la nevera',20,null,0,0,{diversion:-.1},'limpiar']);
-ACTV.fogon.push(['limpiar','🧽','Limpiar la cocina',25,null,0,0,{diversion:-.1},'limpiar']);
-ACTV.tele.push(['apagar','📴','Apagar y hacer otra cosa',1,null,0,0,{}]);
-// qué pasa al terminar las nuevas
+// qué pasa al terminar cada cosa (las fichas están en data/objetos.json → actividades; aquí, el efecto de su clave final)
 {const _af=actFinish;actFinish=function(u,frac){const a=ACT_DEF(u.type,u.act);const fx=a&&a[8];const mine=['limpiar','llamar','madre','arreglar','ramo','cosechar','bbq','taper','lavar','ordenarropa','copa','copas','fit','pasear','duchalarga','movil'];if(!mine.includes(fx))return _af.apply(this,arguments);
   const n=CH().name,x=u.i%N+.5,y=(u.i/N|0)+.5;const ft=(t,c='#2e8b57')=>floatText(t,x,y,46,c);if(frac<.6){if(frac>.15)ft('🤷 a medias','#8a7f99');return;}
   switch(fx){

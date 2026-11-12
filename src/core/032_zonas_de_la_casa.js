@@ -1,21 +1,11 @@
 // ---------- zonas de la casa ----------
-const ZONES={
-  bano:{n:'Baño',e:'🛁',size:[[5,4],[4,5],[5,5]]},
-  cocina:{n:'Cocina',e:'🍳',size:[[6,5],[5,6],[5,5]]},
-  dormitorio:{n:'Dormitorio',e:'🛏️',size:[[6,5],[5,6],[5,5]]},
-  salon:{n:'Salón',e:'🛋️',size:[[6,6],[7,5],[5,7],[6,5]]},
-  estudio:{n:'Estudio',e:'💻',size:[[5,5],[6,4],[4,6]]},
-  taller:{n:'Taller',e:'🛠️',size:[[5,5],[5,4]]},
-  loft:{n:'Estudio-loft',e:'🏠'},libre:{n:'Habitación libre',e:'⬜'},pasillo:{n:'Pasillo',e:'🚪'}};
-const ZONE_ORDER=['salon','dormitorio','cocina','bano','estudio','taller'];
+const ZONES=DATA.objetos.zonas;
+const ZONE_ORDER=DATA.objetos.zonas_orden;
 // dónde tiene sentido cada mueble (en orden de preferencia)
-const OBJ_ZONES={vater:['bano'],ducha:['bano'],espejo:['bano','dormitorio'],nevera:['cocina'],fogon:['cocina'],mesa:['cocina','salon'],silla:['cocina','estudio','salon','taller','dormitorio'],
-  cama:['dormitorio'],sofa:['salon'],tele:['salon','dormitorio'],telefono:['salon','estudio'],libros:['estudio','salon','dormitorio'],compu:['estudio','dormitorio'],guitarra:['estudio','salon'],
-  banco:['taller','jardin'],lampara:['salon','dormitorio','estudio','cocina','pasillo','bano','taller'],alfombra:['salon','dormitorio','estudio'],planta:['salon','estudio','dormitorio','cocina','pasillo','bano','jardin'],
-  arbol:['jardin'],flores:['jardin'],seto:['jardin'],farola:['jardin'],huerto:['jardin'],bancoj:['jardin'],barbacoa:['jardin'],fuente:['jardin']};
+const OBJ_ZONES=DATA.objetos.zonas_por_objeto;
 const SMALL_ITEMS=new Set(['silla','planta','lampara','alfombra','flores','arbol','seto','farola','mesa','huerto','bancoj','barbacoa','fuente']);
-const ZONE_OF={vater:'bano',ducha:'bano',nevera:'cocina',fogon:'cocina',cama:'dormitorio',sofa:'salon',tele:'salon',compu:'estudio',banco:'taller'};
-const GROUP={vater:'bano',ducha:'bano',nevera:'cocina',fogon:'cocina',mesa:'cocina',cama:'dorm',sofa:'ocio',tele:'ocio',compu:'ocio',libros:'ocio',guitarra:'ocio',telefono:'ocio',banco:'ocio'};
+const ZONE_OF=DATA.objetos.zona_de;
+const GROUP=DATA.objetos.grupo;
 function roomPurpose(r){
   const z={};for(const c of r.cells){const v=S.zone&&S.zone[c];if(v)z[v]=(z[v]||0)+1;}
   let best=null,bn=0;for(const k in z)if(z[k]>bn){bn=z[k];best=k;}

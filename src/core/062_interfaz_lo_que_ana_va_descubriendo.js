@@ -15,8 +15,8 @@ function hidBadges(p){const r=(p.rev||[]).map(k=>HID[k]).filter(Boolean);return 
 // los avisos importantes también quedan escritos en la historia
 {const _t=toast;toast=function(msg,gold){if(gold&&S&&S.story&&typeof msg==='string'&&!/^(📕|📅|💭|🎂|⭐|✅|🏡|🍻|🧭|📌|🏠 El casero cobró)/.test(msg)){const m=msg.match(/^(\p{Extended_Pictographic}️?)\s*(.*)$/su);const ic=m?m[1]:'📌',tx=(m?m[2]:msg).replace(/\s*·?\s*Míralo en 📋\.?$/,'');const st=storyState();const lt=L(tx);if(!st.log.some(e=>e.d===S.day&&e.txt===lt))tell(tx,ic);}return _t.apply(this,arguments);};}
 // quién manda
-const BOSSN={f:['Marisa','Begoña','Yolanda','Montse','Puri'],m:['Jesús','Ramón','Alberto','Fran','Ginés']};
-const BOSST={oficina:['la directora','el director'],super:['la encargada','el encargado'],hosteleria:['la dueña','el dueño'],obra:['la capataz','el capataz'],cuidados:['la supervisora','el supervisor'],tech:['la CTO','el CTO'],funcion:['la jefa de servicio','el jefe de servicio'],reparto:['la app','la app'],arte:['la dueña de la sala','el dueño de la sala']};
+const BOSSN=DATA.personas.jefes_nombres;
+const BOSST=DATA.personas.jefes_trato;
 function boss(){const o=office();if(!o.boss){const g=Math.random()<.5?'f':'m';o.boss={n:pickR(BOSSN[g]),g};}return o.boss;}
 const bossT=()=>{const b=boss();const t=(BOSST[S.track]||['la jefa','el jefe'])[b.g==='f'?0:1];return S.track==='reparto'?'la app':`${t}, ${b.n},`;};
 const bossS=()=>S.track==='reparto'?'la app':boss().n;

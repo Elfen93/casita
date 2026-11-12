@@ -1,7 +1,6 @@
 // =================== MARGINALIDAD: impago, desahucio, calle, albergue, pedir, servicios sociales, estigma ===================
 const MG=()=>{if(!S.mg)S.mg={debt:0,wk:0,bank:0,calle:null,alb:0,ss:0,ssSince:0,imv:false,fines:0,hist:[]};return S.mg;};
 const homeless=()=>!!(S.home&&S.home.type==='calle');
-HOMES.calle={n:'En la calle',e:'🧳',rent:0,build:'objs',buy:false,need:0,cls:-1,d:'Un colchón detrás de unos setos, en el parque. Las cosas en dos bolsas. Nadie la ve, o hacen como que no.',start:'duerme en un colchón en el parque, con todo lo que tiene en dos bolsas'};
 // plantilla: un rincón del parque. Colchón, un banco, una fuente. Sin paredes.
 {const _ht=homeTemplate;homeTemplate=function(type){if(type!=='calle')return _ht.apply(this,arguments);const T0=_ht('casita');const I=(x,y)=>y*N+x;
   for(let i=0;i<N*N;i++){T0.wl[i]=0;T0.wc[i]=0;T0.ob[i]=null;T0.fl[i]=0;}
@@ -63,12 +62,11 @@ function mgEvict(who){const m=MG();const nm=CH().name;const md=P_('madre');
   if(m.ss>=2&&!S.jobless&&S.shifts>=8&&Math.random()<.15){applyHome('habitacion');computeRooms();if(typeof centerOnWorld==='function')centerOnWorld(S.sim.x,S.sim.y);S.money-=Math.round(moveCost('habitacion')*.3);m.calle=null;chapter('techo','Un techo',`La trabajadora social ha conseguido una habitación de un programa de la ONG. Con el sueldo de ${nm} y una fianza reducida. ${d} días en la calle. Una llave en el bolsillo pesa más de lo que parece.`);toast('🔑 Tiene habitación',true);sfx('level');}
   m.hist.push(d);}catch(e){console.error(e);}return r;};}
 // ---- salidas desde la calle ----
-Object.assign(OUT,{
-  albergue:{n:'Noche en el albergue',e:'🛏️',dur:660,h:[19,21.5],why:'una ducha, una cena y una cama con sábanas',req:()=>homeless()},
-  pedir:{n:'Pedir en la puerta del súper',e:'🥤',dur:200,h:[9,20],why:'lo que caiga',req:()=>homeless()||S.money<-100},
-  chatarra:{n:'Buscar chatarra',e:'🛒',dur:240,h:[7,20],why:'cobre, aluminio, lo que pese',req:()=>homeless()||S.money<-50},
-  ssociales:{n:'Servicios sociales',e:'🏛️',dur:150,h:[9,13],wd:[1,2,3,4,5],why:'una cita, un papel, otra cita',req:()=>homeless()||MG().wk>=3||S.money<-200},
-});
+conLogica(OUT,{
+  albergue:{req:()=>homeless()},
+  pedir:{req:()=>homeless()||S.money<-100},
+  chatarra:{req:()=>homeless()||S.money<-50},
+  ssociales:{req:()=>homeless()||MG().wk>=3||S.money<-200}});
 {const _c=outCost;outCost=function(k){if(['albergue','pedir','chatarra','ssociales'].includes(k))return 0;return _c.apply(this,arguments);};}
 OUT.comedor.req=()=>homeless()||S.money<60;
 {const _ob=outBack;outBack=function(k){const m=MG();const nd=S.needs;const nm=CH().name;const add=(n,v)=>nd[n]=Math.max(0,Math.min(100,nd[n]+v));

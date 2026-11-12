@@ -1,10 +1,9 @@
 // ---------- planes de Ana: deseos, compras y obras ----------
-const NEED_BUY={hambre:'nevera',energia:'cama',higiene:'ducha',vejiga:'vater',diversion:'guitarra',social:'telefono'};
-const ROOM_FOR={nevera:'Cocina',fogon:'Cocina',cama:'Dormitorio',ducha:'Baño',vater:'Baño',espejo:'Baño',sofa:'Salón',tele:'Salón',telefono:'Salón',libros:'Estudio',compu:'Estudio',guitarra:'Estudio'};
+const NEED_BUY=DATA.objetos.compra_por_necesidad;
+const ROOM_FOR=DATA.objetos.habitacion_de;
 const OUTDOOR=new Set(['arbol','flores','seto','farola','huerto','bancoj','barbacoa','fuente']);
 for(const t of ['hamaca','columpio','elastica','caseta','tendedero','compost','parrilla'])OUTDOOR.add(t);
-Object.assign(ROOM_FOR,{banera:'Baño',lavabo:'Baño',camamat:'Dormitorio',litera:'Dormitorio',encimera:'Cocina',micro:'Cocina',escritorio:'Estudio',consola:'Salón',piano:'Salón'});
-const BUILDERS=['Rosa','Manolo','Lucía','Tomás','Inés','Jorge','Carmen','Andrés'];
+const BUILDERS=DATA.personas.obreros;
 const STEP_T={rezone:1,undoor:8,clear:6,move:10,floor:3,wall:8,door:10,win:10,paint:4,obj:16,water:6,fix:14,replace:16};
 const STEP_NAME={rezone:'reorganizar',undoor:'tapiar puerta',clear:'despejar',move:'traslado',craft:'fabricación',floor:'suelo',wall:'pared',door:'puerta',win:'ventana',paint:'pintura',obj:'montaje',water:'piscina',fix:'reparación',replace:'cambio'};
 function reserveMoney(){return Math.round(reserveMoney0()*(isI('conservadora')?1.3:1));}

@@ -42,6 +42,6 @@ function applyHome(type){const T0=homeTemplate(type);S.floor=T0.fl;S.wall=T0.wl;
   S.res=(S.res||[]).filter(r=>r.kind==='partner'||r.kind==='kid');S.rentMul=1;
   for(const k of T0.mates){if(k==='madre')S.home.mates.push('madre');else{const p=newMate();S.home.mates.push(p.k);}}
   if(typeof GRX!=='undefined')GRX=null;dirty();if(typeof undoStack!=='undefined'){undoStack=[];redoStack=[];}}
-const MATE_JOBS=[['estudiante de Enfermería','estudiante de Enfermería'],['camarera','camarero'],['repartidora','repartidor'],['opositora','opositor'],['dependienta','dependiente'],['teleoperadora','teleoperador'],['informática en prácticas','informático en prácticas'],['estudiante de Erasmus','estudiante de Erasmus']];
+const MATE_JOBS=DATA.personas.oficios_piso;
 function newMate(){const ch=randomChar();ch.age=20+(Math.random()*12|0);const p={k:'mate'+(S.pid=(S.pid||100)+1),n:ch.name,g:ch.g,ch,age:ch.age,ideo:pickR(IDEO_ORDER),orient:'ambos',relStyle:'libre',kids:'quiza',boda:'igual',job:'compañera',rel:25,love:0,stage:'conocida',met:'el piso',metDay:S.day,spark:0,e:'🛋️',mate:true,mjob:pickR(MATE_JOBS)[ch.g==='m'?1:0],hid:null};
   p.r=`comparte piso · ${p.mjob}`;S.people=S.people||[];S.people.push(p);return p;}

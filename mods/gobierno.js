@@ -1,7 +1,7 @@
 // =================== EL GOBIERNO SE NOTA: consejos y comunas cambian la casa, el curro, la compra y el banco, por fases ===================
 const REV=()=>{const e=W_().era;return e==='consejos'||e==='comunas';};
 const GV=()=>{if(!S.gv)S.gv={since:null,ph:0,pre:null,lack:[],prop:-99,comedor:0,elec:0,ev:0};return S.gv;};
-const GV_PH=[[0,'🏠 Vivienda','Alquiler social y fin de los desahucios'],[5,'🔧 Trabajo','Sin jefe: asambleas, cargos elegidos y revocables, sin horas extra'],[12,'🧺 Compra y banco','Precios regulados, banca pública… y escasez por el bloqueo']];
+const GV_PH=DATA.gobiernos.fases_consejos;
 function govPh(){const g=GV();if(!REV()||g.since==null)return 0;const d=S.day-g.since;return GV_PH.filter(p=>d>=p[0]).length;}
 function govFood(){return REV()&&govPh()>=3?.7:1;}
 function govBank(){return REV()&&govPh()>=3;}

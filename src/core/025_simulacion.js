@@ -57,8 +57,8 @@ function bestObjFor(k){
   for(const rate of tiers){const r=pathToObj(cands.filter(i=>OBJ[S.obj[i].t].need[k]===rate));if(r)return r;}
   return {unreach:true,obj:cands[0]};
 }
-const WEIGHT={vejiga:1.5,hambre:1.25,energia:1.15,higiene:0.85,diversion:0.7,social:0.6};
-const NEEDNAME={hambre:'comer',energia:'dormir',higiene:'ducharse',vejiga:'ir al baño',diversion:'divertirse',social:'charlar con alguien'};
+const WEIGHT=DATA.reglas.peso_necesidad;
+const NEEDNAME=DATA.reglas.verbo_necesidad;
 function autonomy(){
   const s=S.sim; if(s.leaving)return;
   const h=S.t/60, nd=S.needs;
@@ -105,7 +105,7 @@ function autonomy(){
     for(let tries=0;tries<8;tries++){const tx=cx+Math.round(Math.random()*6-3),ty=cy+Math.round(Math.random()*6-3);if(walkable(tx,ty)){const p=bfs([cx,cy],(x,y)=>x===tx&&y===ty);if(p&&p.length){s.path=p;return;}}}
   }
 }
-const HINT={hambre:'una 🧊 nevera o un 🍳 fogón',energia:'una 🛏️ cama',higiene:'una 🚿 ducha',vejiga:'un 🚽 váter',diversion:'algo divertido (📺 🎸 📚)',social:'un ☎️ teléfono, 🪞 espejo o 💻 ordenador'};
+const HINT=DATA.reglas.pista_necesidad;
 const hintT={};
 function throttled(key,ms){const n=performance.now();if(hintT[key]&&n-hintT[key]<ms)return false;hintT[key]=n;return true;}
 function hintMissing(k){if(throttled('m'+k,90000))toast(`Ana necesita ${HINT[k]} — ¡ve a Comprar!`);}

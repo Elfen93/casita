@@ -1,0 +1,99 @@
+{
+  "_": "Los tipos de casa en los que se puede vivir y las condiciones de compra por dificultad. Campos en data/README.md.",
+
+  "viviendas": {
+    "padres": {
+      "n": "En casa de su madre",
+      "e": "👩‍🦳",
+      "rent": 45,
+      "build": "objs",
+      "buy": false,
+      "need": 0,
+      "cls": 0,
+      "d": "Su cuarto de siempre. No paga alquiler, solo pone algo para la compra. Cero intimidad, mucha compañía.",
+      "start": "vuelve a vivir en casa de su madre, en el cuarto de cuando era adolescente"
+    },
+    "infra": {
+      "n": "Bajo interior",
+      "e": "🏚️",
+      "rent": 95,
+      "build": "objs",
+      "buy": false,
+      "need": 0,
+      "cls": 1,
+      "damp": true,
+      "d": "Un cuarto sin luz con humedades. El casero no arregla nada y no hay contrato. Lo más barato que hay.",
+      "start": "acaba de meterse en un bajo interior sin contrato, con moho en las esquinas"
+    },
+    "habitacion": {
+      "n": "Habitación en piso compartido",
+      "e": "🚪",
+      "rent": 105,
+      "build": "objs",
+      "buy": false,
+      "need": 0,
+      "cls": 1,
+      "mates": 2,
+      "d": "Una habitación para ella y el resto a compartir con dos desconocidos: cocina, baño y turnos de limpieza.",
+      "start": "acaba de alquilar una habitación en un piso compartido con dos desconocidos"
+    },
+    "viejo": {
+      "n": "Piso viejo de alquiler",
+      "e": "🏢",
+      "rent": 185,
+      "build": "objs",
+      "buy": true,
+      "price": 9000,
+      "need": 2.4,
+      "cls": 2,
+      "d": "Un piso pequeño de los setenta: muebles cansados, ventanas que no cierran bien. Es suyo por dentro.",
+      "start": "acaba de alquilar un piso viejo de los setenta, pequeño y con muebles cansados"
+    },
+    "casita": {
+      "n": "Casita con terreno",
+      "e": "🏡",
+      "rent": 200,
+      "build": "all",
+      "buy": true,
+      "price": 12000,
+      "need": 2.6,
+      "cls": 2,
+      "d": "Una casita pequeña con mucho terreno alrededor para ampliar, construir y plantar.",
+      "start": "acaba de mudarse a una casita de alquiler con lo justo: una cama, una nevera, una ducha y un váter"
+    },
+    "bueno": {
+      "n": "Piso cómodo céntrico",
+      "e": "🏙️",
+      "rent": 300,
+      "build": "objs",
+      "buy": true,
+      "price": 26000,
+      "need": 2.8,
+      "cls": 3,
+      "d": "Tres habitaciones, buenos muebles, calefacción que funciona y portero. Caro, cómodo y lejos de los problemas.",
+      "start": "acaba de mudarse a un piso cómodo en el centro, con calefacción y portero"
+    },
+    "chalet": {"n": "Chalet con piscina", "e": "🏊", "rent": 470, "build": "all", "buy": true, "price": 60000, "need": 3, "cls": 4, "d": "Casa grande con jardín, piscina y barbacoa. Para quien puede permitírselo.", "start": "acaba de instalarse en un chalet con jardín y piscina"},
+    "calle": {
+      "n": "En la calle",
+      "e": "🧳",
+      "rent": 0,
+      "build": "objs",
+      "buy": false,
+      "need": 0,
+      "cls": -1,
+      "d": "Un colchón detrás de unos setos, en el parque. Las cosas en dos bolsas. Nadie la ve, o hacen como que no.",
+      "start": "duerme en un colchón en el parque, con todo lo que tiene en dos bolsas"
+    }
+  },
+
+  "orden": ["padres", "infra", "habitacion", "viejo", "casita", "bueno", "chalet"],
+
+  "compra": {
+    "facil": {"util": 0.8, "house": 6, "down": 0.1, "rate": 0.02, "years": 15, "closing": 0.03},
+    "normal": {"util": 1.1, "house": 8, "down": 0.15, "rate": 0.03, "years": 20, "closing": 0.06},
+    "dificil": {"util": 1.4, "house": 9, "down": 0.2, "rate": 0.04, "years": 25, "closing": 0.08},
+    "realista": {"util": 1.7, "house": 10, "down": 0.2, "rate": 0.045, "years": 30, "closing": 0.1},
+    "soul": {"util": 1.6, "house": 11, "down": 0.25, "rate": 0.05, "years": 30, "closing": 0.12}
+  }
+}

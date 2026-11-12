@@ -1,11 +1,5 @@
 // ---------- el mundo: crisis, movimiento, gobiernos y elecciones ----------
-const GOVS={progresista:{n:'Gobierno progresista',e:'🌹',fx:'Sube el salario mínimo, control de alquileres, más ayudas · algo más de inflación y menos ofertas'},
-  conservador:{n:'Gobierno conservador',e:'🏛️',fx:'Bajan impuestos e IBI, más policía en las calles · menos paro y menos ayudas'},
-  liberal:{n:'Gobierno liberal',e:'🗽',fx:'Desregulación: más ofertas de trabajo y negocios · más despidos y alquileres libres'},
-  austeridad:{n:'Gobierno tecnócrata de austeridad',e:'✂️',fx:'Recortes por orden de los acreedores: menos paro, oposiciones congeladas, la crisis se alarga'},
-  centro:{n:'Gobierno de coalición',e:'⚖️',fx:'Ni fu ni fa'},
-  consejos:{n:'Consejos de trabajadoras',e:'🚩',fx:'Autogestión: alquiler social, empresas en manos de quien trabaja · escasez y bloqueo exterior'},
-  comunas:{n:'Federación de comunas',e:'🏴',fx:'Asambleas por todas partes, alquileres abolidos, apoyo mutuo · escasez y caos'}};
+const GOVS=DATA.gobiernos.gobiernos;
 const W_=()=>{if(!S.world)S.world={crisis:Dm().soul?45:{facil:10,normal:18,dificil:28,realista:35}[S.diff]||20,mov:10,gov:'centro',elec:300+Math.floor(Math.random()*900),manif:null,gs:null,era:null};return S.world;};
 const dark=()=>W_().crisis>=65;
 function govPay(){const g=W_().gov;return g==='progresista'&&S.career<=1?1.06:g==='conservador'?1.03:g==='consejos'?1.15:1;}
@@ -217,29 +211,10 @@ let confirmQuit=null;
 // =================== EL BARRIO ===================
 // La parcela ocupa 0..N. Alrededor: acera, calzada, acera y manzanas.
 const BR=14; // ancho del barrio a cada lado
-const PLACES={
-  biblioteca:{n:'Biblioteca municipal',e:'📚',r:[-2,-12,4,-6],h:30,c:'#b9c6d8',d:'Silencio, wifi gratis y temarios de oposiciones.',outs:['biblioteca']},
-  ayto:{n:'Ayuntamiento',e:'🏛️',r:[6,-12,13,-5],h:46,c:'#e7dcc2',d:'Plenos, papeleo y la plaza donde acaban las manifestaciones.',outs:['militancia']},
-  casaV:{n:'Casa de la vecina',e:'🏘️',r:[15,-10,18,-6],h:24,c:'#e8b7a0',roof:'#a5533e',d:'',outs:[]},
-  casa2:{n:'Casa de los Ruiz',e:'🏠',r:[19,-10,22,-6],h:24,c:'#c9d8b6',roof:'#6b7f4a',d:'Una familia con tres críos y un perro que no calla.',outs:[]},
-  sindicato:{n:'Local del sindicato',e:'✊',r:[26,-12,32,-6],h:30,c:'#e6c9c0',d:'Asambleas los jueves. Café malo, ideas buenas.',outs:['sindicato']},
-  ateneo:{n:'Ateneo del barrio',e:'📢',r:[-12,-12,-6,-6],h:28,c:'#d8c3dc',d:'Charlas, asambleas, talleres y una biblioteca de libros prestados.',outs:['militancia']},
-  super:{n:'Supermercado',e:'🛒',r:[-12,-2,-5,7],h:32,c:'#efe9dc',acc:'#e85d3f',d:'Donde trabaja medio barrio y compra el otro medio.',outs:[]},
-  bar:{n:'Bar Manolo',e:'🍺',r:[-10,8,-5,11],h:26,c:'#d9a066',d:'Cañas, tapas y tertulias a gritos.',outs:['amigos']},
-  tienda:{n:'Local comercial',e:'🏪',r:[-10,12,-5,14],h:24,c:'#c7d2d8',d:'Un local pequeño a pie de calle.',outs:[]},
-  parroquia:{n:'Parroquia de San Roque',e:'⛪',r:[-12,16,-6,22],h:40,c:'#d6c4a2',d:'Misa a las once y vermú a las doce.',outs:['misa','voluntariado']},
-  comisaria:{n:'Comisaría',e:'🚓',r:[-12,26,-6,32],h:30,c:'#9fb0c6',d:'Nadie entra por gusto.',outs:[]},
-  torre:{n:'Torre de oficinas',e:'🏢',r:[-2,25,5,32],h:96,c:'#9fb4c8',glass:1,d:'Oficinas, coworking y afterworks en la azotea.',outs:['networking']},
-  obra:{n:'Obra en construcción',e:'🏗️',r:[7,25,13,31],h:44,c:'#bdb6aa',obra:1,d:'Un bloque nuevo. «Viviendas de lujo», dice el cartel.',outs:[]},
-  residencia:{n:'Residencia Los Olivos',e:'🩺',r:[15,25,22,31],h:34,c:'#f1e3d3',d:'Ochenta abuelos y pocas manos.',outs:[]},
-  sala:{n:'Sala El Sótano',e:'🎸',r:[26,26,32,32],h:28,c:'#6d3a48',d:'Conciertos de jueves a sábado. Cerveza caliente, música en directo.',outs:['amigos']},
-  parque:{n:'Parque del Río',e:'🌳',r:[25,-3,33,12],park:1,d:'Para correr, para manifestarse y para no hacer nada.',outs:['deporte','manifestacion']},
-  comedor:{n:'Banco de alimentos',e:'🥫',r:[25,14,30,18],h:24,c:'#c9d6c3',d:'Cada semana, más gente en la cola.',outs:['voluntariado','comedor']},
-  coop:{n:'Cooperativa La Colmena',e:'🤝',r:[25,19,31,23],h:26,c:'#e9d27a',d:'Taller y cooperativa de trabajo. Aquí se decide en asamblea.',outs:[]},
-};
+const PLACES=DATA.lugares.lugares;
 // adónde va Ana según lo que haga
 function destOf(k){
-  if(k==='work'){return {oficina:'torre',tech:'torre',super:'super',hosteleria:'bar',obra:'obra',cuidados:'residencia',funcion:'ayto',reparto:'_ride',arte:'sala',negocio:'tienda',coop:'coop'}[S.track]||'torre';}
+  if(k==='work'){return DATA.lugares.trabajo_en[S.track]||'torre';}
   return {amigos:pickR(['bar','sala','parque']),eat:'bar',sindicato:'sindicato',militancia:isI('conservadora')?'parroquia':isI('liberal','libertaria')?'torre':isI('socialdemocrata')?'ayto':'ateneo',manifestacion:'ayto',voluntariado:isI('conservadora')?'parroquia':'comedor',deporte:'parque',networking:'torre',misa:'parroquia',biblioteca:'biblioteca',comedor:'comedor',piquete:destOf('work'),calabozo:'comisaria',walk:'parque'}[k]||'parque';
 }
 // el anillo de la calzada (centro a 2 casillas de la parcela)
