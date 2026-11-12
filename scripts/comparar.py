@@ -91,8 +91,9 @@ setTimeout(()=>{try{
 }catch(err){window.__volcado=JSON.stringify({err:err.message+' '+err.stack});document.title='ERR '+err.message;}},300);
 '''
 
-def volcar(salida,dias=120,html=None,puerto=9340):
-    import websocket
+def volcar(salida,dias=120,html=None):
+    import websocket,socket
+    _s=socket.socket();_s.bind(('127.0.0.1',0));puerto=_s.getsockname()[1];_s.close()  # puerto libre: se pueden lanzar varios a la vez
     src=open(html or P('casita.html'),encoding='utf-8').read()
     lecturas=''.join("try{if(typeof %s!=='undefined')T[%s]=ser(%s,0);}catch(e){}\n"%(n,json.dumps(n),n) for n in nombres())
     js=PRUEBA.replace('/*NOMBRES*/',lecturas).replace('/*DIAS*/',str(dias))

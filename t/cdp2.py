@@ -1,7 +1,8 @@
-import json,subprocess,time,urllib.request,websocket,sys
-p=subprocess.Popen(['google-chrome','--headless=new','--no-sandbox','--use-gl=swiftshader','--enable-unsafe-swiftshader','--allow-file-access-from-files','--window-size=900,900','--remote-debugging-port=9334','--remote-allow-origins=*','about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+import json,subprocess,time,urllib.request,websocket,sys,socket,tempfile,shutil
+_s=socket.socket();_s.bind(('127.0.0.1',0));PORT=_s.getsockname()[1];_s.close();PROF=tempfile.mkdtemp(prefix='casita_chrome_')  # puerto y perfil propios: se pueden lanzar varias pruebas a la vez
+p=subprocess.Popen(['google-chrome','--headless=new','--no-sandbox','--use-gl=swiftshader','--enable-unsafe-swiftshader','--allow-file-access-from-files','--window-size=900,900','--remote-debugging-port=%d'%PORT,'--user-data-dir='+PROF,'--remote-allow-origins=*','about:blank'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 time.sleep(3)
-tabs=json.load(urllib.request.urlopen('http://127.0.0.1:9334/json'))
+tabs=json.load(urllib.request.urlopen('http://127.0.0.1:%d/json'%PORT))
 ws=websocket.create_connection([t for t in tabs if t['type']=='page'][0]['webSocketDebuggerUrl'],timeout=60)
 mid=[0]
 def send(m,params={}):
@@ -14,4 +15,4 @@ send('Runtime.enable');wait(send('Page.navigate',{'url':sys.argv[1]}))
 time.sleep(float(sys.argv[2]))
 r=wait(send('Runtime.evaluate',{'expression':'document.title','returnByValue':True}))
 print(r['result']['result'].get('value'))
-p.kill()
+p.kill();subprocess.run(['pkill','-f','--','--user-data-dir='+PROF],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);shutil.rmtree(PROF,ignore_errors=True)

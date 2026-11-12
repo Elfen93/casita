@@ -23,8 +23,10 @@ assert core.count('// <<B3D>>\n')==1,'falta el ancla de módulos'
 html=head+lib+core.replace('// <<B3D>>\n',mods,1)+rd('src/tail.html')
 # sintaxis del script principal
 i=html.index('<script>\n(() => {');j=html.index('</script>',i)
-open('/tmp/_casita_check.js','w').write(html[i+8:j])
-if subprocess.run(['node','--check','/tmp/_casita_check.js']).returncode:print('SYNTAX_FAIL');sys.exit(1)
+import tempfile
+chk=tempfile.NamedTemporaryFile('w',suffix='.js',delete=False,encoding='utf-8');chk.write(html[i+8:j]);chk.close()  # nombre propio: varios builds a la vez no se pisan
+bad=subprocess.run(['node','--check',chk.name]).returncode;os.unlink(chk.name)
+if bad:print('SYNTAX_FAIL');sys.exit(1)
 if '--check' in sys.argv:print('SYNTAX_OK');sys.exit(0)
 open(P('casita.html'),'w',encoding='utf-8').write(html)
 # PWA
