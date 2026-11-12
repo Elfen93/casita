@@ -71,3 +71,9 @@
 - El censo del barrio: 46 personas en 15 hogares y 8 edificios (tres bloques y cinco casas bajas), cada una con trabajo y horario, historia y lazos; 10 niñas y niños y 7 adolescentes.
 - La gente del censo en las escenas: quien trabaja en un sitio está allí en su turno con su puesto bajo el nombre; las criaturas, más pequeñas según la edad y siempre con una adulta de su casa; los de un mismo hogar van juntos.
 - Casas visitables: «Ir a su casa» enseña el piso o la casa por dentro, distinta según el nivel del hogar y quién vive allí (juguetes, andador, estufa de butano, tendedero), con quien esté en casa a esa hora.
+- Colegio público, colegio concertado e instituto: las criaturas y adolescentes del censo van a su centro en horas de clase; escenas de entrada y salida, recreo y aula, distintas en la pública y en la concertada. Con hijos propios: «Recoger del cole» y «Reunión con la tutora».
+- Universidad pública y privada: al matricularse en un grado o un máster se elige. Mismo título y mismas horas; la privada cuesta entre seis y ocho veces más y tiene clases de tarde y grupos de veinte; la pública, mañanas y ochenta en el aula.
+- Nombres en las escenas: letra de tamaño fijo y legible, sin pisarse ni tapar cabezas, encima de todo también de noche; quien trabaja lleva su puesto debajo; una familia junta, un solo rótulo.
+- La gente añadida a las escenas ya no pisa mesas ni mostradores, y quien trabaja está en su puesto (tras la barra, en la caja, en el andamio).
+- Centro de salud, oficina de empleo, casas y aulas, rehechos a escala de móvil: sillas que parecen sillas, la médica que sale a llamar con el número de la pantalla, pupitres a la medida de las criaturas, la dirección de la casa a la vista.
+- Revisión de diseño: norma en `docs/FABRICA.md`, capturas a tamaño de móvil de verdad (`t/cdpshot.py`) y visor de escenas (`t/t_ver.js`).

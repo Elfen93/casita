@@ -1,3 +1,4 @@
+let _sd=11;Math.random=()=>{_sd=(Math.imul(_sd,1664525)+1013904223)>>>0;return _sd/4294967296;}; // azar sembrado: sin él, un suceso al azar durante la visita cambiaba la relación y la prueba fallaba a veces
 setTimeout(()=>{try{
  const errs=[];const oe=console.error;console.error=(...a)=>{errs.push(a.map(x=>x&&x.stack?x.stack.slice(0,200):String(x)).join(' '));};
  const fails=[];const chk=(c,m)=>{if(!c)fails.push(m);};
@@ -23,7 +24,8 @@ setTimeout(()=>{try{
  am.n='Marta';am.hogar='h1';S.outWith='amiga';s.work=100;s.awayTotal=160;s.dest='hogar';s.outingActive='visita';
  chk(placeName('hogar')==='Casa de Marta','rotulo censo '+placeName('hogar'));
  const names=[];const _l=label;label=function(t){names.push(t);return _l.apply(this,arguments);};
- const noms=(who,h)=>{const p=S.people.find(q=>q.k==='amiga');p.n=who[0];p.hogar=who[1];S.t=h*60;names.length=0;const nt=(h>=21||h<7)?1:0;drawScene('hogar',3,nt);return names.filter(n=>n!==CH().name).sort().join(',');};
+ const noms=(who,h)=>{const p=S.people.find(q=>q.k==='amiga');p.n=who[0];p.hogar=who[1];S.t=h*60;names.length=0;const nt=(h>=21||h<7)?1:0;drawScene('hogar',3,nt);const todos=names.concat(typeof RT!=='undefined'?RT.names.map(q=>q.name):[]); // los nombres van ahora por los rótulos
+  return [...new Set(todos)].filter(n=>n!==CH().name).sort().join(',');};
  const exp={10:{h1:'Concha,Marta',h2:'Irene'},14:{h1:'Concha,Hugo,Lola,Marta',h2:'Irene'},19:{h1:'Concha,Hugo,Lola,Marta,Rafa',h2:'Irene,Sergio'},2:{h1:'',h2:''}};
  const out=[];
  for(const h of [10,14,19,2])for(const [hid,who] of [['h1','Marta'],['h2','Irene']]){const got=noms([who,hid],h);out.push(hid+'@'+h+'='+got);chk(got===exp[h][hid],`${hid}@${h}: '${got}' esperado '${exp[h][hid]}'`);}

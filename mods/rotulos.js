@@ -76,5 +76,13 @@ function rtPaint(){const A=rtAreas();const fs=RT.fs;
 {const _ds=drawScene;
 drawScene=function(key,tt,night){RT.names=[];RT.heads=[];RT.obst=[];RT.ana=null;RT.on=true;let sc;
   try{sc=_ds.apply(this,arguments);}finally{RT.on=false;}
-  try{rtPaint();}catch(e){console.error('rótulos',e);}
+  RT.pend=true; // se pintan al acabar el fotograma, después del tinte de noche: son interfaz, no mundo
   return sc;};}
+// apunta el nombre de la última figura pintada: para las escenas que dibujan a escala propia (criaturas) y antes ponían su etiqueta pequeña
+function rotular(nombre,puesto){if(!RT.on||!RT.heads.length||!nombre)return false;const id=RT.heads.length-1,h=RT.heads[id];RT.names.push({name:nombre,x:h.x,y:h.y,id,rot:puesto?{trab:true,puesto}:null});return true;}
+// letreros de interfaz que una escena quiere encima de todo (la dirección de una casa)
+function rotuloDespues(fn){if(!RT.on)return false;RT.post=RT.post||[];RT.post.push(fn);return true;}
+{const _rn=render;
+render=function(){RT.pend=false;RT.post=[];const r=_rn.apply(this,arguments);
+  if(RT.pend){RT.pend=false;try{rtPaint();for(const fn of RT.post)fn();}catch(e){console.error('rótulos',e);}RT.post=[];}
+  return r;};}

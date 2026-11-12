@@ -48,7 +48,7 @@ casita/
                       ideologías, gobiernos, reglas y sucesos (data/README.md). Lo comparten el juego web y Godot
   src/head.html, src/tail.html
   src/core/NNN_*.js   núcleo: 99 archivos numerados (motor, dibujo, casa, trabajo, mundo…)
-  mods/*.js           60 módulos que amplían el núcleo, en el orden de build.json
+  mods/*.js           63 módulos que amplían el núcleo, en el orden de build.json
   mods/movil.css      estilos de todas las ventanas
   p3d/, q3d/          librería 3D y modelos de los personajes
   pwa/                registro del service worker
@@ -104,7 +104,7 @@ Estado: ✅ funciona · 🟡 funciona pero corto · ⬜ pendiente.
 | Gente: relaciones, pareja, intimidad, visitas, hijos, convivencia | `relaciones`, `intimo`, `visitas`, `invitados`, `crianza`, `convivencia`, `resvida` | ✅ |
 | Interacciones visibles y menú por persona, ideologías y voces | `gente_menu`, `social_fx`, `voces` | ✅ |
 | Móvil del juego: mensajes, noticias, banco | `movil` | ✅ |
-| Estudios y libros: programas, clase en aula, biblioteca, manuales, escribir, pintar | `estudios`, `aula`, `libros`, `lectura` | ✅ |
+| Estudios y libros: programas, clase en aula, universidad pública o privada, biblioteca, manuales, escribir, pintar | `estudios`, `aula`, `universidad`, `libros`, `lectura` | ✅ |
 | Sindicato, huelga, favores colectivos | núcleo, `huelga`, `colectivo` | ✅ |
 | Gobiernos y ciclos: tensión, señales, crisis, pulso de actores, presión exterior | núcleo (`046`), `ciclos`, `ritmo` | ✅ |
 | Consejos y comunas por fases: vivienda, trabajo, compra y banco | `gobierno` | ✅ |
@@ -112,7 +112,7 @@ Estado: ✅ funciona · 🟡 funciona pero corto · ⬜ pendiente.
 | Comunidad propia (socialismo utópico), semilla de las comunas | `comunidad` | ✅ |
 | Gobierno progresista y conservador en la vida diaria | `ciclos`, `fiscal` | 🟡 impuestos y pulso sí; faltan efectos en vivienda, servicios y calle |
 | Deseos del personaje, objetivos, temporadas, final | núcleo, `deseos`, `final` | ✅ |
-| Mundo: lugares visitables y escenas interiores con gente según la hora | núcleo (`047`), `gym`, `aula`, `poblacion`, `servicios` | 🟡 un solo barrio; el mapa del barrio existe en el código (`barrioItems`) pero no se pinta: solo se ven la casa y las escenas |
+| Mundo: lugares visitables y escenas interiores con gente según la hora; nombres en pantalla que no se pisan | núcleo (`047`), `gym`, `aula`, `poblacion`, `rotulos`, `servicios`, `escuela`, `universidad` | 🟡 un solo barrio; el mapa del barrio existe en el código (`barrioItems`) pero no se pinta: solo se ve un lugar cuando el personaje está en él (por eso el recreo y las aulas de colegio e instituto aún no se ven jugando: T-111) |
 | Censo del barrio: 46 vecinos en 15 hogares (trabajo, historia, lazos, niños y adolescentes) y sus casas por dentro | `data/personas.json`, `poblacion`, `hogares` | 🟡 se les ve en su sitio y en su casa, pero aún no se les puede conocer; «Ir a su casa» usa el censo solo cuando la persona tenga `hogar` |
 | Otras ciudades y barrios | — | ⬜ |
 | Envejecer, calendario anual de fiestas | — | ⬜ |
@@ -155,7 +155,7 @@ Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`do
    - ✅ El censo: 46 personas en 15 hogares y 8 edificios (`data/personas.json` → `vecinos`, `hogares`, `edificios`), con trabajo y horario, historia y lazos; 10 niñas y niños y 7 adolescentes.
    - ✅ En las escenas: cada cual donde le toca a su hora, quien trabaja en su puesto, las criaturas con una adulta de su casa (`mods/poblacion.js`).
    - ✅ Casas visitables: el piso o la casa de cada hogar por dentro, según su nivel y quién vive allí (`mods/hogares.js`).
-2. **Lugares visitables: primero los lugares.** ✅ Centro de salud y oficina de empleo (T-003). Siguen: colegio e instituto (el censo ya manda a las criaturas a clase), mercado, polideportivo y más bares; volver a pintar el mapa del barrio para que bloques y casas se vean por fuera; después, otros barrios y ciudades.
+2. **Lugares visitables: primero los lugares.** ✅ Centro de salud y oficina de empleo. ✅ Colegio público, colegio concertado e instituto (las criaturas del censo van a clase; con hijos propios, «Recoger del cole» y «Reunión con la tutora»). ✅ Universidad pública y privada (se elige al matricularse: mismo título, otro precio y otro horario). Siguen: volver a pintar el mapa del barrio y poder mirar un edificio sin estar en él (T-111), mercado, polideportivo y más bares; después, otros barrios y ciudades.
 3. **Interacciones y personajes con los que se puede tratar**, entre toda la población nueva: conocer a los vecinos del censo (hoy son figurantes), que pasen a la lista de gente con su hogar y sus lazos, visitarles, e interacciones nuevas en los lugares y en casa.
 
 Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git worktree add ../wt/t0NN -b fab/t0NN main`); cada agente lee solo los documentos que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica. La revisión es de diseño y tiene la última palabra: un defecto que se ve no se publica ni se apunta, se arregla antes (`docs/FABRICA.md`, «Revisión de diseño»).

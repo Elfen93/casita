@@ -41,7 +41,7 @@ const hgQ=(y,x0,x1,z0,z1,c)=>faceY(x0,x1,y,z0,z1,c),hgR=(x,y0,y1,z0,z1,c)=>faceX
 const hgBox=(x0,y0,x1,y1,z0,z1,c)=>sBox(x0,y0,x1,y1,z0,z1,c);
 function hgPer(x,y,m,o){const sc=hgSc(m.edad);const [a,b]=P(x,y);ctx.save();if(sc<1){ctx.translate(a,b);ctx.scale(sc,sc);ctx.translate(-a,-b);}
   sPerson(x,y,m.ch,{front:true,right:true,...o});ctx.restore();
-  if(m.n){ctx.save();ctx.globalAlpha=.92;label(m.n,a,b-((o.pose==='sit'?58:66)*sc)-2,'rgba(255,253,248,.92)','#3b3247',8);ctx.restore();}}
+  if(m.n&&!(typeof rotular==='function'&&rotular(m.n))){ctx.save();ctx.globalAlpha=.92;label(m.n,a,b-((o.pose==='sit'?58:66)*sc)-2,'rgba(255,253,248,.92)','#3b3247',8);ctx.restore();}}
 function hgSteam(x,y,z,tt){const [a,b]=P(x,y,z);ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.2;for(let k=0;k<2;k++){ctx.beginPath();const ph=tt*2+k*2;ctx.moveTo(a+k*3-1.5,b);ctx.bezierCurveTo(a+k*3-4+Math.sin(ph)*2,b-5,a+k*3+3+Math.cos(ph)*2,b-9,a+k*3-1+Math.sin(ph+1)*2,b-14);ctx.stroke();}}
 // ---------- distribución ----------
 const HGL={
@@ -92,15 +92,15 @@ SCENES['hogar']=function(E){const {tt,night}=E;const h=E.h!=null?E.h:S.t/60;cons
     const k=cls===0?1:.7;
     if(L.hum==='back'){// pared del fondo, entre el cuadro y la cocina, bajando desde el techo (se ve siempre)
       const u0=L.hu,zt=66,zb=66-26*k;
-      mancha(fb,[[u0-3.6*k,zt],[u0,zt],[u0,zb+8],[u0-.5,zb+3],[u0-1.3,zb+9],[u0-2.0,zb],[u0-2.8,zb+7],[u0-3.6*k,zb+12]],'#566a46',.78);
-      mancha(fb,[[u0-2.6*k,zt],[u0,zt],[u0,zt-9],[u0-1.2,zt-13],[u0-2.3,zt-8]],'#3f5034',.7);
-      if(k===1){mancha(fb,[[u0-3.7,zt],[u0-3.1,zt],[u0-3.2,zt-9],[u0-3.5,zt-6]],'#566a46',.7);}
-      ctx.globalAlpha=.7;ctx.fillStyle='#2f3d27';for(const [u,z,r] of [[u0-.4,zb+4,1.8],[u0-1.5,zb+2,1.4],[u0-2.4,zb+6,1.6],[u0-1.0,zt-16,1.3],[u0-3.0,zt-12,1.2]]){const q=P(u,0,z);ctx.beginPath();ctx.arc(q[0],q[1],r,0,7);ctx.fill();}
+      mancha(fb,[[u0-3.6*k,zt],[u0,zt],[u0,zb+8],[u0-.5,zb+3],[u0-1.3,zb+9],[u0-2.0,zb],[u0-2.8,zb+7],[u0-3.6*k,zb+12]],'#7a7460',.42);
+      mancha(fb,[[u0-2.6*k,zt],[u0,zt],[u0,zt-9],[u0-1.2,zt-13],[u0-2.3,zt-8]],'#54503f',.5);
+      if(k===1){mancha(fb,[[u0-3.7,zt],[u0-3.1,zt],[u0-3.2,zt-9],[u0-3.5,zt-6]],'#7a7460',.4);}
+      ctx.globalAlpha=.7;ctx.fillStyle='#2b2a22';for(const [u,z,r] of [[u0-.4,zb+4,1.8],[u0-1.5,zb+2,1.4],[u0-2.4,zb+6,1.6],[u0-1.0,zt-16,1.3],[u0-3.0,zt-12,1.2]]){const q=P(u,0,z);ctx.beginPath();ctx.arc(q[0],q[1],r,0,7);ctx.fill();}
       ctx.globalAlpha=.6;ctx.strokeStyle='#7b6a3a';ctx.lineWidth=1.4;ctx.beginPath();for(const u of [u0-.6,u0-1.9,u0-2.7]){ctx.moveTo(...fb(u,zb+9));ctx.lineTo(...fb(u,zb-2));}ctx.stroke();}
     else{const v0=D-.3,zt=66,zb=66-26*k;
-      mancha(fl,[[v0-3.6*k,zt],[v0,zt],[v0,zb+8],[v0-.5,zb+3],[v0-1.3,zb+9],[v0-2.0,zb],[v0-2.8,zb+7],[v0-3.6*k,zb+12]],'#566a46',.78);
-      mancha(fl,[[v0-2.6*k,zt],[v0,zt],[v0,zt-9],[v0-1.2,zt-13],[v0-2.3,zt-8]],'#3f5034',.7);
-      ctx.globalAlpha=.7;ctx.fillStyle='#2f3d27';for(const [u,z,r] of [[v0-.4,zb+4,1.8],[v0-1.5,zb+2,1.4],[v0-2.4,zb+6,1.6]]){const q=P(0,u,z);ctx.beginPath();ctx.arc(q[0],q[1],r,0,7);ctx.fill();}}
+      mancha(fl,[[v0-3.6*k,zt],[v0,zt],[v0,zb+8],[v0-.5,zb+3],[v0-1.3,zb+9],[v0-2.0,zb],[v0-2.8,zb+7],[v0-3.6*k,zb+12]],'#7a7460',.42);
+      mancha(fl,[[v0-2.6*k,zt],[v0,zt],[v0,zt-9],[v0-1.2,zt-13],[v0-2.3,zt-8]],'#54503f',.5);
+      ctx.globalAlpha=.7;ctx.fillStyle='#2b2a22';for(const [u,z,r] of [[v0-.4,zb+4,1.8],[v0-1.5,zb+2,1.4],[v0-2.4,zb+6,1.6]]){const q=P(0,u,z);ctx.beginPath();ctx.arc(q[0],q[1],r,0,7);ctx.fill();}}
     ctx.restore();};
   const drawBase=()=>{prism(0,0,W,D,-22,0,'#6d5c4a');
     if(bloque){topQuad(0,0,W,D,0,piso);}else{topQuad(0,0,hx,D,0,piso);topQuad(hx,0,W,D,0,'#b9704f');}
@@ -203,6 +203,6 @@ SCENES['hogar']=function(E){const {tt,night}=E;const h=E.h!=null?E.h:S.t/60;cons
     const cx=cam.x+(W-D)*TW/4*cam.z,cy=Math.max(160,cam.y-WH*cam.z-18);const w=ctx.measureText(t).width+14;ctx.fillStyle='rgba(255,253,248,.95)';roundRect(cx-w/2,cy-10,w,20,8);ctx.fill();ctx.fillStyle='#3b3247';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t,cx,cy+.5);ctx.restore();};
   const after=()=>{const f=dorm?.5:night>.3?.25:0;if(f||dorm){ctx.fillStyle=`rgba(20,28,60,${dorm?.34:.14+night*.14})`;ctx.fillRect(-2400,-2400,4800,4800);}
     if(dorm||night>.3||h>=18||(lluvia&&h>=16)){ctx.save();ctx.globalCompositeOperation='lighter';const g=ctx.createRadialGradient(lampPos[0],lampPos[1],4,lampPos[0],lampPos[1],dorm?190:150);g.addColorStop(0,dorm?'rgba(255,205,120,.85)':'rgba(255,200,110,.5)');g.addColorStop(1,'rgba(255,200,110,0)');ctx.fillStyle=g;ctx.fillRect(lampPos[0]-200,lampPos[1]-200,400,400);ctx.restore();}
-    cartel();};
+    if(!(typeof rotuloDespues==='function'&&rotuloDespues(cartel)))cartel();};
   return {W,D,floor:piso,wall:pared,out:false,tile:false,drawBase,decor,items:it,ana,after};};
 // ---------- la salida «Ir a su casa»: el rótulo ya sale de placeName('hogar'); nada que guardar ----------

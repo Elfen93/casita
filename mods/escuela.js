@@ -77,7 +77,7 @@ function esFig(x,y,ch,age,o={}){const sc=Math.min(1,pbEscala(age)*(o.k||1)),[px,
   ctx.restore();
   if(o.cig){const tt=o.tt||0;for(let k=0;k<3;k++){const u=((tt*.5+k/3)%1);ctx.fillStyle=`rgba(210,210,215,${.5*(1-u)})`;ctx.beginPath();ctx.arc(px+(right?1:-1)*(12+u*4+Math.sin(tt+k)*2),py-30*sc-u*18,1.6+u*2.6,0,7);ctx.fill();}}
   if(o.ball){const [bx,by]=P(x+(o.ball[0]||0),y+(o.ball[1]||0));emoji('⚽',bx,by-3,9);}
-  if(o.name||o.puesto){ctx.save();ctx.globalAlpha=.88;const ny=py-(o.pose==='sit'?52:64)*sc-(o.puesto?9:0);if(o.name)label(o.name,px,ny,'rgba(255,253,248,.92)','#3b3247',8);if(o.puesto)label(o.puesto,px,ny+9,'rgba(255,240,200,.92)','#5a3a22',6);ctx.restore();}}
+  if((o.name||o.puesto)&&!(typeof rotular==='function'&&rotular(o.name||o.puesto,o.name?o.puesto:null))){ctx.save();ctx.globalAlpha=.88;const ny=py-(o.pose==='sit'?52:64)*sc-(o.puesto?9:0);if(o.name)label(o.name,px,ny,'rgba(255,253,248,.92)','#3b3247',8);if(o.puesto)label(o.puesto,px,ny+9,'rgba(255,240,200,.92)','#5a3a22',6);ctx.restore();}}
 const esPuesto=v=>{const p=v.trabajo&&v.trabajo.puesto;return Array.isArray(p)?(v.g==='f'?p[0]:p[1]||p[0]):null;};
 function esSpot(seed,taken,x0,x1,y0,y1,gap){for(let t=0;t<30;t++){const x=x0+esR(seed+'x'+t)*(x1-x0),y=y0+esR(seed+'y'+t)*(y1-y0);if(taken.every(q=>Math.hypot(q[0]-x,q[1]-y)>gap)){taken.push([x,y]);return [x,y];}}return null;}
 function esMoment(key,h,lect,act){if(act==='tutoria')return 'tutoria';if(act==='cole')return 'salida';if(!lect)return 'cerrado';const T=ESC_T[key];

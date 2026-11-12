@@ -10,7 +10,16 @@ Orden del frente A (12 nov 2026): 1 población · 2 lugares · 3 interacciones y
 ### ✅ T-102 · La gente del censo en las escenas (`mods/poblacion.js`, `t/t_censo.js`)
 ### ✅ T-103 · Casas visitables (`mods/hogares.js`)
 
-### ⚡ T-110 · Colegio e instituto
+### ✅ T-110 · Colegio público, concertado e instituto (`mods/escuela.js`) · ✅ T-112 · Universidad pública y privada (`mods/universidad.js`)
+### ✅ T-104 · Rótulos que no se pisan y gente bien colocada (`mods/rotulos.js`, `mods/poblacion.js`) · ✅ T-105 y T-106 · Pulido en móvil de salud, empleo, casas y aulas
+
+### T-113 · Elegir colegio para los hijos
+Rol: sistemas + guion. Hoy los hijos del personaje van a la pública. Poder elegir concertado (cuota «voluntaria» mensual, uniforme) con consecuencias reales y sin monigotes.
+
+### T-114 · Escenas grandes en el móvil
+Rol: motor. Las escenas de 12×9 casillas (patios, súper) se ven algo más pequeñas que el bar en vertical. Estudiar que la cámara de escena acerque más y siga al personaje, con arrastre para ver el resto.
+
+### (hecho) T-110 · Colegio e instituto
 Rol: escenas. Dos lugares con escena (patio y aula; pasillo con taquillas). Las criaturas y adolescentes del censo que tienen `estudia: 'cole'|'instituto'` están allí en horario de clase; a la salida, adultas de su hogar en la puerta. Hecho cuando: capturas de entrada, recreo y salida; `t/t_censo.js` pasa con los nuevos lugares.
 
 ### ⚡ T-111 · El mapa del barrio vuelve a pintarse

@@ -14,7 +14,7 @@ function svVisitNow(){const H=HP();H.citaDue=0;svBack=true;try{hpVisit();}finall
 {const _ob=outBack;outBack=function(k){const r=_ob.apply(this,arguments);
   if(k==='medico'){svVisitNow();return r;}
   if(k==='sepe'){const n=CH().name;S.netBoost=Math.max(S.netBoost||0,S.day+3);if(!S.seek){try{autoSeek();}catch(e){}}
-    tell(pickR([ // GUION:revisar
+    tell(pickR([
       `Oficina de empleo. Dos horas de cola para que le sellen un papel que podía sellarse solo. «Siga buscando», le han dicho. ${n} lo hace.`,
       `Ventanilla tres, cerrada. Ventanilla uno, «sin cita no se atiende». ${n} ha salido con una cita para dentro de un mes y una fotocopia.`,
       `«Vuelva usted mañana», le ha dicho el cartel. ${n} ha vuelto igual: hoy no ha cobrado nada y ha rellenado tres formularios.`]),'📋');return r;}

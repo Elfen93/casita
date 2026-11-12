@@ -68,7 +68,9 @@ Bloquea la publicación:
 - Escenas o variantes entregadas sin mirar.
 
 Cómo se revisa:
-- Cada escena nueva o tocada se mira en captura **a tamaño de móvil (420×860)**, que es donde se juega, en hora punta y en hora floja, de día y de noche, y en cada variante que tenga.
+- Cada escena nueva o tocada se mira en captura **a tamaño de móvil (420×860)**, que es donde se juega, en hora punta y en hora floja, de día y de noche, y en cada variante que tenga. `t/cdpshot.py … 420,860` da ese tamaño de verdad, y `t/t_ver.js` pone cualquier escena a cualquier hora sin escribir una prueba (instrucciones en su cabecera). La referencia de escala es el bar: la escena llena el ancho y una persona de pie mide unos 30 px; una escena nueva no puede verse más pequeña.
+- Los nombres de persona van siempre por los rótulos (`sPerson` con `name`, o `rotular()` si la figura se pinta a escala propia): letra fija, sin pisarse, encima de todo. Una escena no pinta etiquetas de nombre por su cuenta.
+- Nada compartido en `/tmp` entre agentes: cada cual guarda sus scripts dentro de su copia.
 - La integradora abre las capturas ella misma. No vale el «las he mirado» del agente.
 - Los textos nuevos se leen contra la BIBLIA antes de publicar; `// GUION:revisar` no sale a `main`.
 - Si algo se deja fuera, es una decisión: se dice por qué y se abre tarea en el backlog. Nunca en silencio.
