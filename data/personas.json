@@ -129,5 +129,44 @@
     "ahorradora": ["coser"],
     "ordenada": ["armario"],
     "cocinillas": ["cafetera"]
-  }
+  },
+
+  "vecinos": [
+    {"id": "paca", "n": "Paca la del súper", "g": "f", "edad": 58, "oficio": ["cajera", "cajero"], "ideo": "socialdemocrata", "d": "Lleva doce años en la misma caja y conoce a todo el barrio por lo que compra.", "donde": [["super", 8, 15, [0, 1, 2, 3, 4, 5]], ["bar", 19, 21, [4]]]},
+    {
+      "id": "mauri",
+      "n": "Mauri",
+      "g": "m",
+      "edad": 64,
+      "oficio": ["jubilado de la obra", "jubilado de la obra"],
+      "ideo": "conservadora",
+      "d": "Se jubiló con la espalda hecha polvo y una pensión que no da para el bar de siempre.",
+      "donde": [["bar", 12, 14, [0, 1, 2, 3, 4, 5, 6]], ["parque", 17, 20, [0, 1, 2, 3, 4, 5, 6]]]
+    },
+    {"id": "yolanda", "n": "Yoli", "g": "f", "edad": 34, "oficio": ["limpiadora", "limpiador"], "ideo": "apolitica", "d": "Limpia tres portales y una oficina. Dice que sólo cobra por dos.", "donde": [["torre", 6, 9, [0, 1, 2, 3, 4]], ["comedor", 14, 15, [0, 1, 2, 3, 4]]]},
+    {"id": "nacho", "n": "Nacho", "g": "m", "edad": 41, "oficio": ["albañil", "albañil"], "ideo": "apolitica", "d": "Entra a las siete, sale a las tres y no pregunta quién es el dueño del edificio.", "donde": [["obra", 7, 15, [0, 1, 2, 3, 4]], ["bar", 19, 22, [4, 5]]]},
+    {"id": "rosi", "n": "Rosi", "g": "f", "edad": 72, "oficio": ["jubilada", "jubilado"], "ideo": "conservadora", "d": "Va a misa por costumbre y al bar por la tertulia.", "donde": [["parroquia", 10, 12, [6]], ["parque", 11, 13, [0, 1, 2, 3, 4]], ["residencia", 16, 18, [2, 5]]]},
+    {"id": "dani", "n": "Dani", "g": "m", "edad": 23, "oficio": ["repartidor", "repartidor"], "ideo": "anarquista", "d": "Reparte en bici sin contrato y con la mochila de otro.", "donde": [["parque", 15, 17, [0, 1, 2, 3, 4]], ["ateneo", 19, 22, [3, 4]], ["gym", 18, 20, [0, 2]]]},
+    {"id": "wei", "n": "Wei", "g": "m", "edad": 37, "oficio": ["dueño de tienda", "dueño de tienda"], "ideo": "liberal", "d": "Abre a las nueve y cierra cuando el alquiler deja de apretar.", "donde": [["tienda", 9, 21, [0, 1, 2, 3, 4, 5]]]},
+    {"id": "carmen", "n": "Carmen", "g": "f", "edad": 49, "oficio": ["enfermera", "enfermero"], "ideo": "socialdemocrata", "d": "Doble turno otra vez. Hace las cuentas del mes de pie.", "donde": [["residencia", 7, 15, [0, 1, 2, 3]], ["super", 17, 18, [4]]]},
+    {
+      "id": "toni",
+      "n": "Toni el de la coop",
+      "g": "m",
+      "edad": 52,
+      "oficio": ["socio de la cooperativa", "socio de la cooperativa"],
+      "ideo": "marxista",
+      "d": "Cuenta las horas de asamblea como horas de trabajo, que lo son.",
+      "donde": [["coop", 9, 14, [0, 1, 2, 3, 4]], ["sindicato", 17, 20, [1, 3]]]
+    },
+    {"id": "lucia", "n": "Lucía", "g": "f", "edad": 27, "oficio": ["becaria", "becario"], "ideo": "ecologista", "d": "Becaria desde hace tres años. La beca se llama así para no llamarla sueldo.", "donde": [["biblioteca", 10, 14, [0, 1, 2, 3, 4]], ["parque", 17, 20, [5, 6]]]},
+    {"id": "hassan", "n": "Hassan", "g": "m", "edad": 45, "oficio": ["peón", "peón"], "ideo": "apolitica", "d": "Trabaja en negro y paga el alquiler en blanco.", "donde": [["obra", 8, 16, [0, 1, 2, 3, 4]], ["comedor", 14, 15, [5]], ["parque", 17, 19, [5, 6]], ["obra", 17, 20, [0, 1, 2, 3]]]},
+    {"id": "marisa", "n": "Marisa", "g": "f", "edad": 66, "oficio": ["cuidadora", "cuidador"], "ideo": "socialdemocrata", "d": "Cuida a su marido, a su nieta y a quien haga falta, sin contrato.", "donde": [["parque", 11, 13, [0, 1, 2, 3, 4]], ["parroquia", 18, 19, [2, 5]]]},
+    {"id": "ruben", "n": "Rubén", "g": "m", "edad": 31, "oficio": ["camarero", "camarero"], "ideo": "libertaria", "d": "Sirve cañas diez horas y cuenta propinas como si fueran ahorros.", "donde": [["bar", 13, 24, [0, 1, 2, 3, 4, 5]]]},
+    {"id": "pili", "n": "Pili", "g": "f", "edad": 78, "oficio": ["jubilada", "jubilado"], "ideo": "apolitica", "d": "Lleva la compra en el carro desde antes de que hubiera súper.", "donde": [["super", 10, 12, [0, 1, 2, 3, 4]], ["parque", 17, 20, [0, 1, 2, 3, 4, 5, 6]]]},
+    {"id": "sergio", "n": "Sergio", "g": "m", "edad": 55, "oficio": ["delegado sindical", "delegado sindical"], "ideo": "marxista", "d": "Mil asambleas y un solo convenio firmado. Insiste en la siguiente.", "donde": [["sindicato", 16, 21, [0, 1, 2, 3, 4]], ["bar", 21, 23, [4]]]},
+    {"id": "irene", "n": "Irene", "g": "f", "edad": 19, "oficio": ["estudiante", "estudiante"], "ideo": "ecologista", "d": "Estudia por la mañana y friega platos por la noche.", "donde": [["biblioteca", 16, 20, [0, 1, 2, 3, 4]], ["gym", 18, 20, [1, 3]]]},
+    {"id": "quique", "n": "Quique", "g": "m", "edad": 29, "oficio": ["informático", "informática"], "ideo": "liberal", "d": "Programa para una empresa que le llama «colaborador» y le factura como autónomo.", "donde": [["torre", 9, 18, [0, 1, 2, 3, 4]], ["gymbueno", 19, 21, [0, 2, 4]]]},
+    {"id": "olga", "n": "Olga", "g": "f", "edad": 44, "oficio": ["administrativa", "administrativo"], "ideo": "conservadora", "d": "Lleva el papeleo de la comunidad y se sabe todos los morosos.", "donde": [["ayto", 9, 14, [0, 1, 2, 3, 4]], ["parroquia", 11, 12, [6]], ["gym", 19, 21, [1, 3]]]}
+  ]
 }

@@ -50,6 +50,7 @@ Campos comunes: `n` nombre · `e` emoji · `d` descripción.
 | `jefes_nombres`, `jefes_trato` | `BOSSN`, `BOSST` | Nombres de jefes y cómo se les llama en cada sector `[femenino, masculino]`. |
 | `obreros` | `BUILDERS` | Nombres de quien viene a hacer obras. |
 | `oficios`, `oficios_piso` | `newPerson()`, `MATE_JOBS` | Oficios de la gente que se conoce y de quien comparte piso `[femenino, masculino]`. |
+| `vecinos` | `VECINOS` (`mods/poblacion.js`) | Vecinos del barrio con nombre: `n` nombre o mote · `g` género · `edad` · `oficio` `[femenino, masculino]` · `ideo` ideología · `d` frase · `donde` `[[lugar, desde, hasta, [días]]]` (horas de 0 a 24, 0 = lunes). Salen con su nombre en las escenas cuando coincide el sitio, la hora y el día. |
 | `personaje_base` | `DEFCHAR` | El personaje por defecto. |
 | `orientacion`, `estilo_relacion`, `quiere_hijos`, `quiere_boda`, `etapas` | `ORIENT`, `RELSTYLE`, `KIDSW`, `BODAW`, `STAGE` | Opciones de vida y etapas de una relación, con su etiqueta. |
 | `clases` | `CLASSN` | Nombre de cada posición de clase. |

@@ -86,6 +86,9 @@ def comprobar(d):
         dentro('ideologias.%s.act'%k,v.get('act',{}),sal,'lugares.salidas')
         if v.get('vote'):dentro('ideologias.%s.vote'%k,[v['vote']],gov,'gobiernos.gobiernos')
     dentro('ideologias.izquierda',ID['izquierda'],ideo,'ideologias.ideologias');dentro('ideologias.derecha',ID['derecha'],ideo,'ideologias.ideologias')
+    for v in P.get('vecinos',[]):
+        dentro('personas.vecinos.%s.ideo'%v['id'],[v['ideo']],ideo,'ideologias.ideologias')
+        dentro('personas.vecinos.%s.donde'%v['id'],[x[0] for x in v['donde']],lug,'lugares.lugares')
     dentro('ideologias.reparto',[r[0] for r in ID['reparto']],ideo,'ideologias.ideologias')
     dentro('ideologias.voces',ID['voces'],gov,'gobiernos.gobiernos')
     for g,v in ID['voces'].items():dentro('ideologias.voces.%s'%g,v,ideo,'ideologias.ideologias')
