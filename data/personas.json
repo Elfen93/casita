@@ -1,23 +1,19 @@
 {
   "_": "La gente: nombres, oficios, rasgos de personalidad y opciones de vida. Campos en data/README.md.",
 
-  "nombres": {
-    "f": ["Ana", "Lucía", "Marta", "Carmen", "Inés", "Nora", "Sara", "Paula", "Alba", "Julia", "Aitana", "Valeria"],
-    "m": ["Pablo", "Hugo", "Diego", "Javier", "Mario", "Iker", "Óscar", "Raúl", "Leo", "Bruno", "Adrián", "Marcos"],
-    "x": ["Alex", "Sam", "Noa", "Ari", "Cris", "Dani", "Eli", "Robin", "Andy", "Sasha"]
-  },
+  "nombres": {"f": ["Ana", "Marta", "Inés", "Nora", "Paula", "Aitana", "Valeria"], "m": ["Diego", "Javier", "Mario", "Óscar", "Raúl", "Bruno", "Marcos"], "x": ["Alex", "Sam", "Noa", "Ari", "Cris", "Eli", "Robin", "Andy", "Sasha"]},
 
-  "nombres_peques": {"f": ["Lola", "Vera", "Martina", "Alma", "Noa", "Olivia", "Jimena"], "m": ["Leo", "Mateo", "Bruno", "Pau", "Hugo", "Nil", "Dani"]},
+  "nombres_peques": {"f": ["Vera", "Vera", "Martina", "Alma", "Noa", "Olivia", "Jimena"], "m": ["Samuel", "Mateo", "Bruno", "Pau", "Víctor", "Nil", "Guille"]},
 
-  "madres": ["Rosa", "Pilar", "Maite", "Concha", "Lola", "Isabel"],
+  "madres": ["Rosa", "Pilar", "Maite", "Concha", "Manoli", "Isabel"],
 
-  "amistades": [["Lucía", "a"], ["Sergio", "o"], ["Nuria", "a"], ["Iván", "o"], ["Marta", "a"], ["Álex", "e"], ["Bea", "a"], ["Rubén", "o"]],
+  "amistades": [["Noelia", "a"], ["Joaquín", "o"], ["Teresa", "a"], ["Iván", "o"], ["Marta", "a"], ["Álex", "e"], ["Bea", "a"], ["Emilio", "o"]],
 
-  "vecindario": ["Carmen", "Paco", "Manoli", "Antonio"],
+  "vecindario": ["Clara", "Paco", "Manoli", "Antonio"],
 
-  "companeros": [["Raúl", "o"], ["Elena", "a"], ["Toni", "o"], ["Sofía", "a"]],
+  "companeros": [["Raúl", "o"], ["Elena", "a"], ["Unai", "o"], ["Sofía", "a"]],
 
-  "jefes_nombres": {"f": ["Marisa", "Begoña", "Yolanda", "Montse", "Puri"], "m": ["Jesús", "Ramón", "Alberto", "Fran", "Ginés"]},
+  "jefes_nombres": {"f": ["Elena", "Estrella", "Yolanda", "Montse", "Puri"], "m": ["Jesús", "Ramón", "Alberto", "Fran", "Ginés"]},
 
   "jefes_trato": {
     "oficina": ["la directora", "el director"],
@@ -31,7 +27,7 @@
     "arte": ["la dueña de la sala", "el dueño de la sala"]
   },
 
-  "obreros": ["Rosa", "Manolo", "Lucía", "Tomás", "Inés", "Jorge", "Carmen", "Andrés"],
+  "obreros": ["Rosa", "Manolo", "Paula", "Tomás", "Inés", "Jorge", "Blanca", "Andrés"],
 
   "oficios": {
     "enfermera": ["enfermera", "enfermero"],
