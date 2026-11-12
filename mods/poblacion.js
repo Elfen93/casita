@@ -56,7 +56,10 @@ function crowd(E,key,r){const c=POB[key];if(!c)return [];r=r||{};const W=r.W||8,
   let list=vecinosEn(key,h,wd).sort((a,b)=>(a.motivo==='trabajo'?0:1)-(b.motivo==='trabajo'?0:1)||(a.v.id<b.v.id?-1:1));
   const adultosH=new Set(list.filter(q=>pbAdult(q.v)&&q.v.hogar!=null).map(q=>q.v.hogar));
   list=list.filter(q=>{const v=q.v;if(pbAdult(v))return true;const conAdulta=v.hogar!=null&&adultosH.has(v.hogar);
-    if(conAdulta)return true;return typeof v.edad==='number'&&v.edad>=12?true:parqueTarde;}).slice(0,12);
+    if(conAdulta)return true;return typeof v.edad==='number'&&v.edad>=12?true:parqueTarde;});
+  // tope de 12: quien trabaja y las adultas primero, y ninguna criatura se queda sin la adulta que la traía
+  if(list.length>12){const ad=list.filter(q=>pbAdult(q.v)),me=list.filter(q=>!pbAdult(q.v));const adK=ad.slice(0,Math.max(4,12-me.length));const hk=new Set(adK.map(q=>q.v.hogar));
+    list=adK.concat(me.filter(q=>(q.v.hogar!=null&&hk.has(q.v.hogar))||(typeof q.v.edad==='number'&&q.v.edad>=12)||parqueTarde)).slice(0,12);}
   const lv=pbLevel(c,h,wd);
   const n=Math.min(14,Math.max(4,Math.round(c.lo+(c.hi-c.lo)*lv),list.length+2));
   const ns=NPCS();const known=(Array.isArray(S.people)?S.people:[]).filter(p=>p&&p.ch&&p.n);

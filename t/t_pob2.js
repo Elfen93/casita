@@ -1,3 +1,4 @@
+DATA.personas.vecinos.length=0; // esta prueba usa solo sus vecinos de ejemplo
 setTimeout(()=>{try{window.__errs=window.__errs||[];const ce=console.error;console.error=(...a)=>{window.__errs.push(a.map(x=>x&&x.stack?x.stack.slice(0,200):String(x)).join(' ').slice(0,300));};
 S=newState('normal');S.char={...randomChar(),g:'f'};S.ideo='marxista';initPeople();applyHome('viejo');startTrack('oficina',true);rollWeather();newToday();storyStart();S.autoHome=false;S.r3d='simple';
 const ALL=[0,1,2,3,4,5,6],bad=[];const T=(c,m)=>{if(!c)bad.push(m);};
