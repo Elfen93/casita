@@ -18,8 +18,9 @@ Lo leen dos juegos: el web (hoy) y el de Godot (`godot/`, cuando exista). Lo que
 4. **Los nombres cortos de los campos** (`n`, `e`, `d`…) son los que ya usaba el código. Abajo están los principales; para cualquier otro, búscalo en el código (`grep -n "\.tox" -r src mods`).
 5. **Textos** como en `docs/BIBLIA.md`: castellano de España, frases cortas, femenino genérico (la función `L()` los adapta al personaje).
 6. **Aquí no hay lógica.** Si una ficha necesita una condición o un efecto con código, la ficha va aquí y la función se queda en el código, unida con `conLogica(tabla,{id:{campo:función}})` (ver `OUT` y `GEST`).
-7. Antes de entregar: `python3 scripts/datos.py` (comprueba sintaxis y que cada referencia exista) y `python3 scripts/datos.py --fmt` (deja el formato de la casa: una ficha por línea si cabe en 300 caracteres).
-8. Un dato, un sitio. Si un módulo quiere cambiar un precio o añadir una ficha, se cambia aquí, no con `OBJ.x.p=…` al cargar.
+7. **Textos con huecos.** Cuando una frase lleva dentro un nombre o una cifra, se escribe con huecos entre llaves: `"{p} sale del cole a las cinco."`. El código la rellena con `huecos(texto,{p:nombre})`. Hay dos huecos que se rellenan solos: `{n}`, el nombre del personaje, y `{o}`, la terminación de su género. Las condiciones (si llueve, si está en paro) no van en el texto: el código elige entre frases enteras.
+8. Antes de entregar: `python3 scripts/datos.py` (comprueba sintaxis y que cada referencia exista) y `python3 scripts/datos.py --fmt` (deja el formato de la casa: una ficha por línea si cabe en 300 caracteres).
+9. Un dato, un sitio. Si un módulo quiere cambiar un precio o añadir una ficha, se cambia aquí, no con `OBJ.x.p=…` al cargar.
 
 ## Qué hay en cada archivo
 

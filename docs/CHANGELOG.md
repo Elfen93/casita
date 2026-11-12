@@ -63,3 +63,4 @@
 - Documento maestro docs/CASITA.md: qué es, reglas, mapa de sistemas, decisiones y plan (paso 0, fábrica, Godot).
 - Paso 0, primera pasada: el contenido sale del código a `data/*.json` (107 secciones en 11 archivos: lugares, viviendas, personas, profesiones, objetos, libros, estudios, interacciones, ideologías, gobiernos, reglas) y `build.py` lo incrusta como `DATA`. Por fuera no cambia nada: 11 partidas de 120 días con el azar sembrado dan lo mismo que antes. Nuevos: `scripts/datos.py` (comprueba y formatea los datos), `scripts/comparar.py` (antes/después) y `t/t_data.js`.
 - Pruebas en paralelo: cada Chrome de prueba usa su puerto y su perfil, y el build su archivo temporal, para que varios agentes construyan y prueben a la vez.
+- Textos con huecos: `huecos(texto,{clave:valor})` y su norma en data/README.md, para la segunda pasada del paso 0.
