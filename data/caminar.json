@@ -47,5 +47,42 @@
 
   "reparto": "Repartiendo por el barrio",
 
-  "ir_min": 45
+  "ir_min": 45,
+
+  "ir_transporte": "{n} va en transporte: que llegue antes",
+
+  "cierra_dia": "{lugar} cierra los {dia}",
+
+  "cerrado_hora": "{lugar} estará cerrado cuando llegue: abre {cuando}",
+
+  "festivos": "festivos",
+
+  "dias_plural": ["lunes", "martes", "miércoles", "jueves", "viernes", "sábados", "domingos"],
+
+  "el": {
+    "super": "el súper",
+    "bar": "el bar",
+    "biblioteca": "la biblioteca",
+    "sepe": "la oficina de empleo",
+    "sindicato": "el local del sindicato",
+    "ayto": "el ayuntamiento",
+    "ateneo": "el ateneo",
+    "parroquia": "la parroquia",
+    "torre": "la torre de oficinas",
+    "sala": "la sala",
+    "comedor": "el comedor social",
+    "gym": "el gimnasio",
+    "gymbueno": "el gimnasio",
+    "ambulatorio": "el centro de salud",
+    "tienda": "la tienda",
+    "coop": "la cooperativa",
+    "obra": "la obra",
+    "colegio": "el colegio",
+    "concertado": "el colegio",
+    "instituto": "el instituto",
+    "uni_publica": "la universidad",
+    "uni_privada": "la universidad",
+    "residencia": "la residencia",
+    "parque": "el parque"
+  }
 }
