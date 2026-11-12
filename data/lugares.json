@@ -94,7 +94,7 @@
     "albergue": {"n": "Noche en el albergue", "e": "🛏️", "dur": 660, "h": [19, 21.5], "why": "una ducha, una cena y una cama con sábanas"},
     "pedir": {"n": "Pedir en la puerta del súper", "e": "🥤", "dur": 200, "h": [9, 20], "why": "lo que caiga"},
     "chatarra": {"n": "Buscar chatarra", "e": "🛒", "dur": 240, "h": [7, 20], "why": "cobre, aluminio, lo que pese"},
-    "ssociales": {"n": "Servicios sociales", "e": "🏛️", "dur": 150, "h": [9, 13], "wd": [1, 2, 3, 4, 5], "why": "una cita, un papel, otra cita"},
+    "ssociales": {"n": "Servicios sociales", "e": "🏛️", "dur": 150, "h": [9, 13], "wd": [0, 1, 2, 3, 4], "why": "una cita, un papel, otra cita"},
     "libreria": {"n": "Ir a la librería", "e": "📚", "dur": 60, "h": [10, 20], "why": "mirar lomos, oler papel, gastar lo que no debería"},
     "mercadillo": {"n": "Mercadillo de libros usados", "e": "📦", "dur": 90, "h": [10, 14], "wd": [5, 6], "why": "libros a dos duros, subrayados por otra gente"},
     "presta": {"n": "Biblioteca: devolver y pedir", "e": "🏛️", "dur": 50, "h": [9, 20], "why": "devolver lo prestado y llevarse otro, gratis"},

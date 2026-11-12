@@ -41,7 +41,7 @@ Object.assign(DLG,{cr_recoger:{t:()=>DT.cr_recoger.t,x:d=>huecos(DT.cr_recoger.x
   auto:()=>{const m=grandma();return m?2:S.money>hrs(100)?1:0;}}});
 Object.assign(DLG_CD,{cr_recoger:200});
 // ---- el cole: por la mañana no están ----
-{const _ur=updateResidents;updateResidents=function(gm){try{const h=S.t/60;const wk=dateOf(S.day).wd;for(const r of S.res||[]){if(r.kind!=='kid')continue;const k=(S.kids||[])[r.kid];if(!k)continue;const a=kidAge(k);const school=a>=3&&wk>=1&&wk<=5&&!k.sick&&!festivo(S.day)&&k.huelga!==S.day;
+{const _ur=updateResidents;updateResidents=function(gm){try{const h=S.t/60;const wk=dateOf(S.day).wd;for(const r of S.res||[]){if(r.kind!=='kid')continue;const k=(S.kids||[])[r.kid];if(!k)continue;const a=kidAge(k);const school=a>=3&&wk<5&&!k.sick&&!festivo(S.day)&&k.huelga!==S.day;
       if(school&&h>=9&&h<(S.recoger==='pagar'?18.5:17)&&!r.away){r.away={until:S.day*1440+(S.recoger==='pagar'?18.5:17)*60,back:[r.x,r.y]};}
       if(r.away&&S.day*1440+S.t>=r.away.until){r.x=r.away.back[0];r.y=r.away.back[1];r.away=null;}}}catch(e){}return _ur.apply(this,arguments);};}
 // ---- tocar al crío: jugar, cuento, deberes, bañar ----
