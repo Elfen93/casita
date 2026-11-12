@@ -3,8 +3,8 @@ const {colectivo:TX_colectivo}=DATA.textos_mods_ag;
 const SOL=()=>{if(!S.sol)S.sol={fav:0,seen:0,log:[],owed:0};return S.sol;};
 function solAdd(n,why){const s=SOL();s.fav=Math.min(12,s.fav+n);if(why)s.log.push([S.day,why]);if(s.log.length>12)s.log.shift();}
 // lo que cuenta: actos de solidaridad (dilemas), asambleas, piquetes, parar desahucios
-{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const s=SOL();const e=ex().exp.solid||0;if(e>s.seen){solAdd((e-s.seen)*1.5,'se plantó por alguien');s.seen=e;}
-  const ch=storyState().chap;if(ch.parado&&!s.parado){s.parado=1;solAdd(3,'paró un desahucio');}if(S.union&&S.union.member&&dateOf(S.day).wd===0)solAdd(.15);if(S.rentStrike&&dateOf(S.day).wd===0)solAdd(.2);
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);try{const s=SOL();const e=ex().exp.solid||0;if(e>s.seen){solAdd((e-s.seen)*1.5,TX_colectivo.sol_planto);s.seen=e;}
+  const ch=storyState().chap;if(ch.parado&&!s.parado){s.parado=1;solAdd(3,TX_colectivo.sol_desahucio);}if(S.union&&S.union.member&&dateOf(S.day).wd===0)solAdd(.15);if(S.rentStrike&&dateOf(S.day).wd===0)solAdd(.2);
   solBack();}catch(e){console.error(e);}return r;};}
 {const _ob=outBack;outBack=function(k){const r=_ob.apply(this,arguments);try{if(['sindicato','militancia','piquete','voluntariado','manifestacion'].includes(k))solAdd(k==='piquete'?.8:k==='voluntariado'?.5:.3);}catch(e){}return r;};}
 function solWho(){const ps=(S.people||[]).filter(p=>p.rel>=35&&p.k!=='madre');const v=P_('vecina'),c=P_('compi');const pool=[];if(v&&v.rel>=40)pool.push(v);if(c&&c.rel>=40)pool.push(c);for(const p of ps)if(!pool.includes(p))pool.push(p);return pool.length?pickR(pool.slice(0,4)):null;}

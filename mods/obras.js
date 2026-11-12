@@ -11,5 +11,5 @@
 // el botón 🔧 de Desgaste: que se note que ha hecho algo
 {const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{if(menuTab==='casa'){card.querySelectorAll('[data-fix]').forEach(b=>{b.onclick=()=>{const i=+b.dataset.fix;const o=S.obj[i];if(!o)return;const [fk,fl]=stepReq({k:'fix',i});const row=b.parentElement;const say=(t,bad)=>{let m=row.querySelector('.fixmsg');if(!m){m=document.createElement('div');m.className='sub fixmsg';m.style.cssText='font-size:11.5px;text-align:left;margin-top:4px';row.appendChild(m);}m.textContent=t;m.style.color=bad?'#a04a3a':'#2e8b57';};
         if(lvl(fk)<fl){say(huecos(TXHZ.obras.sabe_arreglarlo_pide_tiene_tecnico,{skLabel:skLabel(fk),fl,lvl:lvl(fk)}),true);sfx('bad');return;}
-        addFixStep(i,true);const s=S.sim;if(s.work>0){say(`Apuntado: lo arreglará cuando vuelva a casa.`);}else{s.use=null;s.path=[];s.target=null;s.queue=[];s.think=0;s.cmd=true;say(TXHZ.obras.va_herramientas_puede_fallar_tener);}
+        addFixStep(i,true);const s=S.sim;if(s.work>0){say(TXHZ.obras.apuntado_arreglara_cuando_vuelva);}else{s.use=null;s.path=[];s.target=null;s.queue=[];s.think=0;s.cmd=true;say(TXHZ.obras.va_herramientas_puede_fallar_tener);}
         b.textContent=TXHZ.obras.marcha;b.disabled=true;};});}}catch(e){console.error(e);}return r;};}

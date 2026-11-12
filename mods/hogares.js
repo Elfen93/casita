@@ -1,6 +1,6 @@
 // =================== HOGARES: la casa de la gente, por dentro (la salida «Ir a su casa») ===================
 {const _d=destOf;destOf=function(k){if(k==='visita')return 'hogar';return _d.apply(this,arguments);};}
-{const _pn=placeName;placeName=function(k){if(k!=='hogar')return _pn.apply(this,arguments);try{const p=hgVisitado();if(!p)return TXHZ.hogares.casa_alguien;const h=hogarDe(p);let s='Casa de '+p.n;if(h.censo){if(h.hogar.puerta&&(s+h.hogar.puerta).length<=14)s+=' · '+h.hogar.puerta;}return s;}catch(e){return TXHZ.hogares.casa_alguien;}};}
+{const _pn=placeName;placeName=function(k){if(k!=='hogar')return _pn.apply(this,arguments);try{const p=hgVisitado();if(!p)return TXHZ.hogares.casa_alguien;const h=hogarDe(p);let s=huecos(TXHZ.hogares.casa_de,{p:p.n});if(h.censo){if(h.hogar.puerta&&(s+h.hogar.puerta).length<=14)s+=' · '+h.hogar.puerta;}return s;}catch(e){return TXHZ.hogares.casa_alguien;}};}
 const hgVisitado=()=>(S.people||[]).find(q=>q.k===S.outWith)||P_('madre')||(S.people||[])[0]||null;
 // ---------- el censo (todo opcional) ----------
 const hgCen=()=>{const D=DATA.personas||{};return {ed:D.edificios||{},ho:D.hogares||{},ve:D.vecinos||[]};};
@@ -18,7 +18,7 @@ function hogarDe(p){const C=hgCen();let hid=p&&p.hogar;if(hid==null&&p&&p.id!=nu
   if(n>=1)miembros.push({id:null,anon:true,g:g0==='f'?'m':'f',edad:30+Math.floor(svH(sd+3)*20)});
   if(n>=2)miembros.push({id:null,anon:true,g:svH(sd+4)<.5?'f':'m',edad:3+Math.floor(svH(sd+5)*8)});
   const tipo=n===0?'sola':n===1?'pareja':'familia';
-  return {hogar:{id:'_'+k,n:'Casa de '+((p&&p.n)||''),edificio:null,puerta:null,cls,tipo,miembros:[]},edificio:{tipo:bloque?'bloque':'casa',plantas:bloque?4:1,n:''},miembros,censo:false};}
+  return {hogar:{id:'_'+k,n:huecos(TXHZ.hogares.casa_de,{p:(p&&p.n)||''}),edificio:null,puerta:null,cls,tipo,miembros:[]},edificio:{tipo:bloque?'bloque':'casa',plantas:bloque?4:1,n:''},miembros,censo:false};}
 // ---------- quién está fuera a esa hora (trabajo y «donde») ----------
 function hgFuera(v,day,h){const wd=dateOf(day).wd;const at=(a,b)=>a<=b?(h>=a&&h<b):(h>=a||h<b);const dd=d=>!Array.isArray(d)||d.includes(wd);
   const T=v.trabajo;if(T&&T.h&&dd(T.dias)&&at(T.h[0],T.h[1]))return T.lugar||'trabajo';

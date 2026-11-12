@@ -27,7 +27,7 @@ function actFinish(u,frac){const a=ACT_DEF(u.type,u.act);if(!a)return;const C=CO
       else if(fx==='nueva')tell(huecos(TX_casa.receta_falla,{plato:r[0].toLowerCase(),q:QN[q],fin:pickR(TX_casa.receta_falla_fin)}),'🔥');
       S.needs.hambre=Math.min(100,S.needs.hambre+[10,25,35,45][q]);S.needs.diversion=Math.min(100,S.needs.diversion+[0,5,10,18][q]);ft(`${r[2]} ${Q[q]} ${r[0]}`,q?'#2e8b57':'#c0392b');C.plat++;
       const m=homeMates();if(m.length&&q>=1){for(const p of m){p.rel=Math.min(100,p.rel+q*2);if(p.love!=null&&['pareja','convive','casada','cita','rollo'].includes(p.stage))p.love=Math.min(100,p.love+q);}
-        if(throttled('cena'+S.day,8e4))tell(huecos(TX_casa.cena,{plato:r[0].toLowerCase(),con:m.map(p=>p.n).join(' y '),fin:q>=3?TX_casa.cena_3:q>=2?TX_casa.cena_2:TX_casa.cena_1}),'🍽️');}
+        if(throttled('cena'+S.day,8e4))tell(huecos(TX_casa.cena,{plato:r[0].toLowerCase(),con:m.map(p=>p.n).join(' '+TX_casa.y+' '),fin:q>=3?TX_casa.cena_3:q>=2?TX_casa.cena_2:TX_casa.cena_1}),'🍽️');}
       break;}
     case 'tapers':{const q=qRoll('cocina');S.tapers=(S.tapers||0)+[2,4,5,6][q];ft(huecos(TX_casa.tapers_ft,{k:[2,4,5,6][q]}));tell(huecos(TX_casa.tapers_tell,{}),'🥡');break;}
     case 'sano':S.needs.energia=Math.min(100,S.needs.energia+6);ft(TX_casa.sano);break;
@@ -42,10 +42,10 @@ function actFinish(u,frac){const a=ACT_DEF(u.type,u.act);if(!a)return;const C=CO
     case 'cancion':{const q=qRoll('musica');const t=pickR(SONGW);C.can.push({t,q,d:S.day});ft(huecos(TX_casa.cancion_ft,{t,q:Q[q]}),q?'#7d3aa8':'#c0392b');
       tell(huecos(q>=3?TX_casa.cancion_3:q>=2?TX_casa.cancion_2:q>=1?TX_casa.cancion_1:TX_casa.cancion_0,{t}),'🎵');if(q>=2)S.needs.diversion=Math.min(100,S.needs.diversion+15);break;}
     case 'concierto':{const m=homeMates();const q=qRoll('musica',.2);if(!m.length){ft(huecos(TX_casa.concierto_solo,{}),'#7d3aa8');break;}for(const p of m)p.rel=Math.min(100,p.rel+1+q);
-      const song=C.can.length?C.can.slice().sort((a,b)=>b.q-a.q)[0].t:null;tell(huecos(TX_casa.concierto,{song:song?'«'+song+'»':TX_casa.concierto_unas,con:m.map(p=>p.n).join(' y '),fin:q>=2?TX_casa.concierto_coros:TX_casa.concierto_aplausos}),'🎶');ft(huecos(TX_casa.concierto_ft,{q:Q[q]}));break;}
+      const song=C.can.length?C.can.slice().sort((a,b)=>b.q-a.q)[0].t:null;tell(huecos(TX_casa.concierto,{song:song?'«'+song+'»':TX_casa.concierto_unas,con:m.map(p=>p.n).join(' '+TX_casa.y+' '),fin:q>=2?TX_casa.concierto_coros:TX_casa.concierto_aplausos}),'🎶');ft(huecos(TX_casa.concierto_ft,{q:Q[q]}));break;}
     case 'guapo':S.glow=S.day*1440+S.t+240;ft(huecos(TX_casa.guapo,{}));break;
     case 'entrevista':S.intPrep=S.day;ft(TX_casa.entrevista_ft);break;
-    case 'peli':{const m=homeMates();const pel=pickR(TX_casa.peli_titulos);if(m.length){for(const p of m){p.rel=Math.min(100,p.rel+3);if(p.love!=null&&['pareja','convive','casada','cita','rollo'].includes(p.stage))p.love=Math.min(100,p.love+3);}tell(huecos(TX_casa.peli,{con:m.map(p=>p.n).join(' y '),pel,fin:pickR(TX_casa.peli_fin)}),'🍿');}ft(huecos(TX_casa.peli_ft,{pel}));break;}
+    case 'peli':{const m=homeMates();const pel=pickR(TX_casa.peli_titulos);if(m.length){for(const p of m){p.rel=Math.min(100,p.rel+3);if(p.love!=null&&['pareja','convive','casada','cita','rollo'].includes(p.stage))p.love=Math.min(100,p.love+3);}tell(huecos(TX_casa.peli,{con:m.map(p=>p.n).join(' '+TX_casa.y+' '),pel,fin:pickR(TX_casa.peli_fin)}),'🍿');}ft(huecos(TX_casa.peli_ft,{pel}));break;}
     case 'serie':ft(pickR(TX_casa.serie));break;
     case 'noticias':{try{const nw=phNews();const h0=pickR(nw);ft('🗞️ '+h0[1].slice(0,46)+'…','#2c3a5c');}catch(e){}if(S.ideo!=='apolitica')S.pol.xp=(S.pol.xp||0)+1;break;}
     case 'futbol':ft(pickR(TX_casa.futbol));break;

@@ -23,7 +23,9 @@
     "red_algo": "Alguien se acuerda de lo que hizo.",
     "red_nada": "Nadie le debe nada. Lo que no se da, no vuelve.",
     "red_debe": " · debe {v} a {quien}",
-    "red_debe_alguien": "alguien"
+    "red_debe_alguien": "alguien",
+    "sol_planto": "se plantó por alguien",
+    "sol_desahucio": "paró un desahucio"
   },
 
   "comunidad": {
@@ -303,7 +305,8 @@
     "huelga_toast_consejos": "Ya no hay patrón: lo que se quiera cambiar, al consejo",
     "huelga_toast_oficial": "El sindicato oficial no convoca huelgas",
     "huelga_fin_consejos": "La huelga se desconvoca: ahora la plantilla decide en asamblea, y lo que se pedía se ha llevado al consejo.",
-    "huelga_fin_oficial": "La huelga se desconvoca: el sindicato oficial ha llegado a un acuerdo con la dirección."
+    "huelga_fin_oficial": "La huelga se desconvoca: el sindicato oficial ha llegado a un acuerdo con la dirección.",
+    "y": "y"
   },
 
   "fiscal": {
@@ -460,7 +463,14 @@
       "Premio": ["🏆", "TRANSFERENCIA RECIBIDA"],
       "Ventas": ["🖼️", "ABONO PLATAFORMA"],
       "Otros": ["⬆️", "CARGO VARIOS"],
-      "Otros_sale": ["💳", "CARGO VARIOS"]
+      "Otros_sale": ["💳", "CARGO VARIOS"],
+      "Devolución": ["💳", "DEVOLUCIÓN"],
+      "Matrícula": ["💳", "MATRÍCULA"],
+      "Cuota autónomos": ["💳", "CUOTA AUTÓNOMOS"],
+      "Transporte": ["💳", "TRANSPORTE"],
+      "Comedor del centro": ["💳", "COMEDOR DEL CENTRO"],
+      "Comunidad": ["💳", "COMUNIDAD"],
+      "Café": ["💳", "CAFÉ"]
     },
     "mov_empresa": "EMPRESA",
     "mov_aportacion": "APORTACIÓN CASA",
@@ -548,7 +558,8 @@
       "nada": "nada",
       "remun": "Remuneración de la hucha: 0,00 % TAE.",
       "ayuda_toast": "💬 «Todos nuestros agentes están ocupados. Su llamada es importante para nosotros.»"
-    }
+    },
+    "iban": "ES21 0182 4411 {h} **** 2714"
   },
 
   "banco2": {
@@ -740,7 +751,8 @@
       "nada": "Nada todavía.",
       "platos": "🍳 Platos cocinados: {a}",
       "tapers": " · 🥡 Tápers en la nevera: {a}"
-    }
+    },
+    "y": "y"
   },
 
   "comidas": {
@@ -857,7 +869,8 @@
       "creador_eso": "Lo justo. Sin títulos no se entra en tecnología, sanidad ni función pública… pero se puede estudiar.",
       "creador_grado": "Con carrera. Empieza con menos dinero (la deuda) pero más puertas abiertas.",
       "creador_otro": "Abre algunas puertas y sube un poco el sueldo."
-    }
+    },
+    "o": "o"
   },
 
   "final": {
@@ -997,7 +1010,44 @@
     "directo": "{e} {n} va directo desde {from}: {to}"
   },
 
-  "agenda": {"no_se_puede": "🗓️ {it2}: {why}", "se_fue_de_clase": "{n} se ha ido de clase a {out}. Lo tenía en el horario.", "toast_plan": "🗓️ {it1} {it2}", "copiado": "📅 Copiado", "hoy_nada": "Hoy no hay nada planeado.", "hoy": "Hoy: ", "en_pausa": " · <b>en pausa</b>"},
+  "agenda": {
+    "no_se_puede": "🗓️ {it2}: {why}",
+    "se_fue_de_clase": "{n} se ha ido de clase a {out}. Lo tenía en el horario.",
+    "toast_plan": "🗓️ {it1} {it2}",
+    "copiado": "📅 Copiado",
+    "hoy_nada": "Hoy no hay nada planeado.",
+    "hoy": "Hoy: ",
+    "en_pausa": " · <b>en pausa</b>",
+    "titulo": "📅 Mi semana",
+    "seguirla": "seguirla",
+    "franja_nota": "Cada cosa empieza en cuanto se puede dentro de su franja (una asamblea a las 18:00 cabe en la franja de las 17:00).",
+    "trabajo_de": "💼 Trabajo de {a}:00 a {b}:00",
+    "clase_de": " · 🎓 clase de {a} a {b}",
+    "trabajo": "trabajo",
+    "clase_marca": "🎓 clase · ",
+    "copiar_dias": "Copiar a todos los días laborables",
+    "vaciar_dia": "Vaciar el día",
+    "listo": "Listo",
+    "montar_horario": "📅 Montar el horario"
+  },
 
-  "body3d": {"muñecos": {"clasicos": "🧍 Muñecos: clásicos (2D)", "simples": "🧍 Muñecos: 3D simples", "quaternius": "🧍 Muñecos: 3D Quaternius"}}
+  "body3d": {"muñecos": {"clasicos": "🧍 Muñecos: clásicos (2D)", "simples": "🧍 Muñecos: 3D simples", "quaternius": "🧍 Muñecos: 3D Quaternius"}},
+
+  "escuela": {
+    "pron_ella": "ella",
+    "pron_el": "él",
+    "muy_lista": "muy lista",
+    "muy_listo": "muy listo",
+    "cole_ext_publico": ["Veintiocho por clase y una profe de baja sin sustituir.", "En la verja, el cartel de la huelga y otro de la AMPA pidiendo voluntarias.", "El barracón sigue en el patio. «Provisional», desde 2009."],
+    "cole_ext_concertado": ["En la puerta, un sobre con la cuota «voluntaria». Ya es el tercer recordatorio.", "Todas con el mismo jersey y la misma sonrisa de foto.", "El patio, con césped. Alguien lo paga y no es el colegio."],
+    "cole_sale": ["{k} ha salido con la mochila a medio cerrar y un dibujo arrugado. «Mira». {n} lo ha mirado hasta que {e} se ha cansado de esperar.{ext}", "{k} ha tardado en salir: se había quedado «ayudando a la profe». {n} no ha preguntado más y han ido andando despacio.{ext}", "{k} ha contado todo el camino lo del recreo, en el orden equivocado. {n} ha escuchado. Hoy sí podía.{ext}"],
+    "tutoria_ext_publico": ["Orientadora, una para tres colegios.", "La reunión, a las cinco: a esa hora ya no hay clase y casi nadie sale del trabajo.", "Once familias detrás de la puerta y un solo despacho."],
+    "tutoria_ext_concertado": ["Aquí la tutora habló de «actividades complementarias» y de lo que cuestan.", "Antes de irse, una carpeta con el precio de las excursiones.", "La directora pasó a saludar. Siempre pasa cuando se habla de la cuota."],
+    "tutoria": ["La tutora de {k} tenía veinte minutos y la cola detrás. Ha dicho que {e} es {muy} y que hay que «reforzar». {n} ha salido con una fotocopia.{ext}", "«{k} tiene capacidad», ha dicho la tutora. Lo dicen siempre que algo falta: apoyo, tiempo o plazas. {n} ha asentido y ha firmado.{ext}", "Tutoría de {k}: la letra, las tablas y una anécdota del patio. {n} ha pedido el permiso en el trabajo y ha llegado con el abrigo puesto.{ext}"],
+    "centro_concertado": "San Roque",
+    "centro_instituto": "Las Eras",
+    "centro_publico": "La Ribera",
+    "la_criatura": "la criatura",
+    "una_companera": "una compañera"
+  }
 }

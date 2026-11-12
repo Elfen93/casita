@@ -237,18 +237,31 @@ Textos sueltos del núcleo: lo que dicen `tell`, `toast`, `chapter`, `remember` 
 
 `scripts/datos.py` comprueba que cada `TXN.sección.clave` del código exista, que no haya llaves sueltas ni claves que empiecen por cifra y que estén las secciones `nucleo_*`.
 <!-- p0a:fin -->
+<!-- p0e -->
+### Remate de los textos de `mods/` (paso 0, segunda pasada, parte `p0e`)
+Sin archivos nuevos: claves nuevas en las secciones que ya había de `textos_mods_ag.json` (módulos de la «a» a la «g», `TX_modulo.clave`), `textos_mods_hz.json` (`TXHZ.modulo.clave`) y `movil.json` (`TXMV`). Lo que quedaba en el código era texto mezclado con concatenaciones y con el esqueleto HTML: se ha sacado por tramos (el marcado se queda, el texto sale), con `huecos()` donde llevaba cifras o nombres.
+| Archivo | Sección | Qué se añadió |
+|---|---|---|
+| `textos_mods_ag.json` | `escuela` (nueva) | Lo que se cuenta al recoger a la criatura del cole (`cole_sale`) y en la tutoría (`tutoria`), con sus colas por tipo de centro (`cole_ext_publico`, `cole_ext_concertado`, `tutoria_ext_publico`, `tutoria_ext_concertado`; listas de 3 que el código elige con `pickR`), los nombres cortos de los centros, `la_criatura`, `una_companera` y los pronombres. |
+| `textos_mods_ag.json` | `agenda` | La ficha «Mi semana»: título, «seguirla», la nota de la franja, «Trabajo de {a}:00 a {b}:00», «clase de», los tres botones y «Montar el horario». |
+| `textos_mods_ag.json` | `banco` | `iban` (`ES21 0182 4411 {h} **** 2714`) y siete conceptos más en `mov` (`Devolución`, `Matrícula`, `Cuota autónomos`, `Transporte`, `Comedor del centro`, `Comunidad`, `Café`): antes salían en mayúsculas por el camino de «concepto desconocido» y ahora tienen su línea, con el mismo resultado. |
+| `textos_mods_ag.json` | `colectivo`, `casa`, `estudios`, `gobierno` | `sol_planto` y `sol_desahucio` (las razones que apunta la red de solidaridad) y la conjunción de las listas («A y B», «A o B»): clave `y` u `o`. |
+| `textos_mods_hz.json` | `libros`, `lectura`, `salud`, `productos`, `universidad`, `relaciones`, `patrimonio`, `trato`, `mente`, `social_fx`, `jornada`, `obras`, `texto`, `reparto`, `salidas`, `hogares`, `tocar`, `vecinos` | Las líneas de las tiendas y fichas de libros, la biblioteca y las pestañas de lectura, la ficha del cuerpo y los botones de gimnasio, seguro y dieta, el diagnóstico, las tarjetas de ahorro, inversión y préstamo, la matrícula en la pública y la privada, y las frases sueltas que quedaban en `tell()` y `toast()`. |
+| `movil.json` | `ui` | `visto`. |
+- Los textos que el código compara con un texto de otro archivo (las comparaciones de `outAvail(...)` con «solo en días libres») leen ahora `TXN.politica.solo_libres`, que ya estaba en `textos_nucleo.json`. Los títulos que los módulos usan como ancla para insertarse en una ficha (`<h3>🌍 El mundo</h3>`, `<h3>🫀 Cuerpo</h3>`, `<h3>🤝 Red</h3>`, `<h3>📚 Libros</h3>`) se construyen con la clave de datos que los pinta, no con una copia del texto.
+- Se queda en el código, a propósito: ids, claves de estado y conceptos bancarios que se guardan en la partida (`bkAdd('Hucha',…)`, `Nómina`, `calentador`…), nombres de clase CSS y estilos, el esqueleto HTML, las palabras clave de `phFree`, los patrones con los que un módulo busca un texto que pinta otro (`replace(/EURÍBOR …/)`, `Comprar la casa`), la terminación de género que se resuelve con `ga()`, `L()` o un ternario sobre una sola letra, y todo lo que se pinta en el lienzo (rótulos y carteles de las escenas: `gText`, `eTxt`, `uT`, `svText`, `label`, `fillText`).
+- `scripts/datos.py` (bloque `p0e`) comprueba que cada `TX_modulo.clave` y cada `TXN.sección.clave` que el código lee existe, que los huecos de `escuela.cole_sale` y `escuela.tutoria` los rellena el código y que cada concepto de `bkAdd`/`withCtx` tiene su línea en `banco.mov`. `t/t_txt_p0e.js` comprueba que cada texto de más de 12 caracteres que había en los módulos antes de moverlos, y cada texto corto que salió del código, sigue existiendo, igual, en el código o en `data/`.
+<!-- /p0e -->
 
 ## Lo que todavía está en el código
 
 Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con condiciones y efectos:
 
 - **Sucesos con decisiones**: consecuencias (`CQ`), golpes e incidentes (`GOLPES`, `PERSONAL`, `INCID`), hitos (`BEATS`), arcos de ideología (`ARCS`), rasgos ocultos de la gente (`HID`), aspiraciones y objetivos (`ASP`, `GOALS`), dilemas de la comunidad (los textos de `UT_DIL` ya están en `textos_mods_ag.json`; los efectos siguen en `UT_FX`).
-- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los módulos de la «h» en adelante y las plantillas de mensajes y noticias del móvil de esos módulos (los de la «a» a la «g» están en `textos_mods_ag.json`).
 - **Sucesos con decisiones**: consecuencias (`CQ`), golpes e incidentes (`GOLPES`, `PERSONAL`, `INCID`), hitos (`BEATS`), arcos de ideología (`ARCS`), rasgos ocultos de la gente (`HID`), aspiraciones y objetivos (`ASP`, `GOALS`), dilemas de la comunidad (`UT_DIL`).
-- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de cada módulo (los módulos de la «h» a la «z» y el móvil ya salieron: `movil.json` y `textos_mods_hz.json`).
 - **Escenas** (`SCENES`): los interiores se dibujan con código; sus carteles y su gente van dentro.
 - **Sucesos con decisiones**: los dilemas de la comunidad (`UT_DIL`).
-- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los archivos de `src/core` desde el 081 (obra, ropa, muebles, looks, planes, creador, calendario…) y de los mods, y las plantillas de mensajes y noticias del móvil.
+- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los archivos de `src/core` desde el 081 (obra, ropa, muebles, looks, planes, creador, calendario…).
 - **Escenas** (`SCENES`): los interiores se dibujan con código; los carteles y rótulos de cadena suelta ya están en `textos_nucleo.escenas`, el dibujo y su gente siguen dentro.
 - **Aspecto**: peinados, caras, ropa y retratos (`LOOKS`, `LOOK_SRC`), y el dibujo de cada mueble (`MDRAW`).
 - Tablas menores por objeto (`BACKD`, `ACTS`, `ELECTRIC`, `SMALL_ITEMS`, `MUEB_NEW`) y los eslóganes de las ideologías en las pancartas.

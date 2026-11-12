@@ -6,7 +6,7 @@ const EDU_PROGS=DATA.estudios.programas;
 const ED=()=>{if(!S.edu)S.edu={lv:'eso',done:[],certs:[],cur:null};S.edu.done=S.edu.done||[];S.edu.certs=S.edu.certs||[];return S.edu;};
 const eduHas=lv=>{const E=ED();return E.lv===lv||E.done.includes(lv)||(EDU_LV[E.lv]&&EDU_LV[lv]&&EDU_LV[E.lv].o>EDU_LV[lv].o&&lv!=='fpm'&&lv!=='fps')||(lv==='bach'&&(E.done.includes('fps')||E.lv==='grado'||E.lv==='master'));};
 function eduCan(k){const P=EDU_PROGS[k];const E=ED();if(E.cur&&E.cur.k===k)return TX_estudios.can.cursando;if(P.cert&&E.certs.includes(P.cert))return TX_estudios.can.tiene;if(P.lv&&(E.done.includes(k)||(E.lv===P.lv&&!P.cert)))return TX_estudios.can.tiene;
-  if(P.req.length&&!P.req.some(r=>eduHas(r)))return huecos(TX_estudios.can.necesita,{x:P.req.map(r=>EDU_LV[r].n).join(' o ')});if(E.cur)return TX_estudios.can.otra;
+  if(P.req.length&&!P.req.some(r=>eduHas(r)))return huecos(TX_estudios.can.necesita,{x:P.req.map(r=>EDU_LV[r].n).join(' '+TX_estudios.o+' ')});if(E.cur)return TX_estudios.can.otra;
   const c=Math.round(P.cost*PM());if(S.money<c)return huecos(TX_estudios.can.cuesta,{v:fmt(c)});return null;}
 function eduHours(k){const P=EDU_PROGS[k];const D=Dm();return Math.round(P.h*(D.soul?1:D.shifts<1?D.shifts:1)*(P.cert?1:0.8));}
 function eduClash(k){const P=EDU_PROGS[k];if(S.jobless||!S.track||!TRACKS[S.track])return false;const T0=TRACKS[S.track];const [a,b]=P.sched,[c,d]=T0.sh;return P.days.some(x=>T0.days.includes(x))&&a<d&&c<b;}
@@ -39,7 +39,7 @@ const EDU_PAY=DATA.estudios.sueldo;
 function eduBest(){const E=ED();let best=E.lv;for(const d of E.done){const P=EDU_PROGS[d];if(P&&P.lv&&EDU_LV[P.lv].o>EDU_LV[best].o)best=P.lv;}return best;}
 function eduPayMul(k){const t=EDU_PAY[k||S.track];if(!t)return 1;const E=ED();let m=1;for(const lv in t){if(eduHas(lv)||E.done.some(d=>EDU_PROGS[d]&&EDU_PROGS[d].lv===lv))m=Math.max(m,t[lv]);}
   if(E.certs.includes('ofimatica')&&(k||S.track)==='oficina')m+=.03;if(E.certs.includes('ingles')&&['oficina','tech'].includes(k||S.track))m+=.04;if(E.certs.includes('carretilla')&&(k||S.track)==='super')m+=.05;if(E.certs.includes('manipulador')&&(k||S.track)==='hosteleria')m+=.03;return m;}
-{const _em=entryMissing;entryMissing=function(k){const m=_em.apply(this,arguments);try{if(k===S.track&&!S.jobless)return m;const req=EDU_REQ[k];if(req&&req.length&&!req.some(r=>eduHas(r))){m.push(huecos(TX_estudios.titulo_req,{x:req.map(r=>EDU_LV[r].n).join(' o ')}));}
+{const _em=entryMissing;entryMissing=function(k){const m=_em.apply(this,arguments);try{if(k===S.track&&!S.jobless)return m;const req=EDU_REQ[k];if(req&&req.length&&!req.some(r=>eduHas(r))){m.push(huecos(TX_estudios.titulo_req,{x:req.map(r=>EDU_LV[r].n).join(' '+TX_estudios.o+' ')}));}
   if(k==='hosteleria'&&Dm().soul&&!ED().certs.includes('manipulador'))m.push(TX_estudios.carnet_manip);}catch(e){}return m;};}
 // sueldo: multiplicador por estudios aplicado vía payMul al empezar/ascender
 function eduApplyPay(){try{const base=S.payMulBase!=null?S.payMulBase:(S.payMul||1);S.payMulBase=base;S.payMul=base*eduPayMul();}catch(e){}}

@@ -13,7 +13,7 @@ const vcMenor=(v,e)=>!!v&&typeof v.edad==='number'&&v.edad<e;
 const vcMenorP=p=>!!p&&p.vid!=null&&typeof p.age==='number'&&p.age<18;
 const vcEsc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const vcCap=s=>s?s[0].toUpperCase()+s.slice(1):s;
-const vcLista=a=>a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' y '+a[a.length-1];
+const vcLista=a=>a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' '+TXHZ.vecinos.y+' '+a[a.length-1];
 const vcEdad=v=>typeof v.edad!=='number'?'':v.edad<1?VCF().bebe:vcT('edad',{e:v.edad});
 function vcOficio(v){const o=v.oficio;if(Array.isArray(o)&&o.length)return vcCap((v.g==='m'?(o[1]||o[0]):o[0])||'');
   const e=v.estudia&&(VCF().estudia||{})[v.estudia];return e||'';}

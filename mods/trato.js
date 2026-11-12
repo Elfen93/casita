@@ -36,7 +36,7 @@ function trEnsure(p){if(!p||p.vid==null)return p;const v=vecinoPorId(p.vid);if(!
   if(p.relStyle==null){p.relStyle=['estable','estable','libre','soltera'][Math.floor(pbH(v.id+'r')*4)];p.kids=['si','quiza','no'][Math.floor(pbH(v.id+'k')*3)];p.boda=['si','igual','no'][Math.floor(pbH(v.id+'b')*3)];p.spark=Math.round((pbH(v.id+'s')-.5)*20);}
   return p;}
 {const _vc=vcConocer;vcConocer=function(){const r=_vc.apply(this,arguments);try{if(r)trEnsure(r);}catch(e){}return r;};}
-{const _rt=roleTxt;roleTxt=function(p){if(p&&p.vid!=null){const v=vecinoPorId(p.vid);return ((v?vcOficio(v):'')||'vecin'+pO(p)).toLowerCase()+', '+p.age+' años';}return _rt.apply(this,arguments);};}
+{const _rt=roleTxt;roleTxt=function(p){if(p&&p.vid!=null){const v=vecinoPorId(p.vid);return ((v?vcOficio(v):'')||huecos(TXHZ.trato.vecin,{po:pO(p)})).toLowerCase()+', '+huecos(TXHZ.trato.edad_anos,{edad:p.age+''});}return _rt.apply(this,arguments);};}
 {const _fl=flirt;flirt=function(p){if(p&&p.vid!=null){trEnsure(p);if(vcMenorP(p)){toast(TRD().romance.menor);return false;}
     if(!trRomOkP(p)){const v=vecinoPorId(p.vid),pa=v?trTienePareja(v):[];toast(pa.length?trT('tiene_pareja',{quien:pa[0].n}):huecos(TXHZ.trato.esta_interesad_esa_manera,{p:p.n,pO:pO(p)}));return false;}}
   return _fl.apply(this,arguments);};}
@@ -191,7 +191,7 @@ function trAsamblea(v,p){if(trObs())return;if(!S.ideo||S.ideo==='apolitica'){toa
   const why=outAvail('militancia');if(why){toast(trT('no_se_puede',{why}));return;}
   TT().asam={vid:v.id};if(typeof menu!=='undefined')menu.classList.remove('open');S.outWith=p.k;S.dateOut=false;doOut('militancia');}
 function trAsambleaFin(pk,as){const T=TT(),p=(S.people||[]).find(q=>q.k===pk),v=p&&vecinoPorId(p.vid);T.asam=null;S.outWith=null;S.dateOut=false;if(!p||!v)return;
-  const b=sxSnap(p),en=T.bloque.ids.includes(v.id),res=trFx({rel:6,mov:en?1.5:1,sol:.6,social:6},v,p,{mem:'fue a la asamblea con '+v.n}),L=pickR(TRD().politica.asamblea);p.last=S.day;
+  const b=sxSnap(p),en=T.bloque.ids.includes(v.id),res=trFx({rel:6,mov:en?1.5:1,sol:.6,social:6},v,p,{mem:huecos(TXHZ.trato.fue_asamblea_con,{v:v.n})}),L=pickR(TRD().politica.asamblea);p.last=S.day;
   try{tell(trT('diario_asamblea',{n:CH().name,v:v.n}),'📢');}catch(e){}trCard('📢',huecos(L[0],{v:v.n}),huecos(L[1],{v:v.n}),true,p,b,res);}
 // ---------- deudas ----------
 function trPagar(v,p,i){const T=TT(),d=T.deudas[i];if(!d||d.dir!=='le'||d.vid!==v.id)return;if(S.money<d.amt){toast(trT('sin_dinero'));return;}
@@ -255,7 +255,7 @@ function trClick(v,code){if(trObs()){toast(trT('solo_mirar'));return;}const p=vc
   if(a==='bloque'){trFin();trBloque(v,p);return;}
   if(a==='asam'){trFin();trAsamblea(v,p);return;}
   if(a==='lig'){trFin();flirt(p);return;}
-  if(a==='cita'){trFin();const why=outAvail('amigos');if(why&&why!=='solo en días libres'){toast(trT('no_se_puede',{why}));return;}S.outWith=p.k;S.dateOut=true;doOut('amigos');return;}
+  if(a==='cita'){trFin();const why=outAvail('amigos');if(why&&why!==TXN.politica.solo_libres){toast(trT('no_se_puede',{why}));return;}S.outWith=p.k;S.dateOut=true;doOut('amigos');return;}
   if(a==='pagar'){trFin();trPagar(v,p,+b);return;}
   if(a==='req'){const rq=TT().req.find(r=>r.vid===v.id);if(!rq){vcOpen(v);return;}trFin();(b==='ok'?trAceptar:trRechazar)(v,p,rq);return;}
   if(a==='comp'){trFin();trIrComp(v,p);return;}}

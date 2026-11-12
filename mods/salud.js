@@ -40,7 +40,7 @@ conLogica(OUT,{gimnasio:{req:()=>!!HP().gymMember}});
     if(x.dx&&HP_DEF[x.k].med&&dateOf(S.day).wd===0){const c=Math.round(HP_DEF[x.k].med/8*HW()*(H.mutua?.6:1));bkAdd('Farmacia',-c);}
     // mejora o empeora
     if(x.dx){if(x.k==='lumbar'&&(S.fit||0)>50&&Math.random()<.02){H.list.splice(H.list.indexOf(x),1);tell(huecos(TXHZ.salud.espalda_ha_dejado_doler_rehabilitacion,{nom:n}),'🦴');}
-      if(x.k==='anemia'&&ovw()>-5&&Math.random()<.04){H.list.splice(H.list.indexOf(x),1);tell(`Analítica: la anemia de ${n} ha remitido. Comer. Era eso.`,'🩸');}
+      if(x.k==='anemia'&&ovw()>-5&&Math.random()<.04){H.list.splice(H.list.indexOf(x),1);tell(huecos(TXHZ.salud.analitica_anemia_remite,{n}),'🩸');}
       if(x.k==='diab'&&ovw()<6&&Math.random()<.01){H.list.splice(H.list.indexOf(x),1);chapter('diabrev',TXHZ.salud.dar_vuelta,huecos(TXHZ.salud.diabetes_ha_remitido_dos_anos,{nom:n}));}
       if(x.k==='carpo'&&Math.random()<.015){H.list.splice(H.list.indexOf(x),1);tell(TXHZ.salud.operacion_del_tunel_carpiano_tres,'🖐️');S.sick=Math.max(S.sick||0,5);}
       if(x.k==='ansiedad'&&(MT().an>60)&&Math.random()<.03){H.list.splice(H.list.indexOf(x),1);tell(huecos(TXHZ.salud.lleva_semanas_sin_ataques_ansiedad,{nom:n,x:MT().ther&&MT().ther.on?TXHZ.salud.terapia_ha_hecho_parte:''}),'🫀');}}
@@ -59,19 +59,19 @@ function hpVisit(){const H=HP();const n=CH().name;const priv=H.citaPriv;if(priv&
   if(!found.length){tell(priv?huecos(TXHZ.salud.doctora_privada_ha_pedido_analitica,{c:fmt(hrs(8))}):huecos(TXHZ.salud.siete_minutos_consulta_esta_bien,{nom:n,x:H.citaWait||9}),'🩺');return;}
   for(const x of found){x.dx=true;const D=HP_DEF[x.k];
     if(x.k==='lumbar'||x.k==='hiper'||x.k==='diab'){S.sick=Math.max(S.sick||0,x.k==='lumbar'?5:2);}
-    tell(`Diagnóstico: ${D.n}. ${D.d}${D.med?' Medicación: '+fmt(Math.round(D.med/8*HW()))+' a la semana'+(H.mutua?' (la mutua cubre parte)':' con receta de la pública')+'.':''}`,D.e);
+    tell(huecos(TXHZ.salud.diagnostico,{dn:D.n,d:D.d,x:D.med?huecos(TXHZ.salud.medicacion_semana,{c:fmt(Math.round(D.med/8*HW())),x:H.mutua?TXHZ.salud.mutua_cubre:TXHZ.salud.receta_publica}):''}),D.e);
     if(x.k==='diab'||x.k==='hiper')chapter('dx_'+x.k,D.n,huecos(TXHZ.salud.dx_cronica,{dx:D.n.toLowerCase(),detalle:x.k==='diab'?huecos(TXHZ.salud.dx_diab,{n}):huecos(TXHZ.salud.dx_hiper,{edad:S.char.age||30})}));
     if(x.k==='lumbar'&&!S.jobless&&['obra','super','hosteleria','cuidados'].includes(S.track))tell(huecos(TXHZ.salud.medico_ha_escrito_evitar_esfuerzos,{nom:n}),'🦴');}
   if(priv&&found.length)tell(TXHZ.salud.privada_cita_ha_sido_larga,'🏥');}
 // ---- UI ----
 function hpBlock(){const H=HP();const o=ovw();const st=o<=-9?TXHZ.salud.bajo_peso:o<=-4?huecos(TXHZ.salud.delgad,{}):o<8?TXHZ.salud.peso:o<16?TXHZ.salud.sobrepeso:TXHZ.salud.obesidad;
-  let h=`<h3>${TXHZ.salud.cuerpo}</h3><div class="sub" style="font-size:12px">⚖️ ${H.peso.toFixed(1)} kg · ${st} · 🏃 forma ${Math.round(S.fit||0)}/100${H.gymMember?' · 🏋️ socio del gimnasio ('+H.gymMonth+' días este mes)':''}${H.mutua?' · 🏥 seguro privado':''}${H.diet?' · 🥗 cuidando lo que come':''}</div>`;
-  if(H.list.length)h+=`<div class="sub" style="font-size:12px;color:#a04a3a">${H.list.map(x=>HP_DEF[x.k].e+' '+(x.dx?HP_DEF[x.k].n:'algo que no está bien ('+(S.day-x.since)+' días)')).join(' · ')}</div>`;
+  let h=`<h3>${TXHZ.salud.cuerpo}</h3><div class="sub" style="font-size:12px">${huecos(TXHZ.salud.ficha_cuerpo,{peso:H.peso.toFixed(1),st,fit:Math.round(S.fit||0),x:H.gymMember?huecos(TXHZ.salud.ficha_gym,{d:H.gymMonth}):'',x2:H.mutua?TXHZ.salud.ficha_seguro:'',x3:H.diet?TXHZ.salud.ficha_dieta:''})}</div>`;
+  if(H.list.length)h+=`<div class="sub" style="font-size:12px;color:#a04a3a">${H.list.map(x=>HP_DEF[x.k].e+' '+(x.dx?HP_DEF[x.k].n:huecos(TXHZ.salud.algo_no_esta_bien,{d:S.day-x.since}))).join(' · ')}</div>`;
   h+=`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px">`;
   if(!H.cita)h+=`<button class="btn grey" id="hpcita">${TXHZ.salud.cita_publica}</button><button class="btn grey" id="hppriv">${huecos(TXHZ.salud.privada,{c:fmt(hrs(8))})}</button>`;else h+=`<span class="sub" style="font-size:12px">${huecos(TXHZ.salud.cita_dentro_dias,{x:H.cita-S.day})}</span>`;
-  h+=`<button class="btn grey" id="hpgym">${H.gymMember?'🏋️ Darse de baja del gym':'🏋️ Apuntarse al gimnasio ('+fmt(gymFee())+'/mes)'}</button>`;
-  h+=`<button class="btn grey" id="hpmutua">${H.mutua?'🏥 Quitar el seguro privado':'🏥 Seguro privado ('+fmt(hrs(6))+'/mes)'}</button>`;
-  h+=`<button class="btn grey" id="hpdiet">${H.diet?'🥗 Dejar de contar lo que come':'🥗 Cuidar lo que come'}</button></div>`;return h;}
+  h+=`<button class="btn grey" id="hpgym">${H.gymMember?TXHZ.salud.baja_gym:huecos(TXHZ.salud.alta_gym,{c:fmt(gymFee())})}</button>`;
+  h+=`<button class="btn grey" id="hpmutua">${H.mutua?TXHZ.salud.quitar_seguro:huecos(TXHZ.salud.alta_seguro,{c:fmt(hrs(6))})}</button>`;
+  h+=`<button class="btn grey" id="hpdiet">${H.diet?TXHZ.salud.dejar_dieta:TXHZ.salud.cuidar_dieta}</button></div>`;return h;}
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{return hpBlock()+h;}catch(e){return h;}};}
 {const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);const H=HP();const q=s=>card.querySelector(s);const re=()=>openMenu('vida');
   const a=q('#hpcita');if(a)a.onclick=()=>{hpAsk(false);re();};const b=q('#hppriv');if(b)b.onclick=()=>{if(S.money<hrs(8)){toast(TXHZ.salud.llega);return;}hpAsk(true);re();};
@@ -95,4 +95,4 @@ const bmiTxt=b=>b<18.5?TXHZ.salud.bajo_peso:b<25?TXHZ.salud.peso_normal:b<30?TXH
     anchor.before(box);const upd=()=>{const a=+box.querySelector('#cralt').value||cre.alt,w=+box.querySelector('#crpeso').value||cre.peso;cre.alt=Math.max(140,Math.min(210,a));cre.peso=Math.max(38,Math.min(200,w));const bb=bmiOf(cre.alt,cre.peso);box.querySelector('#crbmi').textContent=huecos(TXHZ.salud.imc,{x:bb.toFixed(1),bmiTxt:bmiTxt(bb)});cre.build=bb<19?'delgada':bb>=27?'ancha':'media';};
     box.querySelector('#cralt').oninput=upd;box.querySelector('#crpeso').oninput=upd;
     const ok=card.querySelector('#creok');if(ok&&edit)ok.addEventListener('click',()=>{try{if(S.char){S.char.alt=cre.alt;const H=HP();const m=cre.alt/100;H.base=Math.round(22.5*m*m);H.peso=cre.peso;H.hist=[];if(H.peso-H.base>-6)H.list=H.list.filter(x=>x.k!=='anemia'||x.dx);}}catch(e){}});}catch(e){console.error(e);}};}
-{const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{if(menuTab==='perfil'){const d=card.querySelector('#hpmini');if(d&&S.char&&S.char.alt){const H=HP();const b=bmiOf(S.char.alt,H.peso);d.innerHTML=`📏 ${(S.char.alt/100).toFixed(2)} m · ⚖️ ${H.peso.toFixed(1)} kg · IMC ${b.toFixed(1)} (${bmiTxt(b)}) · 🏃 forma ${Math.round(S.fit||0)}`+(H.list.filter(x=>x.dx).length?' · '+H.list.filter(x=>x.dx).map(x=>HP_DEF[x.k].e+' '+HP_DEF[x.k].n).join(', '):'');}}}catch(e){}return r;};}
+{const _om=openMenu;openMenu=function(...a){const r=_om.apply(this,a);try{if(menuTab==='perfil'){const d=card.querySelector('#hpmini');if(d&&S.char&&S.char.alt){const H=HP();const b=bmiOf(S.char.alt,H.peso);d.innerHTML=huecos(TXHZ.salud.mini,{alt:(S.char.alt/100).toFixed(2),kg:H.peso.toFixed(1),imc:b.toFixed(1),txt:bmiTxt(b),fit:Math.round(S.fit||0)})+(H.list.filter(x=>x.dx).length?' · '+H.list.filter(x=>x.dx).map(x=>HP_DEF[x.k].e+' '+HP_DEF[x.k].n).join(', '):'');}}}catch(e){}return r;};}
