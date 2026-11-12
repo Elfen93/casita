@@ -4,13 +4,13 @@ Orden = prioridad. Cada tarea: rol, qué, hecho cuando, no tocar. Las marcadas �
 
 ## Ahora: mundo creíble
 
-### ⚡ T-001 · Población en las escenas
+### ✅ T-001 · Población en las escenas (hecho el 12 nov 2026: `mods/poblacion.js`, `data/personas.json` → vecinos)
 Rol: escenas. Las escenas existentes (obra, súper, bar, torre, residencia, biblioteca, parque, sindicato, ateneo, comedor, coop, sala, parroquia, comisaría, gym, gymbueno) tienen pocas figuras. Hacer un helper común `crowd(E,{n,hours,spots,acts})` que ponga de 5 a 15 figuras por hora punta, en grupos (dos hablando, uno esperando, uno andando entre dos puntos), y que a veces sean **conocidos** (gente de `S.people` con `p.ch`, con su nombre encima). Hecho cuando: cada escena tiene densidad por hora, captura antes/después de 4 escenas, test t/t_scenes.js que abre todas sin errores. No tocar: reglas, textos.
 
 ### ⚡ T-002 · Escuela de adultos
 Rol: escenas. `PLACES.instituto` (edificio en el mapa) + `SCENES['instituto']`: aula de noche con pupitres, pizarra con el tema del día (según el programa de `ED().cur`), pasillo con máquina de café, profesora, 8–14 compañeros de 19 a 55 años; versión «examen» (silencio, mesas separadas) cuando `ED().cur.h` está cerca del total. `destOf('clase')` → 'instituto' (y 'uni' si el programa es de grado: misma escena con otro rótulo). Hecho cuando: capturas mañana/tarde/examen; `t/t_edu.js` pasa; un `tell` del primer día (// GUION:revisar).
 
-### ⚡ T-003 · Centro de salud y oficina del paro
+### ✅ T-003 · Centro de salud y oficina del paro (hecho el 12 nov 2026: `mods/servicios.js`)
 Rol: escenas. Dos escenas: `ambulatorio` (sala de espera con números, pantalla de turnos, 10+ personas, médica que llama) a la que va `hpVisit`/`hpAsk`; `sepe` (cola, ventanillas, «vuelva mañana»), a la que van `autoSeek` cuando está en paro y `ssociales`. Hecho cuando: capturas; las visitas al médico y al paro son salidas con escena (`OUT.medico`, `OUT.sepe`) y no instantáneas.
 
 ### ⚡ T-004 · Construcción cómoda

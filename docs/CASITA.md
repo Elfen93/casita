@@ -45,10 +45,10 @@ casita/
   build.py            une todo → casita.html (desarrollo) e index.html + sw.js (publicación)
   build.json          orden de los módulos
   data/*.json         el contenido: lugares, gente, trabajos, objetos, libros, estudios, interacciones,
-                      ideologías, gobiernos y reglas (data/README.md). Lo comparten el juego web y Godot
+                      ideologías, gobiernos, reglas y sucesos (data/README.md). Lo comparten el juego web y Godot
   src/head.html, src/tail.html
   src/core/NNN_*.js   núcleo: 99 archivos numerados (motor, dibujo, casa, trabajo, mundo…)
-  mods/*.js           57 módulos que amplían el núcleo, en el orden de build.json
+  mods/*.js           59 módulos que amplían el núcleo, en el orden de build.json
   mods/movil.css      estilos de todas las ventanas
   p3d/, q3d/          librería 3D y modelos de los personajes
   pwa/                registro del service worker
@@ -95,9 +95,9 @@ Estado: ✅ funciona · 🟡 funciona pero corto · ⬜ pendiente.
 | Casa: construir, muebles, desgaste, averías, obras contratadas en horario | núcleo, `casa`, `hogar`, `obras`, `horario_obras`, `pintar` | ✅ (construcción incómoda: ver T-004) |
 | Necesidades y energía, autonomía, agenda semanal | núcleo, `rutina`, `energia`, `agenda`, `encadenar` | ✅ |
 | Comida: despensa, tres comidas, cocinar→comer, fregar, nutrición | `comidas`, `cocinar`, `fregar` | ✅ |
-| Cuerpo: peso con objetivo, gimnasio, problemas de salud, médico y esperas | `salud`, `peso`, `gym` | ✅ |
+| Cuerpo: peso con objetivo, gimnasio, problemas de salud, médico (cita, espera y visita al centro de salud) | `salud`, `peso`, `gym`, `servicios` | ✅ |
 | Mente: ánimo, depresión, terapia, adicciones, camello, cárcel | `mente` | ✅ |
-| Trabajo: profesiones, jornada, ascensos, baño y café, entrevista | núcleo, `jornada`, `curro`, `entrevista` | ✅ |
+| Trabajo: profesiones, jornada, ascensos, baño y café, entrevista, oficina de empleo en paro | núcleo, `jornada`, `curro`, `entrevista`, `servicios` | ✅ |
 | Dinero: banco según sistema, ahorro, depósito, préstamos, deudas, patrimonio | `banco`, `productos`, `banco2`, `banco3`, `patrimonio` | ✅ |
 | Impuestos: nómina bruta/neta, IRPF, IVA, IBI, renta, negro, autónomos | `fiscal` | ✅ |
 | Vivienda: alquiler, compra, hipoteca, desahucio, calle, albergue | núcleo, `marginal`, `reparto`, `facturas` | ✅ |
@@ -112,7 +112,7 @@ Estado: ✅ funciona · 🟡 funciona pero corto · ⬜ pendiente.
 | Comunidad propia (socialismo utópico), semilla de las comunas | `comunidad` | ✅ |
 | Gobierno progresista y conservador en la vida diaria | `ciclos`, `fiscal` | 🟡 impuestos y pulso sí; faltan efectos en vivienda, servicios y calle |
 | Deseos del personaje, objetivos, temporadas, final | núcleo, `deseos`, `final` | ✅ |
-| Mundo: barrio, lugares visitables, escenas interiores | núcleo (`047`), `gym`, `aula` | 🟡 un solo barrio; escenas con poca gente |
+| Mundo: lugares visitables y escenas interiores con gente según la hora; 18 vecinos con nombre | núcleo (`047`), `gym`, `aula`, `poblacion`, `servicios` | 🟡 un solo barrio; el mapa del barrio existe en el código (`barrioItems`) pero no se pinta: solo se ven la casa y las escenas; los vecinos aún son figurantes, no se les puede conocer |
 | Otras ciudades y barrios | — | ⬜ |
 | Envejecer, calendario anual de fiestas | — | ⬜ |
 
@@ -144,17 +144,17 @@ Abreviaturas del estado que más aparecen: `S` (partida), `S.sim` (el personaje 
 Sacar el contenido a una carpeta `data/` en un formato legible. El juego web pasa a leer de ahí sin cambiar por fuera. Es la pieza que comparten los dos frentes.
 
 - ✅ **Primera pasada (12 nov 2026):** 107 secciones en 11 archivos: lugares y salidas, viviendas, personas, profesiones, objetos y lo que se hace con ellos, libros, estudios, interacciones, ideologías, gobiernos (ciclos e impuestos) y reglas básicas. Comprobado con `scripts/comparar.py`: 11 partidas de 120 días con el azar sembrado dan el mismo estado, el mismo diario y las mismas pantallas que antes.
-- ⬜ **Segunda pasada:** lo que mezcla texto con condiciones y efectos: dilemas, consecuencias, golpes, hitos y arcos; los textos sueltos de `tell()`/`toast()`/`chapter()`; las plantillas del móvil; los carteles y la gente de las escenas. Hace falta antes un formato de texto con huecos (`{nombre}`, género) que valga también para Godot. Lista completa al final de `data/README.md`.
+- 🟡 **Segunda pasada:** lo que mezcla texto con condiciones y efectos. El formato está decidido: textos con huecos (`"{p} sale del cole a las cinco."`, norma 7 de `data/README.md`) que el código rellena con `huecos()`. Hechos los 23 dilemas (`data/sucesos.json`), como piloto. Quedan consecuencias, golpes, incidentes, hitos y arcos; los textos sueltos de `tell()`/`toast()`/`chapter()`; las plantillas del móvil; los carteles de las escenas. Cada tabla es un encargo para un agente, con `scripts/comparar.py` y una prueba de textos como `t/t_dlg.js` para demostrar que no cambia nada. Lista al final de `data/README.md`.
 
 La fábrica y la prueba de Godot ya pueden empezar con lo que hay: lo que necesitan (lugares, gente, trabajos, objetos, necesidades, interacciones) está en `data/`.
 
 ### Frente A — La fábrica de contenido (juego web)
 Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`docs/FABRICA.md`, plantilla en `docs/prompts/PLANTILLA.md`, tareas en `docs/BACKLOG.md`). Primera tanda:
-1. **Población** (T-001): vecinos con nombre, oficio, ideología, horarios y relaciones; escenas con gente.
-2. **Barrios y lugares visitables**: centro de salud y oficina de empleo (T-003), mercado, polideportivo, más bares, y después otros barrios y ciudades.
+1. **Población** (T-001): ✅ 18 vecinos con nombre, oficio, ideología y horarios, y escenas con gente. Falta que tengan relaciones entre ellos y que se les pueda conocer.
+2. **Barrios y lugares visitables**: ✅ centro de salud y oficina de empleo (T-003). Siguen mercado, polideportivo, más bares, y después otros barrios y ciudades.
 3. **Interacciones nuevas** con la gente, en los lugares y en casa.
 
-Reglas de la fábrica: 2 o 3 agentes por tanda; cada agente lee este documento y solo los que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica.
+Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git worktree add ../wt/t0NN -b fab/t0NN main`); cada agente lee solo los documentos que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica.
 
 ### Frente B — Godot
 1. Montar Godot en modo sin pantalla y un proyecto en `godot/` dentro de este mismo repo (decidido).

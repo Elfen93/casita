@@ -64,3 +64,7 @@
 - Paso 0, primera pasada: el contenido sale del código a `data/*.json` (107 secciones en 11 archivos: lugares, viviendas, personas, profesiones, objetos, libros, estudios, interacciones, ideologías, gobiernos, reglas) y `build.py` lo incrusta como `DATA`. Por fuera no cambia nada: 11 partidas de 120 días con el azar sembrado dan lo mismo que antes. Nuevos: `scripts/datos.py` (comprueba y formatea los datos), `scripts/comparar.py` (antes/después) y `t/t_data.js`.
 - Pruebas en paralelo: cada Chrome de prueba usa su puerto y su perfil, y el build su archivo temporal, para que varios agentes construyan y prueben a la vez.
 - Textos con huecos: `huecos(texto,{clave:valor})` y su norma en data/README.md, para la segunda pasada del paso 0.
+- Vecinos: 18 personas del barrio con nombre, oficio, ideología y horario (`data/personas.json`). Las escenas se llenan de gente según la hora y el día, y los vecinos salen con su nombre donde les toca estar.
+- Centro de salud: el día de la cita el personaje va (90 minutos en la pública, 45 en la privada) y la visita pasa allí; si ese día no puede ir, se resuelve como antes. Sala de espera con pantalla de turnos.
+- Oficina de empleo: en paro se puede ir por la mañana en días laborables. Cola, ventanillas y un empujón de tres días a la búsqueda de trabajo. Servicios sociales se ve ahí.
+- Paso 0, segunda pasada (piloto): los textos de los 23 dilemas pasan a `data/sucesos.json`; no cambia ni una letra (`t/t_dlg.js`, `scripts/comparar.py`).
