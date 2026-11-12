@@ -9,6 +9,6 @@ function endStroke(){
   stroke=null;updateUR();
 }
 function undo(){returnHeld();const st=undoStack.pop();if(!st)return;restore(st.before);S.money+=st.spent;redoStack.push(st);sfx('undo');bumpMoney();updateUR();}
-function redo(){const st=redoStack[redoStack.length-1];if(!st)return;if(S.money<st.spent){toast('No te llega el dinero para rehacer 💸');sfx('bad');return;}redoStack.pop();restore(st.after);S.money-=st.spent;undoStack.push(st);sfx('undo');bumpMoney();updateUR();}
+function redo(){const st=redoStack[redoStack.length-1];if(!st)return;if(S.money<st.spent){toast(TXN.deshacer.no_llega_rehacer);sfx('bad');return;}redoStack.pop();restore(st.after);S.money-=st.spent;undoStack.push(st);sfx('undo');bumpMoney();updateUR();}
 function updateUR(){const u=document.getElementById('undob'),r=document.getElementById('redob');if(u)u.disabled=!undoStack.length;if(r)r.disabled=!redoStack.length;}
 

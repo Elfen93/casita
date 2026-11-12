@@ -43,7 +43,7 @@ body.obra .tool.on{box-shadow:0 0 0 3px var(--accent),0 4px 12px rgba(30,20,50,.
 #obar .ob button.ok:disabled{background:#cfc6bf;border-color:#cfc6bf;opacity:1}
 `;document.head.appendChild(st);}
 {const b=obEl('bottom');const s=document.createElement('div');s.id='obstrip';
-  s.innerHTML='<div id="obtxt" class="glass"></div><button class="obb glass" id="undob" title="Deshacer">↶</button><button class="obb glass" id="redob" title="Rehacer">↷</button>';
+  s.innerHTML=`<div id="obtxt" class="glass"></div><button class="obb glass" id="undob" title="${TXN.obra_tactil.deshacer}">↶</button><button class="obb glass" id="redob" title="${TXN.obra_tactil.rehacer}">↷</button>`;
   b.insertBefore(s,b.firstChild);
   const a=document.createElement('div');a.id='obar';a.className='glass';document.body.appendChild(a);}
 function obClear(keepSel){
@@ -54,16 +54,16 @@ function obClear(keepSel){
 function obIsTouch(){return OB.touch;}
 // ¿qué hace la herramienta? (para la tira de ayuda)
 function obHow(){
-  if(!tool)return mode==='buy'?(OB.touch?'Elige un mueble abajo o toca uno de la casa para moverlo, girarlo o venderlo':'Elige un mueble abajo o haz clic en uno de la casa'):'Elige qué construir abajo';
+  if(!tool)return mode==='buy'?(OB.touch?TXN.obra_tactil.how_buy_touch:TXN.obra_tactil.how_buy_click):TXN.obra_tactil.how_build;
   const k=tool.kind,T=OB.touch;
-  if(DRAG_KINDS.includes(k))return T?'Toca el inicio y luego el final, o mantén pulsado y arrastra':'Arrastra con el ratón para dibujar';
-  if(k==='obj'||k==='craft')return T?'Toca dónde ponerlo; luego arrástralo y ✓':'Haz clic donde quieras ponerlo';
-  if(k==='move')return S.held?(T?'Arrastra el fantasma y pulsa ✓':'Haz clic donde dejarlo'):'Toca un mueble para cogerlo';
-  if(k==='paint')return T?'Toca una pared · mantén y arrastra para varias':'Clic o arrastra sobre las paredes';
-  if(k==='del')return T?'Toca para borrar · mantén y arrastra para varias · devuelve la mitad':'Clic o arrastra para borrar · devuelve la mitad';
-  if(k==='door')return 'Toca una pared o valla';
-  if(k==='win')return 'Toca una pared';
-  if(k==='rot')return 'Toca un mueble para girarlo';
+  if(DRAG_KINDS.includes(k))return T?TXN.obra_tactil.how_drag_touch:TXN.obra_tactil.how_drag_mouse;
+  if(k==='obj'||k==='craft')return T?TXN.obra_tactil.how_obj_touch:TXN.obra_tactil.how_obj_click;
+  if(k==='move')return S.held?(T?TXN.obra_tactil.how_move_touch:TXN.obra_tactil.how_move_click):TXN.obra_tactil.how_move_pick;
+  if(k==='paint')return T?TXN.obra_tactil.how_paint_touch:TXN.obra_tactil.how_paint_click;
+  if(k==='del')return T?TXN.obra_tactil.how_del_touch:TXN.obra_tactil.how_del_click;
+  if(k==='door')return TXN.obra_tactil.how_door;
+  if(k==='win')return TXN.obra_tactil.how_win;
+  if(k==='rot')return TXN.obra_tactil.how_rot;
   return '';
 }
 function obStrip(){
@@ -72,12 +72,12 @@ function obStrip(){
   let h='';
   if(tool){const b=palette.querySelector('.tool.on');let nm='';
     if(b){const e=b.querySelector('.e'),n=b.querySelector('.n');nm=(e?e.textContent.trim()+' ':'')+(n?n.textContent:'');}
-    else if(tool.kind==='move')nm='✋ Mover';else if(tool.kind==='obj'||tool.kind==='craft')nm=(OBJ[tool.v].e||'🌿')+' '+OBJ[tool.v].n;
-    h+=`<span class="chip"><span>${nm||'Herramienta'}</span><button id="obnot" title="Soltar herramienta">✕</button></span>`;}
+    else if(tool.kind==='move')nm=TXN.obra_tactil.mover;else if(tool.kind==='obj'||tool.kind==='craft')nm=(OBJ[tool.v].e||'🌿')+' '+OBJ[tool.v].n;
+    h+=`<span class="chip"><span>${nm||TXN.obra_tactil.herramienta}</span><button id="obnot" title="${TXN.obra_tactil.soltar_herramienta}">✕</button></span>`;}
   let tx=obHow();
-  if(obLocked()){const tk=(S.home&&S.home.type)||'casita';const wh=tk==='padres'||tk==='habitacion'||tk==='infra'?'tu cuarto':'tu casa';
-    if(mode==='build'&&(!tool||!['paint'].includes(tool.kind)))tx=`<span class="lk">🔒 Aquí no puedes hacer obras: solo pintar ${wh}.</span> `+(tool?tx:'');
-    else tx=`<span class="lk">🔒 Solo puedes tocar ${wh} (lo iluminado).</span> `+tx;}
+  if(obLocked()){const tk=(S.home&&S.home.type)||'casita';const wh=tk==='padres'||tk==='habitacion'||tk==='infra'?TXN.obra_tactil.tu_cuarto:TXN.obra_tactil.tu_casa;
+    if(mode==='build'&&(!tool||!['paint'].includes(tool.kind)))tx=`<span class="lk">${huecos(TXN.obra_tactil.lock_solo_pintar,{wh})}</span> `+(tool?tx:'');
+    else tx=`<span class="lk">${huecos(TXN.obra_tactil.lock_solo_tocar,{wh})}</span> `+tx;}
   h+=`<span class="tx">${tx}</span>`;
   el.innerHTML=h;
   const nb=obEl('obnot');if(nb)nb.onclick=()=>{returnHeld();obClear();tool=null;buildPalette();};
@@ -89,11 +89,11 @@ function obDraftCost(d){
 function obDraftState(){
   const d=OB.draft;if(!d)return null;
   if(d.k==='pt'){const t=tool;const ok=canApply(d.x,d.y,t);const c=obDraftCost(d);
-    let why='';if(!ok)why=obLocked()&&!inArea(d.x,d.y)?'🔒 Fuera de tu zona':'No cabe aquí';else if(S.money<c)why='💸 No te llega';
+    let why='';if(!ok)why=obLocked()&&!inArea(d.x,d.y)?TXN.obra_tactil.fuera_zona:TXN.obra_tactil.no_cabe;else if(S.money<c)why=TXN.obra_tactil.no_llega;
     let nm='';if(t.kind==='obj'||t.kind==='craft')nm=`${OBJ[t.v].e||'🌿'} ${OBJ[t.v].n}${t.kind==='obj'?' '+TIERS[t.q??3].e:' 🪚'}`;else if(t.kind==='move'&&S.held)nm=`✋ ${OBJ[S.held.t].e||'🌿'} ${OBJ[S.held.t].n}`;
     return {ok:!why,why,cost:c,nm};}
   const pv=OB.pv;if(!pv)return null;const n=pv.walls.size-pv.bad.size+pv.floors.size;
-  let why='';if(pv.small)why='Mínimo 3×3';else if(!n)why=obLocked()?'🔒 Aquí no se pueden hacer obras':'No hay nada que construir aquí';else if(S.money<pv.cost)why='💸 No te llega';
+  let why='';if(pv.small)why=TXN.obra_tactil.minimo_3x3;else if(!n)why=obLocked()?TXN.obra_tactil.sin_obras:TXN.obra_tactil.nada_que_construir;else if(S.money<pv.cost)why=TXN.obra_tactil.no_llega;
   return {ok:!why,why,cost:pv.cost,nm:pv.label};
 }
 function obBar(){
@@ -104,9 +104,9 @@ function obBar(){
   const d=OB.draft;
   if(d){const st=obDraftState();if(!st){hide();return;}
     const sh=d.k==='shape',gt=!sh&&ghostType();
-    const verb=sh?(tool.kind==='floor'?'Poner suelo':'Construir'):tool.kind==='move'?'Dejar aquí':tool.kind==='craft'?'Encargar':'Colocar';
-    show(`<div class="ot"><b>${st.nm}</b><i class="${st.ok?'':'bad'}">${st.why||(st.cost?fmt(st.cost):'gratis')}</i></div>
-      <div class="ob"><button class="x" id="obx" title="Cancelar">✕</button>${gt?'<button id="obrot">↻ Girar</button>':''}<button class="ok" id="obok" ${st.ok?'':'disabled'}>✓ ${verb}${st.cost?`<small>${fmt(st.cost)}</small>`:''}</button></div>`);
+    const verb=sh?(tool.kind==='floor'?TXN.obra_tactil.v_poner_suelo:TXN.obra_tactil.v_construir):tool.kind==='move'?TXN.obra_tactil.v_dejar:tool.kind==='craft'?TXN.obra_tactil.v_encargar:TXN.obra_tactil.v_colocar;
+    show(`<div class="ot"><b>${st.nm}</b><i class="${st.ok?'':'bad'}">${st.why||(st.cost?fmt(st.cost):TXN.obra_tactil.gratis)}</i></div>
+      <div class="ob"><button class="x" id="obx" title="${TXN.obra_tactil.cancelar}">✕</button>${gt?`<button id="obrot">${TXN.obra_tactil.girar}</button>`:''}<button class="ok" id="obok" ${st.ok?'':'disabled'}>✓ ${verb}${st.cost?`<small>${fmt(st.cost)}</small>`:''}</button></div>`);
     obEl('obx').onclick=()=>{obClear();sfx('tap');obRefresh();};
     obEl('obok').onclick=obConfirm;
     const rb=obEl('obrot');if(rb)rb.onclick=()=>{const t=ghostType();const cur=d.r!=null?d.r:OB.of(t,d.x,d.y);d.r=(cur+1)%4;sfx('pick');obRefresh();};
@@ -114,15 +114,15 @@ function obBar(){
   const s=OB.sel;
   if(s&&S.obj[s.i]){const o=S.obj[s.i],D=OBJ[o.t],x=s.i%N,y=s.i/N|0;
     const can=k=>canApply(x,y,{kind:k});const mine=can('move');
-    const cond=D.need?` · estado ${Math.round(condOf(o))}%`:'';
+    const cond=D.need?huecos(TXN.obra_tactil.estado,{x:Math.round(condOf(o))}):'';
     const q=o.q??3;const rep=mine&&D.need&&buyTier<5&&buyTier!==q;
-    show(`<div class="ot"><b>${D.e||'🌿'} ${D.n} ${TIERS[q].e}${cond}</b><i class="${mine?'':'bad'}">${mine?'':'🔒 No es tuyo'}</i></div>
-      <div class="ob"><button id="obmv" ${mine?'':'disabled'}>✋ Mover</button><button id="obrt" ${can('rot')?'':'disabled'}>↻ Girar</button><button id="obsell" class="red" ${can('del')?'':'disabled'}>💰 Vender<small>+${fmt(sellValue(o))}</small></button>${rep?`<button id="obq">🔁 ${TIERS[buyTier].e}<small>${TIERS[buyTier].n}</small></button>`:''}<button class="x" id="obx">✕</button></div>`);
+    show(`<div class="ot"><b>${D.e||'🌿'} ${D.n} ${TIERS[q].e}${cond}</b><i class="${mine?'':'bad'}">${mine?'':TXN.obra_tactil.no_es_tuyo}</i></div>
+      <div class="ob"><button id="obmv" ${mine?'':'disabled'}>${TXN.obra_tactil.mover}</button><button id="obrt" ${can('rot')?'':'disabled'}>${TXN.obra_tactil.girar}</button><button id="obsell" class="red" ${can('del')?'':'disabled'}>${TXN.obra_tactil.vender}<small>+${fmt(sellValue(o))}</small></button>${rep?`<button id="obq">🔁 ${TIERS[buyTier].e}<small>${TIERS[buyTier].n}</small></button>`:''}<button class="x" id="obx">✕</button></div>`);
     obEl('obx').onclick=()=>{OB.sel=null;obRefresh();};
     obEl('obrt').onclick=()=>{beginStroke();apply(x,y,{kind:'rot'});endStroke();obRefresh();};
     obEl('obsell').onclick=()=>{beginStroke();apply(x,y,{kind:'del'});endStroke();OB.sel=null;obRefresh();};
     obEl('obmv').onclick=()=>{OB.sel=null;returnHeld();tool={kind:'move'};buildPalette();beginStroke();const ok=apply(x,y,tool);endStroke();if(ok)OB.draft={k:'pt',x,y,r:null,sig:obSig()};obRefresh();};
-    const qb=obEl('obq');if(qb)qb.onclick=()=>{const [k,l]=stepReq({k:'replace',i:s.i});if(lvl(k)<l)hireFor(s.i,'replace');else{orderReplace(s.i,true);toast(`🔁 Ana lo cambiará por uno ${TIERS[buyTier].n.toLowerCase()}`);}OB.sel=null;obRefresh();};
+    const qb=obEl('obq');if(qb)qb.onclick=()=>{const [k,l]=stepReq({k:'replace',i:s.i});if(lvl(k)<l)hireFor(s.i,'replace');else{orderReplace(s.i,true);toast(huecos(TXN.obra_tactil.ana_cambia,{t:TIERS[buyTier].n.toLowerCase()}));}OB.sel=null;obRefresh();};
     return;}
   OB.sel=null;hide();
 }
@@ -146,7 +146,7 @@ function obTap(sx,sy){
   if(!tool){
     if(i>=0&&S.obj[i]&&!S.obj[i]._tmp){OB.sel={i};sfx('tap');}
     else if(OB.sel)OB.sel=null;
-    else toast(mode==='buy'?'Elige un mueble abajo 👇 o toca uno de la casa':'Elige qué construir en la barra de abajo 👇');
+    else toast(mode==='buy'?TXN.obra_tactil.tap_buy:TXN.obra_tactil.tap_build);
     obRefresh();obNudge();return;}
   OB.sel=null;
   const k=tool.kind,sig=obSig();

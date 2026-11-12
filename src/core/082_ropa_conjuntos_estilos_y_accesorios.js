@@ -1,21 +1,9 @@
 // ---------- ropa: conjuntos, estilos y accesorios ----------
-const OUTFITS={basico:{n:'Básico',e:'👕'},hiphop:{n:'Hip hop',e:'🧢'},mono:{n:'Monocromo',e:'◼️'},chandal:{n:'Chándal',e:'🏃'},traje:{n:'Traje',e:'🕴️'},
-  obrero:{n:'Mono de trabajo',e:'🔧'},vestido:{n:'Vestido',e:'👗'},falda:{n:'Falda',e:'👚'},vaquera:{n:'Cazadora vaquera',e:'🧥'},punk:{n:'Punk / rock',e:'🤘'},
-  punto:{n:'Punto y abrigo',e:'🧶'},deporte:{n:'Deportivo',e:'🏀'}};
-const MONOC=[['#18181c','Negro'],['#f3f0e8','Blanco'],['#d9c4a0','Beige'],['#6b6e3c','Oliva'],['#7b7f87','Gris'],['#2c3a5c','Marino'],['#7d2f36','Granate'],['#b9824f','Camel'],['#d7a1b4','Rosa'],['#3f6b55','Verde'],['#e2b33c','Mostaza'],['#5b3f8c','Morado']];
+const OUTFITS=TXN.ropa.outfits;
+const MONOC=[['#18181c',TXN.ropa.mono.negro],['#f3f0e8',TXN.ropa.mono.blanco],['#d9c4a0',TXN.ropa.mono.beige],['#6b6e3c',TXN.ropa.mono.oliva],['#7b7f87',TXN.ropa.mono.gris],['#2c3a5c',TXN.ropa.mono.marino],['#7d2f36',TXN.ropa.mono.granate],['#b9824f',TXN.ropa.mono.camel],['#d7a1b4',TXN.ropa.mono.rosa],['#3f6b55',TXN.ropa.mono.verde],['#e2b33c',TXN.ropa.mono.mostaza],['#5b3f8c',TXN.ropa.mono.morado]];
 const OUTC=['#18181c','#f3f0e8','#d9c4a0','#7b7f87','#2c3a5c','#4a6fa5','#6b6e3c','#3f6b55','#7d2f36','#b9824f','#c0392b','#ff8a5b','#e9c46a','#00bb7f','#5bc0be','#3a86ff','#9b5de5','#f15bb5','#c4e04e'];
-const ACCS={gorra:'🧢 Gorra',gorro:'🧶 Gorro de lana',cadena:'⛓️ Cadena',bolso:'👜 Bolso',gafasol:'🕶️ Gafas de sol'};
-const OSLOTS={basico:[['shirt','Camiseta'],['pants','Pantalón'],['shoes','Zapatos']],
-  hiphop:[['shirt','Sudadera'],['pants','Pantalón ancho'],['shoes','Zapatillas']],
-  chandal:[['shirt','Chándal'],['acc2','Rayas'],['shoes','Zapatillas']],
-  traje:[['shirt','Traje'],['acc2','Corbata'],['shoes','Zapatos']],
-  obrero:[['shirt','Mono'],['acc2','Bandas'],['shoes','Botas']],
-  vestido:[['shirt','Vestido'],['shoes','Zapatos']],
-  falda:[['shirt','Blusa'],['pants','Falda'],['shoes','Zapatos']],
-  vaquera:[['acc2','Cazadora'],['shirt','Camiseta'],['pants','Pantalón'],['shoes','Zapatillas']],
-  punk:[['acc2','Chupa'],['shirt','Camiseta'],['pants','Pantalón'],['shoes','Botas']],
-  punto:[['shirt','Jersey'],['acc2','Abrigo'],['pants','Pantalón'],['shoes','Zapatos']],
-  deporte:[['shirt','Camiseta'],['acc2','Ribete'],['pants','Pantalón corto'],['shoes','Zapatillas']]};
+const ACCS=TXN.ropa.accesorios;
+const OSLOTS=TXN.ropa.ranuras;
 const ofSig=c=>(c.shirt||'')+'|'+(c.pants||'');
 function dressUp(ch,k){const R=pickR,rr=Math.random;ch.outfit=k;ch.acc=[];ch.capBack=false;delete ch.capc;
   switch(k){
@@ -223,12 +211,12 @@ function ofPorHead(x,c,g){const F=c.of,A=F.acc,cx=g.cx,col=F.capCol,fw=g.fw,capY
 {const _rfc=rfChar;rfChar=function(ch,md,nobg){const c=_rfc(ch,md,nobg);const F=outfitSpec(ch);if(F){c.of=F;c.shirt=F.jacket||(F.tank||F.dress?ch.skin:F.top);if(F.jacket||F.suit||F.zip||F.turtle||F.hood||F.overall)c.cuello=null;}return c;};}
 // ---- creador: sección «Estilo» ----
 function styleSection(c){const k=OUTFITS[c.outfit]?c.outfit:'basico';
-  let h=`<div class="clab">Estilo</div><div class="chips">${Object.entries(OUTFITS).map(([key,v])=>`<button class="mini${k===key?' sel':''}" data-of="${key}">${v.e} ${v.n}</button>`).join('')}</div>`;
+  let h=`<div class="clab">${TXN.ropa.estilo}</div><div class="chips">${Object.entries(OUTFITS).map(([key,v])=>`<button class="mini${k===key?' sel':''}" data-of="${key}">${v.e} ${v.n}</button>`).join('')}</div>`;
   const sw=(key,list,lab)=>`<div class="sub" style="font-size:11px;margin:4px 0 2px">${lab}</div><div class="swatches">${list.map(col=>`<div class="sw${c[key]===col?' on':''}" data-k="${key}" data-v="${col}" style="background:${col}"></div>`).join('')}</div>`;
-  if(k==='mono')h+=`<div class="sub" style="font-size:11px;margin:4px 0 2px">Un solo color, de la cabeza a los pies</div><div class="swatches">${MONOC.map(([col,n])=>`<div class="sw${c.shirt===col?' on':''}" data-mono="${col}" title="${n}" style="background:${col}"></div>`).join('')}</div>`;
+  if(k==='mono')h+=`<div class="sub" style="font-size:11px;margin:4px 0 2px">${TXN.ropa.un_solo_color}</div><div class="swatches">${MONOC.map(([col,n])=>`<div class="sw${c.shirt===col?' on':''}" data-mono="${col}" title="${n}" style="background:${col}"></div>`).join('')}</div>`;
   else for(const [key,lab] of OSLOTS[k])h+=sw(key,k==='basico'&&key==='shirt'?SHIRTC:k==='basico'&&key==='pants'?PANTSC:OUTC,lab);
-  const acc=c.acc||[];h+=`<div class="sub" style="font-size:11px;margin:6px 0 2px">Complementos</div><div class="chips">${Object.entries(ACCS).map(([a,n])=>`<button class="mini${acc.includes(a)?' sel':''}" data-acc="${a}">${n}</button>`).join('')}${acc.includes('gorra')?`<button class="mini${c.capBack?' sel':''}" data-capback="1">↩️ Gorra del revés</button>`:''}</div>`;
-  if(acc.includes('gorra')||acc.includes('gorro'))h+=sw('capc',OUTC,acc.includes('gorra')?'Color de la gorra':'Color del gorro');
+  const acc=c.acc||[];h+=`<div class="sub" style="font-size:11px;margin:6px 0 2px">${TXN.ropa.complementos}</div><div class="chips">${Object.entries(ACCS).map(([a,n])=>`<button class="mini${acc.includes(a)?' sel':''}" data-acc="${a}">${n}</button>`).join('')}${acc.includes('gorra')?`<button class="mini${c.capBack?' sel':''}" data-capback="1">${TXN.ropa.gorra_reves}</button>`:''}</div>`;
+  if(acc.includes('gorra')||acc.includes('gorro'))h+=sw('capc',OUTC,acc.includes('gorra')?TXN.ropa.color_gorra:TXN.ropa.color_gorro);
   return h;}
 {const _rcr=renderCreator;renderCreator=function(diff,edit){if(cre){if(!cre.outfit)cre.outfit='basico';if(['chandal','traje','obrero','vestido'].includes(cre.outfit))cre.pants=cre.shirt;cre.ofSig=ofSig(cre);}
   _rcr(diff,edit);

@@ -20,18 +20,18 @@ function costOf(x,y,t){
   const pm=PM();if(k==='floor')return Math.round(FLOORS[t.v].p*pm);if(k==='wall')return Math.round(20*pm);if(k==='fence')return Math.round(12*pm);if(k==='door')return Math.round(60*pm);if(k==='win')return Math.round(80*pm);if(k==='paint')return Math.round(5*pm);if(k==='obj')return priceOf(t.v,t.q);return 0;
 }
 let lastPoorToast=0;
-function pay(c){if(S.money<c){if(performance.now()-lastPoorToast>1500){toast('No te llega el dinero 💸 ¡A trabajar!');sfx('bad');lastPoorToast=performance.now();}return false;}S.money-=c;return true;}
+function pay(c){if(S.money<c){if(performance.now()-lastPoorToast>1500){toast(TXN.construir_comprar.no_llega);sfx('bad');lastPoorToast=performance.now();}return false;}S.money-=c;return true;}
 function bumpMoney(){const m=document.getElementById('money');m.classList.add('bump');setTimeout(()=>m.classList.remove('bump'),180);}
 function apply(x,y,t=tool,quiet){
   if(!canApply(x,y,t))return false;
   const i=idx(x,y),k=t.kind;
   if(k==='craft'){const c=CRAFT[t.v];
-    if(bancoIdx()==null){toast('Ana necesita un 🛠️ banco de trabajo para fabricar (está en Comprar → Ocio)');sfx('bad');return false;}
-    if(lvl(c[0])<c[2]){toast(`Ana no sabe fabricar ${OBJ[t.v].n.toLowerCase()}: pide ${skLabel(c[0])} ${c[2]} y tiene ${lvl(c[0])}`);sfx('bad');return false;}
+    if(bancoIdx()==null){toast(TXN.construir_comprar.necesita_banco);sfx('bad');return false;}
+    if(lvl(c[0])<c[2]){toast(huecos(TXN.construir_comprar.no_sabe_fabricar,{x:OBJ[t.v].n.toLowerCase(),sk:skLabel(c[0]),pide:c[2],tiene:lvl(c[0])}));sfx('bad');return false;}
     const cj=craftJob(t.v,i,true);
-    if(S.job){if(S.job.who!=='ana'){toast('Hay una obra de la cooperativa en marcha; espera a que termine');return false;}S.job.steps.push(...cj.steps);S.job.total+=2;}
+    if(S.job){if(S.job.who!=='ana'){toast(TXN.construir_comprar.obra_en_marcha);return false;}S.job.steps.push(...cj.steps);S.job.total+=2;}
     else S.job={...cj,who:'ana',total:2};
-    toast(`🪚 Encargado a Ana: ${OBJ[t.v].n.toLowerCase()} · materiales ${fmt(craftMat(t.v))}`);sfx('tap');animStart(i,'floor');return true;}
+    toast(huecos(TXN.construir_comprar.encargado,{x:OBJ[t.v].n.toLowerCase(),coste:fmt(craftMat(t.v))}));sfx('tap');animStart(i,'floor');return true;}
   const cst=costOf(x,y,t),m0=S.money;
   if(!pay(cst))return false;
   const delWhat=k==='del'?(S.obj[i]?'obj':S.wall[i]?'wall':'floor'):null;
@@ -44,8 +44,8 @@ function apply(x,y,t=tool,quiet){
   else if(k==='obj'){S.obj[i]={t:t.v,r:orientFor(t.v,x,y),q:t.q??3,c:100};withChair(i);}
   else if(k==='rot'){const o=S.obj[i];o.r=((o.r||0)+1)%4;}
   else if(k==='move'){
-    if(S.held){S.obj[i]={t:S.held.t,r:orientFor(S.held.t,x,y),q:S.held.q??3,c:S.held.c??100};S.held=null;hint.textContent='Toca un mueble para cogerlo';}
-    else{S.held={...S.obj[i],from:i};S.obj[i]=null;hint.textContent=`Llevas: ${OBJ[S.held.t].e||'🌿'} ${OBJ[S.held.t].n} · toca dónde dejarlo`;}
+    if(S.held){S.obj[i]={t:S.held.t,r:orientFor(S.held.t,x,y),q:S.held.q??3,c:S.held.c??100};S.held=null;hint.textContent=TXN.construir_comprar.toca_coger;}
+    else{S.held={...S.obj[i],from:i};S.obj[i]=null;hint.textContent=huecos(TXN.construir_comprar.llevas,{e:OBJ[S.held.t].e||'🌿',x:OBJ[S.held.t].n});}
   }
   else if(k==='del'){
     if(S.obj[i]){S.money+=sellValue(S.obj[i]);S.obj[i]=null;}
@@ -92,25 +92,25 @@ function buildPreview(a,b){
   if(k==='wall'||k==='fence'){
     const t={kind:k};
     for(const [x,y] of sh.cells){if(!inb(x,y))continue;const i=idx(x,y);if(S.wall[i])continue;pv.walls.set(i,k==='fence'?4:1);if(canApply(x,y,t))pv.cost+=costOf(x,y,t);else pv.bad.add(i);}
-    pv.label=`${sh.w} ${k==='fence'?'valla':'pared'}${sh.w>1?(k==='fence'?'s':'es'):''}`;
+    pv.label=huecos(k==='fence'?(sh.w>1?TXN.construir_comprar.valla_n:TXN.construir_comprar.valla_1):(sh.w>1?TXN.construir_comprar.pared_n:TXN.construir_comprar.pared_1),{w:sh.w});
   } else if(k==='floor'){
     for(const [x,y] of sh.cells){const i=idx(x,y);if(canApply(x,y,tool)){pv.floors.set(i,tool.v);pv.cost+=Math.round(FLOORS[tool.v].p*PM());}}
-    pv.label=`${sh.w}×${sh.h} ${FLOORS[tool.v].n.toLowerCase()}`;
+    pv.label=huecos(TXN.construir_comprar.suelo_medida,{w:sh.w,h:sh.h,x:FLOORS[tool.v].n.toLowerCase()});
   } else if(k==='room'){
     const wt={kind:'wall'},ft={kind:'floor',v:lastFloor};
     for(const [x,y,edge] of sh.cells){const i=idx(x,y);
       if(edge&&sh.w>1&&sh.h>1){if(S.wall[i])continue;pv.walls.set(i,1);if(canApply(x,y,wt))pv.cost+=Math.round(20*PM());else pv.bad.add(i);}
       else if(canApply(x,y,ft)&&!S.wall[i]){pv.floors.set(i,lastFloor);pv.cost+=Math.round(FLOORS[lastFloor].p*PM());}
     }
-    if(sh.w<3||sh.h<3)pv.label='Arrastra más grande (mín. 3×3)';
-    else pv.label=`Habitación ${sh.w-2}×${sh.h-2} · ${(sh.w-2)*(sh.h-2)*4} m²`;
+    if(sh.w<3||sh.h<3)pv.label=TXN.construir_comprar.arrastra_mas;
+    else pv.label=huecos(TXN.construir_comprar.habitacion_medida,{w:sh.w-2,h:sh.h-2,m2:(sh.w-2)*(sh.h-2)*4});
     pv.small=sh.w<3||sh.h<3;
   }
   return pv;
 }
 function commitPreview(){
   const pv=preview;preview=null;if(!pv)return;
-  if(pv.small){toast('Las habitaciones necesitan al menos 3×3 casillas');sfx('bad');return;}
+  if(pv.small){toast(TXN.construir_comprar.min_3x3);sfx('bad');return;}
   beginStroke();let n=0,fail=false;const mStart=S.money;let lastI=null;
   let ord=0;
   for(const [i,ft] of pv.floors){if(!apply(i%N,i/N|0,{kind:'floor',v:ft},true)){fail=true;break;}n++;lastI=i;const a=anims.get(i);if(a)a.t0+=ord*12;ord++;}
@@ -118,20 +118,20 @@ function commitPreview(){
   if(!fail)for(const [i,wt] of pv.walls){if(pv.bad.has(i))continue;if(!apply(i%N,i/N|0,{kind:wt===4?'fence':'wall'},true)){fail=true;break;}n++;lastI=i;const a=anims.get(i);if(a)a.t0+=ord*35;ord++;}
   if(n&&lastI!=null&&S.money<mStart)floatText('-'+fmt(mStart-S.money),lastI%N+.5,(lastI/N|0)+.5,40,'#c0392b');
   endStroke();
-  if(n){sfx('build');if(tool&&tool.kind==='room'){computeRooms();toast('🏗️ ¡Habitación construida! Pon una 🚪 puerta y alguna 🪟 ventana');}}
+  if(n){sfx('build');if(tool&&tool.kind==='room'){computeRooms();toast(TXN.construir_comprar.habitacion_construida);}}
   else if(!fail)sfx('bad');
 }
 function liveTap(x,y){
-  if(viewPlace){const k=S.sim.dest;if(k&&PLACES[k])openPlace(k);else toast('Ana está fuera');return;}
+  if(viewPlace){const k=S.sim.dest;if(k&&PLACES[k])openPlace(k);else toast(TXN.construir_comprar.ana_fuera);return;}
   if(!inb(x,y))return;const s=S.sim;
-  if(s.work>0){if(s.dest&&PLACES[s.dest])return openPlace(s.dest);return toast(s.dest==='_ride'?'Ana está repartiendo por el barrio':'Ana no está en casa. Acelera el tiempo 10×');}
+  if(s.work>0){if(s.dest&&PLACES[s.dest])return openPlace(s.dest);return toast(s.dest==='_ride'?TXN.construir_comprar.ana_repartiendo:TXN.construir_comprar.ana_no_en_casa);}
   const [sx,sy]=simCell();if(x===sx&&y===sy){openMenu();return;}
   const o=S.obj[idx(x,y)];
   if(o){const d=OBJ[o.t];const ii=idx(x,y);
-    if(d.need&&!usable(o)){const [fk,fl]=stepReq({k:'fix',i:ii});if(lvl(fk)<fl){toast(`💥 ${d.n} rota. Ana no sabe arreglarla (pide ${skLabel(fk)} ${fl}, tiene ${lvl(fk)}): llama a un técnico o cámbiala desde 📋`);sfx('bad');return;}addFixStep(ii,true);toast(`💥 ${d.n} rota · Ana intentará arreglarla (${skLabel(fk)} ${lvl(fk)})`);sfx('tap');return;}
-    if(d.need&&condOf(o)<60&&throttled('st'+ii,15000))toast(`${d.n} ${TIERS[o.q??3].e} · estado ${Math.round(condOf(o))}%`);
-    if(d.need){enqueue({k:'obj',i:idx(x,y)});if(d.sk&&throttled('sk'+o.t,60000))toast(`${d.n}: entrena ${SKILLS.find(q=>q[0]===d.sk)[2]}`);}else toast(`${d.n}: hace la casa más bonita (+ánimo) ${d.e||'🌿'}`);return;}
-  if(FLOORS[S.floor[idx(x,y)]].water){toast('Ana mira la piscina con ganas de verano 🏊‍♀️');return;}
-  if(walkable(x,y)){const p=bfs(simCell(),(a,b)=>a===x&&b===y);if(p){sfx('tap');s.leaving=false;s.use=null;s.path=p;s.target=null;s.cmd=true;s.think=40;}else toast('No hay camino 🚧');}
+    if(d.need&&!usable(o)){const [fk,fl]=stepReq({k:'fix',i:ii});if(lvl(fk)<fl){toast(huecos(TXN.construir_comprar.rota_no_sabe,{x:d.n,sk:skLabel(fk),pide:fl,tiene:lvl(fk)}));sfx('bad');return;}addFixStep(ii,true);toast(huecos(TXN.construir_comprar.rota_intentara,{x:d.n,sk:skLabel(fk),nivel:lvl(fk)}));sfx('tap');return;}
+    if(d.need&&condOf(o)<60&&throttled('st'+ii,15000))toast(huecos(TXN.construir_comprar.estado_objeto,{x:d.n,cal:TIERS[o.q??3].e,estado:Math.round(condOf(o))}));
+    if(d.need){enqueue({k:'obj',i:idx(x,y)});if(d.sk&&throttled('sk'+o.t,60000))toast(huecos(TXN.construir_comprar.entrena,{x:d.n,sk:SKILLS.find(q=>q[0]===d.sk)[2]}));}else toast(huecos(TXN.construir_comprar.mas_bonita,{x:d.n,e:d.e||'🌿'}));return;}
+  if(FLOORS[S.floor[idx(x,y)]].water){toast(TXN.construir_comprar.mira_piscina);return;}
+  if(walkable(x,y)){const p=bfs(simCell(),(a,b)=>a===x&&b===y);if(p){sfx('tap');s.leaving=false;s.use=null;s.path=p;s.target=null;s.cmd=true;s.think=40;}else toast(TXN.construir_comprar.no_hay_camino);}
 }
 

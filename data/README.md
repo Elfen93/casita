@@ -237,6 +237,24 @@ Textos sueltos del núcleo: lo que dicen `tell`, `toast`, `chapter`, `remember` 
 
 `scripts/datos.py` comprueba que cada `TXN.sección.clave` del código exista, que no haya llaves sueltas ni claves que empiecen por cifra y que estén las secciones `nucleo_*`.
 <!-- p0a:fin -->
+<!-- p0d begin: textos de src/core 081–098 -->
+### textos_nucleo.json · secciones de `src/core` 081–098 (paso 0, parte `p0d`)
+Las secciones nuevas del mismo archivo (mismo patrón y misma lectura, `TXN.sección.clave`): lo que ve el jugador en la obra con el dedo, la ropa, los muebles nuevos, los retratos, los planes de Ana, el panel, el creador y el calendario. Lo que no es texto (ids, colores, dibujo, CSS, el esqueleto del HTML) se queda en el código; en las plantillas HTML largas (`096`, `097`, `098`) sale el texto de dentro, por tramos. Los huecos `{clave}` los rellena el código con `huecos()`; una frase que cambia según el caso son claves distintas y el código elige entre ellas.
+| Sección | Archivo | Qué hay |
+|---|---|---|
+| `obra_tactil` | 081 | Tira de ayuda de la obra («Toca el inicio y luego el final…»), botones de la barra (Mover, Girar, Vender, Cancelar…), avisos de por qué no se puede construir (`no_llega`, `fuera_zona`…). |
+| `ropa` | 082 | `outfits` (nombre y emoji de cada estilo; es la tabla `OUTFITS`), `accesorios` (`ACCS`), `ranuras` (`OSLOTS`: qué se elige en cada estilo), `mono` (nombres de los colores del estilo monocromo) y las etiquetas del creador. |
+| `muebles_nuevos` | 084 | `deseos`: el porqué de cada compra que quiere Ana («para escuchar vinilos»), y los avisos de usar el mueble (siesta, abono, ropa arreglada). |
+| `looks` | 089 | Por id de retrato: `n` nombre, `job` oficio y `bio` historia (las lee la tabla `LOOKS`, que conserva sus colores y rasgos de dibujo); `nombres_f` (nombres que se toman como femeninos) y las etiquetas de la tira de retratos. |
+| `planes_ana` | 090 | Lo que Ana quiere hacer (`pasos`: nombre de cada paso de obra; `deseos` en claves sueltas), el aviso de cada obra y de cada arreglo, la etiqueta de lo que hace ahora (`uso_*`). |
+| `deshacer` · `entrada` | 092 · 094 | Un aviso cada uno. |
+| `construir_comprar` | 093 | Avisos al comprar y construir, medidas de la vista previa (`valla_1`, `valla_n`, `pared_1`, `pared_n`…), y lo que dice Ana al tocar un mueble. |
+| `interfaz` | 096 | El panel: pestañas (`pestanas`: `[id, emoji, nombre]`), perfil, historia, trabajo, casa, ajustes, elegir dificultad y los avisos de copiar y pegar la partida. |
+| `creador` | 097 | El creador de personaje: etiquetas, opciones sueltas de raya, pendientes y gafas (`[id, texto]`) y lo que se cuenta al guardar. |
+| `calendario` | 098 | Pantalla de calendario, barra de herramientas (`cats_obra`, `cats_compra`, `herr_*`), ayuda de cada herramienta (`h_*`), línea de «qué hace ahora» y el primer capítulo. |
+
+Se queda en el código, a propósito: las palabras con las que el creador busca sus propios títulos en pantalla (`'Cara'`, `'Compl'`), los textos que son solo emoji o símbolo, y el dibujo (`LOOKS` sin `n`/`job`/`bio`, `LOOK_SRC`, `MDRAW`, `FPAT`). `scripts/datos.py` (bloque `p0d`) comprueba que las secciones existen, que cada hueco del texto lo rellena el código (y al revés) y que no hay textos vacíos ni `${…}`. `t/t_txt_p0d.js` comprueba que cada texto que había en esos archivos antes de moverlos sigue existiendo, igual, en el código o aquí.
+<!-- p0d end -->
 
 ## Lo que todavía está en el código
 
@@ -248,9 +266,9 @@ Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con co
 - **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de cada módulo (los módulos de la «h» a la «z» y el móvil ya salieron: `movil.json` y `textos_mods_hz.json`).
 - **Escenas** (`SCENES`): los interiores se dibujan con código; sus carteles y su gente van dentro.
 - **Sucesos con decisiones**: los dilemas de la comunidad (`UT_DIL`).
-- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los archivos de `src/core` desde el 081 (obra, ropa, muebles, looks, planes, creador, calendario…) y de los mods, y las plantillas de mensajes y noticias del móvil.
+- **Textos sueltos dentro de funciones**: los `tell()`, `toast()` y `chapter()` de los mods, y las plantillas de mensajes y noticias del móvil (los de `src/core` 081–098 ya están en `textos_nucleo.json`).
 - **Escenas** (`SCENES`): los interiores se dibujan con código; los carteles y rótulos de cadena suelta ya están en `textos_nucleo.escenas`, el dibujo y su gente siguen dentro.
-- **Aspecto**: peinados, caras, ropa y retratos (`LOOKS`, `LOOK_SRC`), y el dibujo de cada mueble (`MDRAW`).
+- **Aspecto**: peinados, caras, ropa y retratos (`LOOKS`, `LOOK_SRC`; los nombres, oficios y biografías de los retratos y los nombres de los estilos de ropa ya están en `textos_nucleo.json`), y el dibujo de cada mueble (`MDRAW`).
 - Tablas menores por objeto (`BACKD`, `ACTS`, `ELECTRIC`, `SMALL_ITEMS`, `MUEB_NEW`) y los eslóganes de las ideologías en las pancartas.
 
 ## Para caminar (nota para quien haga que el personaje ande por la calle)

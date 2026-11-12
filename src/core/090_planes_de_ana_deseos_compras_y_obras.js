@@ -5,7 +5,7 @@ const OUTDOOR=new Set(['arbol','flores','seto','farola','huerto','bancoj','barba
 for(const t of ['hamaca','columpio','elastica','caseta','tendedero','compost','parrilla'])OUTDOOR.add(t);
 const BUILDERS=DATA.personas.obreros;
 const STEP_T={rezone:1,undoor:8,clear:6,move:10,floor:3,wall:8,door:10,win:10,paint:4,obj:16,water:6,fix:14,replace:16};
-const STEP_NAME={rezone:'reorganizar',undoor:'tapiar puerta',clear:'despejar',move:'traslado',craft:'fabricación',floor:'suelo',wall:'pared',door:'puerta',win:'ventana',paint:'pintura',obj:'montaje',water:'piscina',fix:'reparación',replace:'cambio'};
+const STEP_NAME=TXN.planes_ana.pasos;
 function reserveMoney(){return Math.round(reserveMoney0()*(isI('conservadora')?1.3:1));}
 function reserveMoney0(){const d=dateOf(S.day).wd;return Math.round(utilEstimate()*0.6+(housingWeekly()*(d===0&&S.t<8*60?1:Math.max(0.35,(7-d)/7))+60)*(T('ahorradora')?1.8:T('derrochadora')?0.6:1));}
 const spare=()=>S.money-reserveMoney();
@@ -59,7 +59,7 @@ function wantFor(t,why,urgent){
   const z=zs.find(z=>!rooms.some(r=>r.purpose===z))||zs[0];
   if(rooms.filter(r=>r.purpose===z).length>=2)return null;
   const r=planRoom(z);
-  if(r){r.why=`para poner ${OBJ[t].n.toLowerCase()} (no hay sitio)`;return r;}
+  if(r){r.why=huecos(TXN.planes_ana.para_poner_sin_sitio,{x:OBJ[t].n.toLowerCase()});return r;}
   return urgent?w:null;
 }
 function wantBuy(t,why){return {key:'buy-'+t,name:OBJ[t].n,emoji:OBJ[t].e||'🌿',why,kind:'buy',steps:[{k:'obj',v:t,i:null,q:3}]};}
@@ -124,7 +124,7 @@ function roomSteps({x0,y0,w,h},purpose,moves){
   for(const [x,y] of per){const i=idx(x,y);if(!S.wall[i]&&!(x===door[0]&&y===door[1]))steps.push({k:'wall',i});}
   if(win)steps.push({k:'win',i:idx(...win)});
   const Z=purpose?ZONES[purpose]:null;
-  return {key:`room-${purpose||'x'}`,name:Z?`${Z.n} nuevo`.replace('Cocina nuevo','Cocina nueva'):'Habitación nueva',emoji:Z?Z.e:'🏗️',why:`de ${(w-2)*(h-2)*4} m²`,kind:'build',steps,purpose,inner:inner.map(([x,y])=>idx(x,y)),moves:moves||null};
+  return {key:`room-${purpose||'x'}`,name:Z?huecos(TXN.planes_ana.cuarto_nuevo,{x:Z.n}).replace(TXN.planes_ana.cocina_nuevo,TXN.planes_ana.cocina_nueva):TXN.planes_ana.habitacion_nueva,emoji:Z?Z.e:'🏗️',why:huecos(TXN.planes_ana.de_m2,{m2:(w-2)*(h-2)*4}),kind:'build',steps,purpose,inner:inner.map(([x,y])=>idx(x,y)),moves:moves||null};
 }
 function planWindows(){
   computeRooms();const steps=[];const have=count(i=>S.wall[i]===3);
@@ -139,7 +139,7 @@ function planWindows(){
     if(steps.some(s=>Math.abs(s.i%N-x)+Math.abs((s.i/N|0)-y)<3))continue;
     steps.push({k:'win',i});
   }
-  return steps.length?{key:'win',name:'Ventanas',emoji:'🪟',why:'para que entre luz',kind:'build',steps}:null;
+  return steps.length?{key:'win',name:TXN.planes_ana.ventanas,emoji:'🪟',why:TXN.planes_ana.entra_luz,kind:'build',steps}:null;
 }
 function planPaint(){
   computeRooms();if(!rooms.length)return null;
@@ -147,13 +147,13 @@ function planPaint(){
   const set=new Set();for(const c of r.cells){const x=c%N,y=c/N|0;for(const [a,b] of [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]){if(!inb(a,b))continue;const j=idx(a,b);if(S.wall[j]&&S.wall[j]!==4&&!S.wcol[j])set.add(j);}}
   if(set.size<4)return null;
   const v=1+(Math.random()*(WALLCOLS.length-3)|0);
-  return {key:'paint',name:'Pintar '+r.name.toLowerCase(),emoji:'🎨',why:'de color '+WALLCOLS[v][1].toLowerCase(),kind:'build',steps:[...set].slice(0,14).map(i=>({k:'paint',v,i}))};
+  return {key:'paint',name:huecos(TXN.planes_ana.pintar,{x:r.name.toLowerCase()}),emoji:'🎨',why:huecos(TXN.planes_ana.de_color,{x:WALLCOLS[v][1].toLowerCase()}),kind:'build',steps:[...set].slice(0,14).map(i=>({k:'paint',v,i}))};
 }
 function planDecor(){
   computeRooms();const r=rooms.filter(r=>r.stars<5).sort((a,b)=>a.stars-b.stars)[0];if(!r)return null;
   const hasLight=r.cells.some(c=>S.obj[c]&&OBJ[S.obj[c].t].light);
   const t=!hasLight?'lampara':Math.random()<.5?'planta':'alfombra';
-  if(roomFull(r,t))return null;const j=wantBuy(t,'para mejorar '+r.name.toLowerCase());j.steps[0].room=r.id;return j;
+  if(roomFull(r,t))return null;const j=wantBuy(t,huecos(TXN.planes_ana.para_mejorar,{x:r.name.toLowerCase()}));j.steps[0].room=r.id;return j;
 }
 function planPool(){
   computeRooms();const [sx,sy]=simCell();
@@ -162,61 +162,61 @@ function planPool(){
     for(let y=y0-1;y<=y0+h&&ok;y++)for(let x=x0-1;x<=x0+w;x++){if(!inb(x,y)){ok=false;break;}const i=idx(x,y);if(S.wall[i]||S.obj[i]||roomId[i]>=0||(x===sx&&y===sy)||S.floor[i]===4){ok=false;break;}}
     if(!ok)continue;
     const steps=[];for(let y=y0;y<y0+h;y++)for(let x=x0;x<x0+w;x++)steps.push({k:'water',v:9,i:idx(x,y)});
-    return {key:'pool',name:'Piscina',emoji:'🏊‍♀️',why:'para el verano',kind:'build',steps};
+    return {key:'pool',name:TXN.planes_ana.piscina,emoji:'🏊‍♀️',why:TXN.planes_ana.para_el_verano,kind:'build',steps};
   }
   return null;
 }
 function chooseWant(){
   let worst=null,wc=101;for(let i=0;i<N*N;i++){const o=S.obj[i];if(!o||!OBJ[o.t].need)continue;const c=condOf(o);if(c<wc){wc=c;worst=i;}}
   if(worst!=null&&wc<=0){const o=S.obj[worst];const nq=pickTier(o.t,true);
-    if(((o.fails||0)>=2||(o.q??3)<=2)&&spare()>=priceOf(o.t,nq)-20)return replaceWant(worst,nq,(o.fails||0)>=2?'(no tiene arreglo)':'(era de las baratas)');}
-  if(worst!=null&&wc<=0)return {key:'fix-'+worst,name:'Arreglar '+OBJ[S.obj[worst].t].n.toLowerCase(),emoji:'🔧',why:'(está rota)',kind:'fix',steps:[{k:'fix',i:worst}]};
+    if(((o.fails||0)>=2||(o.q??3)<=2)&&spare()>=priceOf(o.t,nq)-20)return replaceWant(worst,nq,(o.fails||0)>=2?TXN.planes_ana.sin_arreglo:TXN.planes_ana.era_barata);}
+  if(worst!=null&&wc<=0)return {key:'fix-'+worst,name:huecos(TXN.planes_ana.arreglar,{x:OBJ[S.obj[worst].t].n.toLowerCase()}),emoji:'🔧',why:TXN.planes_ana.esta_rota,kind:'fix',steps:[{k:'fix',i:worst}]};
   {const c=planCirculation();if(c)return c;}
-  if(worst!=null&&wc<(T('ordenada')?45:25))return {key:'fix-'+worst,name:'Reparar '+OBJ[S.obj[worst].t].n.toLowerCase(),emoji:'🔧',why:'antes de que se rompa',kind:'fix',steps:[{k:'fix',i:worst}]};
-  for(const [k] of NEEDS)if(!findObjs(d=>d.need&&d.need[k]).length){const w=wantFor(NEED_BUY[k],'para '+NEEDNAME[k],true);if(w)return w;}
+  if(worst!=null&&wc<(T('ordenada')?45:25))return {key:'fix-'+worst,name:huecos(TXN.planes_ana.reparar,{x:OBJ[S.obj[worst].t].n.toLowerCase()}),emoji:'🔧',why:TXN.planes_ana.antes_de_romper,kind:'fix',steps:[{k:'fix',i:worst}]};
+  for(const [k] of NEEDS)if(!findObjs(d=>d.need&&d.need[k]).length){const w=wantFor(NEED_BUY[k],huecos(TXN.planes_ana.para_necesidad,{x:NEEDNAME[k]}),true);if(w)return w;}
   computeRooms();
   // separar zonas: si el baño o la cama están en un loft compartido, quiere su propio cuarto y llevarlos allí
   const loftWith=ts=>rooms.find(r=>r.purpose==='loft'&&r.cells.some(c=>S.obj[c]&&ts.includes(S.obj[c].t)));
   const hasZone=z=>rooms.some(r=>r.purpose===z);
-  if(!hasZone('bano')&&loftWith(['vater','ducha'])){const r=planRoom('bano',['vater','ducha']);if(r){r.why='para no tener el váter junto a todo lo demás';return r;}}
-  if(S.day>=3&&!hasZone('dormitorio')&&loftWith(['cama'])){const r=planRoom('dormitorio',['cama']);if(r){r.why='para dormir tranquila';return r;}}
-  if(S.day>=5&&!hasZone('cocina')&&loftWith(['nevera','fogon'])){const r=planRoom('cocina',['nevera','fogon']);if(r){r.why='para cocinar con espacio';return r;}}
+  if(!hasZone('bano')&&loftWith(['vater','ducha'])){const r=planRoom('bano',['vater','ducha']);if(r){r.why=TXN.planes_ana.para_no_tener_el_vater;return r;}}
+  if(S.day>=3&&!hasZone('dormitorio')&&loftWith(['cama'])){const r=planRoom('dormitorio',['cama']);if(r){r.why=TXN.planes_ana.para_dormir_tranquila;return r;}}
+  if(S.day>=5&&!hasZone('cocina')&&loftWith(['nevera','fogon'])){const r=planRoom('cocina',['nevera','fogon']);if(r){r.why=TXN.planes_ana.para_cocinar_con_espacio;return r;}}
   const next=CAREER[S.career+1];
   if(next){
     const nrq=reqOf(next);
-    if(nrq.logica&&!has('libros')&&!has('compu')){const w=wantFor('libros','para estudiar y ascender');if(w)return w;};
-    if(nrq.carisma&&!has('telefono')&&!has('espejo')){const w=wantFor('espejo','para practicar carisma');if(w)return w;};
-    if(nrq.logica>=3&&!has('compu')){const w=wantFor('compu','para programar y ascender');if(w)return w;};
+    if(nrq.logica&&!has('libros')&&!has('compu')){const w=wantFor('libros',TXN.planes_ana.para_estudiar_y_ascender);if(w)return w;};
+    if(nrq.carisma&&!has('telefono')&&!has('espejo')){const w=wantFor('espejo',TXN.planes_ana.para_practicar_carisma);if(w)return w;};
+    if(nrq.logica>=3&&!has('compu')){const w=wantFor('compu',TXN.planes_ana.para_programar_y_ascender);if(w)return w;};
   }
-  if(!has('fogon')){const w=wantFor('fogon','para aprender a cocinar');if(w)return w;}
-  if(S.day>=4&&!has('huerto')){const w=wantFor('huerto','para tener verduras propias');if(w)return w;}
+  if(!has('fogon')){const w=wantFor('fogon',TXN.planes_ana.para_aprender_a_cocinar);if(w)return w;}
+  if(S.day>=4&&!has('huerto')){const w=wantFor('huerto',TXN.planes_ana.para_tener_verduras_propias);if(w)return w;}
   computeRooms();
-  {const tw=[];if(T('cocinillas')){if(!has('fogon'))tw.push(['fogon','porque le encanta cocinar']);if(!has('mesa'))tw.push(['mesa','para comer como es debido']);}
-   if(T('artista')&&!has('guitarra'))tw.push(['guitarra','para tocar música']);if(T('trabajadora')&&!has('libros'))tw.push(['libros','para estudiar y ascender']);
-   if(T('naturaleza')&&count(i=>S.obj[i]&&OBJ[S.obj[i].t].green)<5)tw.push([['planta','flores','arbol'][Math.random()*3|0],'porque adora las plantas']);
-   if(T('cocinillas')&&!has('barbacoa'))tw.push(['barbacoa','para hacer barbacoas']);if(T('naturaleza')&&count(i=>S.obj[i]&&S.obj[i].t==='huerto')<3)tw.push(['huerto','para cultivar más']);
-   if(T('manitas')&&!has('banco'))tw.push(['banco','para hacerse sus propios muebles']);if(T('perezosa')&&!has('sofa'))tw.push(['sofa','para tumbarse']);
+  {const tw=[];if(T('cocinillas')){if(!has('fogon'))tw.push(['fogon',TXN.planes_ana.porque_le_encanta_cocinar]);if(!has('mesa'))tw.push(['mesa',TXN.planes_ana.para_comer_como_es_debido]);}
+   if(T('artista')&&!has('guitarra'))tw.push(['guitarra',TXN.planes_ana.para_tocar_musica]);if(T('trabajadora')&&!has('libros'))tw.push(['libros',TXN.planes_ana.para_estudiar_y_ascender]);
+   if(T('naturaleza')&&count(i=>S.obj[i]&&OBJ[S.obj[i].t].green)<5)tw.push([['planta','flores','arbol'][Math.random()*3|0],TXN.planes_ana.porque_adora_las_plantas]);
+   if(T('cocinillas')&&!has('barbacoa'))tw.push(['barbacoa',TXN.planes_ana.para_hacer_barbacoas]);if(T('naturaleza')&&count(i=>S.obj[i]&&S.obj[i].t==='huerto')<3)tw.push(['huerto',TXN.planes_ana.para_cultivar_mas]);
+   if(T('manitas')&&!has('banco'))tw.push(['banco',TXN.planes_ana.para_hacerse_sus_propios_muebles]);if(T('perezosa')&&!has('sofa'))tw.push(['sofa',TXN.planes_ana.para_tumbarse]);
    for(const [t,why] of tw){const w=wantFor(t,why);if(w)return w;}}
   if(T('derrochadora')&&Math.random()<0.4){const d=planDecor();if(d)return d;}
   {const loose=findObjs((d,t)=>t==='silla').filter(i=>{const x=i%N,y=i/N|0;return ![[x+1,y],[x-1,y],[x,y+1],[x,y-1]].some(([a,b])=>inb(a,b)&&S.obj[idx(a,b)]&&SEATED.has(S.obj[idx(a,b)].t));});
    const needy=findObjs((d,t)=>SEATED.has(t)).filter(i=>chairsAround(i)<(S.obj[i].t==='compu'||S.obj[i].t==='escritorio'?1:2));
-   if(loose.length&&needy.length){const st=loose.slice(0,needy.length*2).map(i=>({k:'move',v:'silla',from:i,i:null}));return {key:'chairs',name:'Colocar sillas',emoji:'🪑',why:'llevar las sillas sueltas a la mesa y al escritorio',kind:'move',steps:st};}}
-  {const cp=findObjs((d,t)=>t==='compu');if(cp.length&&cp.some(i=>chairsAround(i)===0)){const w=wantFor('silla','para sentarse al ordenador');if(w)return w;}}
-  if(has('fogon')&&!has('mesa')){const w=wantFor('mesa','para comer sentada');if(w)return w;}
-  {const ms=findObjs((d,t)=>t==='mesa');if(ms.length&&ms.some(i=>chairsAround(i)<2)){const w=wantFor('silla','para la mesa');if(w)return w;}}
-  if(!has('tele')){const w=wantFor('tele','para relajarse');if(w)return w;}
-  if(!has('sofa')){const w=wantFor('sofa','para descansar');if(w)return w;}
+   if(loose.length&&needy.length){const st=loose.slice(0,needy.length*2).map(i=>({k:'move',v:'silla',from:i,i:null}));return {key:'chairs',name:TXN.planes_ana.sillas,emoji:'🪑',why:TXN.planes_ana.sillas_why,kind:'move',steps:st};}}
+  {const cp=findObjs((d,t)=>t==='compu');if(cp.length&&cp.some(i=>chairsAround(i)===0)){const w=wantFor('silla',TXN.planes_ana.para_sentarse_al_ordenador);if(w)return w;}}
+  if(has('fogon')&&!has('mesa')){const w=wantFor('mesa',TXN.planes_ana.para_comer_sentada);if(w)return w;}
+  {const ms=findObjs((d,t)=>t==='mesa');if(ms.length&&ms.some(i=>chairsAround(i)<2)){const w=wantFor('silla',TXN.planes_ana.para_la_mesa);if(w)return w;}}
+  if(!has('tele')){const w=wantFor('tele',TXN.planes_ana.para_relajarse);if(w)return w;}
+  if(!has('sofa')){const w=wantFor('sofa',TXN.planes_ana.para_descansar);if(w)return w;}
   if(count(i=>S.wall[i]===3)<3){const r=planWindows();if(r)return r;}
   const opts=[];
   if(!S.goals.paint)opts.push(planPaint);
-  if(count(i=>S.obj[i]&&OBJ[S.obj[i].t].green)<6)opts.push(()=>wantFor(['planta','flores','arbol','seto'][Math.random()*4|0],'para alegrar la casa'));
-  if(!has('guitarra'))opts.push(()=>wantFor('guitarra','para aprender música'));
-  if(count(i=>S.obj[i]&&S.obj[i].t==='huerto')<2)opts.push(()=>wantFor('huerto','para cultivar más'));
-  if(!has('bancoj'))opts.push(()=>wantFor('bancoj','para sentarse al sol'));
-  if(!has('barbacoa')&&spare()>800)opts.push(()=>wantFor('barbacoa','para comer al aire libre'));
-  if(!has('fuente')&&spare()>1500)opts.push(()=>wantFor('fuente','para el jardín'));
-  if(!has('banco'))opts.push(()=>wantFor('banco','para fabricarse muebles y aprender oficios'));
-  if(!has('libros'))opts.push(()=>wantFor('libros','para leer'));
+  if(count(i=>S.obj[i]&&OBJ[S.obj[i].t].green)<6)opts.push(()=>wantFor(['planta','flores','arbol','seto'][Math.random()*4|0],TXN.planes_ana.para_alegrar_la_casa));
+  if(!has('guitarra'))opts.push(()=>wantFor('guitarra',TXN.planes_ana.para_aprender_musica));
+  if(count(i=>S.obj[i]&&S.obj[i].t==='huerto')<2)opts.push(()=>wantFor('huerto',TXN.planes_ana.para_cultivar_mas));
+  if(!has('bancoj'))opts.push(()=>wantFor('bancoj',TXN.planes_ana.para_sentarse_al_sol));
+  if(!has('barbacoa')&&spare()>800)opts.push(()=>wantFor('barbacoa',TXN.planes_ana.para_comer_al_aire_libre));
+  if(!has('fuente')&&spare()>1500)opts.push(()=>wantFor('fuente',TXN.planes_ana.para_el_jardin));
+  if(!has('banco'))opts.push(()=>wantFor('banco',TXN.planes_ana.para_fabricarse_muebles_y_aprender));
+  if(!has('libros'))opts.push(()=>wantFor('libros',TXN.planes_ana.para_leer));
   if(!hasZone('salon')&&rooms.length<5)opts.push(()=>planRoom('salon'));
   if(has('compu')&&!hasZone('estudio')&&rooms.length<5)opts.push(()=>{const i=findObjs((d,t)=>t==='compu')[0];const rr=rooms[roomId[i]];return rr&&rr.purpose!=='estudio'?planRoom('estudio',['compu','libros']):null;});
   opts.push(planDecor);
@@ -233,7 +233,7 @@ function planTick(){
     if(o.ok&&S.money>=o.down+o.closing+cushion&&o.pay<weeklyRent()*1.15){buyHouse('mortgage');return;}}
   if(!S.want||S.wantDay!==S.day||(S.want.steps.some(st=>st.i!=null&&(S.wall[st.i]===4)))){
     const w=chooseWant();S.wantDay=S.day;
-    if(w&&(!S.want||S.want.key!==w.key)){toast(`💭 Ana quiere: ${w.emoji} ${w.name} ${w.why}`);}
+    if(w&&(!S.want||S.want.key!==w.key)){toast(huecos(TXN.planes_ana.ana_quiere,{emoji:w.emoji,nombre:w.name,why:w.why}));}
     S.want=w;
   }
   const w=S.want;if(!w)return;
@@ -241,7 +241,7 @@ function planTick(){
   if(w.kind==='fix'&&w.steps[0].k==='fix'&&condOf(S.obj[w.steps[0].i])>=60){S.want=null;return;}
   if(w.kind==='buy'){const st=w.steps[0];st.q=pickTier(st.v,w.urgent);
     const t=st.v,c=CRAFT[t];
-    if(c&&canCraft(t)&&(craftEst(c[0])>=2||spare()<priceOf(t,2)||T('ahorradora')||T('manitas'))&&spare()>=craftMat(t)){const cj=craftJob(t,null);if(cj){S.job={...cj,who:'ana',total:2};S.want=null;toast(`🪚 Ana fabricará ${OBJ[t].n.toLowerCase()} ella misma en su banco (${skLabel(c[0])} ${lvl(c[0])})`);sfx('build');return;}}}
+    if(c&&canCraft(t)&&(craftEst(c[0])>=2||spare()<priceOf(t,2)||T('ahorradora')||T('manitas'))&&spare()>=craftMat(t)){const cj=craftJob(t,null);if(cj){S.job={...cj,who:'ana',total:2};S.want=null;toast(huecos(TXN.planes_ana.ana_fabricara,{x:OBJ[t].n.toLowerCase(),sk:skLabel(c[0]),nivel:lvl(c[0])}));sfx('build');return;}}}
   const p=jobPrice(w);
   const big=w.kind==='build'&&w.steps.length>6;
   let who=null;
@@ -249,7 +249,7 @@ function planTick(){
   const miss=jobReq(w);
   const canPay=spare()>=p.mat||(w.urgent&&S.money>=p.mat+20)||(urgentFix&&S.money>=p.mat);
   const canHire=spare()>=p.mat+p.labor||((w.urgent||urgentFix)&&S.money>=p.mat+p.labor);
-  if(miss){if(canHire)who='builder';if(throttled('miss'+w.key,90000))toast(`Ana no sabe hacerlo sola: ${w.name.toLowerCase()} pide ${skLabel(miss[0])} ${miss[1]} y tiene ${lvl(miss[0])}. ${canHire?'Llama a la cooperativa':'Ahorrará para pagar a la cooperativa'}`);}
+  if(miss){if(canHire)who='builder';if(throttled('miss'+w.key,90000))toast(huecos(TXN.planes_ana.no_sabe_sola,{x:w.name.toLowerCase(),sk:skLabel(miss[0]),pide:miss[1],tiene:lvl(miss[0]),coop:canHire?TXN.planes_ana.llama_coop:TXN.planes_ana.ahorra_coop}));}
   else if(!T('manitas')&&canHire&&((big&&(S.needs.energia<50||T('perezosa')))||(T('perezosa')&&w.steps.length>2)))who='builder';
   else if(canPay)who='ana';
   if(!who)return;
@@ -258,10 +258,10 @@ function planTick(){
   if(who==='builder'){
     if(!spawnBuilder()){S.job.who='ana';}
     else{S.money-=p.labor;bumpMoney();S.stats.hired++;floatText('-'+fmt(p.labor),S.npc.x,S.npc.y,40,'#c0392b');
-      toast(fresh.kind==='fix'?`🧰 Ana llamó a ${S.npc.name}, de la cooperativa · ${fmt(p.labor)}`:fresh.kind==='buy'?`🔌 Ana contrató a ${S.npc.name}, de la cooperativa, para instalarlo · ${fmt(p.labor)}`:`👷 Ana contrató a ${S.npc.name}, de la cooperativa de albañiles · mano de obra ${fmt(p.labor)}`,true);}
+      toast(fresh.kind==='fix'?huecos(TXN.planes_ana.llamo_coop,{quien:S.npc.name,coste:fmt(p.labor)}):fresh.kind==='buy'?huecos(TXN.planes_ana.contrato_instalar,{quien:S.npc.name,coste:fmt(p.labor)}):huecos(TXN.planes_ana.contrato_albaniles,{quien:S.npc.name,coste:fmt(p.labor)}),true);}
   }
-  if(S.job.who==='builder'&&fresh.kind==='buy')toast(`🛒 Ana compra ${fresh.name.toLowerCase()} ${TIERS[fresh.steps[0].q].e} y paga la instalación`);
-  if(S.job.who==='ana')toast(fresh.kind==='buy'?`🛒 Ana compra ${fresh.name.toLowerCase()} ${TIERS[fresh.steps[0].q].e} ${TIERS[fresh.steps[0].q].n} y lo montará ella`:`🔨 Ana se pone manos a la obra: ${fresh.emoji} ${fresh.name}`);
+  if(S.job.who==='builder'&&fresh.kind==='buy')toast(huecos(TXN.planes_ana.compra_instalacion,{x:fresh.name.toLowerCase(),cal:TIERS[fresh.steps[0].q].e}));
+  if(S.job.who==='ana')toast(fresh.kind==='buy'?huecos(TXN.planes_ana.compra_monta,{x:fresh.name.toLowerCase(),cal:TIERS[fresh.steps[0].q].e,calidad:TIERS[fresh.steps[0].q].n}):huecos(TXN.planes_ana.manos_a_la_obra,{emoji:fresh.emoji,nombre:fresh.name}));
   sfx('build');
 }
 function chooseFresh(w){
@@ -280,44 +280,44 @@ function stepCell(st){
 function standTargets(i){const x=i%N,y=i/N|0;return new Set([[x+1,y],[x-1,y],[x,y+1],[x,y-1]].filter(([a,b])=>walkable(a,b)).map(([a,b])=>idx(a,b)));}
 function execStep(job,j,byNpc){
   const st=job.steps[j];const x=st.i%N,y=st.i/N|0;let ok=true;
-  if(S.money<stepCost(st)){job.paused=true;if(throttled('poorjob',20000))toast('Se acabó el dinero para la obra: Ana ahorrará para seguir 💸');return false;}
+  if(S.money<stepCost(st)){job.paused=true;if(throttled('poorjob',20000))toast(TXN.planes_ana.sin_dinero_obra);return false;}
   switch(st.k){
     case 'floor':case 'water':ok=apply(x,y,{kind:'floor',v:st.v},true);if(!ok&&S.floor[st.i]===st.v)ok=true;break;
     case 'wall':ok=apply(x,y,{kind:'wall'},true);break;
     case 'door':if(!S.wall[st.i]&&!S.obj[st.i]){S.money-=Math.round(60*PM());S.wall[st.i]=2;dirty();animStart(st.i,'wall');burst('dust',x+.5,y+.5,2,6,.6,{vz:8,life:.6});}else ok=apply(x,y,{kind:'door'},true);break;
     case 'win':ok=apply(x,y,{kind:'win'},true);break;
     case 'paint':ok=apply(x,y,{kind:'paint',v:st.v},true);break;
-    case 'rezone':{S.lastSwapDay=S.day;for(const c of st.a)S.zone[c]=st.az;for(const c of st.b)S.zone[c]=st.bz;dirty();computeRooms();toast('🔄 Ana reorganiza la casa: cambian los usos de dos cuartos');break;}
-    case 'undoor':{S.money-=stepCost(st);S.wall[st.i]=1;dirty();animStart(st.i,'wall');burst('dust',x+.5,y+.5,4,8,.6,{vz:10,life:.7});toast('🧱 Puerta tapiada');break;}
+    case 'rezone':{S.lastSwapDay=S.day;for(const c of st.a)S.zone[c]=st.az;for(const c of st.b)S.zone[c]=st.bz;dirty();computeRooms();toast(TXN.planes_ana.reorganiza);break;}
+    case 'undoor':{S.money-=stepCost(st);S.wall[st.i]=1;dirty();animStart(st.i,'wall');burst('dust',x+.5,y+.5,4,8,.6,{vz:10,life:.7});toast(TXN.planes_ana.puerta_tapiada);break;}
     case 'clear':{const o=S.obj[st.i];if(!o)break;const spot=pickSpot(o.t);
-      if(spot!=null&&spot!==st.i){S.obj[spot]={...o,r:orientFor(o.t,spot%N,spot/N|0)};animStart(spot,'obj');toast(`🌿 Ana aparta ${OBJ[o.t].n.toLowerCase()} para hacer sitio`);}
-      else{S.money+=sellValue(o);toast(`🪓 Ana quita ${OBJ[o.t].n.toLowerCase()} para hacer sitio`);}
+      if(spot!=null&&spot!==st.i){S.obj[spot]={...o,r:orientFor(o.t,spot%N,spot/N|0)};animStart(spot,'obj');toast(huecos(TXN.planes_ana.aparta,{x:OBJ[o.t].n.toLowerCase()}));}
+      else{S.money+=sellValue(o);toast(huecos(TXN.planes_ana.quita,{x:OBJ[o.t].n.toLowerCase()}));}
       S.obj[st.i]=null;dirty();burst('dust',x+.5,y+.5,4,8,.6,{vz:10,life:.7});ensureSimFree();break;}
     case 'move':{const o=S.obj[st.from];if(!o||S.obj[st.i]){break;}S.obj[st.i]={...o,r:orientFor(o.t,x,y)};S.obj[st.from]=null;animStart(st.i,'obj');withChair(st.i);dirty();
-      burst('dust',st.from%N+.5,(st.from/N|0)+.5,4,6,.6,{vz:10,life:.6});confettiSmall(x+.5,y+.5);toast(`📦 ${OBJ[o.t].n} trasladada a su sitio`);ensureSimFree();break;}
+      burst('dust',st.from%N+.5,(st.from/N|0)+.5,4,6,.6,{vz:10,life:.6});confettiSmall(x+.5,y+.5);toast(huecos(TXN.planes_ana.trasladada,{x:OBJ[o.t].n}));ensureSimFree();break;}
     case 'craft':{const c=CRAFT[st.v];const mat=craftMat(st.v);S.money-=mat;floatText('-'+fmt(mat),x+.5,y+.5,30,'#c0392b');
       const q=craftTier(c[0]);const nx=job.steps[j+1];if(nx&&nx.k==='obj')nx.q=q;S.stats.crafted=(S.stats.crafted||0)+1;gainSkill(c[0],20);
-      burst('chip',x+.5,y+.5,26,12,.7,{vz:100,life:1,col:'#d8b98a'});toast(`🪚 Ana ha fabricado ${OBJ[st.v].n.toLowerCase()}: ${TIERS[q].e} ${TIERS[q].n}`);sfx('build');break;}
+      burst('chip',x+.5,y+.5,26,12,.7,{vz:100,life:1,col:'#d8b98a'});toast(huecos(TXN.planes_ana.ha_fabricado,{x:OBJ[st.v].n.toLowerCase(),cal:TIERS[q].e,calidad:TIERS[q].n}));sfx('build');break;}
     case 'obj':{
-      if(st.crafted){if(st.i==null||S.obj[st.i]||!walkable(x,y)){st.i=pickSpot(st.v);if(st.i==null){toast('No hay sitio para colocarlo');break;}}
+      if(st.crafted){if(st.i==null||S.obj[st.i]||!walkable(x,y)){st.i=pickSpot(st.v);if(st.i==null){toast(TXN.planes_ana.no_hay_sitio);break;}}
         const xx=st.i%N,yy=st.i/N|0;S.obj[st.i]={t:st.v,r:orientFor(st.v,xx,yy),q:st.q??1,c:100};animStart(st.i,'obj');withChair(st.i);dirty();confettiSmall(xx+.5,yy+.5);ensureSimFree();break;}
       ok=apply(x,y,{kind:'obj',v:st.v,q:st.q??3},true);
       if(ok){confettiSmall(x+.5,y+.5);const o=S.obj[st.i];const nm=OBJ[st.v].n.toLowerCase();
-        if(!byNpc){const [k,l]=stepReq(st);const chance=Math.min(.97,0.6+0.12*(lvl(k)-l));gainSkill(k,10);if(Math.random()>chance){o.c=55;toast(`Ana montó ${nm}, pero le quedó un poco coja (55%). Con más ${SKN(k)[2]} le saldrá mejor 🔩`);sfx('bad');}else toast(`📦 Ana montó ${nm} ${TIERS[o.q??3].e} ella sola`);}}
+        if(!byNpc){const [k,l]=stepReq(st);const chance=Math.min(.97,0.6+0.12*(lvl(k)-l));gainSkill(k,10);if(Math.random()>chance){o.c=55;toast(huecos(TXN.planes_ana.monto_coja,{x:nm,sk:SKN(k)[2]}));sfx('bad');}else toast(huecos(TXN.planes_ana.monto_sola,{x:nm,cal:TIERS[o.q??3].e}));}}
       else st.i=null;break;}
     case 'fix':{const o=S.obj[st.i];if(!o){break;}const parts=stepCost(st);S.money-=parts;floatText('-'+fmt(parts),x+.5,y+.5,30,'#c0392b');
       const [fk,fl]=stepReq(st);if(!byNpc)gainSkill(fk,12);const chance=byNpc?1:Math.min(.95,0.5+0.12*(lvl(fk)-fl));
-      if(Math.random()<chance){o.c=byNpc?100:Math.min(100,70+lvl(fk)*3);burst('spark',x+.5,y+.5,25,10,.6,{vz:90,life:.9,col:'#9fe3b0'});toast(`🔧 ${OBJ[o.t].n} arreglada${byNpc?'':' por Ana'} · estado ${Math.round(o.c)}%`);sfx('build');}
+      if(Math.random()<chance){o.c=byNpc?100:Math.min(100,70+lvl(fk)*3);burst('spark',x+.5,y+.5,25,10,.6,{vz:90,life:.9,col:'#9fe3b0'});toast(huecos(TXN.planes_ana.arreglada,{x:OBJ[o.t].n,por:byNpc?'':TXN.planes_ana.por_ana,estado:Math.round(o.c)}));sfx('build');}
       else{st.fails=(st.fails||0)+1;
-        if(ELECTRIC.has(o.t)&&Math.random()<0.4){S.needs.energia=Math.max(0,S.needs.energia-15);burst('spark',x+.5,y+.5,25,14,.9,{vz:150,life:.7,col:'#ffe066'});toast('⚡ ¡Calambrazo! Ana no consiguió arreglarlo');popBubble('😵');}
-        else toast(`Ana no consiguió arreglar ${OBJ[o.t].n.toLowerCase()}… ${st.fails<2?'lo intentará otra vez':'quizá llame a un técnico'}`);
+        if(ELECTRIC.has(o.t)&&Math.random()<0.4){S.needs.energia=Math.max(0,S.needs.energia-15);burst('spark',x+.5,y+.5,25,14,.9,{vz:150,life:.7,col:'#ffe066'});toast(TXN.planes_ana.calambrazo);popBubble('😵');}
+        else toast(huecos(TXN.planes_ana.no_consiguio,{x:OBJ[o.t].n.toLowerCase(),despues:st.fails<2?TXN.planes_ana.otra_vez:TXN.planes_ana.tecnico}));
         o.fails=(o.fails||0)+1;sfx('bad');if(st.fails<2){job.paused=false;return false;}}
       break;}
-    case 'replace':{const o=S.obj[st.i];if(!o)break;const cost=stepCost(st);if(S.money<cost){job.paused=true;toast('No llega para cambiarlo: Ana ahorrará');return false;}
+    case 'replace':{const o=S.obj[st.i];if(!o)break;const cost=stepCost(st);if(S.money<cost){job.paused=true;toast(TXN.planes_ana.no_llega_cambiar);return false;}
       S.money-=cost;floatText('-'+fmt(cost),x+.5,y+.5,30,'#c0392b');burst('dust',x+.5,y+.5,8,10,.9,{vz:20,life:.8});
       const q=st.q??3;S.obj[st.i]={t:o.t,r:o.r,q,c:100};animStart(st.i,'obj');confettiSmall(x+.5,y+.5);dirty();
-      if(!byNpc&&Math.random()>Math.min(.97,0.6+0.12*(lvl(stepReq(st)[0])-stepReq(st)[1]))){S.obj[st.i].c=55;toast(`Ana cambió ${OBJ[o.t].n.toLowerCase()} por una nueva ${TIERS[q].e}, pero la montó un poco coja (55%)`);}
-      else toast(`🔁 ${OBJ[o.t].n} nueva ${TIERS[q].e} ${TIERS[q].n} instalada${byNpc?'':' por Ana'}`);sfx('build');break;}
+      if(!byNpc&&Math.random()>Math.min(.97,0.6+0.12*(lvl(stepReq(st)[0])-stepReq(st)[1]))){S.obj[st.i].c=55;toast(huecos(TXN.planes_ana.cambio_coja,{x:OBJ[o.t].n.toLowerCase(),cal:TIERS[q].e}));}
+      else toast(huecos(TXN.planes_ana.nueva_instalada,{x:OBJ[o.t].n,cal:TIERS[q].e,calidad:TIERS[q].n,por:byNpc?'':TXN.planes_ana.por_ana}));sfx('build');break;}
   }
   st.done=true;job.paused=false;
   if(nextStep(job)<0)finishJob();
@@ -329,15 +329,15 @@ function finishJob(){
   if(j.purpose&&j.inner){for(const c of j.inner)S.zone[c]=j.purpose;dirty();computeRooms();}
   if(j.moves&&j.purpose){
     const steps=[];for(const t of j.moves)for(const i of findObjs((d,tt)=>tt===t)){const rr=rooms[roomId[i]];if(!rr||rr.purpose!==j.purpose)steps.push({k:'move',v:t,from:i,zone:j.purpose,i:null});}
-    if(steps.length){const mj={key:'move',name:'Llevar muebles a '+ZONES[j.purpose].n.toLowerCase(),emoji:'📦',why:'',kind:'move',steps,total:steps.length};
+    if(steps.length){const mj={key:'move',name:huecos(TXN.planes_ana.llevar_muebles,{x:ZONES[j.purpose].n.toLowerCase()}),emoji:'📦',why:'',kind:'move',steps,total:steps.length};
       const miss=jobReq(mj);const lab=60+steps.length*25;
       const npcHere=S.npc;
-      if(!miss){S.job={...mj,who:'ana'};if(npcHere)npcLeave();toast(`📦 Ana va a llevar ${j.moves.map(t=>OBJ[t].n.toLowerCase()).join(' y ')} a ${ZONES[j.purpose].n.toLowerCase()}`);}
-      else if(S.money>=lab){S.job={...mj,who:'builder'};if(npcHere&&npcHere.state!=='leaving'){S.money-=lab;toast(`📦 ${npcHere.name} se queda a trasladar ${j.moves.map(t=>OBJ[t].n.toLowerCase()).join(' y ')} · ${fmt(lab)}`);}else if(spawnBuilder()){S.money-=lab;toast(`📦 La cooperativa traslada ${j.moves.map(t=>OBJ[t].n.toLowerCase()).join(' y ')} · ${fmt(lab)}`);}else S.job=null;}
+      if(!miss){S.job={...mj,who:'ana'};if(npcHere)npcLeave();toast(huecos(TXN.planes_ana.va_a_llevar,{cosas:j.moves.map(t=>OBJ[t].n.toLowerCase()).join(' y '),donde:ZONES[j.purpose].n.toLowerCase()}));}
+      else if(S.money>=lab){S.job={...mj,who:'builder'};if(npcHere&&npcHere.state!=='leaving'){S.money-=lab;toast(huecos(TXN.planes_ana.se_queda_trasladar,{quien:npcHere.name,cosas:j.moves.map(t=>OBJ[t].n.toLowerCase()).join(' y '),coste:fmt(lab)}));}else if(spawnBuilder()){S.money-=lab;toast(huecos(TXN.planes_ana.coop_traslada,{cosas:j.moves.map(t=>OBJ[t].n.toLowerCase()).join(' y '),coste:fmt(lab)}));}else S.job=null;}
       return;}
   }
-  tally('built',j.name);if(j.purpose&&j.kind==='build')chapter('room1','Hacer hogar',`${CH().name} ha levantado su primera habitación nueva: ${ZONES[j.purpose]?ZONES[j.purpose].n.toLowerCase():'un cuarto'}. Huele a pintura fresca y a futuro.`);
-  toast(`✅ Terminado: ${j.emoji} ${j.name}${j.who==='builder'&&S.npc?' · '+S.npc.name+' se despide 👋':''}`,true);sfx('level');
+  tally('built',j.name);if(j.purpose&&j.kind==='build')chapter('room1',TXN.planes_ana.cap_hacer_hogar,huecos(TXN.planes_ana.primera_habitacion,{n:CH().name,cuarto:ZONES[j.purpose]?ZONES[j.purpose].n.toLowerCase():TXN.planes_ana.un_cuarto}));
+  toast(huecos(TXN.planes_ana.terminado,{emoji:j.emoji,nombre:j.name,despide:j.who==='builder'&&S.npc?huecos(TXN.planes_ana.se_despide,{quien:S.npc.name}):''}),true);sfx('level');
   if(!S.sim.work){confetti(S.sim.x,S.sim.y,50);popBubble('🎉');}
   if(S.npc)npcLeave();
 }
@@ -397,19 +397,19 @@ function updateNPC(gm){
   if(!p){st.tries=(st.tries||0)+1;if(st.tries>3)st.done=true;return;}
   if(p.length){n.path=p;n.goJ=j;}else n.work={j,t:0,dur:STEP_T[st.k]*0.45};
 }
-function cancelJob(){if(!S.job)return;S.job=null;S.want=null;S.wantDay=S.day;if(S.npc)npcLeave();const s=S.sim;if(s.use&&s.use.type==='_build')s.use=null;s.buildJ=null;toast('Obra cancelada. Lo ya construido se queda.');}
+function cancelJob(){if(!S.job)return;S.job=null;S.want=null;S.wantDay=S.day;if(S.npc)npcLeave();const s=S.sim;if(s.use&&s.use.type==='_build')s.use=null;s.buildJ=null;toast(TXN.planes_ana.obra_cancelada);}
 function noWorkToday(){const w=W_();return onLeave()||(S.strike&&S.strike.on&&S.strike.join)||(w.gs===S.day&&ID().strike>=.5)||!!w.rev||S.jail>0;}
 function shouldWork(){
   const h=S.t/60,nd=S.needs;
   return !S.jobless&&!(S.sick>0)&&!noWorkToday()&&dayType(S.day)==='work'&&S.lastWorkDay!==S.day&&h>=leaveTime()-0.1&&h<SHIFT.end-2&&nd.energia>8&&nd.vejiga>12;
 }
 function useLabel(u){
-  if(u.type==='_suelo')return {b:'💤',v:'Durmiendo en el suelo'};
-  if(u.type==='_build'){const st=S.job&&S.job.steps[u.j];const k=st?st.k:'obj';return {b:k==='paint'?'🎨':k==='obj'?'📦':'🔨',v:k==='move'?'Trasladando '+(OBJ[st.v]?.n||'algo').toLowerCase():k==='craft'?'Fabricando '+(OBJ[st.v]?.n||'algo').toLowerCase():k==='obj'?(st.crafted?'Colocando ':'Montando ')+(OBJ[st.v]?.n||'algo').toLowerCase():k==='fix'?'Reparando':'Construyendo: '+STEP_NAME[k]};}
-  if(u.type==='banco')return {b:'🛠️',v:'Practicando '+(SKN(u.trainSk||'carp')[2]).toLowerCase()};
-  if(bedUse(u)&&u.nap)return {b:'😴',v:'Echándose una siesta'};
-  if(u.type==='_meal')return {b:'🍽️',v:'Comiendo sentada a la mesa'};
-  if(u.type==='compu'&&u.seat==null)return {b:'💻',v:'Programando de pie'};
+  if(u.type==='_suelo')return {b:'💤',v:TXN.planes_ana.uso_suelo};
+  if(u.type==='_build'){const st=S.job&&S.job.steps[u.j];const k=st?st.k:'obj';return {b:k==='paint'?'🎨':k==='obj'?'📦':'🔨',v:k==='move'?huecos(TXN.planes_ana.uso_trasladando,{x:(OBJ[st.v]?.n||TXN.planes_ana.algo).toLowerCase()}):k==='craft'?huecos(TXN.planes_ana.uso_fabricando,{x:(OBJ[st.v]?.n||TXN.planes_ana.algo).toLowerCase()}):k==='obj'?huecos(st.crafted?TXN.planes_ana.uso_colocando:TXN.planes_ana.uso_montando,{x:(OBJ[st.v]?.n||TXN.planes_ana.algo).toLowerCase()}):k==='fix'?TXN.planes_ana.uso_reparando:huecos(TXN.planes_ana.uso_construyendo,{x:STEP_NAME[k]})};}
+  if(u.type==='banco')return {b:'🛠️',v:huecos(TXN.planes_ana.uso_practicando,{x:(SKN(u.trainSk||'carp')[2]).toLowerCase()})};
+  if(bedUse(u)&&u.nap)return {b:'😴',v:TXN.planes_ana.uso_siesta};
+  if(u.type==='_meal')return {b:'🍽️',v:TXN.planes_ana.uso_comida};
+  if(u.type==='compu'&&u.seat==null)return {b:'💻',v:TXN.planes_ana.uso_programando};
   return {b:OBJ[u.type]?.b||'✨',v:OBJ[u.type]?.verb||''};
 }
 

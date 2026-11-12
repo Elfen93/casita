@@ -51,12 +51,12 @@ function bedUse(u){return !!u&&isBedT(u.type)&&(u.type==='cama'||u.goal==='energ
   if(k==='hambre'&&T('perezosa')&&Math.random()<0.6){const m=findObjs((d,t)=>t==='micro').filter(i=>usable(S.obj[i]));if(m.length){const r=pathToObj(m);if(r)return r;}}
   return _bo(k);};}
 {const _su=startUse;startUse=function(){const s=S.sim,i=s.target;_su();const u=s.use;if(!u||u.i!==i||!S.obj[i])return;const t=u.type,d=OBJ[t];if(!d)return;const x=i%N+.5,y=(i/N|0)+.5;
-  if(d.bed&&u.goal==='energia'){const h=S.t/60;u.nap=!(h>=20.5||h<6);if(u.nap)toast('😴 Ana se echa una siesta');}
+  if(d.bed&&u.goal==='energia'){const h=S.t/60;u.nap=!(h>=20.5||h<6);if(u.nap)toast(TXN.muebles_nuevos.siesta);}
   if(d.food&&u.goal==='hambre'&&Dm().food){const fc=Math.round(Dm().food*d.food*MK().price);if(fc>0){S.money-=fc;floatText('-'+fmt(fc)+' 🛒',x,y,40,'#c0392b');}}
   if(t==='cafetera')S.needs.energia=Math.min(100,S.needs.energia+10);
   if(t==='elastica')S.fit=Math.min(100,(S.fit||0)+1);
-  if(t==='compost'&&has('huerto')&&Math.random()<.35){S.pantry=(S.pantry||0)+1;floatText('🌱 abono para el huerto',x,y,40,'#2e8b57');}
-  if(t==='coser'&&Math.random()<.4){const sv=Math.round(6*PM());S.money+=sv;floatText('+'+fmt(sv)+' 🧵 ropa arreglada',x,y,40,'#2e8b57');}
+  if(t==='compost'&&has('huerto')&&Math.random()<.35){S.pantry=(S.pantry||0)+1;floatText(TXN.muebles_nuevos.abono,x,y,40,'#2e8b57');}
+  if(t==='coser'&&Math.random()<.4){const sv=Math.round(6*PM());S.money+=sv;floatText('+'+fmt(sv)+TXN.muebles_nuevos.ropa_arreglada,x,y,40,'#2e8b57');}
   if(t==='lavadora'&&Dm().food){const fc=Math.round(Dm().food*0.3*MK().price);if(fc>0)S.money-=fc;}};}
 {const _fx=tickFX;tickFX=function(dt){_fx(dt);const s=S.sim;if(speed===0||menu.classList.contains('open')||s.work||!s.use||s.use.i==null)return;
   const t=s.use.type,d=OBJ[t];if(!d)return;const i=s.use.i,ox=i%N+.5,oy=(i/N|0)+.5,r=()=>(Math.random()-.5);
@@ -77,33 +77,33 @@ function bedUse(u){return !!u&&isBedT(u.type)&&(u.type==='cama'||u.goal==='energ
 // deseos de Ana: según rasgos, ideología, bolsillo, estación y familia
 function muebWant(){
   const c=[],add=(t,why,p)=>{if(p>0&&!has(t)&&!c.some(x=>x[0]===t))c.push([t,why,p]);};const sp=spare();
-  if(has('fogon'))add('encimera','para tener dónde cortar',1);
-  if(T('perezosa')){add('micro','para no tener que cocinar',2);add('sillon','para tumbarse a gusto',2);add('consola','para jugar sin moverse',1.5);}
-  if(T('ordenada')){add('lavadora','para tener la ropa siempre limpia',2);add('lavabo','para lavarse las manos',1.5);add('armario','para tenerlo todo en su sitio',1.5);}
-  if(T('artista')){add('tocadisc','para escuchar vinilos',2);if(sp>priceOf('piano',3)*1.4)add('piano','porque siempre soñó con uno',3);}
-  if(T('naturaleza')){add('monstera','porque adora las plantas',2);add('kentia','porque adora las plantas',1);add('jaula','para tener compañía con plumas',1);add('hamaca','para el jardín',1);}
-  if(T('sociable')){add('caseta','porque quiere un perro',1.5);add('cafetera','para invitar a un café',1);}
-  if(T('solitaria')||T('trabajadora')){add('butaca','para leer tranquila',2);add('escritorio','para estudiar',1.5);}
-  if(T('cocinillas')){add('mesacoc','para comer en la cocina',1.5);add('parrilla','para asar como es debido',1);add('cafetera','para el café de la mañana',1);}
-  if(T('derrochadora')){add('muebar','por darse un capricho',sp>2500?1.5:0);add('alfpersa','por darse un capricho',1.5);add('lamparco','por darse un capricho',1);}
-  if(T('ahorradora')){add('coser','para arreglarse la ropa',1.5);add('tendedero','para no gastar en secadora',1.5);}
-  if(isI('ecologista')){add('compost','para cerrar el ciclo del huerto',has('huerto')?2:0.8);add('tendedero','porque la secadora es un despilfarro',2);add('alfyute','fibra natural',0.6);}
-  if(isI('marxista','anarquista')){add('poster','para que se sepa de qué lado está',1.5);add('pizarra','para preparar las asambleas',1);}
-  if(isI('conservadora')){add('cuadro','para darle un aire de hogar',1.5);add('comoda','para guardar el ajuar',1);}
-  if(isI('liberal','libertaria'))add('muebar','para recibir a sus contactos',sp>2500?1:0);
-  if((S.kids||[]).some(k=>kidAge(k)<3))add('cuna','para el bebé',5);
-  if(liveIn()&&has('cama'))add('camamat','para dormir en pareja',3);
-  if(seasonOf()==='inv')add(sp>priceOf('chimenea',3)*2?'chimenea':'butano','para pasar el invierno',2);
-  add('cafetera','para el café',0.6);add('cortinas','para vestir las ventanas',0.6);if(has('cama'))add('mesilla','para dejar el libro y el móvil',0.7);add('estant','para colocar sus cosas',0.5);
-  add('mesabaja','para dejar el café',has('sofa')?0.8:0);add('lavadora','para no ir a la lavandería',has('ducha')?0.9:0);add('banera','para darse baños',sp>1500?0.8:0);add('cuadro','para alegrar las paredes',0.5);
-  add('columpio','para el jardín',0.3);add('acuario','para relajarse mirando peces',0.4);add('espejopie','para arreglarse',0.4);add('alfred','para el suelo',0.4);add('lampapel','para una luz suave',0.4);
+  if(has('fogon'))add('encimera',TXN.muebles_nuevos.deseos.para_tener_donde_cortar,1);
+  if(T('perezosa')){add('micro',TXN.muebles_nuevos.deseos.para_no_tener_que_cocinar,2);add('sillon',TXN.muebles_nuevos.deseos.para_tumbarse_a_gusto,2);add('consola',TXN.muebles_nuevos.deseos.para_jugar_sin_moverse,1.5);}
+  if(T('ordenada')){add('lavadora',TXN.muebles_nuevos.deseos.para_tener_la_ropa_siempre,2);add('lavabo',TXN.muebles_nuevos.deseos.para_lavarse_las_manos,1.5);add('armario',TXN.muebles_nuevos.deseos.para_tenerlo_todo_en_su,1.5);}
+  if(T('artista')){add('tocadisc',TXN.muebles_nuevos.deseos.para_escuchar_vinilos,2);if(sp>priceOf('piano',3)*1.4)add('piano',TXN.muebles_nuevos.deseos.porque_siempre_sono_con_uno,3);}
+  if(T('naturaleza')){add('monstera',TXN.muebles_nuevos.deseos.porque_adora_las_plantas,2);add('kentia',TXN.muebles_nuevos.deseos.porque_adora_las_plantas,1);add('jaula',TXN.muebles_nuevos.deseos.para_tener_compania_con_plumas,1);add('hamaca',TXN.muebles_nuevos.deseos.para_el_jardin,1);}
+  if(T('sociable')){add('caseta',TXN.muebles_nuevos.deseos.porque_quiere_un_perro,1.5);add('cafetera',TXN.muebles_nuevos.deseos.para_invitar_a_un_cafe,1);}
+  if(T('solitaria')||T('trabajadora')){add('butaca',TXN.muebles_nuevos.deseos.para_leer_tranquila,2);add('escritorio',TXN.muebles_nuevos.deseos.para_estudiar,1.5);}
+  if(T('cocinillas')){add('mesacoc',TXN.muebles_nuevos.deseos.para_comer_en_la_cocina,1.5);add('parrilla',TXN.muebles_nuevos.deseos.para_asar_como_es_debido,1);add('cafetera',TXN.muebles_nuevos.deseos.para_el_cafe_de_la,1);}
+  if(T('derrochadora')){add('muebar',TXN.muebles_nuevos.deseos.por_darse_un_capricho,sp>2500?1.5:0);add('alfpersa',TXN.muebles_nuevos.deseos.por_darse_un_capricho,1.5);add('lamparco',TXN.muebles_nuevos.deseos.por_darse_un_capricho,1);}
+  if(T('ahorradora')){add('coser',TXN.muebles_nuevos.deseos.para_arreglarse_la_ropa,1.5);add('tendedero',TXN.muebles_nuevos.deseos.para_no_gastar_en_secadora,1.5);}
+  if(isI('ecologista')){add('compost',TXN.muebles_nuevos.deseos.para_cerrar_el_ciclo_del,has('huerto')?2:0.8);add('tendedero',TXN.muebles_nuevos.deseos.porque_la_secadora_es_un,2);add('alfyute',TXN.muebles_nuevos.deseos.fibra_natural,0.6);}
+  if(isI('marxista','anarquista')){add('poster',TXN.muebles_nuevos.deseos.para_que_se_sepa_de,1.5);add('pizarra',TXN.muebles_nuevos.deseos.para_preparar_las_asambleas,1);}
+  if(isI('conservadora')){add('cuadro',TXN.muebles_nuevos.deseos.para_darle_un_aire_de,1.5);add('comoda',TXN.muebles_nuevos.deseos.para_guardar_el_ajuar,1);}
+  if(isI('liberal','libertaria'))add('muebar',TXN.muebles_nuevos.deseos.para_recibir_a_sus_contactos,sp>2500?1:0);
+  if((S.kids||[]).some(k=>kidAge(k)<3))add('cuna',TXN.muebles_nuevos.deseos.para_el_bebe,5);
+  if(liveIn()&&has('cama'))add('camamat',TXN.muebles_nuevos.deseos.para_dormir_en_pareja,3);
+  if(seasonOf()==='inv')add(sp>priceOf('chimenea',3)*2?'chimenea':'butano',TXN.muebles_nuevos.deseos.para_pasar_el_invierno,2);
+  add('cafetera',TXN.muebles_nuevos.deseos.para_el_cafe,0.6);add('cortinas',TXN.muebles_nuevos.deseos.para_vestir_las_ventanas,0.6);if(has('cama'))add('mesilla',TXN.muebles_nuevos.deseos.para_dejar_el_libro_y,0.7);add('estant',TXN.muebles_nuevos.deseos.para_colocar_sus_cosas,0.5);
+  add('mesabaja',TXN.muebles_nuevos.deseos.para_dejar_el_cafe,has('sofa')?0.8:0);add('lavadora',TXN.muebles_nuevos.deseos.para_no_ir_a_la,has('ducha')?0.9:0);add('banera',TXN.muebles_nuevos.deseos.para_darse_banos,sp>1500?0.8:0);add('cuadro',TXN.muebles_nuevos.deseos.para_alegrar_las_paredes,0.5);
+  add('columpio',TXN.muebles_nuevos.deseos.para_el_jardin,0.3);add('acuario',TXN.muebles_nuevos.deseos.para_relajarse_mirando_peces,0.4);add('espejopie',TXN.muebles_nuevos.deseos.para_arreglarse,0.4);add('alfred',TXN.muebles_nuevos.deseos.para_el_suelo,0.4);add('lampapel',TXN.muebles_nuevos.deseos.para_una_luz_suave,0.4);
   const ok=c.filter(([t])=>priceOf(t,2)<=Math.max(150,sp*1.3));if(!ok.length)return null;
   let tot=ok.reduce((a,x)=>a+x[2],0),r=Math.random()*tot;for(const [t,why,p] of ok){r-=p;if(r<=0)return wantFor(t,why);}return null;}
 {const _cw=chooseWant;chooseWant=function(){let w=_cw();
   try{
     // clase: si no llega para una cama de verdad, un colchón en el suelo; en invierno sin calefacción, una estufa de butano
-    if(w&&w.key==='buy-cama'&&spare()<priceOf('cama',2)){const c=wantFor('colchon','no llega para una cama de verdad',true);if(c)return c;}
-    if(seasonOf()==='inv'&&!has('butano')&&!has('chimenea')&&spare()<priceOf('chimenea',3)&&spare()>=priceOf('butano',3)&&Math.random()<.3&&(!w||w.kind==='buy'||w.key==='paint')){const b=wantFor('butano','porque en casa hace un frío que pela');if(b)return b;}
+    if(w&&w.key==='buy-cama'&&spare()<priceOf('cama',2)){const c=wantFor('colchon',TXN.muebles_nuevos.deseos.no_llega_para_una_cama_de_verdad,true);if(c)return c;}
+    if(seasonOf()==='inv'&&!has('butano')&&!has('chimenea')&&spare()<priceOf('chimenea',3)&&spare()>=priceOf('butano',3)&&Math.random()<.3&&(!w||w.kind==='buy'||w.key==='paint')){const b=wantFor('butano',TXN.muebles_nuevos.deseos.porque_en_casa_hace_un_frio_que);if(b)return b;}
     const low=!w||w.key==='paint'||w.key==='pool'||w.key==='win'||(w.kind==='buy'&&!w.urgent&&/^buy-(lampara|planta|alfombra|flores|arbol|seto|guitarra|bancoj|barbacoa|fuente|libros|banco|huerto)$/.test(w.key));
     if(low&&Math.random()<0.5){const m=muebWant();if(m)return m;}
   }catch(e){console.error(e);}

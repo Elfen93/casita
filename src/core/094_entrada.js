@@ -39,7 +39,7 @@ function endPtr(e){
     const c=screenToCell(e.clientX,e.clientY);
     if(mode==='live')liveTap(c[0],c[1]);
     else if(tool){beginStroke();if(!apply(c[0],c[1])&&tool.kind!=='move')sfx('bad');endStroke();flash=c;setTimeout(()=>{if(flash===c)flash=null;},500);}
-    else toast('Elige algo de la barra de abajo 👇');
+    else toast(TXN.entrada.elige_barra);
   }
   if(ptrs.size===0){if(!(gesture&&gesture.type==='pan'&&gesture.moved&&performance.now()-(gesture.lt||0)<80)){camVel.x=0;camVel.y=0;}gesture=null;preview=null;if(e.pointerType!=='mouse'){hover=null;pointerScreen=null;}}
   else if(ptrs.size===1){const [p]=[...ptrs.values()];gesture={type:'pan',sx:p.x,sy:p.y,cx:cam.x,cy:cam.y,moved:true};}

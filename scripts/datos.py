@@ -599,6 +599,9 @@ def comprobar(d):
     for k,l in SU.get('nucleo_arcos',{}).items():
         ids=[x.get('id') for x in l] if isinstance(l,list) else []
         if len(set(ids))!=len(ids):E.append('sucesos.nucleo_arcos.%s: ids repetidos'%k)
+    # --- p0d begin: textos de src/core/081–098 (secciones nuevas de textos_nucleo.json) ---
+    p0d_textos(d,E)
+    # --- p0d end ---
     return E
 
 # --- p0c begin: validaciones de los textos que el código lee de data/movil.json y data/textos_mods_hz.json ---
@@ -673,6 +676,44 @@ def p0c_textos(d,E):
                 for h in _p0c_huecos(t):
                     if h not in dadas:E.append('mods/%s: TXHZ.%s.%s lleva {%s} y el código no lo rellena'%(f,m.group(1),m.group(2),h))
 # --- p0c end ---
+
+# --- p0d begin: validaciones de los textos de src/core/081–098 (data/textos_nucleo.json: obra_tactil … calendario) ---
+P0D_SECCIONES=('obra_tactil','ropa','muebles_nuevos','looks','planes_ana','deshacer','construir_comprar','entrada','interfaz','creador','calendario')
+def p0d_textos(d,E):
+    TN=d.get('textos_nucleo')
+    if not isinstance(TN,dict):return
+    for sec in P0D_SECCIONES:
+        if not isinstance(TN.get(sec),dict) or not TN.get(sec):E.append('textos_nucleo.%s: falta la sección (src/core 081–098)'%sec)
+    for sec in P0D_SECCIONES:
+        for k,v in (TN.get(sec) or {}).items():
+            for t in _p0c_textos_de(v):
+                if not t.strip() and isinstance(v,str):E.append('textos_nucleo.%s.%s: texto vacío'%(sec,k))
+                if '${' in t or '`' in t:E.append('textos_nucleo.%s.%s: sobra un ${…} o una comilla invertida: los huecos son {clave}'%(sec,k))
+                if not _p0c_cierre(t):E.append('textos_nucleo.%s.%s: huecos mal cerrados en «%s»'%(sec,k,t[:60]))
+    CORE=os.path.join(R,'src','core')
+    if not os.path.isdir(CORE):return
+    for f in sorted(os.listdir(CORE)):
+        if not (f.endswith('.js') and '081'<=f[:3]<='098'):continue
+        src=open(os.path.join(CORE,f),encoding='utf-8').read()
+        # huecos(TXN.sec.clave,{…}): cada hueco del texto lo rellena el código ({n} y {o} se rellenan solos) y cada dato que da el código lo usa el texto
+        for m in re.finditer(r'huecos\(\s*TXN\.(\w+)\.(\w+)\s*,\s*\{',src):
+            i=m.end()-1;j=_p0c_cierra(src,i)
+            if j<0:continue
+            dadas=set(_p0c_claves(src[i:j+1]))
+            v=(TN.get(m.group(1)) or {}).get(m.group(2))
+            if not isinstance(v,str):continue
+            hu=_p0c_huecos(v)
+            for h in hu-dadas-{'n','o'}:E.append('src/core/%s: TXN.%s.%s lleva {%s} y el código no lo rellena'%(f[:3],m.group(1),m.group(2),h))
+            for h in dadas-hu:E.append('src/core/%s: TXN.%s.%s no usa el dato «%s» que le pasa el código'%(f[:3],m.group(1),m.group(2),h))
+        # un texto con huecos que el código usa sin huecos() saldría con las llaves a la vista
+        for m in re.finditer(r'TXN\.(\w+)\.(\w+)',src):
+            ant=src[max(0,m.start()-160):m.start()];hp=ant.rfind('huecos(')
+            if hp>=0 and ',{' not in ant[hp:]:continue  # primer argumento de huecos() (también dentro de un ternario)
+            if m.group(1) not in P0D_SECCIONES:continue
+            v=(TN.get(m.group(1)) or {}).get(m.group(2))
+            if isinstance(v,str) and _p0c_huecos(v):
+                E.append('src/core/%s: TXN.%s.%s lleva huecos y el código no lo pasa por huecos()'%(f[:3],m.group(1),m.group(2)))
+# --- p0d end ---
 
 # ---------- formato ----------
 def una(v):return json.dumps(v,ensure_ascii=False,separators=(', ',': '))
