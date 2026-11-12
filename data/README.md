@@ -29,7 +29,8 @@ Campos comunes: `n` nombre · `e` emoji · `d` descripción.
 ### lugares.json
 | Sección | En el código | Qué es |
 |---|---|---|
-| `lugares` | `PLACES` | Edificios del barrio. `r` rectángulo en el mapa `[x0,y0,x1,y1]` en casillas (la parcela de la casa va de 0 a 20) · `h` altura · `c` color · `roof`, `acc` colores de tejado y detalle · `glass`, `obra`, `park` aspecto · `outs` salidas que se hacen ahí · `abre` cuándo está abierto al público: `[[desde,hasta,[días]],…]`, horas de 0 a 24 (puede ser decimal: 21.5 = 21:30), días con 0 = lunes. Una franja por tramo (un súper de 9 a 21:30 de lunes a sábado es `[[9,21.5,[0,1,2,3,4,5]]]`; un comercio con cierre a mediodía lleva dos). Un `hasta` mayor de 24 cierra de madrugada del día siguiente (`26` = las 2:00). Los días que no salen en ninguna franja, cerrado; los festivos cuentan como domingo salvo en lo que está abierto los siete días. Lo llevan todos los lugares menos las casas particulares (`casaV`, `casa2`). Hoy solo lo lee la ficha del mapa (`mods/barrio.js`); el horario de cada salida sigue siendo el `h` y `wd` de la salida, que es el que manda al jugar. `colegio` (público, 3 a 11 años), `concertado` (3 a 16) e `instituto` (12 a 17) son los tres centros de estudios: su gente y sus escenas, en `mods/escuela.js`. |
+| `lugares` | `PLACES` | Edificios de la ciudad. `barrio` id de `ciudad.json` (`@casa` en `casaV` y `casa2`: están en el barrio donde vive el personaje) · `rb` rectángulo `[x0,y0,x1,y1]` en casillas locales de su barrio (el que usa el mapa) · `r` el plano antiguo del paseo `[x0,y0,x1,y1]` (la parcela de la casa va de 0 a 20): solo lo leen `src/core/047` y las rutas, hasta que el personaje ande por la ciudad · `h` altura · `c` color · `roof`, `acc` colores de tejado y detalle · `glass`, `obra`, `park` aspecto · `outs` salidas que se hacen ahí · `abre` cuándo está abierto al público: `[[desde,hasta,[días]],…]`, horas de 0 a 24 (puede ser decimal: 21.5 = 21:30), días con 0 = lunes. Una franja por tramo (un súper de 9 a 21:30 de lunes a sábado es `[[9,21.5,[0,1,2,3,4,5]]]`; un comercio con cierre a mediodía lleva dos). Un `hasta` mayor de 24 cierra de madrugada del día siguiente (`26` = las 2:00). Los días que no salen en ninguna franja, cerrado; los festivos cuentan como domingo salvo en lo que está abierto los siete días. Lo llevan todos los lugares menos las casas particulares (`casaV`, `casa2`). Hoy solo lo lee la ficha del mapa (`mods/barrio.js`); el horario de cada salida sigue siendo el `h` y `wd` de la salida, que es el que manda al jugar. `colegio` (público, 3 a 11 años), `concertado` (3 a 16) e `instituto` (12 a 17) son los tres centros de estudios: su gente y sus escenas, en `mods/escuela.js`. |
+| `solo_mapa` | `DATA.lugares.solo_mapa` (`mods/barrio.js`) | Lugares nuevos que solo existen en el mapa: sin escena interior, sin salidas, no están en `PLACES`. `n`, `e`, `d`, `abre` (como en `lugares`), `barrio`, `rb`, `h` altura, `c` color y `solar` (un descampado con vallas en vez de un cubo). Entre 6 y 12. En su ficha: horario y «Sin interior». |
 | `trabajo_en` | `destOf('work')` | A qué lugar va a trabajar cada sector. `_ride` = en la calle, repartiendo. |
 | `salidas` | `OUT` | Lo que se hace fuera de casa. `dur` minutos · `h` horario `[desde,hasta]` · `wd` días de la semana (0 = lunes) · `days:'libre'` solo en días libres · `flex` se adapta al turno · `why` para qué sirve. `cole` (recoger a la criatura a la salida) y `tutoria` (de 16 a 18) solo salen si el personaje tiene una criatura en edad escolar. La condición para poder ir (`req`) es código. |
 | `salidas_necesidades` | `OUT_LIVE` | Lo que cada salida da o quita a cada necesidad por minuto. |
@@ -56,16 +57,23 @@ Campos comunes: `n` nombre · `e` emoji · `d` descripción.
 ### barrio.json
 | Sección | En el código | Qué es |
 |---|---|---|
-| `edificios` | `mods/barrio.js` | Dónde se ve en el mapa del barrio cada edificio de `personas.edificios` (ni uno más ni uno menos). `r` rectángulo `[x0,y0,x1,y1]` en casillas, sin pisar ningún lugar · `rotulo` nombre corto del rótulo · `c` color de la fachada · `roof` tejado (casas) · `det` detalle dibujado: `local`, `huerto`, `parra`, `patio` o `adosada`. |
-| `suelo` | `mods/barrio.js` | Placas de terreno que se suman al barrio de siempre `[x0,y0,x1,y1]`. |
-| `calles` | `mods/barrio.js` | Franjas de asfalto con acera: `n` nombre · `r` rectángulo. |
-| `arboles` | `mods/barrio.js` | Árboles sueltos `[x,y]`. |
+| `edificios` | `mods/barrio.js` | Dónde se ve en el mapa cada edificio de `personas.edificios` (ni uno más ni uno menos). `barrio` id de `ciudad.json` · `rb` rectángulo `[x0,y0,x1,y1]` en casillas locales de su barrio, sin pisar calles ni otros edificios · `rotulo` nombre corto del rótulo · `c` color de la fachada · `roof` tejado (casas) · `det` detalle dibujado: `local`, `huerto`, `parra`, `patio` o `adosada`. Su puerta está en `ciudad.json`, en la calle que dice su nombre. |
 | `hogares` | — | Quién vive junto. `n` nombre · `edificio` · `puerta` (solo en bloques) · `cls` 0 a 4 como en `viviendas` · `tipo` `familia`, `monoparental`, `pareja`, `sola`, `compartido` o `tres_generaciones` · `d` frase · `miembros` ids de `vecinos` (cada uno con su `hogar` de vuelta; todo menor de 18 con una persona adulta). |
 | `personaje_base` | `DEFCHAR` | El personaje por defecto. |
 | `orientacion`, `estilo_relacion`, `quiere_hijos`, `quiere_boda`, `etapas` | `ORIENT`, `RELSTYLE`, `KIDSW`, `BODAW`, `STAGE` | Opciones de vida y etapas de una relación, con su etiqueta. |
 | `clases` | `CLASSN` | Nombre de cada posición de clase. |
 | `rasgos` | `TRAITS` | Rasgos de personalidad. `no` rasgo incompatible · `cat` categoría · `hid` no se elige en el creador: se descubre jugando. |
 | `rasgos_categorias`, `rasgos_objetos` | `TRAIT_CATS`, `FAVS` | Categorías del creador y objetos favoritos de cada rasgo. |
+
+### ciudad.json
+La ciudad por barrios (`mods/barrio.js`; `scripts/datos.py` la comprueba entera). Cada barrio tiene su propia cuadrícula de calles en casillas locales (1 casilla = 10 m) y un rectángulo en el plano de la ciudad (1 unidad = 100 m, así que un barrio de 6×5 unidades mide 60×50 casillas). Andando, 12 min por km.
+| Sección | Qué es |
+|---|---|
+| `ciudad` | `n` nombre · `m_casilla`, `m_plano` metros · `min_km` minutos a pie por km (12). |
+| `orden`, `vivienda` | Orden de los barrios y barrio de cada tipo de `viviendas` (el personaje vive ahí, y ahí están `casaV` y `casa2`). |
+| `barrios` | `n` · `tipo` (`centro`, `nuevo`, `residencial`, `obrero`, `marginal`, `industrial`) y `tipo_n` · `e` emoji · `c` color · `alquiler` (1 = la media de la ciudad) · `d` quién vive y quién manda, `bueno`, `cuesta` · `plano` `[x0,y0,x1,y1]` · `calles` `[{n, a, b, w}]` rectas horizontales o verticales (de `a` a `b`, `w` ancho; se cruzan y se tocan en nodos sin más) · `puertas` `{id: [x, y, calle]}`: el punto del eje de la calle donde está la entrada de cada lugar, edificio del censo y casa (a menos de `w/2+2,5` de su fachada; los del censo, en la calle de su dirección) · `casa` `{casa, casaV, casa2}` rectángulos, solo en los barrios de `vivienda` · `arboles`. |
+| `enlaces.pie` | Barrios que se tocan a pie: `a`, `b`, `pa`, `pb` (el punto de paso en cada uno, sobre una calle y en el mismo sitio del plano) y `m` metros del paso. |
+| `enlaces.lineas` | `id`, `n`, `modo` (`metro`, `bus`, `tren`), `c` color, `cada` minutos entre coches (se espera la mitad), `precio_h` horas de salario por billete (`hrs(precio_h)` en euros), `paradas` `[{b, n, p}]` y `min` (minutos entre paradas consecutivas). De cualquier barrio se llega a cualquier otro (lo comprueba `datos.py`, que además avisa de quién vive y trabaja en barrios distintos). |
 
 ### profesiones.json
 | Sección | En el código | Qué es |
@@ -181,3 +189,15 @@ Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con co
 - **Escenas** (`SCENES`): los interiores se dibujan con código; sus carteles y su gente van dentro.
 - **Aspecto**: peinados, caras, ropa y retratos (`LOOKS`, `LOOK_SRC`), y el dibujo de cada mueble (`MDRAW`).
 - Tablas menores por objeto (`BACKD`, `ACTS`, `ELECTRIC`, `SMALL_ITEMS`, `MUEB_NEW`) y los eslóganes de las ideologías en las pancartas.
+
+## Para caminar (nota para quien haga que el personaje ande por la calle)
+
+Todo lo que hace falta está en `mods/barrio.js` (funciones puras, sin `S`, probadas en `t/t_ciudad.js`):
+- `cdBarrioDe(id)` → id del barrio de un lugar, un edificio del censo, un lugar de `solo_mapa` o `'casa'` (`casaV`/`casa2` van con la casa). `cdRect(id)` → su rectángulo local.
+- `cdPuerta(id)` → `{b, p:[x,y], c}`: el barrio, el punto de la entrada (en el eje de la calle `c`) y el nombre de la calle. Es donde el personaje entra y sale; desde la fachada hasta ahí son 2–4 casillas rectas (la fachada visible es la del lado `y` mayor).
+- `cdGrafo(b)` → `{nodes, adj}`: nodos en las puntas de calle, cruces, puertas, pasos y paradas; `adj` lleva `{k, l (casillas), c (calle)}`. Las calles son rectas horizontales o verticales: andar es ir de punto a punto.
+- `cdCamino(b, a, c)` → `[[x,y],…]`: extremos y esquinas del camino a pie más corto entre dos puertas (ids) o puntos de nodo. `cdLong(pts)` casillas y `cdMinPie(pts)` minutos (0,12 min por casilla).
+- `cdTrayecto(idA, idB)` → `{min, h, precio, tramos}`; tramos `pie` (`b`, `pts`), `paso` (de un barrio al vecino: `pa` en `de`, `pb` en `a`) y `metro|bus|tren` (`linea`, `de`, `a`, `paradas`, `espera`, `viaje`, `h`). Minutos de juego = minutos a pie; la espera es `cada/2`. Misma lógica en `datos.py` (`trayecto_py`).
+- Hoy el mapa de barrio dibuja con `rb` y las salidas siguen usando `r` y `routeTo` de `src/core/047` (la parcela antigua): al andar por la ciudad, `r` deja de hacer falta y se borra. Las puertas del barrio de la casa son `casa`, `casaV` y `casa2`.
+- Dibujo: el barrio se pinta en `bmSuelo` (calles), `bmItems` (edificios por profundidad `x1+y1`) y `bmEspeciales` (postes de paso y paradas); una figura andando entra en `bmItems` con `d = x+y`.
+- Prueba: `python3 scripts/test.py t/t_ciudad.js 60`; mapa a ojo: `t/t_barrio_ver.js` (cabecera con parámetros).

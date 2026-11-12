@@ -1,0 +1,209 @@
+{
+  "_": "La ciudad como dato (mods/barrio.js, scripts/datos.py). ciudad: nombre y escala (m_casilla metros por casilla, m_plano metros por unidad del plano, min_km minutos a pie por km) · orden de los barrios · vivienda: barrio de cada tipo de vivienda del personaje · barrios: n, tipo, tipo_n, e, c (color), alquiler (1 = la media), d bueno cuesta (la mirada), plano [x0,y0,x1,y1] en unidades de plano (su tamaño local es plano×m_plano/m_casilla), calles [{n, a:[x,y], b:[x,y], w}] rectas horizontales o verticales en casillas locales, puertas {id: [x, y, calle]} (el punto del eje de la calle donde está la entrada de cada lugar, edificio del censo y casa), casa {casa, casaV, casa2: rb} (sitio de la vivienda del personaje y de las dos casas de al lado, solo en los barrios de `vivienda`), arboles [[x,y]]. enlaces: pie [{a, b, pa, pb, m}] (barrios que se tocan a pie: punto de paso en cada uno y metros del paso) y lineas [{id, n, modo (metro, bus, tren), c, cada (minutos entre coches), precio_h (horas de salario por billete), paradas [{b, n, p}], min (minutos entre paradas consecutivas)}].",
+
+  "ciudad": {"n": "Riobravo", "m_casilla": 10, "m_plano": 100, "min_km": 12},
+
+  "orden": ["casco", "ensanche", "pinares", "ribera", "eras", "poligono"],
+
+  "vivienda": {"padres": "ribera", "infra": "eras", "habitacion": "casco", "viejo": "ribera", "casita": "eras", "bueno": "casco", "chalet": "pinares", "calle": "ribera"},
+
+  "barrios": {
+    "casco": {
+      "n": "El Casco",
+      "tipo": "centro",
+      "tipo_n": "Centro",
+      "e": "🏛️",
+      "c": "#e9c46a",
+      "alquiler": 1.4,
+      "d": "Ayuntamiento, juzgados, mercado y la plaza. Viven jubiladas de toda la vida, pisos de estudiantes y quien paga por llegar andando. Los fondos van comprando portales enteros.",
+      "bueno": "Todo a pie, y el transporte pasa cada pocos minutos.",
+      "cuesta": "Cada renovación sube el alquiler y los bajos ya son todos de cadena.",
+      "plano": [3, 5, 9, 10],
+      "calles": [
+        {"n": "Calle Mayor", "a": [0, 25], "b": [60, 25], "w": 5},
+        {"n": "Calle Postas", "a": [0, 10], "b": [60, 10], "w": 4},
+        {"n": "Calle de la Fuente", "a": [0, 40], "b": [60, 40], "w": 5},
+        {"n": "Calle Real", "a": [15, 0], "b": [15, 50], "w": 4},
+        {"n": "Calle del Pósito", "a": [45, 0], "b": [45, 50], "w": 4},
+        {"n": "Calle de la Estación", "a": [35, 25], "b": [35, 50], "w": 4}
+      ],
+      "puertas": {
+        "parroquia": [7.0, 10, "Calle Postas"],
+        "sala": [22.0, 10, "Calle Postas"],
+        "juzgados": [30.5, 10, "Calle Postas"],
+        "sepe": [39.0, 10, "Calle Postas"],
+        "comisaria": [52.0, 10, "Calle Postas"],
+        "biblioteca": [7.0, 25, "Calle Mayor"],
+        "ayto": [22.5, 25, "Calle Mayor"],
+        "mercado": [31.5, 25, "Calle Mayor"],
+        "b_fuente": [22.5, 40, "Calle de la Fuente"],
+        "casa": [7.5, 40, "Calle de la Fuente"],
+        "casaV": [29.0, 40, "Calle de la Fuente"],
+        "casa2": [39.5, 40, "Calle de la Fuente"]
+      },
+      "casa": {"casa": [4, 31.4, 11, 37.4], "casaV": [27.5, 33.4, 30.5, 37.4], "casa2": [38, 33.4, 41, 37.4]},
+      "arboles": [[12, 5], [12, 20], [40, 20], [40, 30], [8, 45], [50, 30], [52, 45], [30, 45]]
+    },
+    "ensanche": {
+      "n": "Ensanche Norte",
+      "tipo": "nuevo",
+      "tipo_n": "Ensanche nuevo",
+      "e": "🏗️",
+      "c": "#9cc3d5",
+      "alquiler": 1.35,
+      "d": "Barrio de tres años: torre de oficinas, campus privado y una grúa que no para. Viven parejas con hipoteca a treinta años. Manda la promotora, que aún no ha entregado la plaza.",
+      "bueno": "Todo nuevo: aceras anchas, ascensor y fibra.",
+      "cuesta": "Pocos bares, ningún vecino de siempre y la plaza prometida sigue siendo un solar.",
+      "plano": [6, 0, 12, 5],
+      "calles": [
+        {"n": "Avenida de las Torres", "a": [0, 25], "b": [60, 25], "w": 6},
+        {"n": "Calle de la Grúa", "a": [0, 40], "b": [60, 40], "w": 4},
+        {"n": "Paseo del Campus", "a": [30, 0], "b": [30, 50], "w": 5},
+        {"n": "Calle Nueva", "a": [15, 25], "b": [15, 50], "w": 4},
+        {"n": "Calle del Cuarto", "a": [45, 25], "b": [45, 50], "w": 4}
+      ],
+      "puertas": {"uni_privada": [7.5, 25, "Avenida de las Torres"], "gran_plaza": [22.0, 25, "Avenida de las Torres"], "torre": [37.5, 25, "Avenida de las Torres"], "obra": [37.0, 40, "Calle de la Grúa"], "cafe_brindis": [22.5, 40, "Calle de la Grúa"]},
+      "arboles": [[12, 30], [12, 46], [50, 30], [50, 12], [8, 5], [24, 5], [40, 5], [55, 45]]
+    },
+    "pinares": {
+      "n": "Los Pinares",
+      "tipo": "residencial",
+      "tipo_n": "Residencial acomodado",
+      "e": "🌲",
+      "c": "#8fbf8a",
+      "alquiler": 1.6,
+      "d": "Chalets, adosados y un colegio concertado con lista de espera. Viven quienes pueden pagar el sitio y la tranquilidad. Manda la comunidad de propietarios, que vota quién entra.",
+      "bueno": "Silencio, jardines y calles seguras para ir con críos.",
+      "cuesta": "No hay comercio de barrio, y quien limpia y cuida llega en autobús desde lejos.",
+      "plano": [0, 0, 6, 5],
+      "calles": [
+        {"n": "Avenida de los Pinos", "a": [0, 25], "b": [60, 25], "w": 5},
+        {"n": "Calle Fragua", "a": [12, 10], "b": [60, 10], "w": 4},
+        {"n": "Calle de las Encinas", "a": [12, 40], "b": [60, 40], "w": 4},
+        {"n": "Paseo de las Acacias", "a": [12, 0], "b": [12, 50], "w": 4},
+        {"n": "Calle del Pinar", "a": [45, 25], "b": [45, 50], "w": 4}
+      ],
+      "puertas": {
+        "concertado": [23.0, 25, "Avenida de los Pinos"],
+        "residencia": [33.5, 25, "Avenida de los Pinos"],
+        "gymbueno": [42.0, 25, "Avenida de los Pinos"],
+        "c_fragua": [27.7, 10, "Calle Fragua"],
+        "glorieta": [54.0, 40, "Calle de las Encinas"],
+        "casa": [23.5, 40, "Calle de las Encinas"],
+        "casaV": [31.5, 40, "Calle de las Encinas"],
+        "casa2": [35.5, 40, "Calle de las Encinas"]
+      },
+      "casa": {"casa": [20, 31.4, 27, 37.4], "casaV": [30, 33.4, 33, 37.4], "casa2": [34, 33.4, 37, 37.4]},
+      "arboles": [[6, 15], [6, 32], [6, 44], [20, 46], [30, 46], [40, 46], [55, 15], [55, 5], [40, 4], [20, 4], [50, 20]]
+    },
+    "ribera": {
+      "n": "La Ribera",
+      "tipo": "obrero",
+      "tipo_n": "Obrero",
+      "e": "🏘️",
+      "c": "#e8a67c",
+      "alquiler": 1.0,
+      "d": "Bloques de los setenta y casas bajas junto al parque del río. Viven quienes curran por turnos, y el bar es la oficina de información. Manda el casero, y la comunidad cuando se pone de acuerdo.",
+      "bueno": "Se conoce todo el mundo: quien fía en el súper, quien arregla la persiana.",
+      "cuesta": "Los pisos viejos no se arreglan y el alquiler sube porque el centro ya no cabe.",
+      "plano": [9, 5, 15, 10],
+      "calles": [
+        {"n": "Calle del Canal", "a": [0, 25], "b": [60, 25], "w": 5},
+        {"n": "Calle Huerta", "a": [15, 10], "b": [45, 10], "w": 4},
+        {"n": "Camino del Tejar", "a": [0, 44], "b": [60, 44], "w": 4},
+        {"n": "Calle del Molino", "a": [15, 0], "b": [15, 25], "w": 4},
+        {"n": "Paseo del Río", "a": [45, 0], "b": [45, 50], "w": 5},
+        {"n": "Travesía de la Vía", "a": [35, 25], "b": [35, 50], "w": 4}
+      ],
+      "puertas": {
+        "colegio": [21.0, 10, "Calle Huerta"],
+        "c_huerta": [27.7, 10, "Calle Huerta"],
+        "ateneo": [34.0, 10, "Calle Huerta"],
+        "b_canal": [6.5, 25, "Calle del Canal"],
+        "ambulatorio": [19.5, 25, "Calle del Canal"],
+        "super": [25.5, 25, "Calle del Canal"],
+        "tienda": [32.5, 25, "Calle del Canal"],
+        "bar": [38.5, 25, "Calle del Canal"],
+        "parque": [53.5, 25, "Calle del Canal"],
+        "gym": [23.0, 44, "Camino del Tejar"],
+        "c_tejar": [29.2, 44, "Camino del Tejar"],
+        "uni_publica": [52.0, 44, "Camino del Tejar"],
+        "casa": [6.5, 44, "Camino del Tejar"],
+        "casaV": [12.5, 44, "Camino del Tejar"],
+        "casa2": [16.9, 44, "Camino del Tejar"]
+      },
+      "casa": {"casa": [3, 35.4, 10, 41.4], "casaV": [11, 37.4, 14, 41.4], "casa2": [15.5, 37.4, 18.4, 41.4]},
+      "arboles": [[8, 8], [8, 14], [40, 14], [40, 30], [52, 30], [52, 40], [38, 47], [44, 47]]
+    },
+    "eras": {
+      "n": "Las Eras",
+      "tipo": "marginal",
+      "tipo_n": "Periferia",
+      "e": "🧱",
+      "c": "#b9a1c9",
+      "alquiler": 0.65,
+      "d": "Último barrio antes del descampado: bloques sin ascensor, casas autoconstruidas y un instituto con más mochilas que plazas. Viven quienes no entraron en otro sitio. Manda el banco que embargó dos bloques.",
+      "bueno": "Gente que se cuida: el comedor, la asociación y el locutorio funcionan de verdad.",
+      "cuesta": "Un solo autobús y ningún súper cerca: quien trabaja fuera pierde una hora al día en ir y volver.",
+      "plano": [4, 10, 10, 15],
+      "calles": [{"n": "Camino de las Eras", "a": [25, 0], "b": [25, 50], "w": 4}, {"n": "Calle Olivo", "a": [0, 15], "b": [60, 15], "w": 4}, {"n": "Calle del Pozo", "a": [0, 32], "b": [60, 32], "w": 3}, {"n": "Calle Noria", "a": [0, 44], "b": [60, 44], "w": 3}],
+      "puertas": {
+        "instituto": [7.0, 15, "Calle Olivo"],
+        "locutorio": [16.5, 15, "Calle Olivo"],
+        "b_olivo": [33.5, 15, "Calle Olivo"],
+        "bar_esperanza": [42.5, 15, "Calle Olivo"],
+        "asociacion": [52.5, 15, "Calle Olivo"],
+        "comedor": [31.5, 32, "Calle del Pozo"],
+        "c_pozo": [39.7, 32, "Calle del Pozo"],
+        "descampado": [11.5, 32, "Calle del Pozo"],
+        "c_noria": [45.7, 44, "Calle Noria"],
+        "casa": [7.5, 44, "Calle Noria"],
+        "casaV": [14.5, 44, "Calle Noria"],
+        "casa2": [19.0, 44, "Calle Noria"]
+      },
+      "casa": {"casa": [4, 36, 11, 42], "casaV": [13, 38, 16, 42], "casa2": [17.5, 38, 20.5, 42]},
+      "arboles": [[50, 22], [55, 28], [50, 36], [56, 40], [30, 38], [34, 47], [8, 48]]
+    },
+    "poligono": {
+      "n": "Polígono Las Salinas",
+      "tipo": "industrial",
+      "tipo_n": "Polígono industrial",
+      "e": "🏭",
+      "c": "#a9afb5",
+      "alquiler": 0.8,
+      "d": "Naves, camiones y un bar de menús. De día trabaja aquí media ciudad; de noche no vive nadie. Manda quien tiene la nave, y el sindicato guarda un local en la entrada.",
+      "bueno": "Hay curro, y los turnos se cobran.",
+      "cuesta": "Sin transporte de noche y sin más sitio donde comer que el menú.",
+      "plano": [10, 10, 15, 15],
+      "calles": [{"n": "Avenida del Metal", "a": [0, 25], "b": [50, 25], "w": 6}, {"n": "Camino de Servicio", "a": [25, 0], "b": [25, 50], "w": 5}, {"n": "Calle del Acero", "a": [0, 42], "b": [50, 42], "w": 5}],
+      "puertas": {"naves": [10.0, 25, "Avenida del Metal"], "bar_cruce": [33.0, 25, "Avenida del Metal"], "sindicato": [41.0, 25, "Avenida del Metal"], "coop": [7.0, 42, "Calle del Acero"], "itv": [34.0, 42, "Calle del Acero"]},
+      "arboles": [[20, 5], [40, 5], [45, 35], [20, 47], [45, 47]]
+    }
+  },
+
+  "enlaces": {
+    "pie": [
+      {"a": "pinares", "b": "casco", "pa": [45, 50], "pb": [15, 0], "m": 60},
+      {"a": "pinares", "b": "ensanche", "pa": [60, 25], "pb": [0, 25], "m": 50},
+      {"a": "ensanche", "b": "casco", "pa": [15, 50], "pb": [45, 0], "m": 60},
+      {"a": "ensanche", "b": "ribera", "pa": [45, 50], "pb": [15, 0], "m": 120},
+      {"a": "casco", "b": "ribera", "pa": [60, 25], "pb": [0, 25], "m": 40},
+      {"a": "casco", "b": "eras", "pa": [35, 50], "pb": [25, 0], "m": 180},
+      {"a": "ribera", "b": "poligono", "pa": [35, 50], "pb": [25, 0], "m": 250}
+    ],
+    "lineas": [
+      {"id": "L1", "n": "Metro L1", "modo": "metro", "c": "#7a4fa0", "cada": 6, "precio_h": 0.2, "paradas": [{"b": "pinares", "n": "Mirador", "p": [35, 25]}, {"b": "casco", "n": "Plaza Mayor", "p": [30, 25]}, {"b": "ribera", "n": "Puente Viejo", "p": [30, 25]}], "min": [4, 4]},
+      {
+        "id": "C1",
+        "n": "Cercanías C1",
+        "modo": "tren",
+        "c": "#4f6d7a",
+        "cada": 15,
+        "precio_h": 0.25,
+        "paradas": [{"b": "poligono", "n": "Apeadero Las Salinas", "p": [25, 45]}, {"b": "eras", "n": "Apeadero Las Eras", "p": [25, 40]}, {"b": "casco", "n": "Estación Central", "p": [35, 45]}, {"b": "ensanche", "n": "Estación Norte", "p": [30, 10]}],
+        "min": [5, 6, 5]
+      },
+      {"id": "B2", "n": "Bus 2", "modo": "bus", "c": "#2e8b57", "cada": 12, "precio_h": 0.15, "paradas": [{"b": "eras", "n": "Las Eras", "p": [25, 22]}, {"b": "ribera", "n": "Plaza del Canal", "p": [22, 25]}, {"b": "ensanche", "n": "Torres", "p": [30, 30]}], "min": [8, 9]}
+    ]
+  }
+}

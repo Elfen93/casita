@@ -159,6 +159,258 @@ def trato(T,lug,ideo,E,dentro):
     for c in set(re.findall(r"trT\('(\w+)'",src))|set(re.findall(r"TRF\(\)\.(\w+)",src)):
         if c not in T['ficha']:E.append('trato.ficha: falta «%s» (lo usa mods/trato.js)'%c)
 
+# ---------- la ciudad: barrios, calles, puertas y enlaces ----------
+# Los mismos cálculos están en mods/barrio.js (cdGrafo, cdCamino, cdTrayecto): si cambia uno, cambia el otro.
+AVISOS=[]
+HOGAR_TIPOS_CASA=('casa','casaV','casa2')
+def _k(p):return (round(float(p[0]),1),round(float(p[1]),1))
+def _horiz(c):return c['a'][1]==c['b'][1]
+def _en(c,p):
+    a,b=c['a'],c['b']
+    if _horiz(c):return abs(p[1]-a[1])<1e-6 and a[0]-1e-6<=p[0]<=b[0]+1e-6
+    return abs(p[0]-a[0])<1e-6 and a[1]-1e-6<=p[1]<=b[1]+1e-6
+def grafo(bar,extra=()):
+    cal=bar['calles'];pts={_k(c['a']) for c in cal}|{_k(c['b']) for c in cal}
+    for i,c in enumerate(cal):
+        for e in cal[i+1:]:
+            if _horiz(c)==_horiz(e):continue
+            h,v=(c,e) if _horiz(c) else (e,c);p=_k((v['a'][0],h['a'][1]))
+            if _en(h,p) and _en(v,p):pts.add(p)
+    for p in list(bar.get('puertas',{}).values()):pts.add(_k(p))
+    for p in extra:pts.add(_k(p))
+    adj={p:[] for p in pts}
+    for c in cal:
+        ps=sorted((p for p in pts if _en(c,p)),key=lambda p:p[0]+p[1])
+        for a,b in zip(ps,ps[1:]):
+            l=abs(a[0]-b[0])+abs(a[1]-b[1]);adj[a].append((b,l));adj[b].append((a,l))
+    return adj
+def camino(adj,a,b):
+    import heapq
+    a,b=_k(a),_k(b)
+    if a not in adj or b not in adj:return None
+    dist={a:0};prev={};h=[(0,a)]
+    while h:
+        d0,u=heapq.heappop(h)
+        if d0>dist.get(u,1e18):continue
+        if u==b:break
+        for v,l in adj[u]:
+            if d0+l<dist.get(v,1e18)-1e-9:dist[v]=d0+l;prev[v]=u;heapq.heappush(h,(d0+l,v))
+    if b not in dist:return None
+    r=[b]
+    while r[-1]!=a:r.append(prev[r[-1]])
+    return dist[b],r[::-1]
+def _rect_dist(r,p):
+    dx=max(r[0]-p[0],0,p[0]-r[2]);dy=max(r[1]-p[1],0,p[1]-r[3]);return (dx*dx+dy*dy)**.5
+def _pisa(a,b,m=0):return a[0]<b[2]+m and b[0]<a[2]+m and a[1]<b[3]+m and b[1]<a[3]+m
+def _calle_rect(c):
+    h=c['w']/2
+    return [c['a'][0],c['a'][1]-h,c['b'][0],c['b'][1]+h] if _horiz(c) else [c['a'][0]-h,c['a'][1],c['b'][0]+h,c['b'][1]]
+def trayecto_py(C,pa,pb):
+    """pa, pb = (barrio,[x,y]). Devuelve (minutos, precio_h, lineas usadas) por Dijkstra sobre pie y líneas."""
+    import heapq
+    esc=C['ciudad'];mc=esc['m_casilla']/1000*esc['min_km'];B=C['barrios'];en=C['enlaces']
+    esp={b:[] for b in B}
+    for l in en['pie']:esp[l['a']].append(l['pa']);esp[l['b']].append(l['pb'])
+    for l in en['lineas']:
+        for s in l['paradas']:esp[s['b']].append(s['p'])
+    esp[pa[0]].append(pa[1]);esp[pb[0]].append(pb[1])
+    G={b:grafo(B[b],esp[b]) for b in B}
+    nodos={}
+    def add(u,v,c,tag=None):nodos.setdefault(u,[]).append((v,c,tag));nodos.setdefault(v,[])
+    for b in B:
+        ps=sorted({_k(p) for p in esp[b]})
+        for i,p in enumerate(ps):
+            for q in ps[i+1:]:
+                r=camino(G[b],p,q)
+                if r:add(('g',b)+p,('g',b)+q,r[0]*mc);add(('g',b)+q,('g',b)+p,r[0]*mc)
+    for l in en['pie']:
+        c=l['m']/1000*esc['min_km'];u=('g',l['a'])+_k(l['pa']);v=('g',l['b'])+_k(l['pb']);add(u,v,c);add(v,u,c)
+    for l in en['lineas']:
+        for i,s in enumerate(l['paradas']):
+            g=('g',s['b'])+_k(s['p']);o=('l',l['id'],i);add(g,o,l['cada']/2,l['id']);add(o,g,0)
+            if i:
+                o0=('l',l['id'],i-1);c=l['min'][i-1];add(o0,o,c);add(o,o0,c)
+    src=('g',pa[0])+_k(pa[1]);dst=('g',pb[0])+_k(pb[1])
+    dist={src:0};prev={};h=[(0,src)]
+    while h:
+        d0,u=heapq.heappop(h)
+        if d0>dist.get(u,1e18):continue
+        if u==dst:break
+        for v,c,t in nodos.get(u,[]):
+            if d0+c<dist.get(v,1e18)-1e-9:dist[v]=d0+c;prev[v]=(u,t);heapq.heappush(h,(d0+c,v))
+    if dst not in dist:return None
+    precio=0;usadas=[];u=dst
+    while u!=src:
+        p,t=prev[u];
+        if t:precio+=next(l['precio_h'] for l in en['lineas'] if l['id']==t);usadas.append(t)
+        u=p
+    return round(dist[dst],1),round(precio,3),usadas[::-1]
+def ciudad(d,E,dentro,mismas):
+    C=d['ciudad'];L=d['lugares'];P=d['personas'];BA=d.get('barrio',{});V=d['viviendas']
+    if not C.get('barrios'):E.append('ciudad.barrios: vacío');return
+    esc=C.get('ciudad',{});mp=esc.get('m_plano',100);mc=esc.get('m_casilla',10);k=mp/mc
+    if not(esc.get('n') and mc>0 and mp>0 and esc.get('min_km')==12):E.append('ciudad.ciudad: n, m_casilla, m_plano y min_km (12 min por km)')
+    B=C['barrios'];mismas('ciudad.orden',C.get('orden',[]),B)
+    if len(B)<5 or len(B)>7:E.append('ciudad.barrios: de 5 a 7 barrios, hay %d'%len(B))
+    tam={}
+    for b,x in B.items():
+        q='ciudad.barrios.%s'%b
+        for f in ('n','tipo','tipo_n','e','c','d','bueno','cuesta'):
+            if not x.get(f):E.append('%s: falta %s'%(q,f))
+        if not isinstance(x.get('alquiler'),(int,float)) or x['alquiler']<=0:E.append(q+'.alquiler: número > 0 (1 = la media de la ciudad)')
+        pl=x.get('plano',[])
+        if len(pl)!=4 or not(pl[0]<pl[2] and pl[1]<pl[3]):E.append(q+'.plano: [x0,y0,x1,y1]');continue
+        tam[b]=((pl[2]-pl[0])*k,(pl[3]-pl[1])*k)
+    for i,(a,x) in enumerate(B.items()):
+        for c,y in list(B.items())[i+1:]:
+            if a in tam and c in tam and _pisa(x['plano'],y['plano']):E.append('ciudad: los planos de %s y %s se pisan'%(a,c))
+    # lo que hay en cada barrio: lugares, edificios del censo, lugares solo de mapa y casas
+    cosas={b:{} for b in B};casas={b:{} for b in B}
+    def poner(id,bar,rb,q):
+        if bar not in B:E.append('%s.barrio: «%s» no es un barrio'%(q,bar));return
+        if not(isinstance(rb,list) and len(rb)==4 and rb[0]<rb[2] and rb[1]<rb[3]):E.append('%s.rb: [x0,y0,x1,y1] con x0<x1 e y0<y1'%q);return
+        if id in cosas[bar]:E.append('%s: id repetido en el barrio'%q)
+        cosas[bar][id]=rb
+    ids=set()
+    for kk,p in L['lugares'].items():
+        ids.add(kk)
+        if p.get('barrio')=='@casa':
+            if kk not in ('casaV','casa2'):E.append('lugares.%s.barrio: «@casa» solo vale para casaV y casa2'%kk)
+            if 'rb' in p:E.append('lugares.%s: con barrio «@casa» el rectángulo lo da ciudad.barrios.*.casa'%kk)
+        else:poner(kk,p.get('barrio'),p.get('rb'),'lugares.'+kk)
+    for kk,p in L.get('solo_mapa',{}).items():
+        if kk in ids:E.append('lugares.solo_mapa.%s: el id ya es un lugar'%kk)
+        ids.add(kk)
+        for f in ('n','e','d','abre','h','c'):
+            if f not in p:E.append('lugares.solo_mapa.%s: falta %s'%(kk,f))
+        if p.get('outs'):E.append('lugares.solo_mapa.%s: sin salidas ni escena interior'%kk)
+        poner(kk,p.get('barrio'),p.get('rb'),'lugares.solo_mapa.'+kk)
+    if not 6<=len(L.get('solo_mapa',{}))<=12:E.append('lugares.solo_mapa: entre 6 y 12 lugares nuevos, hay %d'%len(L.get('solo_mapa',{})))
+    for kk,e in BA.get('edificios',{}).items():
+        if kk in ids:E.append('barrio.edificios.%s: el id ya es un lugar'%kk)
+        poner(kk,e.get('barrio'),e.get('rb'),'barrio.edificios.'+kk)
+    usados=set(C.get('vivienda',{}).values())
+    mismas('ciudad.vivienda',C.get('vivienda',{}),V['viviendas'])
+    dentro('ciudad.vivienda',usados,B,'ciudad.barrios')
+    for b,x in B.items():
+        for kk,rb in x.get('casa',{}).items():
+            if kk not in HOGAR_TIPOS_CASA:E.append('ciudad.barrios.%s.casa.%s: solo casa, casaV y casa2'%(b,kk))
+            casas[b][kk]=rb
+        if b in usados and set(casas[b])!=set(HOGAR_TIPOS_CASA):E.append('ciudad.barrios.%s: aquí vive el personaje según ciudad.vivienda: faltan casa, casaV y casa2 en «casa»'%b)
+    # calles, edificios y puertas de cada barrio
+    for b,x in B.items():
+        if b not in tam:continue
+        q='ciudad.barrios.%s'%b;w,h=tam[b];cal=x.get('calles',[]);nom=set()
+        if not cal:E.append(q+'.calles: vacío');continue
+        for c in cal:
+            if c.get('n') in nom:E.append('%s.calles: nombre repetido «%s»'%(q,c.get('n')))
+            nom.add(c.get('n'))
+            a,bb,ww=c.get('a'),c.get('b'),c.get('w')
+            if not(a and bb and len(a)==2 and len(bb)==2 and isinstance(ww,(int,float)) and ww>0):E.append('%s.calles.%s: n, a, b y w'%(q,c.get('n')));continue
+            if not((a[0]==bb[0] and a[1]<bb[1]) or (a[1]==bb[1] and a[0]<bb[0])):E.append('%s.calles.%s: recta horizontal o vertical, de a (menor) a b'%(q,c['n']));continue
+            if not(0<=a[0] and 0<=a[1] and bb[0]<=w and bb[1]<=h):E.append('%s.calles.%s: sale del barrio (%gx%g)'%(q,c['n'],w,h))
+        for i,c in enumerate(cal):
+            for e in cal[i+1:]:
+                if _horiz(c)==_horiz(e) and _pisa(_calle_rect(c),_calle_rect(e),-.01) and ((_horiz(c) and abs(c['a'][1]-e['a'][1])<1e-6) or (not _horiz(c) and abs(c['a'][0]-e['a'][0])<1e-6)):E.append('%s.calles: «%s» y «%s» se superponen'%(q,c['n'],e['n']))
+        todos=dict(cosas[b])
+        for kk,rb in casas[b].items():todos[kk]=rb
+        for kk,r in todos.items():
+            if not(r[0]>=0 and r[1]>=0 and r[2]<=w and r[3]<=h):E.append('%s: %s sale del barrio'%(q,kk))
+            for c in cal:
+                if _pisa(r,_calle_rect(c),-.01):E.append('%s: %s pisa la calle «%s»'%(q,kk,c['n']))
+        ks=list(todos)
+        for i,a in enumerate(ks):
+            for c in ks[i+1:]:
+                if _pisa(todos[a],todos[c]):E.append('%s: %s y %s se pisan'%(q,a,c))
+        pu=x.get('puertas',{})
+        mismas(q+'.puertas',pu,todos)
+        for kk,p in pu.items():
+            if kk not in todos:continue
+            if not(len(p)==3):E.append('%s.puertas.%s: [x, y, calle]'%(q,kk));continue
+            c=next((c for c in cal if c.get('n')==p[2]),None)
+            if not c:E.append('%s.puertas.%s: la calle «%s» no existe'%(q,kk,p[2]));continue
+            if not _en(c,p[:2]):E.append('%s.puertas.%s: el punto no está en el eje de «%s»'%(q,kk,p[2]));continue
+            if _rect_dist(todos[kk],p[:2])>c['w']/2+2.5:E.append('%s.puertas.%s: la puerta queda a más de %g de la fachada'%(q,kk,c['w']/2+2.5))
+            ed=P['edificios'].get(kk)
+            if ed:
+                clave=c['n'].split()[-1].lower()
+                if clave not in ed['n'].lower():E.append('%s.puertas.%s: «%s» no es la calle de «%s»'%(q,kk,c['n'],ed['n']))
+    # enlaces: a pie y líneas; el grafo de cada barrio debe ser conexo
+    en=C.get('enlaces',{});especiales={b:[] for b in B}
+    def enlace_pt(b,p,q):
+        if b not in B or b not in tam:E.append('%s: barrio «%s» no existe'%(q,b));return
+        w,h=tam[b]
+        if not any(_en(c,p) for c in B[b]['calles']):E.append('%s: el punto %s no está en una calle de %s'%(q,p,b));return
+        especiales[b].append(p)
+    ady={b:set() for b in B}
+    for i,l in enumerate(en.get('pie',[])):
+        q='ciudad.enlaces.pie[%d]'%i
+        if l.get('a') not in B or l.get('b') not in B:E.append(q+': barrio que no existe');continue
+        enlace_pt(l['a'],l['pa'],q);enlace_pt(l['b'],l['pb'],q)
+        if not(isinstance(l.get('m'),(int,float)) and 0<l['m']<=500):E.append(q+'.m: metros del paso, de 1 a 500')
+        A,Bb=B[l['a']]['plano'],B[l['b']]['plano']
+        pa=(A[0]+l['pa'][0]/k,A[1]+l['pa'][1]/k);pb=(Bb[0]+l['pb'][0]/k,Bb[1]+l['pb'][1]/k)
+        if abs(pa[0]-pb[0])>.15 or abs(pa[1]-pb[1])>.15:E.append('%s: los dos puntos no coinciden en el plano %s %s'%(q,pa,pb))
+        ady[l['a']].add(l['b']);ady[l['b']].add(l['a'])
+    ids_l=set()
+    for i,l in enumerate(en.get('lineas',[])):
+        q='ciudad.enlaces.lineas[%s]'%l.get('id',i)
+        if l.get('id') in ids_l:E.append(q+': id repetido')
+        ids_l.add(l.get('id'))
+        if l.get('modo') not in ('metro','bus','tren'):E.append(q+'.modo: metro, bus o tren')
+        if not(l.get('n') and l.get('c') and isinstance(l.get('cada'),(int,float)) and l['cada']>0 and isinstance(l.get('precio_h'),(int,float)) and l['precio_h']>0):E.append(q+': n, c, cada (minutos) y precio_h (horas de salario)')
+        ps=l.get('paradas',[])
+        if len(ps)<2 or len(l.get('min',[]))!=len(ps)-1 or any(not(isinstance(m,(int,float)) and m>0) for m in l.get('min',[])):E.append(q+': al menos 2 paradas y un tiempo en minutos entre cada par')
+        for s in ps:
+            if not s.get('n'):E.append(q+': parada sin nombre')
+            enlace_pt(s.get('b'),s.get('p'),q+'.paradas')
+        for s,t in zip(ps,ps[1:]):
+            if s.get('b') in ady and t.get('b') in ady:ady[s['b']].add(t['b']);ady[t['b']].add(s['b'])
+    # cada barrio, conexo; todos los barrios, conectados entre sí
+    for b,x in B.items():
+        if b not in tam:continue
+        g=grafo(x,especiales[b]);ini=next(iter(g));vis={ini};cola=[ini]
+        while cola:
+            u=cola.pop()
+            for v,_ in g[u]:
+                if v not in vis:vis.add(v);cola.append(v)
+        if len(vis)!=len(g):E.append('ciudad.barrios.%s: las calles no forman un solo grafo (%d de %d puntos alcanzables)'%(b,len(vis),len(g)))
+    if B:
+        ini=next(iter(B));vis={ini};cola=[ini]
+        while cola:
+            u=cola.pop()
+            for v in ady[u]:
+                if v not in vis:vis.add(v);cola.append(v)
+        if len(vis)!=len(B):E.append('ciudad.enlaces: desde %s no se llega a %s'%(ini,sorted(set(B)-vis)))
+    # no se puede seguir si algo falla arriba: los avisos de trayecto necesitan los datos bien
+    if E:return
+    # camino a pie entre cada pareja de puertas de cada barrio, y trayecto entre cada pareja de barrios
+    for b,x in B.items():
+        g=grafo(x,especiales[b]);ps=[(kk,p) for kk,p in x['puertas'].items()]
+        for kk,p in ps:
+            if kk in casas[b] and b not in usados:continue
+            r=camino(g,p[:2],ps[0][1][:2])
+            if not r:E.append('ciudad.barrios.%s: no hay camino a pie de %s a %s'%(b,kk,ps[0][0]))
+    for a in B:
+        for b in B:
+            if a<b:
+                pa=next(iter(B[a]['puertas'].values()));pb=next(iter(B[b]['puertas'].values()))
+                if not trayecto_py(C,(a,pa[:2]),(b,pb[:2])):E.append('ciudad.enlaces: no hay trayecto de %s a %s'%(a,b))
+    # aviso (no error): quien vive en un barrio y trabaja en otro; es un dato de juego
+    sitio={}
+    for kk,bs in cosas.items():
+        for id in bs:sitio[id]=kk
+    for hid,hg in P['hogares'].items():hg['_b']=sitio.get(hg['edificio'])
+    for v in P['vecinos']:
+        t=v.get('trabajo');hg=P['hogares'].get(v['hogar'],{})
+        if not t or t['lugar']=='fuera' or not hg.get('_b'):continue
+        bt=sitio.get(t['lugar'])
+        if bt and bt!=hg['_b']:
+            pa=B[hg['_b']]['puertas'][hg['edificio']];pb=B[bt]['puertas'][t['lugar']]
+            r=trayecto_py(C,(hg['_b'],pa[:2]),(bt,pb[:2]))
+            if r:AVISOS.append('%s vive en %s y trabaja en %s (%s): %g min de trayecto%s'%(v['n'],B[hg['_b']]['n'],B[bt]['n'],t['lugar'],r[0],(', '+' + '.join(r[2]) if r[2] else ', a pie')))
+    for hg in P['hogares'].values():hg.pop('_b',None)
+
 # ---------- comprobaciones: cada una devuelve una lista de fallos ----------
 def comprobar(d):
     E=[]
@@ -176,7 +428,7 @@ def comprobar(d):
         dentro('lugares.%s.outs'%k,p.get('outs',[]),sal,'lugares.salidas')
         if len(p.get('r',[]))!=4:E.append('lugares.%s.r: hacen falta 4 números [x0,y0,x1,y1]'%k)
     # horarios de apertura: [[desde,hasta,[días]],…]; hasta > 24 = cierra de madrugada del día siguiente
-    for k,p in lug.items():
+    for k,p in list(lug.items())+list(L.get('solo_mapa',{}).items()):
         ab=p.get('abre')
         if ab is None:
             if k not in ('casaV','casa2'):E.append('lugares.%s: falta abre [[desde,hasta,[días]],…] (solo las casas particulares no lo llevan)'%k)
@@ -264,19 +516,13 @@ def comprobar(d):
         if v['ideo'] is not None:dentro('personas.vecinos.%s.ideo'%v['id'],[v['ideo']],ideo,'ideologias.ideologias')
         dentro('personas.vecinos.%s.donde'%v['id'],[x[0] for x in v['donde']],lug,'lugares.lugares')
     censo(P,lug,ideo,E,dentro)
-    # mapa del barrio: cada edificio del censo tiene su sitio
+    # el mapa del barrio y la ciudad: cada edificio tiene barrio, rectángulo local y puerta en una calle
     B=d.get('barrio')
     if B:
         mismas('barrio.edificios',B.get('edificios',{}),P['edificios'])
         for k,e in B.get('edificios',{}).items():
-            r=e.get('r',[])
-            if len(r)!=4 or not(r[0]<r[2] and r[1]<r[3]):E.append('barrio.edificios.%s.r: [x0,y0,x1,y1] con x0<x1 e y0<y1'%k)
             if not e.get('rotulo'):E.append('barrio.edificios.%s: falta rotulo'%k)
-        rs=[('lugares.'+k,p['r']) for k,p in lug.items()]+[('barrio.'+k,e['r']) for k,e in B.get('edificios',{}).items() if len(e.get('r',[]))==4]
-        for i,(n1,a) in enumerate(rs):
-            for n2,c in rs[i+1:]:
-                if n1.startswith('lugares.') and n2.startswith('lugares.'):continue
-                if len(a)==4 and len(c)==4 and a[0]<c[2] and c[0]<a[2] and a[1]<c[3] and c[1]<a[3]:E.append('barrio: %s y %s se pisan en el mapa'%(n1,n2))
+    if 'ciudad' in d:ciudad(d,E,dentro,mismas)
     dentro('ideologias.reparto',[r[0] for r in ID['reparto']],ideo,'ideologias.ideologias')
     dentro('ideologias.voces',ID['voces'],gov,'gobiernos.gobiernos')
     for g,v in ID['voces'].items():dentro('ideologias.voces.%s'%g,v,ideo,'ideologias.ideologias')
@@ -324,5 +570,6 @@ if __name__=='__main__':
     if '--fmt' in sys.argv:print('formateados:',formatear(d))
     E=comprobar(d)
     for e in E:print('✗',e)
+    for a in AVISOS:print('aviso:',a)
     print('DATA_FAIL' if E else 'DATA_OK',sum(len(v)-('_' in v) for v in d.values()),'secciones en',len(d),'archivos')
     sys.exit(1 if E else 0)
