@@ -12,7 +12,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const fails=[];const chk=(c,
   chk(S.people.filter(q=>q.k==='v_'+v.id).length===1,'una vez '+v.id);const p2=vcConocer(v);chk(p2===p&&S.people.filter(q=>q.vid===v.id).length===1,'sin duplicar '+v.id);
   chk(p.vid===v.id&&p.hogar===v.hogar&&p.n===v.n&&p.g===v.g&&p.age===v.edad,'campos '+v.id);chk(p.rel>0&&p.rel<36,'relación baja '+p.rel);
   chk(p.ideo===(v.ideo||'apolitica'),'ideo '+v.id);const lk=pbLook(v);chk(p.ch.skin===lk.skin&&p.ch.hair===lk.hair&&p.ch.shirt===lk.shirt&&p.ch.style===lk.style&&p.ch.beard===lk.beard,'aspecto '+v.id);
-  chk(p.stage==='conocida'&&p.orient==null&&!canLove(p),'sin romance '+v.id);chk(/·/.test(p.r)||p.r.length>3,'resumen '+p.r);}
+  chk(p.stage==='conocida'&&(p.orient==null)===!trRomOk(v),'romance solo si es adulta libre (T-122) '+v.id);chk(/·/.test(p.r)||p.r.length>3,'resumen '+p.r);}
  chk(S.people.length===nPre+3,'3 más en la lista');
  info.hogares=adultos.map(v=>v.hogar).join(',');
  // 2. nadie en dos sitios: con él de salida o en tu casa no sale en su puesto

@@ -155,6 +155,19 @@ Campos comunes: `n` nombre · `e` emoji · `d` descripción.
 
 El dilema `calentador` lleva además `fin_burofax` y `fin_sindicato`: la frase del día en que por fin lo arreglan, según lo que se eligió.
 
+### trato.json
+Tratar con los vecinos (`mods/trato.js`). Secciones:
+- `oficios`: por primer puesto del censo (`cajera`, `albañil`...), `acciones` con `id`, `e` (icono), `n` (nombre), `rel` (relación mínima), `p` (probabilidad de salir bien), `req` (condiciones), `ok` y `ko` como `[título, línea]`, `fx` y `fxko` (efectos). `nota` es una línea de contexto sin acción.
+- `lugares`: lo mismo, según dónde está el vecino (`bar`, `super`, `parque`...). Las claves son ids de `lugares.json`.
+- `favores`: `pedir` (le pides algo) y `pide` (te lo pide a ti, con `modo` `ya` o `visita`). Cada uno con `msg`, `ok`, `ko` o `rechazo`, `fx`, `mem` (la nota de «te debe una» / «le debes una»).
+- `cotilleo`: textos del chisme que descubre una `historia` o un `lazo` real del censo.
+- `politica`: afinidad entre ideologías (`cercanas`, claves de `ideologias.json`), reacciones y textos de organizar el bloque.
+- `romance`: `edad_min` (nunca menos de 18), `dif_edad`, pesos de `orientacion` (suman 1) y rechazos.
+- `buscan`: mensajes del móvil (`mensajes`, con `rel`, `req`, `resp`) y visitas (`visita`).
+- `ficha`: textos de la interfaz y del diario.
+
+Efectos (`fx`): rel, social, diversion, hambre, energia, coste_h, fiar_h, presta_h, presto_h, pista, despensa, agua, hijos_hap, mov, sol, te, chisme. Condiciones (`req`): huerto, hijos_cole, con_trabajo, en_paro, trabajo_dentro, ella_hijos, bloque, politica, justa, solvente. Huecos: `{v}`, `{x}`, `{y}`, `{k}`, `{c}`, `{n}`, `{o}`, `{quien}`, `{sitio}`, `{frase}`, `{que}`, `{st}`, `{l}`, `{why}`. `datos.py` lo comprueba todo.
+
 ## Lo que todavía está en el código
 
 Queda para la segunda pasada del paso 0, porque ahí el texto va mezclado con condiciones y efectos:
