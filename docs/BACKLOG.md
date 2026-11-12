@@ -20,7 +20,10 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 
 ### ✅ (hecho) T-130 · La ciudad por barrios (`data/ciudad.json`, `mods/barrio.js`)
 
-### ⚡ T-131 · Caminar por la ciudad
+### T-132 · Flecos de caminar
+Rol: motor. Encadenar otra salida o redirigir mientras anda; tocar con «Ver casa» y el personaje fuera usa el manejador viejo; piquetes y colas en la puerta; `_ride` de reparto sin destino; escala de la figura en la calle; manzanas vacías (los 12 lugares sin interior).
+
+### ✅ (hecho, `mods/caminar.js`) T-131 · Caminar por la ciudad
 Rol: motor. El personaje va andando por las calles de `ciudad.json` de puerta a puerta (`cdCamino`, `cdTrayecto`), y en transporte entre barrios. Sustituir los usos del `r` antiguo en `src/core/047` y borrarlo. Dibujo mínimo.
 
 ### ✅ (hecho) T-122 · Tratar con los vecinos (`mods/trato.js`, `data/trato.json`) · horarios `abre` en lugares · burofax con plazo
