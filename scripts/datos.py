@@ -17,6 +17,69 @@ def cargar():
             except ValueError as e:raise SystemExit('DATA_FAIL data/%s: %s'%(f,e))
     return d
 
+
+# ---------- censo del barrio: edificios, hogares y vecinos ----------
+LAZOS=('pareja','hija','hijo','madre','padre','hermana','hermano','abuela','abuelo','nieta','nieto','amiga','ex','casera','inquilina','jefa','empleada','mal_rollo')
+ESTUDIA=(None,'cole','instituto','fp','uni')
+PERMITIDO_MENOR=('parque','biblioteca','super','tienda','parroquia','comedor','ateneo','ambulatorio','gymbueno')
+def censo(P,lug,ideo,E,dentro):
+    ed,ho,vs=P.get('edificios',{}),P.get('hogares',{}),P.get('vecinos',[])
+    ids=[v['id'] for v in vs]
+    if len(set(ids))!=len(ids):E.append('personas.vecinos: ids repetidos %s'%sorted({i for i in ids if ids.count(i)>1}))
+    por={v['id']:v for v in vs}
+    for k,e in ed.items():
+        if e.get('tipo') not in ('bloque','casa'):E.append('personas.edificios.%s.tipo: bloque o casa'%k)
+        if not(e.get('n') and e.get('d') and isinstance(e.get('plantas'),int)):E.append('personas.edificios.%s: faltan n, d o plantas'%k)
+    for k,h in ho.items():
+        q='personas.hogares.%s'%k
+        dentro(q+'.edificio',[h.get('edificio')],ed,'personas.edificios')
+        if h.get('tipo') not in ('familia','monoparental','pareja','sola','compartido','tres_generaciones'):E.append(q+'.tipo: «%s» no vale'%h.get('tipo'))
+        if h.get('cls') not in (0,1,2,3,4):E.append(q+'.cls: de 0 a 4')
+        bloque=ed.get(h.get('edificio'),{}).get('tipo')=='bloque'
+        if bool(h.get('puerta'))!=bloque:E.append(q+'.puerta: solo y siempre en bloques')
+        if not(h.get('n') and h.get('d')):E.append(q+': faltan n o d')
+        dentro(q+'.miembros',h.get('miembros',[]),por,'personas.vecinos')
+        if not h.get('miembros'):E.append(q+': sin miembros')
+        if len(set(h.get('miembros',[])))!=len(h.get('miembros',[])):E.append(q+'.miembros: repetidos')
+        if h.get('miembros') and not any(por[m]['edad']>=18 for m in h['miembros'] if m in por):E.append(q+': no hay ninguna persona adulta')
+    mis={m:k for k,h in ho.items() for m in h.get('miembros',[])}
+    for v in vs:
+        i=v['id'];q='personas.vecinos.%s'%i
+        dentro(q+'.hogar',[v.get('hogar')],ho,'personas.hogares')
+        if v.get('hogar') in ho and mis.get(i)!=v['hogar']:E.append(q+': no está en miembros de su hogar %s'%v['hogar'])
+        for k in ('rol','historia','trabajo','estudia','lazos'):
+            if k not in v:E.append(q+': falta «%s»'%k)
+        if v.get('estudia') not in ESTUDIA:E.append(q+'.estudia: «%s» no vale'%v.get('estudia'))
+        for o,t in v.get('lazos',[]):
+            if o not in por:E.append(q+'.lazos: «%s» no existe'%o)
+            if o==i:E.append(q+'.lazos: lazo consigo misma')
+            if t not in LAZOS:E.append(q+'.lazos: tipo «%s» no vale'%t)
+        if v['edad']<16:
+            if v.get('oficio') is not None or v.get('ideo') is not None:E.append(q+': menor de 16 con oficio o ideo')
+            if v.get('trabajo'):E.append(q+': menor de 16 que trabaja')
+        if v['edad']<18:
+            for lg,a,b,ds in v['donde']:
+                if lg not in PERMITIDO_MENOR:E.append(q+'.donde: menor en «%s»'%lg)
+                if lg=='gymbueno' and v['edad']<14:E.append(q+'.donde: gymbueno desde los 14')
+                if b>22:E.append(q+'.donde: menor fuera de casa después de las 22')
+        if v.get('estudia') in ('cole','instituto','fp'):
+            for lg,a,b,ds in v['donde']:
+                if set(ds)&set(range(5)) and a<14 and b>9:E.append(q+'.donde: «%s» %d-%d en horario de clase'%(lg,a,b))
+        for lg,a,b,ds in v['donde']:
+            if not(0<=a<b<=24) or not ds or any(d not in range(7) for d in ds):E.append(q+'.donde: horas o días mal en «%s»'%lg)
+        for n,(l1,a1,b1,d1) in enumerate(v['donde']):
+            for l2,a2,b2,d2 in v['donde'][n+1:]:
+                if a1<b2 and a2<b1 and set(d1)&set(d2):E.append(q+'.donde: «%s» y «%s» se pisan'%(l1,l2))
+        t=v.get('trabajo')
+        if t:
+            lg=t.get('lugar');a,b=t.get('h',[0,0]);ds=t.get('dias',[])
+            if lg!='fuera':dentro(q+'.trabajo.lugar',[lg],lug,'lugares.lugares')
+            if len(t.get('puesto',[]))!=2 or not(0<=a<b<=24) or not ds or any(d not in range(7) for d in ds):E.append(q+'.trabajo: puesto [f,m], h o dias mal')
+            if lg=='fuera':
+                for l2,a2,b2,d2 in v['donde']:
+                    if a<b2 and a2<b and set(ds)&set(d2):E.append(q+'.trabajo: trabaja fuera y «%s» %d-%d lo pisa'%(l2,a2,b2))
+            elif not any(l2==lg and a2<=a and b<=b2 and set(ds)<=set(d2) for l2,a2,b2,d2 in v['donde']):E.append(q+'.trabajo: no cuadra con donde (%s %d-%d)'%(lg,a,b))
+
 # ---------- comprobaciones: cada una devuelve una lista de fallos ----------
 def comprobar(d):
     E=[]
@@ -87,8 +150,9 @@ def comprobar(d):
         if v.get('vote'):dentro('ideologias.%s.vote'%k,[v['vote']],gov,'gobiernos.gobiernos')
     dentro('ideologias.izquierda',ID['izquierda'],ideo,'ideologias.ideologias');dentro('ideologias.derecha',ID['derecha'],ideo,'ideologias.ideologias')
     for v in P.get('vecinos',[]):
-        dentro('personas.vecinos.%s.ideo'%v['id'],[v['ideo']],ideo,'ideologias.ideologias')
+        if v['ideo'] is not None:dentro('personas.vecinos.%s.ideo'%v['id'],[v['ideo']],ideo,'ideologias.ideologias')
         dentro('personas.vecinos.%s.donde'%v['id'],[x[0] for x in v['donde']],lug,'lugares.lugares')
+    censo(P,lug,ideo,E,dentro)
     dentro('ideologias.reparto',[r[0] for r in ID['reparto']],ideo,'ideologias.ideologias')
     dentro('ideologias.voces',ID['voces'],gov,'gobiernos.gobiernos')
     for g,v in ID['voces'].items():dentro('ideologias.voces.%s'%g,v,ideo,'ideologias.ideologias')
