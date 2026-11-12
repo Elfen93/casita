@@ -2,13 +2,13 @@
   "_": "El censo en el mapa de barrio (mods/barrio.js). edificios: dónde está cada edificio del censo (personas.edificios) · barrio id de ciudad.json · rb rectángulo [x0,y0,x1,y1] en casillas locales de su barrio · rotulo nombre corto para el mapa · c color de la fachada · roof color del tejado (casas) · det un detalle que se dibuja (local, huerto, parra, patio, adosada). Las calles y puertas están en ciudad.json.",
 
   "edificios": {
-    "b_fuente": {"barrio": "casco", "rb": [19, 32.4, 26, 37.4], "rotulo": "Plaza de la Fuente, 3", "c": "#cfd9de"},
-    "b_olivo": {"barrio": "eras", "rb": [30, 7.4, 37, 12.4], "rotulo": "Calle Olivo, 12", "c": "#c08460"},
-    "b_canal": {"barrio": "ribera", "rb": [3, 17.4, 10, 22.4], "rotulo": "Calle del Canal, 40", "c": "#dccaa8"},
-    "c_pozo": {"barrio": "eras", "rb": [38, 26, 41.4, 29.4], "rotulo": "Calle del Pozo, 2", "c": "#e9d6b8", "roof": "#a5533e", "det": "patio"},
-    "c_tejar": {"barrio": "ribera", "rb": [27.5, 38, 30.9, 41.4], "rotulo": "Camino del Tejar, 9", "c": "#e6c9b0", "roof": "#8a4b3a", "det": "local"},
-    "c_noria": {"barrio": "eras", "rb": [44, 38.6, 47.4, 42], "rotulo": "Calle Noria, 15", "c": "#efe3c8", "roof": "#b5654a", "det": "huerto"},
-    "c_fragua": {"barrio": "pinares", "rb": [26, 4, 29.4, 7.4], "rotulo": "Calle Fragua, 4", "c": "#d8dde0", "roof": "#6f5a52", "det": "adosada"},
-    "c_huerta": {"barrio": "ribera", "rb": [26, 4, 29.4, 7.4], "rotulo": "Calle Huerta, 7", "c": "#f0dcc0", "roof": "#9a5a40", "det": "parra"}
+    "b_fuente": {"barrio": "casco", "rb": [38.0, 65.9, 52.0, 75.9], "rotulo": "Plaza de la Fuente, 3", "c": "#cfd9de"},
+    "b_olivo": {"barrio": "eras", "rb": [60.0, 16.4, 74.0, 26.4], "rotulo": "Calle Olivo, 12", "c": "#c08460"},
+    "b_canal": {"barrio": "ribera", "rb": [6.0, 35.9, 20.0, 45.9], "rotulo": "Calle del Canal, 40", "c": "#dccaa8"},
+    "c_pozo": {"barrio": "eras", "rb": [73.9, 48.9, 84.9, 56.9], "rotulo": "Calle del Pozo, 2", "c": "#e9d6b8", "roof": "#a5533e", "det": "patio"},
+    "c_tejar": {"barrio": "ribera", "rb": [73.6, 76.4, 84.6, 84.4], "rotulo": "Camino del Tejar, 9", "c": "#e6c9b0", "roof": "#8a4b3a", "det": "local"},
+    "c_noria": {"barrio": "eras", "rb": [85.9, 76.9, 96.9, 84.9], "rotulo": "Calle Noria, 15", "c": "#efe3c8", "roof": "#b5654a", "det": "huerto"},
+    "c_fragua": {"barrio": "pinares", "rb": [49.9, 8.4, 60.9, 16.4], "rotulo": "Calle Fragua, 4", "c": "#d8dde0", "roof": "#6f5a52", "det": "adosada"},
+    "c_huerta": {"barrio": "ribera", "rb": [50.4, 8.4, 61.4, 16.4], "rotulo": "Calle Huerta, 7", "c": "#f0dcc0", "roof": "#9a5a40", "det": "parra"}
   }
 }

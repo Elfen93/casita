@@ -426,7 +426,7 @@ def comprobar(d):
     # lugares y salidas
     for k,p in lug.items():
         dentro('lugares.%s.outs'%k,p.get('outs',[]),sal,'lugares.salidas')
-        if len(p.get('r',[]))!=4:E.append('lugares.%s.r: hacen falta 4 números [x0,y0,x1,y1]'%k)
+        if 'r' in p:E.append('lugares.%s.r: el plano antiguo ya no existe; el sitio es `rb`'%k)
     # horarios de apertura: [[desde,hasta,[días]],…]; hasta > 24 = cierra de madrugada del día siguiente
     for k,p in list(lug.items())+list(L.get('solo_mapa',{}).items()):
         ab=p.get('abre')

@@ -1,7 +1,5 @@
 // =================== HOGARES: la casa de la gente, por dentro (la salida «Ir a su casa») ===================
 {const _d=destOf;destOf=function(k){if(k==='visita')return 'hogar';return _d.apply(this,arguments);};}
-{const _r=routeTo;routeTo=function(f,k){return _r.call(this,f,k==='hogar'?'casaV':k);};}
-{const _o=doorOf;doorOf=function(k){return _o.call(this,k==='hogar'?'casaV':k);};}
 {const _pn=placeName;placeName=function(k){if(k!=='hogar')return _pn.apply(this,arguments);try{const p=hgVisitado();if(!p)return 'Casa de alguien';const h=hogarDe(p);let s='Casa de '+p.n;if(h.censo){if(h.hogar.puerta&&(s+h.hogar.puerta).length<=14)s+=' · '+h.hogar.puerta;}return s;}catch(e){return 'Casa de alguien';}};}
 const hgVisitado=()=>(S.people||[]).find(q=>q.k===S.outWith)||P_('madre')||(S.people||[])[0]||null;
 // ---------- el censo (todo opcional) ----------

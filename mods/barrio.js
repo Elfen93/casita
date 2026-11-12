@@ -121,12 +121,17 @@ function cdCosas(b){const out=[];if(!b)return out;
   for(const x of out)x.d=x.r[2]+x.r[3]-.5;
   return out;}
 function bmBoxes(){if(BM.bx&&BM.bx.b===BM.b)return BM.bx.l;if(!BM.b)return [];BM.bx={b:BM.b,l:cdCosas(BM.b)};return BM.bx.l;}
+// CMF: el origen del marco en el que se pinta (coordenadas locales del barrio). En el mapa, [0,0]; en casa, la esquina de la parcela; dentro de un lugar, la de su planta.
+// cmV pasa un rectángulo del barrio a la vista de ese marco (con la rotación de la casa si la hay).
+let CMF=[0,0];
+const cmV=r=>vrect([r[0]-CMF[0],r[1]-CMF[1],r[2]-CMF[0],r[3]-CMF[1]]);
+const cmW2V=(x,y)=>w2v(x-CMF[0],y-CMF[1]);
 const bmProj=(u,v,z)=>{const [x,y]=P(u,v,z);return [cam.x+x*cam.z,cam.y+y*cam.z];};
 function bmCvx(p){p=p.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
   const lo=[],up=[];for(const q of p){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],q)<=0)lo.pop();lo.push(q);}
   for(let i=p.length-1;i>=0;i--){const q=p[i];while(up.length>=2&&cr(up[up.length-2],up[up.length-1],q)<=0)up.pop();up.push(q);}
   lo.pop();up.pop();return lo.concat(up);}
-function bmHull(b){const pts=[];for(const [u,v] of [[b.r[0],b.r[1]],[b.r[2],b.r[1]],[b.r[2],b.r[3]],[b.r[0],b.r[3]]])for(const z of [0,b.h])pts.push(bmProj(u,v,z));return bmCvx(pts);}
+function bmHull(b){const pts=[],r=cmV(b.r);for(const [u,v] of [[r[0],r[1]],[r[2],r[1]],[r[2],r[3]],[r[0],r[3]]])for(const z of [0,b.h])pts.push(bmProj(u,v,z));return bmCvx(pts);}
 function bmIn(h,x,y){let s=0;for(let i=0;i<h.length;i++){const a=h[i],b=h[(i+1)%h.length],c=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);if(c===0)continue;const g=c>0?1:-1;if(!s)s=g;else if(s!==g)return false;}return true;}
 function bmBB(h){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const [x,y] of h){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}return [x0,y0,x1,y1];}
 const bmSee=bb=>bb[2]>-40&&bb[0]<W+40&&bb[3]>-40&&bb[1]<H+40;
@@ -157,26 +162,23 @@ function bmVerBarrio(id){if(!BM.on||BM.obs||!CDX().barrios[id])return false;
   let cx,cy,z;
   if(c){cx=c.cx;cy=c.cy;z=c.z;}
   else{const [w,h]=cdTam(id);cx=w/2;cy=h/2;z=Math.max(bmFitZ(),.26);
-    const s2=S.sim,dest=s2&&s2.work>0&&s2.dest&&cdBarrioDe(s2.dest)===id?cdRect(s2.dest):null,q=dest||(id===cdHome()?cdRect('casa'):null);if(q){cx=(q[0]+q[2])/2;cy=(q[1]+q[3])/2;}}
+    const s2=S.sim,dest=s2&&s2.work>0&&s2.dest&&cdBarrioDe(cmDest(s2.dest))===id?cdRect(cmDest(s2.dest)):null,q=dest||(id===cdHome()?cdRect('casa'):null);if(q){cx=(q[0]+q[2])/2;cy=(q[1]+q[3])/2;}}
   bmCenter(cx,cy,z);bmClamp();bmUI();return true;}
 function bmCiudad(){if(!BM.on||BM.v==='ciudad')return;if(BM.obs)bmBack(true);bmSaveCam();BM.v='ciudad';BM.b=null;BM.bx=null;BM.ficha=null;menu.classList.remove('open');document.body.classList.remove('bmobs');bmUI();}
 // «mirar dentro»: la escena del lugar a la hora actual, sin mover a nadie
 function bmLook(k){if(!BM.on||BM.v!=='barrio'||!SCENES[k])return false;
-  bmSaveCam();BM.mapCam={x:cam.x,y:cam.y,z:cam.z};BM.obs=k;viewPlace=true;sceneKey=null;
-  menu.classList.remove('open');document.body.classList.add('bmobs');bmUI();return true;}
-function bmBack(quiet){if(!BM.obs)return;BM.obs=null;viewPlace=false;sceneKey=null;
+  bmSaveCam();BM.mapCam={x:cam.x,y:cam.y,z:cam.z};BM.obs=k;sceneKey=null;
+  menu.classList.remove('open');document.body.classList.add('bmobs');
+  // la cámara al sitio, a escala de juego (la figura de pie, unos 30 px)
+  const r=cdRect(k)||[0,0,1,1];bmCenter((r[0]+r[2])/2,(r[1]+r[3])/2,.75);bmUI();return true;}
+function bmBack(quiet){if(!BM.obs)return;BM.obs=null;sceneKey=null;
   if(BM.mapCam){cam.x=BM.mapCam.x;cam.y=BM.mapCam.y;cam.z=BM.mapCam.z;}
   document.body.classList.remove('bmobs');if(!quiet)bmUI();}
 // donde está de verdad el personaje: ahí no se oculta
-const bmReal=k=>{const s=S.sim;return !!(s&&s.work>0&&s.dest===k);};
+const bmReal=k=>typeof cmDentro==='function'?cmDentro(k):false;
 function bmSilent(fn,key,self,args){if(!BM.obs||bmReal(key))return fn.apply(self,args);const s=S.sim,o=s.outingActive;s.outingActive=null;try{const r=fn.apply(self,args);if(r&&r.ana&&typeof r.ana==='object')r.ana={...r.ana,x:-60,y:-60};return r;}finally{s.outingActive=o;}}
-{const _a=awayKey;awayKey=function(){return (BM.on&&BM.obs)||_a.apply(this,arguments);};}
 {const _sa=sceneAct;sceneAct=function(){return BM.on&&BM.obs&&!bmReal(BM.obs)?(((PLACES[BM.obs]||{}).outs||[])[0]||'work'):_sa.apply(this,arguments);};} // una salida o el trabajo que la escena conozca; la figura del personaje no se pinta
-// el motor guarda la ruta del personaje al pintarla por primera vez: en el mapa se calcula pero no se guarda
-{const _aa=anaAbroad;anaAbroad=function(tt){const s=S.sim,had=s&&('route' in s),old=s&&s.route;try{return _aa.apply(this,arguments);}finally{if(BM.on&&s&&!old){if(had)s.route=old;else delete s.route;}}};}
 {const _bs=buildScene;buildScene=function(key,tt,night){return bmSilent(_bs,key,this,arguments);};}
-{const _ds=drawScene;drawScene=function(key,tt,night){if(!BM.obs||bmReal(key))return _ds.apply(this,arguments);const s=S.sim,o=s.outingActive;s.outingActive=null;try{return _ds.apply(this,arguments);}finally{s.outingActive=o;}};}
-{const _db=drawBubble;drawBubble=function(){if(BM.on&&BM.obs&&!bmReal(BM.obs))return;return _db.apply(this,arguments);};}
 // mientras el mapa está abierto, el motor no mueve la cámara ni cambia de escena por su cuenta
 {const _e=enterScene;enterScene=function(){if(BM.on)return;return _e.apply(this,arguments);};}
 {const _l=leaveScene;leaveScene=function(){if(BM.on)return;return _l.apply(this,arguments);};}
@@ -237,7 +239,7 @@ function bmSchedule(k){const p=cdLug(k),rows=[],ESC=typeof ESC_T!=='undefined'?E
 const bmRow=(e,t,w)=>`<div class="outrow"><span class="oe">${e}</span><span class="ot"><b>${t}</b>${w?`<small>${w}</small>`:''}</span></div>`;
 const bmAlq=x=>'×'+String(x).replace('.',',');
 // dónde está ella ahora: el barrio y, si está fuera, el sitio
-function bmDonde(){const s=S.sim;if(s&&s.work>0&&s.dest&&s.dest!=='_ride'){const b=cdBarrioDe(s.dest);if(b)return {b,id:s.dest,fuera:true};}return {b:cdHome(),id:'casa',fuera:false};}
+function bmDonde(){const s=S.sim;if(s&&s.work>0&&s.dest&&s.dest!=='_ride'&&typeof cmPos==='function'){const p=cmPos();if(p&&p.b)return {b:p.b,id:p.id||cmDest(s.dest),fuera:true,pos:p};}return {b:cdHome(),id:'casa',fuera:false};}
 // la ficha de un barrio (desde el plano de la ciudad)
 function bmFichaBarrio(id){const C=CDX(),B=C.barrios[id];if(!B)return false;BM.ficha='b:'+id;const dd=bmDonde();
   const lug=[...Object.keys(PLACES).filter(k=>cdBarrioDe(k)===id&&k!=='casaV'&&k!=='casa2'),...Object.keys(DATA.lugares.solo_mapa||{}).filter(k=>DATA.lugares.solo_mapa[k].barrio===id)];
@@ -275,14 +277,14 @@ function bmFicha(id){if(/^b:/.test(id))return bmFichaBarrio(id.slice(2));if(/^[p
     const hs=Object.entries(H).filter(([,q])=>q.edificio===id).sort((a,c)=>String(a[1].puerta||'').localeCompare(String(c[1].puerta||''),'es'));
     const gente=hs.reduce((s,[,q])=>s+q.miembros.length,0);
     h=`<h2>${e.tipo==='bloque'?'🏢':'🏠'} ${e.n}</h2><div class="sub">${e.d}</div>`;
-    h+=`<div class="kv"><span>🏗️ Plantas</span><span>${e.plantas}</span></div><div class="kv"><span>👥 Gente</span><span>${gente} ${gente===1?'persona':'personas'} en ${hs.length} ${hs.length===1?'hogar':'hogares'}</span></div><div class="kv"><span>📍 Barrio</span><span>${ub.n}</span></div>`;
+    h+=`<div class="kv"><span>🏗️ Plantas</span><span>${e.plantas}</span></div><div class="kv"><span>👥 Gente</span><span>${gente} ${gente===1?'persona':'personas'} en ${hs.length} ${hs.length===1?'hogar':'hogares'}</span></div><div class="kv"><span>📍 Barrio</span><span>${ub.n}</span></div>`+cmKV(cdPuerta(id)?cmTrayectoTxt(id):'');
     h+=`<div class="clab">${e.tipo==='bloque'?'Hogares del bloque':'Hogar'}</div>`;
     for(const [hid,q] of hs){const n=q.miembros.length;h+=`<div class="outrow"><span class="oe">${e.tipo==='bloque'?'🚪':'🏠'}</span><span class="ot"><b>${q.n}</b><small>${q.puerta?q.puerta+' · ':''}${n} ${n===1?'persona':'personas'}</small></span></div>`;}
     if(!hs.length)h+=`<div class="sub">Ahora mismo no hay nadie registrado.</div>`;
     h+=`<button class="btn grey" id="brx">Cerrar</button>`;}
   else{const p=cdLug(id),hr=S.t/60,wd=dateOf(S.day).wd,es=bmEstado(id);
     h=`<h2>${p.e} ${bmName(id)}</h2><div class="sub">${id==='casaV'&&P_('vecina')?`Aquí vive ${P_('vecina').n}. Relación: ${relLabel(P_('vecina').rel)}.`:p.d||'Una casa del barrio.'}</div>`;
-    h+=`<div class="kv"><span>📍 Barrio</span><span>${ub.n}</span></div>`;
+    h+=`<div class="kv"><span>📍 Barrio</span><span>${ub.n}</span></div>`+cmKV(cdPuerta(id)?cmTrayectoTxt(id):'');
     if(es)h+=`<div class="kv"><span>🪧 Hoy</span><span>${es}</span></div>`;
     const rows=bmSchedule(id);
     if(rows.length){h+=`<div class="clab">Qué se hace y cuándo</div>`;for(const [e,n,w] of rows)h+=bmRow(e,n,w);}
@@ -294,15 +296,15 @@ function bmFicha(id){if(/^b:/.test(id))return bmFichaBarrio(id.slice(2));if(/^[p
     if(es&&/huelga/.test(es)&&!ve.length)h+=`<div class="sub">Persianas bajadas.</div>`;
     h+=lista('💼','Trabajan',tr,true)+lista('🎒','Estudian',cl,false)+lista('🧍','Están',otros,false);
     if(!ve.length)h+=`<div class="sub">Nadie del censo a esta hora.</div>`;
-    if(b.kind==='extra')h+=`<div class="sub">Sin interior: solo se ve desde la calle.</div><button class="btn grey" id="brx">Cerrar</button>`;
+    if(b.kind==='extra')h+=`<div class="sub">Sin interior: solo se ve desde la calle.</div><button class="btn grey" id="brgo">${cmT('ir_boton')}</button><button class="btn grey" id="brx">Cerrar</button>`;
     else{h+=SCENES[id]?`<button class="btn" id="brin">👁️ Mirar dentro</button>`:`<div class="sub">Casa particular: desde la calle no se ve más.</div>`;
-      h+=`<button class="btn grey" id="brgo">🚶 Ir allí…</button><button class="btn grey" id="brx">Cerrar</button>`;}}
+      h+=`<button class="btn grey" id="brgo">${cmT('ir_boton')}</button><button class="btn grey" id="brx">Cerrar</button>`;}}
   card.innerHTML=h;menu.classList.add('open');card.scrollTop=0;
   const on=(i,f)=>{const el=card.querySelector('#'+i);if(el)el.onclick=f;};
   on('brx',()=>{menu.classList.remove('open');BM.ficha=null;});
   on('brin',()=>{BM.ficha=null;bmLook(id);});
-  on('brgo',()=>{bmClose();openPlace(id);});
-  on('brhome',()=>{bmClose();});
+  on('brgo',()=>{if(BM.on)bmClose();cmIr(id);});
+  on('brhome',()=>{if(BM.on)bmClose();if(S.sim.work>0)cmVolver();});
   return true;}
 function bmTap(sx,sy){
   if(BM.v==='ciudad'){for(const q of BM.cdHit)if(sx>=q.x0&&sx<=q.x1&&sy>=q.y0&&sy<=q.y1){sfx('tap');return bmFicha('b:'+q.id);}return false;}
@@ -348,27 +350,32 @@ function cdRender(){const C=CDX(),A=cdAjuste(),dd=bmDonde(),pill={},blk=[];BM.cd
     ls.forEach((l,i)=>{ctx.strokeStyle=l.c;ctx.lineWidth=l.modo==='metro'?5:l.modo==='tren'?4:3;ctx.setLineDash(l.modo==='tren'?[7,4]:l.modo==='bus'?[2,5]:[]);ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+22,y);ctx.stroke();ctx.setLineDash([]);
       ctx.fillStyle='#3b3247';ctx.fillText(cdModoIc[l.modo]+' '+l.n,x+27,y+.5);x+=ws[i];});}
   // dónde estás: en el sitio exacto, sin tapar el rótulo del barrio
-  {const r=cdRect(dd.id);if(r){let [x,y]=cdPlanoPt(A,dd.b,[(r[0]+r[2])/2,(r[1]+r[3])/2]);const B=C.barrios[dd.b];if(pill[dd.b])y=Math.max(y,pill[dd.b][1]+22);cdPin(x,y-8);
+  {const r=cdRect(dd.id),pp=dd.pos&&dd.pos.x!=null&&dd.pos.vis?[dd.pos.x,dd.pos.y]:null;if(r||pp){let [x,y]=cdPlanoPt(A,dd.b,pp||[(r[0]+r[2])/2,(r[1]+r[3])/2]);const B=C.barrios[dd.b];if(pill[dd.b])y=Math.max(y,pill[dd.b][1]+22);cdPin(x,y-8);
     ctx.fillStyle='#ff8a5b';ctx.beginPath();ctx.arc(x,y+6,3,0,Math.PI*2);ctx.fill();}}
   return true;}
 // ---- el mapa de un barrio ----
-function bmSuelo(night){const B=CDX().barrios[BM.b],[w,h]=cdTam(BM.b),tone=mixHex(B.c,'#fffdf8',.68);
-  prism(-14,-14,w+14,h+14,-30,-4,'#7d6a55');prism(-14,-14,w+14,h+14,-4,0,'#cfc7b6');
-  topQuad(-14,-14,w+14,h+14,.02,'#d8d2c4');topQuad(0,0,w,h,.04,tone);
-  const cal=B.calles,rc=(c,pad)=>{const hh=c.w/2+pad;return cdHor(c)?[Math.max(0,c.a[0]),Math.max(0,c.a[1]-hh),Math.min(w,c.b[0]),Math.min(h,c.b[1]+hh)]:[Math.max(0,c.a[0]-hh),Math.max(0,c.a[1]),Math.min(w,c.b[0]+hh),Math.min(h,c.b[1])];};
-  for(const c of cal){const r=rc(c,.8);topQuad(r[0],r[1],r[2],r[3],.06,'#dcd6c8');}
-  for(const c of cal){const r=rc(c,0);topQuad(r[0],r[1],r[2],r[3],.08,'#5d6168');}
+const CMSW=1.6; // ancho de la acera
+// el suelo del barrio: el mapa lo pinta como una isla; el mundo, con tierra de sobra alrededor para que nada flote
+function bmSuelo(night,world){const B=CDX().barrios[BM.b],[w,h]=cdTam(BM.b),tone=mixHex(B.c,'#fffdf8',.68),Q=(r,z,c)=>{const v=cmV(r);topQuad(v[0],v[1],v[2],v[3],z,c);};
+  if(world)Q([-400,-400,w+400,h+400],-.04,shade(tone,.9));
+  else{const v=cmV([-14,-14,w+14,h+14]);prism(v[0],v[1],v[2],v[3],-30,-4,'#7d6a55');prism(v[0],v[1],v[2],v[3],-4,0,'#cfc7b6');Q([-14,-14,w+14,h+14],.02,'#d8d2c4');}
+  Q([0,0,w,h],.04,tone);
+  const cal=B.calles,rc=(c,pad)=>{const hh=c.w/2+pad;return cdHor(c)?[Math.max(0,c.a[0]),c.a[1]-hh,Math.min(w,c.b[0]),c.b[1]+hh]:[c.a[0]-hh,Math.max(0,c.a[1]),c.b[0]+hh,Math.min(h,c.b[1])];};
+  for(const c of cal)Q(rc(c,CMSW),.06,'#dcd6c8');
+  for(const c of cal)Q(rc(c,0),.08,'#5d6168');
   // la línea discontinua del eje, sin cruzar las calles que la cortan
   ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=1.4;ctx.setLineDash([7,9]);
   for(const c of cal){const hor=cdHor(c);let cuts=[];for(const e of cal){if(cdHor(e)===hor)continue;const at=hor?e.a[0]:e.a[1];if(hor?(c.a[0]<=at&&at<=c.b[0]&&e.a[1]<=c.a[1]&&c.a[1]<=e.b[1]):(c.a[1]<=at&&at<=c.b[1]&&e.a[0]<=c.a[0]&&c.a[0]<=e.b[0]))cuts.push([at-e.w/2-.4,at+e.w/2+.4]);}
     cuts.sort((a,b)=>a[0]-b[0]);let t=hor?c.a[0]:c.a[1];const end=hor?c.b[0]:c.b[1];const segs=[];for(const q of cuts){if(q[0]>t)segs.push([t,Math.min(q[0],end)]);t=Math.max(t,q[1]);}if(t<end)segs.push([t,end]);
-    for(const [s0,s1] of segs){if(s1-s0<1)continue;const p0=hor?P(s0,c.a[1],.1):P(c.a[0],s0,.1),p1=hor?P(s1,c.a[1],.1):P(c.a[0],s1,.1);ctx.beginPath();ctx.moveTo(...p0);ctx.lineTo(...p1);ctx.stroke();}}
+    for(const [s0,s1] of segs){if(s1-s0<1)continue;const a=hor?cmW2V(s0,c.a[1]):cmW2V(c.a[0],s0),b=hor?cmW2V(s1,c.a[1]):cmW2V(c.a[0],s1),p0=P(a[0],a[1],.1),p1=P(b[0],b[1],.1);
+      const x0=cam.x+p0[0]*cam.z,x1=cam.x+p1[0]*cam.z,y0=cam.y+p0[1]*cam.z,y1=cam.y+p1[1]*cam.z;if(Math.max(x0,x1)<-20||Math.min(x0,x1)>W+20||Math.max(y0,y1)<-20||Math.min(y0,y1)>H+20)continue;
+      ctx.beginPath();ctx.moveTo(...p0);ctx.lineTo(...p1);ctx.stroke();}}
   ctx.setLineDash([]);}
 function bmArbol(x,y){const [px,py]=P(x,y),se=seasonOf();capsule(px,py,px,py-13,2.6,'#6b4a2e');
   if(se==='inv'){capsule(px,py-12,px-4,py-20,1.4,'#6b4a2e');capsule(px,py-12,px+5,py-19,1.4,'#6b4a2e');return;}
   const c={pri:'#5cae4c',ver:'#4a9a43',oto:'#d98b2e'}[se];circ(px,py-21,8,c);circ(px-4,py-18,6,c);circ(px+5,py-18,5.5,c);}
 const bmLit=(night,k,id)=>night>.3&&hash(k+id.length*31+Math.floor(S.day/3))>.4;
-function bmBloque(b,night){const [u0,v0,u1,v1]=b.r,n=b.pl,fh=15,H=n*fh+6,col=b.c||'#c9a07a',cu=(u0+u1)/2;
+function bmBloque(b,night){const [u0,v0,u1,v1]=cmV(b.r),n=b.pl,fh=15,H=n*fh+6,col=b.c||'#c9a07a',cu=(u0+u1)/2;
   topQuad(u0-.5,v1,u1+.5,v1+1.2,.1,'#cfc9bb');
   prismG(u0,v0,u1,v1,0,H,col);
   poly([P(u0,v1,0),P(u1,v1,0),P(u1,v1,6),P(u0,v1,6)],shade(col,.62));poly([P(u1,v0,0),P(u1,v1,0),P(u1,v1,6),P(u1,v0,6)],shade(col,.5));
@@ -384,7 +391,7 @@ function bmBloque(b,night){const [u0,v0,u1,v1]=b.r,n=b.pl,fh=15,H=n*fh+6,col=b.c
   // azotea: pretil, depósito y antena
   topQuad(u0,v0,u1,v1,H,shade(col,.9));prism(u0,v1-.18,u1,v1,H,H+3.5,shade(col,1.12));prism(u1-.18,v0,u1,v1-.18,H,H+3.5,shade(col,1.0));
   cyl(u0+1.2,v0+1.2,.55,H,H+9,'#9aa3ad','#b5bcc4');const [ax,ay]=P(u1-1.2,v0+1.4,H),[bx,by]=P(u1-1.2,v0+1.4,H+16);capsule(ax,ay,bx,by,1.1,'#555');capsule(bx-4,by+3,bx+4,by+3,1.1,'#555');}
-function bmCasa(b,night,big){const [u0,v0,u1,v1]=b.r,n=b.pl||1,cu=(u0+u1)/2,cv=(v0+v1)/2,wall=b.c||'#e7d3b4',roof=b.roof||'#a5533e',bh=big?34:n*21+5,rise=big?22:Math.min(20,(v1-v0)*5.2),w=u1-u0;
+function bmCasa(b,night,big){const [u0,v0,u1,v1]=cmV(b.r),n=b.pl||1,cu=(u0+u1)/2,cv=(v0+v1)/2,wall=b.c||'#e7d3b4',roof=b.roof||'#a5533e',bh=big?34:n*21+5,rise=big?22:Math.min(20,(v1-v0)*5.2),w=u1-u0;
   topQuad(u0-.5,v1,u1+.5,v1+1.3,.1,b.det==='huerto'?'#9ec27a':'#93c46f');
   if(b.det==='huerto'){for(let k=0;k<4;k++)topQuad(u0,v0-1.6+k*.0,u1,v0-1.15+k*.0,.12,'#7aa85a');for(let k=0;k<3;k++){const y=v0-1.55+k*.45;topQuad(u0+.2,y,u1-.2,y+.22,.13,'#5f9143');}}
   prismG(u0,v0,u1,v1,0,bh,wall);
@@ -402,12 +409,12 @@ function bmCasa(b,night,big){const [u0,v0,u1,v1]=b.r,n=b.pl||1,cu=(u0+u1)/2,cv=(
   if(b.det==='adosada'){const [x0,y0]=P(cu,v1,0),[x1,y1]=P(cu,v1,bh);capsule(x0,y0,x1,y1,1.4,shade(wall,.7));}
   if(!big){for(let k=0;k<=3;k++){const [x,y]=P(u0-.2+k*(w+.4)/3,v1+1.1,0);capsule(x,y,x,y-5,1.2,'#f4f1ea');}}}
 // la casa del jugador: una casa, o un bloque si vive en un piso; con el vallado y el pulso naranja que la señalan
-function bmCasaJug(b,night,tt){const [u0,v0,u1,v1]=b.r,t=(S.home&&S.home.type)||'casita';
+function bmCasaJug(b,night,tt){const [u0,v0,u1,v1]=cmV(b.r),t=(S.home&&S.home.type)||'casita';
   if(bmFlat(t))bmBloque({id:'casa',r:b.r,pl:3,c:'#f1dcc0'},night);else bmCasa({id:'casa',r:b.r,pl:1,c:'#f1dcc0',roof:'#b5543c'},night,true);
   ctx.save();ctx.strokeStyle='rgba(255,138,91,.95)';ctx.lineWidth=3;ctx.setLineDash([9,6]);ctx.lineDashOffset=-tt*14;ctx.beginPath();
   const q=[P(u0-1.2,v0-1.2,.2),P(u1+1.2,v0-1.2,.2),P(u1+1.2,v1+2.2,.2),P(u0-1.2,v1+2.2,.2)];ctx.moveTo(...q[0]);for(const p of q.slice(1))ctx.lineTo(...p);ctx.closePath();ctx.stroke();ctx.restore();}
 // un lugar sin escena interior: un cubo de color con puerta y su icono; el descampado, un solar con vallas
-function bmCubo(b,night){const [u0,v0,u1,v1]=b.r,p=b.p,col=p.c||'#cfc7b6',cu=(u0+u1)/2,h=b.h;
+function bmCubo(b,night){const [u0,v0,u1,v1]=cmV(b.r),p=b.p,col=p.c||'#cfc7b6',cu=(u0+u1)/2,h=b.h;
   if(p.solar){topQuad(u0,v0,u1,v1,.12,col);topQuad(u0+.5,v0+.5,u1-.5,v1-.5,.14,shade(col,.94));
     for(let u=u0;u<=u1+.1;u+=3.4){for(const v of [v0,v1]){const [x,y]=P(u,v,0),[x2,y2]=P(u,v,5);capsule(x,y,x2,y2,1.3,'#8a7a62');}}
     for(let v=v0;v<=v1+.1;v+=3.4){for(const u of [u0,u1]){const [x,y]=P(u,v,0),[x2,y2]=P(u,v,5);capsule(x,y,x2,y2,1.3,'#8a7a62');}}
@@ -424,40 +431,45 @@ function bmEspeciales(){const out=[],C=CDX();
   for(const s of cdEspeciales(BM.b)){if(s.t==='paso'){out.push({id:'p:'+s.a,kind:'paso',pt:s.p,name:'➜ '+C.barrios[s.a].n,e:'➜'});}
     else{const l=C.enlaces.lineas.find(x=>x.id===s.l);out.push({id:'s:'+s.l+':'+s.i,kind:'parada',pt:s.p,name:cdModoIc[l.modo]+' '+s.n,e:cdModoIc[l.modo],c:l.c});}}
   return out;}
-function bmPoste(q,night){const [u,v]=q.pt,[x,y]=P(u,v),[x2,y2]=P(u,v,22);capsule(x,y,x2,y2,1.8,q.kind==='paso'?'#7a4fa0':q.c||'#555');
-  const a=P(u,v,22),b=P(u+(q.kind==='paso'?2.6:0),v,22);circ(x2,y2-3,5,q.kind==='paso'?'#fffdf8':q.c);emoji(q.e,x2,y2-3,q.kind==='paso'?8:9);}
-function bmItems(tt,night){const items=[],B=CDX().barrios[BM.b];
-  for(const b of bmBoxes()){const bb=bmBB(bmHull(b));if(!bmSee(bb))continue;
-    if(b.kind==='lugar')items.push({d:b.d,f:()=>bmConR(b,()=>drawBuilding(b.id,tt,night))});
-    else if(b.kind==='extra')items.push({d:b.d,f:()=>bmCubo(b,night)});
-    else if(b.kind==='casa')items.push({d:b.d,f:()=>bmCasaJug(b,night,tt)});
-    else items.push({d:b.d,f:()=>b.bl?bmBloque(b,night):bmCasa(b,night,false)});}
-  for(const q of bmEspeciales())items.push({d:q.pt[0]+q.pt[1],f:()=>bmPoste(q,night)});
-  for(const [x,y] of B.arboles||[]){const [u,v]=w2v(x,y);items.push({d:u+v,f:()=>bmArbol(u,v)});}
+function bmPoste(q,night){const [u,v]=cmW2V(q.pt[0],typeof cmLaneY==='function'?cmLaneY(BM.b,q.pt):q.pt[1]),[x,y]=P(u,v),[x2,y2]=P(u,v,22);capsule(x,y,x2,y2,1.8,q.kind==='paso'?'#7a4fa0':q.c||'#555');
+  circ(x2,y2-3,5,q.kind==='paso'?'#fffdf8':q.c);emoji(q.e,x2,y2-3,q.kind==='paso'?8:9);}
+// lo que se pinta de un barrio por profundidad: edificios cerrados (menos los de `opt.skip`), postes, árboles. Solo lo que cae en pantalla.
+function bmItems(tt,night,opt){const items=[],B=CDX().barrios[BM.b],skip=opt&&opt.skip;
+  for(const b of bmBoxes()){if(skip&&skip.has(b.id))continue;const bb=bmBB(bmHull(b));if(!bmSee(bb))continue;const rv=cmV(b.r),d=rv[2]+rv[3]-.5;
+    if(b.kind==='lugar')items.push({d,f:()=>drawBuilding(b.id,tt,night,rv)});
+    else if(b.kind==='extra')items.push({d,f:()=>bmCubo(b,night)});
+    else if(b.kind==='casa')items.push({d,f:()=>bmCasaJug(b,night,tt)});
+    else items.push({d,f:()=>b.bl?bmBloque(b,night):bmCasa(b,night,false)});}
+  for(const q of bmEspeciales()){const [u,v]=cmW2V(q.pt[0],q.pt[1]),[px,py]=P(u,v),sx=cam.x+px*cam.z,sy=cam.y+py*cam.z;if(sx<-40||sx>W+40||sy<-80||sy>H+40)continue;items.push({d:u+v,f:()=>bmPoste(q,night)});}
+  for(const [x,y] of B.arboles||[]){const [u,v]=cmW2V(x,y),[px,py]=P(u,v),sx=cam.x+px*cam.z,sy=cam.y+py*cam.z;if(sx<-40||sx>W+40||sy<-60||sy>H+60)continue;items.push({d:u+v,f:()=>bmArbol(u,v)});}
   items.sort((a,b)=>a.d-b.d);return items;}
-// los dibujos de siempre (drawBuilding, drawPin) leen PLACES[k].r: aquí se les presta el rectángulo local del barrio
-function bmConR(b,fn){const p=PLACES[b.id],o=p.r;p.r=b.r;try{return fn();}finally{p.r=o;}}
 function bmRender(){
   LAWN=lawnBase();const night=nightFactor(),tt=performance.now()/1000;
   if(BM.S!==S){bmClose();return false;}
   if(BM.v==='ciudad'||!BM.b){RT.names=[];RT.heads=[];RT.obst=[];RT.ana=null;RT.on=false;return cdRender();}
-  bmClamp();
+  bmClamp();CMF=[0,0];
   ctx.setTransform(DPR,0,0,DPR,0,0);drawSky(night,tt);
   ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,DPR*cam.x,DPR*cam.y);
   RT.names=[];RT.heads=[];RT.obst=[];RT.ana=null;RT.on=true;
-  try{bmSuelo(night);for(const it of bmItems(tt,night))it.f();
-    const s=S.sim,ab=anaAbroad(tt);if(s.work>0&&s.dest&&PLACES[s.dest]&&ab&&ab.inside&&cdBarrioDe(s.dest)===BM.b){const b=bmBoxes().find(x=>x.id===s.dest);if(b)bmConR(b,()=>drawPin(s.dest,tt));}
+  try{bmSuelo(night,true);
+    // «mirar dentro»: el interior del sitio, abierto en su sitio del barrio (sin el personaje, salvo que esté ahí de verdad)
+    const ob=BM.obs?cmAbierto(BM.obs,tt,night,{real:bmReal(BM.obs)}):null,items=bmItems(tt,night,{skip:ob?new Set([BM.obs]):null});
+    if(ob)items.push(ob.item);items.sort((a,b)=>a.d-b.d);for(const it of items)it.f();
   }finally{RT.on=false;}
-  // la luz de la hora, como en la casa
-  {const h=S.t/60,warm=Math.max(0,1-Math.abs(h-7.2)/1.8)*.55+Math.max(0,1-Math.abs(h-18.6)/2)*.8;
-    if(warm>.02&&night<1){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='multiply';ctx.fillStyle=mixHex('#ffffff','#ffc890',Math.min(1,warm)*.5);ctx.fillRect(0,0,cv.width,cv.height);ctx.restore();}
-    if(night>0){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=`rgba(20,25,70,${night*.36})`;ctx.fillRect(0,0,cv.width,cv.height);
-      // la luz de las ventanas: un halo cálido en cada edificio que se ve
-      ctx.globalCompositeOperation='lighter';ctx.setTransform(DPR,0,0,DPR,0,0);
-      for(const t of bmTargets()){if(!bmSee(t.bb)||t.kind==='lugar'&&PLACES[t.id].park||t.kind==='extra'&&t.box.p.solar)continue;const R=Math.max(34,(t.bb[2]-t.bb[0])*.6),x=t.cx,y=t.bb[3]-(t.bb[3]-t.bb[1])*.35;
-        const g=ctx.createRadialGradient(x,y,0,x,y,R);g.addColorStop(0,`rgba(255,196,110,${.26*night})`);g.addColorStop(1,'rgba(255,196,110,0)');ctx.fillStyle=g;ctx.fillRect(x-R,y-R,2*R,2*R);}
-      ctx.restore();}}
+  cmLuz(night);
   bmLabels();return true;}
+// la luz de la hora, como en la casa: tinte de mañana y tarde, noche y el halo cálido de las ventanas de cada edificio que se ve
+function cmLuz(night){
+  const h=S.t/60,warm=Math.max(0,1-Math.abs(h-7.2)/1.8)*.55+Math.max(0,1-Math.abs(h-18.6)/2)*.8;
+  if(warm>.02&&night<1){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='multiply';ctx.fillStyle=mixHex('#ffffff','#ffc890',Math.min(1,warm)*.5);ctx.fillRect(0,0,cv.width,cv.height);ctx.restore();}
+  if(night>0){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=`rgba(20,25,70,${night*.36})`;ctx.fillRect(0,0,cv.width,cv.height);ctx.restore();cmHalos(night);}}
+// el halo cálido de las ventanas de cada edificio que se ve (también por la calle, mods/caminar.js)
+function cmHalos(night){const ab=BM.obs||(typeof CW!=='undefined'?CW.openId:null);ctx.save();ctx.globalCompositeOperation='lighter';ctx.setTransform(DPR,0,0,DPR,0,0);
+  for(const t of bmTargets()){if(!bmSee(t.bb)||t.id===ab||t.kind==='lugar'&&PLACES[t.id].park||t.kind==='extra'&&t.box.p.solar||t.kind==='casa'&&typeof cmHomeVis==='function'&&!BM.on&&cmHomeVis())continue;
+    const R=Math.max(34,(t.bb[2]-t.bb[0])*.6),x=t.cx,y=t.bb[3]-(t.bb[3]-t.bb[1])*.35;
+    const g=ctx.createRadialGradient(x,y,0,x,y,R);g.addColorStop(0,`rgba(255,196,110,${.26*night})`);g.addColorStop(1,'rgba(255,196,110,0)');ctx.fillStyle=g;ctx.fillRect(x-R,y-R,2*R,2*R);}
+  if(typeof CW!=='undefined'&&!BM.on&&CW.lamp)for(const [x,y] of CW.lamp){const R=46,g=ctx.createRadialGradient(x,y,0,x,y,R);g.addColorStop(0,`rgba(255,214,140,${.42*night})`);g.addColorStop(1,'rgba(255,214,140,0)');ctx.fillStyle=g;ctx.fillRect(x-R,y-R,2*R,2*R);}
+  ctx.restore();}
 // rótulos del mapa: los mismos de las escenas (mods/rotulos.js), letra fija y sin pisarse; y los nombres de las calles, en los huecos que dejan
 function bmLabels(){const T=bmTargets().filter(t=>bmSee(t.bb));
   for(const t of T){const b=t.box;let name,pri=3,puesto=null;
@@ -465,12 +477,12 @@ function bmLabels(){const T=bmTargets().filter(t=>bmSee(t.bb));
     else if(b.kind==='censo'){name=(b.bl?'🏢 ':'🏠 ')+DATA.barrio.edificios[b.id].rotulo;}
     else{name=cdLug(b.id).e+' '+bmName(b.id);pri=2;if(bmEstado(b.id))puesto='cerrado';}
     RT.names.push({name,x:t.cx,y:t.bb[1]+(b.kind==='lugar'&&PLACES[b.id].park?10:0),id:-1,prio:pri,rot:puesto?{puesto}:null,bmid:b.id});}
-  for(const q of bmEspeciales()){const [x,y]=bmProj(q.pt[0],q.pt[1],26);if(x<0||x>W||y<0||y>H)continue;RT.names.push({name:q.name,x,y,id:-1,prio:q.kind==='paso'?2:3,rot:null,bmid:q.id});}
-  RT.pend=true;RT.post=RT.post||[];RT.post.push(bmCalles);}
-function bmCalles(){const B=CDX().barrios[BM.b],A=RT.lastArea,pl=RT.last||[],ui=RT.lastUI||[],put=[];if(!A)return;
+  for(const q of bmEspeciales()){const [qu,qv]=cmW2V(q.pt[0],q.pt[1]),[x,y]=bmProj(qu,qv,26);if(x<0||x>W||y<0||y>H)continue;RT.names.push({name:q.name,x,y,id:-1,prio:q.kind==='paso'?2:3,rot:null,bmid:q.id});}
+  RT.pend=true;RT.post=RT.post||[];const bb=BM.b,cf=CMF.slice();RT.post.push(()=>{const f0=CMF;CMF=cf;try{bmCalles(bb);}finally{CMF=f0;}});}
+function bmCalles(bar){const B=CDX().barrios[bar],A=RT.lastArea,pl=RT.last||[],ui=RT.lastUI||[],put=[];if(!A||rot!==0)return;
   ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.font='900 9px Nunito, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
   for(const c of B.calles){const hor=cdHor(c),L=hor?c.b[0]-c.a[0]:c.b[1]-c.a[1],w=ctx.measureText(c.n).width+6,ang=hor?Math.atan2(TH,TW):-Math.atan2(TH,TW);
-    for(const f of [.5,.3,.7,.15,.85,.4,.6]){const p=hor?[c.a[0]+L*f,c.a[1]]:[c.a[0],c.a[1]+L*f],[x,y]=bmProj(p[0],p[1],.1);
+    for(const f of [.5,.3,.7,.15,.85,.4,.6]){const p=hor?[c.a[0]+L*f,c.a[1]]:[c.a[0],c.a[1]+L*f],[qu,qv]=cmW2V(p[0],p[1]),[x,y]=bmProj(qu,qv,.1);
       const hw=(Math.abs(Math.cos(ang))*w+Math.abs(Math.sin(ang))*10)/2,hh=(Math.abs(Math.sin(ang))*w+Math.abs(Math.cos(ang))*10)/2,R=[x-hw,y-hh,x+hw,y+hh];
       if(R[0]<4||R[2]>A.Wd-4||R[1]<A.top||R[3]>A.bot)continue;
       if(pl.some(q=>rtHit(R,[q.x0,q.y0,q.x1,q.y1],2))||ui.some(u=>rtHit(R,u,1))||put.some(q=>rtHit(R,q,3)))continue;
@@ -478,6 +490,6 @@ function bmCalles(){const B=CDX().barrios[BM.b],A=RT.lastArea,pl=RT.last||[],ui=
   ctx.restore();}
 {const _lay=rtLayout;rtLayout=function(names,heads,obst,A,fs){const out=_lay.apply(this,arguments);
   if(BM.on&&!BM.obs){const by=new Map();for(const q of names)if(q.bmid)by.set(q.name,q.bmid);for(const p of out){const id=by.get(p.name);if(id)p.bmid=id;}}return out;};}
-{const _rn=render;render=function(){if(BM.on){if(mode!=='live'){bmClose();}else if(!BM.obs){bmRender();return;}}return _rn.apply(this,arguments);};}
+{const _rn=render;render=function(){if(BM.on){if(mode!=='live'){bmClose();}else{bmRender();return;}}return _rn.apply(this,arguments);};}
 // el botón del mapa y el estado propio existen desde el principio
 bmUI();

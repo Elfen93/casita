@@ -31,7 +31,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
    const q=cdCamino(b,c,a);if(!q||Math.abs(cdLong(q)-cdLong(p))>1e-6)bad.push('camino no simétrico '+a+'↔'+c);}}
  {const p=cdCamino('ribera','super','bar');const l=cdLong(p);p[0][0]=-99;p.pop();if(cdLong(cdCamino('ribera','super','bar'))!==l)bad.push('cdCamino devuelve el grafo, no una copia');}
  ok(cdCamino('ribera','super','nave_que_no_existe')===null,'camino a un id que no existe debe dar null');
- ok(Math.abs(cdMinPie([[0,0],[100,0]])-12)<1e-9,'100 casillas son 1 km: 12 min a pie ('+cdMinPie([[0,0],[100,0]])+')');
+ ok(Math.abs(cdMinPie([[0,0],[1000/CDX().ciudad.m_casilla,0]])-12)<1e-9,'1 km de casillas (casilla de 5 m): 12 min a pie ('+cdMinPie([[0,0],[1000/CDX().ciudad.m_casilla,0]])+')');
  // ---- 3. trayecto entre todas las parejas de sitios ----
  let trayectos=0,conTransporte=0;
  for(let i=0;i<todos.length;i++)for(let j=i+1;j<todos.length;j++){const a=todos[i],c=todos[j],t=cdTrayecto(a,c);trayectos++;
@@ -47,7 +47,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
   if(cdBarrioDe(a)===cdBarrioDe(c)&&t.tramos.length!==1)bad.push('en el mismo barrio es un solo tramo a pie');}
  ok(conTransporte>20,'casi nadie usa transporte ('+conTransporte+')');
  // el mismo cálculo que scripts/datos.py (trayecto_py), calculado allí
- for(const [a,c,m,pr] of [['super','torre',9.6,0],['b_olivo','obra',16.7,0],['parroquia','coop',25.4,.2],['c_noria','ayto',14.4,0],['instituto','glorieta',17.5,0],['itv','uni_privada',26.2,0],['bar','locutorio',16.1,0],['descampado','gymbueno',19.1,.2]]){
+ for(const [a,c,m,pr] of [['super','torre',9.7,0],['b_olivo','obra',16.7,0],['parroquia','coop',25.4,.2],['c_noria','ayto',14.4,0],['instituto','glorieta',17.5,0],['itv','uni_privada',26.2,0],['bar','locutorio',16.1,0],['descampado','gymbueno',18.8,.2]]){
   const t=cdTrayecto(a,c);if(!t||Math.abs(t.min-m)>.11||Math.abs(t.h-pr)>1e-6)bad.push('distinto de datos.py: '+a+'→'+c+' da '+(t&&t.min)+'/'+(t&&t.h)+' y debería dar '+m+'/'+pr);}
  {const t=cdTrayecto('parroquia','coop');ok(t.tramos.some(x=>x.m==='metro'&&x.linea==='L1'&&x.espera>0&&x.paradas.length>=2),'parroquia→coop debería llevar un tramo de metro con espera');
   ok(typeof t.precio==='number'&&t.precio>0,'precio en euros con hrs()');}
@@ -58,7 +58,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  {const q=BM.cdHit.find(x=>x.id==='ribera');BM.pt=[(q.x0+q.x1)/2,(q.y0+q.y1)/2];liveTap(0,0);ok(BM.ficha==='b:ribera','tocar el barrio abre su ficha');
   const h=card.innerHTML;for(const w of ['La Ribera','Obrero','Lo bueno','Lo que cuesta','Qué hay','Cómo se llega'])ok(h.includes(w),'ficha de barrio sin «'+w+'»');ok(/Vive aquí del censo/.test(h),'ficha de barrio sin gente del censo');
   card.querySelector('#brver').onclick();R();ok(BM.v==='barrio'&&BM.b==='ribera','Ver el barrio');
-  bmFicha('colegio');ok(card.querySelector('#brin'),'ficha del colegio con Mirar dentro');card.querySelector('#brin').onclick();R();R();ok(BM.obs==='colegio'&&sceneKey==='colegio','mirar dentro del colegio');
+  bmFicha('colegio');ok(card.querySelector('#brin'),'ficha del colegio con Mirar dentro');card.querySelector('#brin').onclick();R();R();ok(BM.obs==='colegio'&&CW.sc&&CW.sc.id==='colegio','mirar dentro del colegio (abierto en su sitio del barrio)');
   document.getElementById('brback').click();R();ok(!BM.obs&&BM.v==='barrio','vuelve al barrio');
   document.getElementById('brciudad').click();R();ok(BM.v==='ciudad','vuelve a la ciudad');
   bmVerBarrio('casco');R();bmFicha('mercado');ok(card.querySelector('#brx')&&!card.querySelector('#brin')&&/Sin interior/.test(card.innerHTML),'mercado: ficha sin interior');

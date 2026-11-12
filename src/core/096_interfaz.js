@@ -99,7 +99,6 @@ function openMenu(tab){card.onscroll=null;
   }
   else if(menuTab==='ajustes'){
     h+=`<button class="btn grey" id="soundbtn">${S.sound?'🔊 Sonido: sí':'🔇 Sonido: no'}</button>`;
-    h+=`<button class="btn grey" id="entbtn">${S.entorno!==false?'🏘️ Calle y vecinos: sí':'🏘️ Calle y vecinos: no'}</button>`;
     h+=`<h3>Dificultad: ${Dm().e} ${Dm().n}</h3><div class="sub" style="font-size:12px">${Dm().desc}</div><div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">${DIFF_ORDER.map(k=>`<button class="mini" data-diff="${k}" style="margin:0;${k===S.diff?'background:var(--ink);color:#fff':''}">${DIFF[k].e} ${DIFF[k].n}</button>`).join('')}</div><div class="sub" style="font-size:11px">Cambiarla afecta desde ahora a precios, sueldo, alquiler y ascensos.</div>`;
     {const c=ex();h+=`<h3>🧭 Dilemas</h3><div class="sub" style="font-size:12px">Cuando la vida pone a Ana en una encrucijada, ¿quién decide?</div><div class="chips"><button class="mini${c.dmode!=='ana'?' sel':''}" data-dmode="preguntar">Decido yo (se pausa el juego)</button><button class="mini${c.dmode==='ana'?' sel':''}" data-dmode="ana">Decide Ana según su carácter</button></div>`;}
     h+=`<h3>💾 Partida</h3><div class="sub" style="font-size:12px">Se guarda sola en este navegador. Para llevarla a otro dispositivo, cópiala.</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button class="mini" id="exportsave">📤 Copiar partida</button><button class="mini" id="importsave">📥 Pegar partida</button></div>`;
@@ -114,7 +113,6 @@ function openMenu(tab){card.onscroll=null;
   on('#closex',()=>{menu.classList.remove('open');save();});on('#closemenu',()=>{menu.classList.remove('open');save();});
   on('#exportsave',async()=>{const txt=JSON.stringify(S);try{await navigator.clipboard.writeText(txt);toast('📤 Partida copiada al portapapeles');}catch(e){prompt('Copia este texto:',txt);}});
   on('#importsave',()=>{const txt=prompt('Pega aquí la partida copiada:');if(!txt)return;try{const o=JSON.parse(txt);if(!o||!o.floor)throw 0;localStorage.setItem(KEY,JSON.stringify(o));location.reload();}catch(e){toast('❌ Eso no parece una partida de Casita');}});
-  on('#entbtn',()=>{S.entorno=S.entorno===false;save();openMenu('ajustes');});
   on('#editchar',()=>openCreator(null,true));if(menuTab==='casa')bindHome();card.querySelectorAll('[data-dmode]').forEach(b=>b.onclick=()=>{ex().dmode=b.dataset.dmode;openMenu();});bindSociety();if(menuTab==='gente')bindGente();
   card.querySelectorAll('[data-zone]').forEach(b=>b.onclick=()=>{const r=rooms[+b.dataset.zone];if(!r)return;const cur=ZONE_ORDER.indexOf(r.purpose);const nxt=cur<0?ZONE_ORDER[0]:cur+1<ZONE_ORDER.length?ZONE_ORDER[cur+1]:0;for(const c of r.cells)S.zone[c]=nxt||0;dirty();computeRooms();toast(nxt?`Ahora es ${ZONES[nxt].e} ${ZONES[nxt].n}`:'Uso automático (según lo que haya dentro)');openMenu();});
   on('#buymort',()=>{if(buyHouse('mortgage'))openMenu();});on('#buycash',()=>{if(buyHouse('cash'))openMenu();});

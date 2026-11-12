@@ -6,7 +6,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  const snap=()=>JSON.stringify([S.sim,S.t,S.day,S.needs,S.money]);
  const R=()=>{try{render();}catch(e){bad.push('render: '+e.message);}};
  // 1. cerrado no calcula nada del barrio
- let nBI=0;{const _b=bmItems;bmItems=function(){nBI++;return _b.apply(this,arguments);};}
+ let nBI=0;{const _b=bmRender;bmRender=function(){nBI++;return _b.apply(this,arguments);};}
  R();R();if(nBI)bad.push('el mapa se calcula estando cerrado ('+nBI+')');
  const s0=snap(),cam0={...cam};
  // 2. abrir
@@ -33,7 +33,8 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
    if(!card.innerHTML.includes(nm))bad.push('la ficha de '+t.id+' no lleva el nombre');
    if(b.kind==='censo'){const hs=Object.values(DATA.personas.hogares).filter(h=>h.edificio===t.id);for(const h of hs)if(!card.innerHTML.includes(h.n))bad.push('ficha de '+t.id+' sin hogar '+h.n);}
    if(b.kind==='lugar'&&SCENES[t.id]&&!card.querySelector('#brin'))bad.push('ficha de '+t.id+' sin «Mirar dentro»');
-   if(b.kind==='extra'&&(card.querySelector('#brin')||card.querySelector('#brgo')))bad.push('el lugar nuevo '+t.id+' ofrece «Mirar dentro» o «Ir allí»');
+   if(b.kind==='extra'&&card.querySelector('#brin'))bad.push('el lugar nuevo '+t.id+' ofrece «Mirar dentro»');
+   if(b.kind==='extra'&&!card.querySelector('#brgo'))bad.push('el lugar nuevo '+t.id+' no ofrece «Ir allí andando»');
    if(b.kind==='extra'&&!/Sin interior/.test(card.innerHTML))bad.push('el lugar nuevo '+t.id+' no dice que no tiene interior');
    tocados++;}}
  for(const k in PLACES)if(k!=='casaV'&&k!=='casa2'&&!vistos.has(k))bad.push('lugar sin barrio donde tocarlo: '+k);
@@ -49,8 +50,8 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  for(const k of Object.keys(PLACES).filter(k=>SCENES[k])){for(const h of [8.7,11.2,18.5]){S.t=h*60;const sh=snap();
     menu.classList.remove('open');if(BM.b!==cdBarrioDe(k)||BM.obs){if(BM.obs)bmBack();bmVerBarrio(cdBarrioDe(k));}if(!bmLook(k)){bad.push('no se puede mirar dentro de '+k);break;}
     for(let i=0;i<3;i++)R();
-    if(sceneKey!==k)bad.push('la escena de '+k+' no se pinta (sceneKey='+sceneKey+')');
-    if(!BM.obs||!viewPlace)bad.push('estado de observadora mal en '+k);
+    if(!(CW.sc&&CW.sc.id===k&&CW.sc.mid&&cdRect(CW.sc.mid)))bad.push('la escena de '+k+' no se pinta en su sitio del barrio');
+    if(BM.obs!==k)bad.push('estado de observadora mal en '+k);
     if(snap()!==sh)bad.push('mirar dentro de '+k+' cambia S.sim o el reloj');
     bmBack();R();if(BM.obs||viewPlace)bad.push('no vuelve al mapa desde '+k);if(snap()!==sh)bad.push('volver al mapa cambia S.sim en '+k);}
   if(tocar4.includes(k))mirados++;}
@@ -60,7 +61,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  if(!document.getElementById('brback'))bad.push('sin botón para volver al mapa');
  document.getElementById('brback').click();R();if(BM.obs)bad.push('el botón de volver no vuelve');
  // 6. recreo del colegio en horario lectivo
- bmBack();bmVerBarrio('ribera');R();S.t=11.1*60;bmLook('colegio');R();R();if(sceneKey!=='colegio')bad.push('recreo no se pinta');bmBack();
+ bmBack();bmVerBarrio('ribera');R();S.t=11.1*60;bmLook('colegio');R();R();if(!(CW.sc&&CW.sc.id==='colegio'))bad.push('recreo no se pinta');bmBack();
  // 7. el toque pasa por liveTap (el del motor) con la posición real
  {bmBack();bmVerBarrio('ribera');const rb=cdRect('bar');bmCenter((rb[0]+rb[2])/2,(rb[1]+rb[3])/2,.6);R();const t2=bmTargets().find(q=>q.id==='bar');menu.classList.remove('open');BM.ficha=null;RT.last=[];BM.pt=[t2.cx,t2.cy];liveTap(0,0);if(BM.ficha!=='bar')bad.push('liveTap no abre la ficha (obtuvo '+BM.ficha+')');menu.classList.remove('open');}
  // 8. cerrar vuelve a donde estaba
@@ -70,7 +71,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  if(snap()!==s0){const a=JSON.parse(s0),b=JSON.parse(snap());const dif=[];for(const i of [0,1,2,3,4]){if(typeof a[i]==='object'&&a[i]){for(const k in Object.assign({},a[i],b[i]))if(JSON.stringify(a[i][k])!==JSON.stringify(b[i][k]))dif.push(i+'.'+k);}else if(a[i]!==b[i])dif.push(i);}bad.push('abrir y cerrar cambia '+dif.join(','));}
  // 9. con el personaje fuera (en el bar): el mapa y mirar dentro de otro sitio
  {const s=S.sim;s.exit=[0,10];s.work=200;s.awayTotal=400;s.route=null;s.outingActive='amigos';s.dest='bar';enterScene();R();const sv=viewPlace,cm={...cam};const before=JSON.stringify(S.sim);
-  bmOpen();R();if(!BM.on)bad.push('fuera: no abre');bmVerBarrio('ribera');R();bmLook('colegio');R();R();if(sceneKey!=='colegio')bad.push('fuera: no mira dentro');
+  bmOpen();R();if(!BM.on)bad.push('fuera: no abre');bmVerBarrio('ribera');R();bmLook('colegio');R();R();if(!(CW.sc&&CW.sc.id==='colegio'))bad.push('fuera: no mira dentro');
   bmBack();R();bmFicha('bar');if(!/Ana|ahí|aqu/i.test(card.innerHTML)&&false)bad.push('x');menu.classList.remove('open');bmClose();R();
   if(viewPlace!==sv)bad.push('fuera: viewPlace no vuelve ('+viewPlace+' vs '+sv+')');
   if(JSON.stringify(S.sim)!==before)bad.push('fuera: cambia S.sim');

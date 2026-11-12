@@ -19,7 +19,7 @@ function leaveNow(){const s=S.sim;const n=CH().name;if(s.outingActive){const k=s
   return _do.apply(this,arguments);};}
 // botón «volver a casa» cuando está fuera: cortar lo que esté haciendo
 {const _vt=vidaTab;vidaTab=function(){const h=_vt.apply(this,arguments);try{const s=S.sim;if(awayNow()){const what=s.outingActive?(OUT[s.outingActive]?outName(s.outingActive):s.outingActive==='amigos'?'con amigos':'fuera'):'en el trabajo';const left=Math.round(s.work);return `<div class="sub" style="font-size:12px;margin:0 0 8px">📍 Ahora: ${what.toLowerCase()} · quedan ${left>=60?Math.round(left/60*10)/10+' h':left+' min'} <button class="mini" id="leavenow">🏠 Irse ya</button></div>`+h;}}catch(e){}return h;};}
-{const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);try{const b=card.querySelector('#leavenow');if(b)b.onclick=()=>{menu.classList.remove('open');if(leaveNow()){const s=S.sim;s.work=1;s.awayTotal=1;s.outingActive=s.outingActive||'_vuelta';s.dest=null;toast('🏠 '+CH().name+' vuelve a casa');}};}catch(e){}};}
+{const _bs=bindSociety;bindSociety=function(){_bs.apply(this,arguments);try{const b=card.querySelector('#leavenow');if(b)b.onclick=()=>{menu.classList.remove('open');if(leaveNow()){cmIrCasa();}};}catch(e){}};}
 // el «_vuelta» es solo el trayecto de vuelta
 {const _fw=finishWork;finishWork=function(){const s=S.sim;if(s.outingActive==='_vuelta'){s.outingActive=null;s.work=0;s.dest=null;s.route=null;if(s.exit&&walkable(s.exit[0],s.exit[1])){s.x=s.exit[0]+.5;s.y=s.exit[1]+.5;}ensureSimFree();s.think=0;return;}return _fw.apply(this,arguments);};}
 // la IA también encadena: del curro al gimnasio si es socia, o a la asamblea si toca

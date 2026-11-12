@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-12
+- Nada flota: la casa y cada sitio están en su barrio. Dentro de un sitio se ve su interior abierto sobre su planta, con acera, calles con nombre, edificios vecinos con rótulo y gente por la calle; en casa, la calle y los vecinos alrededor. «Mirar dentro» desde el mapa pinta lo mismo (el mapa es la misma vista alejada).
+- Caminar (`mods/caminar.js`): ir al trabajo, salir, visitar y hacer recados son un viaje de verdad, de la puerta de casa a la del sitio, con cámara continua, sin cortes y a la ida y a la vuelta. Dura lo que dice `cdTrayecto` (también a 5× y 12×). Entre barrios espera en la parada, viaja («Metro L1 · 6 min»), paga el billete (Banco → «Transporte») y sigue andando. La salida automática al trabajo sale con el margen del trayecto más una hora.
+- El jugador manda: tocar un edificio (calle o mapa) → «🚶 Ir allí andando» (también a los 12 sitios sin interior: se queda en la puerta); tocar la acera → va allí; «🏠 Volver a casa» desde donde esté. La gente del censo que va o viene del trabajo, de clase o de sus sitios camina por la calle con su nombre y se puede tocar.
+- La casilla mide 5 m en todo el juego (antes 10 en el mapa): las coordenadas de `ciudad.json` se duplican y `rb` sale del tamaño de la escena. Se borra `r` de `lugares.json` (plano antiguo del paseo) y con él el anillo de calzada, `routeTo` y compañía. Se quita el ajuste «Calle y vecinos»: el barrio siempre se pinta.
+
 ## 2026-11-10
 - Fábrica: el código fuente vive en el repo (`src/`, `mods/`, `build.py`, `scripts/test.py`), biblia, flujo de trabajo y backlog en `docs/`.
 - Banco Atlántico: app creíble con extracto, categorías, productos (ahorro, depósito, fondo, cripto, préstamo), hucha y comisiones.

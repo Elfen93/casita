@@ -1,17 +1,5 @@
 // ---------- dibujo ----------
 function vrect(r){const a=w2v(r[0],r[1]),b=w2v(r[2],r[3]);return [Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[0],b[0]),Math.max(a[1],b[1])];}
-function drawBarrioGround(night){
-  const b0=-BR,b1=N+BR;
-  prism(b0,b0,b1,b1,-30,-4,'#7d6a55');prism(b0,b0,b1,b1,-4,0,'#cfc7b6');
-  topQuad(-4,-4,N+4,N+4,0.02,'#d8d2c4');topQuad(-3,-3,N+3,N+3,0.04,'#5d6168');topQuad(-1,-1,N+1,N+1,0.06,'#d8d2c4');
-  // líneas de la calzada
-  ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=1.4;ctx.setLineDash([7,9]);ctx.beginPath();const p=[[-2,-2],[N+2,-2],[N+2,N+2],[-2,N+2]].map(([x,y])=>{const [u,v]=w2v(x,y);return P(u,v,.08);});ctx.moveTo(...p[0]);for(let i=1;i<4;i++)ctx.lineTo(...p[i]);ctx.closePath();ctx.stroke();ctx.setLineDash([]);
-  // paso de cebra frente a la casa
-  for(let k=0;k<5;k++){const [u0,v0]=w2v(N/2-1.5+k*.7,N+1),[u1,v1]=w2v(N/2-1.1+k*.7,N+3);topQuad(Math.min(u0,u1),Math.min(v0,v1),Math.max(u0,u1),Math.max(v0,v1),.09,'rgba(255,255,255,.75)');}
-  topQuad(0,0,N,N,0.1,shade(LAWN,.8));
-  // parque
-  const pk=vrect(PLACES.parque.r);topQuad(pk[0],pk[1],pk[2],pk[3],.1,shade(LAWN,.95));
-}
 function placeState(key){const w=W_(),cr=w.crisis,st={};
   st.closed=(w.gs===S.day||!!w.rev)&&!['parque','comisaria','ayto','comedor','ateneo','sindicato'].includes(key);
   st.forRent=key==='tienda'&&S.track!=='negocio'&&cr>55;
@@ -19,8 +7,8 @@ function placeState(key){const w=W_(),cr=w.crisis,st={};
   st.picket=S.strike&&S.strike.on&&key===destOf('work');
   st.posters=w.mov>35||(S.day>w.elec-12&&S.day<w.elec);
   return st;}
-function drawBuilding(key,tt,night){
-  const p=PLACES[key];const [u0,v0,u1,v1]=vrect(p.r);const st=placeState(key);const cu=(u0+u1)/2,cv=(v0+v1)/2;
+function drawBuilding(key,tt,night,rv){ // rv: el rectángulo del edificio en la vista [u0,v0,u1,v1] (lo da mods/barrio.js con cmV)
+  const p=PLACES[key];const [u0,v0,u1,v1]=rv;const st=placeState(key);const cu=(u0+u1)/2,cv=(v0+v1)/2;
   if(p.park){
     for(let k=0;k<9;k++){const x=u0+.8+hash(k*7+2)*(u1-u0-1.6),y=v0+.8+hash(k*13+5)*(v1-v0-1.6);const se=seasonOf();const [px,py]=P(x,y);
       capsule(px,py,px,py-16,3,'#6b4a2e');if(se!=='inv')for(const [dx,dy,r] of [[0,-24,11],[-6,-20,8],[6,-19,8]])circ(px+dx,py+dy,r,{pri:'#5cae4c',ver:'#4a9a43',oto:'#d98b2e'}[se]);else capsule(px,py-16,px-5,py-24,1.5,'#6b4a2e');}
@@ -49,61 +37,14 @@ function drawBuilding(key,tt,night){
   if(W_().mov>60&&['ateneo','sindicato','super','residencia','obra','comedor'].includes(key)){const a=P(u0+.2,v1,h-14),b=P(u1-.2,v1,h-14);capsule(a[0],a[1],b[0],b[1],6,'#fffdf8');const [lx,ly]=P(cu,v1,h-14);ctx.fillStyle='#d1242f';ctx.font='900 7px Nunito';ctx.textAlign='center';ctx.fillText(pickSlogan(key),lx,ly+2);}
 }
 function pickSlogan(k){const s=['¡NI UN DESAHUCIO MÁS!','SALARIOS DIGNOS','LA SANIDAD NO SE VENDE','TU PRISA, MI PRECARIEDAD','VIVIENDA PARA VIVIR'];return s[(k.length+(W_().era?2:0))%s.length];}
-function drawPlaceLabel(key,night){const p=PLACES[key];const [u0,v0,u1,v1]=vrect(p.r);const [x,y]=P((u0+u1)/2,(v0+v1)/2,(p.h||4)*1.5+(key==='parroquia'?34:key==='obra'?50:10));
-  const sx=cam.x+x*cam.z,sy=cam.y+y*cam.z;if(sx<-60||sx>W+60||sy<-20||sy>H+20)return;ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.globalAlpha=0.92;label(`${p.e} ${key==='tienda'&&S.track==='negocio'?'Tu tienda':key==='casaV'&&P_('vecina')?'Casa de '+P_('vecina').n:p.n}`,sx,sy,night>0.5?'rgba(40,30,60,.85)':'rgba(255,253,248,.92)',night>0.5?'#fff':'#3b3247',cam.z<0.6?9:10);ctx.restore();}
 function drawPerson(u,v,ch,dirx,diry,walk,ph){
   const [x,y]=P(u,v);const old=anaRT.phase;anaRT.phase=ph;const right=(dirx-diry)>=0,front=(dirx+diry)>=0;
   ctx.save();drawAna(x,y,{ch,shirt:ch.shirt,mood:60,front,right,pose:walk?'walk':'stand',noShadow:false});ctx.restore();anaRT.phase=old;}
-// Ana fuera de casa: viaje, destino y pin
-function anaAbroad(tt){
-  const s=S.sim;if(!(s.work>0)||!s.dest)return null;const tot=s.awayTotal||s.work,el=tot-s.work,tr=Math.min(20,tot/3);
-  if(s.dest==='_ride'){const t=ringT(...(s.exit||[N/2,N]))+el*0.9*(s.rideDir||1);const [x,y]=ringPt(t);return {x,y,dx:s.rideDir||1,dy:0,walk:true,ride:true};}
-  const from=s.exit?[s.exit[0]+.5,s.exit[1]+.5]:[N/2,N];const route=s.route||(s.route=routeTo(from,s.dest));
-  if(el<tr){const [x,y,dx,dy]=alongRoute(route,el/tr);return {x,y,dx,dy,walk:true};}
-  if(s.work<tr){const [x,y,dx,dy]=alongRoute(route,s.work/tr);return {x,y,dx:-dx,dy:-dy,walk:true};}
-  return {inside:s.dest};
-}
-function drawPin(key,tt){const p=PLACES[key];if(!p)return;const [u0,v0,u1,v1]=vrect(p.r);const [wx,wy]=P((u0+u1)/2,(v0+v1)/2,(p.h||6)*1.5+(key==='parroquia'?34:key==='obra'?50:10));const x=cam.x+wx*cam.z,y=cam.y+wy*cam.z-30+Math.sin(tt*3)*2;
-  ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.fillStyle='#fffdf8';ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(x-5,y+11);ctx.lineTo(x,y+19);ctx.lineTo(x+5,y+11);ctx.fill();
-  ctx.beginPath();ctx.arc(x,y,11,0,Math.PI*2);ctx.clip();const hp=document.getElementById('hudpor');if(hp)ctx.drawImage(hp,x-11,y-11,22,22);ctx.restore();
-  ctx.save();ctx.setTransform(DPR,0,0,DPR,0,0);ctx.strokeStyle='#ff8a5b';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,12,0,Math.PI*2);ctx.stroke();ctx.restore();}
-// lista de cosas del barrio con su profundidad, para dibujarlas en orden
-function barrioItems(tt,night){
-  const items=[];const dk=(u,v)=>u+v;
-  for(const k in PLACES){const [u0,v0,u1,v1]=vrect(PLACES[k].r);items.push({d:dk(u1,v1)-0.5,f:()=>drawBuilding(k,tt,night),lab:()=>drawPlaceLabel(k,night)});}
-  const h=S.t/60,crowd=night>0.7?0.35:1;
-  WALKERS.forEach((w,k)=>{if(k/WALKERS.length>crowd)return;const t=w.t+tt*w.sp;const [x,y]=ringPt(t);const nx=x+(Math.abs(y+2)<.01||Math.abs(y-N-2)<.01?0:Math.sign(x-N/2))*(1.6+w.off*0)+0,ny=y;
-    // acera exterior: desplaza 1,6 hacia fuera del anillo
-    const ox=x<=-1.99?-1.55:x>=N+1.99?1.55:0,oy=y<=-1.99?-1.55:y>=N+1.99?1.55:0;const [px,py]=[x+ox,y+oy];const a=ringPt(t+0.1);const [u,v]=w2v(px,py);const [au,av]=w2v(a[0],a[1]);const [bu,bv]=w2v(x,y);
-    items.push({d:u+v,f:()=>drawPerson(u,v,w.ch,(au-bu)*Math.sign(w.sp),(av-bv)*Math.sign(w.sp),true,tt*6*Math.abs(w.sp)+w.ph)});});
-  CARS.forEach(c=>{const t=c.t+tt*c.sp;const [x,y]=ringPt(t);const off=c.sp>0?-.45:.45;const ox=Math.abs(y+2)<.01?0:Math.abs(y-N-2)<.01?0:0;const a=ringPt(t+Math.sign(c.sp)*.3);const dx=a[0]-x,dy=a[1]-y;const px=x+(dy?off*Math.sign(dy):0),py=y+(dx?-off*Math.sign(dx):0);const [u,v]=w2v(px,py);
-    items.push({d:u+v,f:()=>drawCar(u,v,c.c,w2v(px+dx,py+dy),night)});});
-  // cola del comedor y piquetes
-  const st=placeState('comedor');if(st.queue){const dr=doorOf('comedor');for(let k=0;k<st.queue;k++){const [u,v]=w2v(dr[0]-1.2-k*0.55,dr[1]-1.5+k*0.15);const w=WALKERS[k%WALKERS.length];items.push({d:u+v,f:()=>drawPerson(u,v,w.ch,-1,0,false,k)});}}
-  const wk=destOf('work');if(S.strike&&S.strike.on&&PLACES[wk]){const dr=doorOf(wk);for(let k=0;k<5;k++){const [u,v]=w2v(dr[0]+(k-2)*.6,dr[1]+(dr[1]<0?.6:-.6)*(k%2+1)*0+0.2);const w=WALKERS[(k+3)%WALKERS.length];items.push({d:u+v,f:()=>{drawPerson(u,v,w.ch,0,1,false,k);const [x,y]=P(u,v,52);emoji('🪧',x,y,13);}});}}
-  // manifestación
-  const m=W_().manif;if(m&&m.day===S.day&&h>=10&&h<=14){const dr=doorOf('ayto');for(let k=0;k<16;k++){const [u,v]=w2v(dr[0]-3+(k%8)*.8,dr[1]+1.5+Math.floor(k/8)*.9);const w=WALKERS[k%WALKERS.length];items.push({d:u+v,f:()=>{drawPerson(u,v,w.ch,0,1,true,tt*3+k);if(k%3===0){const [x,y]=P(u,v,54);emoji(k%2?'📣':'🚩',x,y,12);}}});}}
-  if(W_().era==='represion'||(m&&m.day===S.day&&W_().gov==='conservador')){const [u,v]=w2v(-2,N/2);items.push({d:u+v,f:()=>{drawCar(u,v,'#2b3a5a',w2v(-2,N/2+1),night);const [x,y]=P(u,v,30);emoji('🚨',x,y,10);}});}
-  // la vecina en su puerta
-  if(h>9&&h<13&&dayType(S.day)!=='work'&&P_('vecina')){const dr=doorOf('casaV');const [u,v]=w2v(dr[0],dr[1]+.6);items.push({d:u+v,f:()=>drawPerson(u,v,{...WALKERS[2].ch,hair:'#bdbdbd',style:'mono',g:'f',beard:'no'},0,1,false,1)});}
-  // Ana por la calle
-  const ab=anaAbroad(tt);
-  if(ab&&!ab.inside){const [u,v]=w2v(ab.x,ab.y);const [du,dv]=w2v(ab.x+ab.dx,ab.y+ab.dy);items.push({d:u+v,f:()=>{const [x,y]=P(u,v);const old=anaRT.phase;anaRT.phase=tt*9;drawAna(x,y,{...anaOpts(),pose:'walk',front:(du-u)+(dv-v)>=0,right:(du-u)-(dv-v)>=0});anaRT.phase=old;if(ab.ride)emoji('🛵',x+6,y-2,16);
-      ctx.save();ctx.globalAlpha=.9;label(CH().name,x,y-62,'#ff8a5b','#fff',9);ctx.restore();}});}
-  return {items,ab};
-}
+// Ana fuera de casa: el paseo por las calles del barrio y su vista están en mods/caminar.js
 function drawCar(u,v,col,ahead,night){const du=ahead[0]-u,dv=ahead[1]-v;const along=Math.abs(du)>Math.abs(dv);const [a,b]=along?[.7,.38]:[.38,.7];
   prism(u-a,v-b,u+a,v+b,2,9,col);prism(u-a*.6,v-b*.6,u+a*.6,v+b*.6,9,14,shade(col,1.1));
   poly([P(u-a*.6,v+b*.6,9.5),P(u+a*.6,v+b*.6,9.5),P(u+a*.6,v+b*.6,13.5),P(u-a*.6,v+b*.6,13.5)],'rgba(180,220,255,.7)');
   if(night>0.4){const [x,y]=P(u+Math.sign(du)*a,v+Math.sign(dv)*b,5);const g=ctx.createRadialGradient(x,y,1,x,y,18);g.addColorStop(0,'rgba(255,240,180,.7)');g.addColorStop(1,'rgba(255,240,180,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,18,0,Math.PI*2);ctx.fill();}}
-function drawStreetLights(night){
-  for(let k=0;k<RLEN;k+=6){const [x,y]=ringPt(k);const ox=x<=-1.99?-1.7:x>=N+1.99?1.7:0,oy=y<=-1.99?-1.7:y>=N+1.99?1.7:0;const [u,v]=w2v(x+ox,y+oy);const [bx,by]=P(u,v);const [tx,ty]=P(u,v,38);
-    capsule(bx,by,tx,ty,1.6,'#3b3f46');circ(tx,ty,3,night>0.3?'#ffe08a':'#c9c3b8');
-    if(night>0.3){const g=ctx.createRadialGradient(bx,by,2,bx,by,34);g.addColorStop(0,`rgba(255,220,140,${.28*night})`);g.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=g;ctx.save();ctx.scale(1,.5);ctx.beginPath();ctx.arc(bx,by*2,34,0,Math.PI*2);ctx.fill();ctx.restore();}}
-}
-// tocar un edificio del barrio
-function placeAt(x,y){for(const k in PLACES){const [x0,y0,x1,y1]=PLACES[k].r;if(x>=x0-0.5&&x<x1+0.5&&y>=y0-0.5&&y<y1+0.5)return k;}return null;}
-function barrioTap(x,y){const k=placeAt(x,y);if(!k)return;openPlace(k);}
 function openPlace(k){
   const p=PLACES[k],st=placeState(k),s=S.sim;
   const nm=k==='tienda'&&S.track==='negocio'?'Tu tienda':k==='casaV'&&P_('vecina')?'Casa de '+P_('vecina').n:p.n;
@@ -3623,8 +3564,8 @@ function buildScene(key,tt,night){
   if(SCENES[key]){try{const r=SCENES[key]({tt,night,act:sceneAct(),w:W_(),npc:NPCS(),cp:P_('compi'),h:S.t/60,key});if(r)return r;}catch(e){console.error('escena',key,e);}}
   return {W:6,D:5,floor:'#e9e6df',wall:'#f4f1ea',out:false,tile:true,decor:null,items:[],ana:{x:3,y:3,pose:'stand',act:null,front:true,right:true}};
 }
-function drawScene(key,tt,night){
-  const sc=buildScene(key,tt,night);
+function drawScene(key,tt,night){return drawSceneOf(buildScene(key,tt,night),night);}
+function drawSceneOf(sc,night){
   if(sc.drawBase)sc.drawBase();else{sFloor(sc.W,sc.D,sc.floor,sc.tile);if(!sc.out)sWalls(sc.W,sc.D,70,sc.wall,night);}
   if(sc.decor)sc.decor();
   const a=sc.ana;sc.items.push({d:a.x+a.y,f:()=>{const [px,py]=P(a.x,a.y,a.z||0);const old=anaRT.phase;if(a.walkPh!=null)anaRT.phase=a.walkPh;const o={...anaOpts(),pose:a.pose||'stand',act:a.act,front:a.front??true,right:a.right??true,helmet:a.helmet,vest:a.vest};if(a.shirt)o.shirt=a.shirt;if(a.pants)o.pants=a.pants;if(a.sad)o.mood=20;

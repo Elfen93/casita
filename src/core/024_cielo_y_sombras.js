@@ -59,11 +59,12 @@ function render(){
   drawSky(night,tt);
   ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,DPR*cam.x,DPR*cam.y);
   // base del terreno
-  const sceneOn=viewPlace&&mode==='live'&&awayKey();
+  // el barrio se pinta siempre alrededor (mods/caminar.js); si la parcela queda fuera de pantalla, la casa no se pinta
+  const homeVis=typeof cmHomeVis==='function'?cmHomeVis():true;
   sceneIndoor=false;
-  if(sceneOn){const k=awayKey();bubbleAt=null;const sc0=buildScene(k,tt,night);sceneIndoor=!sc0.out;sceneCam(sc0,k);ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,DPR*cam.x,DPR*cam.y);drawScene(k,tt,night);drawBubble();}
+  if(!homeVis){bubbleAt=null;drawEntorno(night,tt,0);drawEntorno(night,tt,1);}
   else{
-  if(ENT_ON())drawEntorno(night,tt,0);else{prism(0,0,N,N,-26,-5,'#7d5f43');prism(0,0,N,N,-5,0,shade(LAWN,.8));}
+  drawEntorno(night,tt,0);
   for(let vy=0;vy<N;vy++)for(let vx=0;vx<N;vx++){
     const [x,y]=vc2wc(vx,vy),i=idx(x,y);
     if(S.wall[i]&&S.wall[i]!==4)drawWallCellFloor(vx,vy,i);else drawFloor(vx,vy,S.floor[i],null,i);
@@ -121,7 +122,7 @@ function render(){
     ctx.globalCompositeOperation='lighter';
     ctx.setTransform(DPR*cam.z,0,0,DPR*cam.z,DPR*cam.x,DPR*cam.y);
     const glow=(lx,ly,R,a)=>{const rg=ctx.createRadialGradient(lx,ly,0,lx,ly,R);rg.addColorStop(0,`rgba(255,196,110,${a})`);rg.addColorStop(1,'rgba(255,196,110,0)');ctx.fillStyle=rg;ctx.fillRect(lx-R,ly-R,2*R,2*R);};
-    for(let i=0;i<(sceneOn?0:N*N);i++){
+    for(let i=0;i<(homeVis?N*N:0);i++){
       const o=S.obj[i];
       if(o&&OBJ[o.t]?.light){const [u,v]=w2v(i%N+.5,(i/N|0)+.5);const [lx,ly]=P(u,v,o.t==='farola'?62:38);glow(lx,ly,o.t==='farola'?170:130,0.5*night*(0.95+Math.sin(tt*3+i)*0.05));}
       if(S.wall[i]===3&&!S.sim.work){const [u,v]=w2v(i%N+.5,(i/N|0)+.5);const [lx,ly]=P(u,v,26);glow(lx,ly,60,0.22*night);}

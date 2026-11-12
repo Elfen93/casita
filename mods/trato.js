@@ -291,7 +291,7 @@ function trNota(p){const f=TT().f[p.vid]||{},L=[];if(f.te>0)L.push(f.te===1?TRF(
 // ---------- vecinos que te buscan (mensaje o visita), a horas en que no trabajan ----------
 function trLibreEn(v,h,wd){const t=v.trabajo;if(!(t&&Array.isArray(t.h)&&pbDia(t.dias,wd)))return true;return ![h-1.5,h,h+1].some(x=>pbIn(t.h[0],t.h[1],((x%24)+24)%24));}
 function trHoraLibre(v,wd,win){let lo=win?win[0]:10,hi=win?win[1]:21.5;const t=v.trabajo;
-  if(t&&Array.isArray(t.h)&&pbDia(t.dias,wd)){const a=t.h[0],b=t.h[1];if(b<=a)return null;const ws=[[lo,Math.min(hi,a-1)],[Math.max(lo,b+.75),hi]].filter(w=>w[1]-w[0]>=.4);if(!ws.length)return null;const w=pickR(ws);return w[0]+Math.random()*(w[1]-w[0]);}
+  if(t&&Array.isArray(t.h)&&pbDia(t.dias,wd)){const a=t.h[0],b=t.h[1];if(b<=a)return null;const ws=[[lo,Math.min(hi,a-1)],[Math.max(lo,b+1.5),hi]].filter(w=>w[1]-w[0]>=.4);if(!ws.length)return null;const w=pickR(ws);return w[0]+Math.random()*(w[1]-w[0]);}
   return hi-lo>=.25?lo+Math.random()*(hi-lo):null;}
 function trSitioCurro(v){const l=v.trabajo&&v.trabajo.lugar;return l&&l!=='fuera'&&PLACES[l]?placeName(l):TRD().buscan.sitio_curro;}
 function trQuien(p){const o=(S.people||[]).find(q=>q.vid!=null&&q!==p&&!vcMenorP(q)&&(q.rel||0)>=30&&q.ideo&&q.ideo!=='apolitica');return o?o.n:'unas vecinas';}

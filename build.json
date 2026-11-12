@@ -66,6 +66,7 @@
   "vecinos.js",
   "trato.js",
   "barrio.js",
+  "caminar.js",
   "rotulos.js"
  ]
 }

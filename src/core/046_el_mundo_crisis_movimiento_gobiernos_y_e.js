@@ -210,7 +210,6 @@ let confirmQuit=null;
 
 // =================== EL BARRIO ===================
 // La parcela ocupa 0..N. Alrededor: acera, calzada, acera y manzanas.
-const BR=14; // ancho del barrio a cada lado
 const PLACES=DATA.lugares.lugares;
 // adónde va Ana según lo que haga
 function destOf(k){
@@ -218,21 +217,7 @@ function destOf(k){
   return {amigos:pickR(['bar','sala','parque']),eat:'bar',sindicato:'sindicato',militancia:isI('conservadora')?'parroquia':isI('liberal','libertaria')?'torre':isI('socialdemocrata')?'ayto':'ateneo',manifestacion:'ayto',voluntariado:isI('conservadora')?'parroquia':'comedor',deporte:'parque',networking:'torre',misa:'parroquia',biblioteca:'biblioteca',comedor:'comedor',piquete:destOf('work'),calabozo:'comisaria',walk:'parque'}[k]||'parque';
 }
 // el anillo de la calzada (centro a 2 casillas de la parcela)
-const RING=[[-2,-2],[N+2,-2],[N+2,N+2],[-2,N+2]];
-const RLEN=4*(N+4);
-function ringPt(t){t=((t%RLEN)+RLEN)%RLEN;const L=N+4;const k=Math.floor(t/L),f=t-k*L;const a=RING[k],b=RING[(k+1)%4];return [a[0]+(b[0]-a[0])*f/L,a[1]+(b[1]-a[1])*f/L];}
-function ringT(x,y){ // proyección de un punto sobre el anillo
-  const L=N+4;const c=[[Math.max(-2,Math.min(N+2,x)),-2],[N+2,Math.max(-2,Math.min(N+2,y))],[Math.max(-2,Math.min(N+2,x)),N+2],[-2,Math.max(-2,Math.min(N+2,y))]];
-  let best=0,bd=1e9;c.forEach(([px,py],k)=>{const d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=k;}});const [px,py]=c[best];
-  return best===0?px+2:best===1?L+py+2:best===2?2*L+(N+2-px):3*L+(N+2-py);}
-function doorOf(key){const p=PLACES[key];if(!p)return [N/2,N+3.5];const [x0,y0,x1,y1]=p.r;const cx=(x0+x1)/2,cy=(y0+y1)/2;
-  if(x1<=-4)return [x1+.4,Math.max(-3,Math.min(N+3,cy))];if(x0>=N+4)return [x0-.4,Math.max(-3,Math.min(N+3,cy))];if(y1<=-4)return [Math.max(-3,Math.min(N+3,cx)),y1+.4];return [Math.max(-3,Math.min(N+3,cx)),y0-.4];}
-function routeTo(from,key){
-  const door=doorOf(key);const t0=ringT(from[0],from[1]),t1=ringT(door[0],door[1]);
-  let d=t1-t0;if(d>RLEN/2)d-=RLEN;if(d<-RLEN/2)d+=RLEN;
-  const pts=[from,ringPt(t0)];const steps=Math.max(1,Math.ceil(Math.abs(d)/2));for(let i=1;i<=steps;i++)pts.push(ringPt(t0+d*i/steps));pts.push(door);return pts;}
-function alongRoute(pts,f){let tot=0;const seg=[];for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(l);tot+=l;}
-  let d=Math.max(0,Math.min(1,f))*tot;for(let i=0;i<seg.length;i++){if(d<=seg[i]||i===seg.length-1){const k=seg[i]?Math.min(1,d/seg[i]):1;const a=pts[i],b=pts[i+1];return [a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,b[0]-a[0],b[1]-a[1]];}d-=seg[i];}return [...pts[pts.length-1],0,0];}
+const RLEN=4*(N+4); // el anillo de la calle de antes (solo lo usan los paseantes del decorado)
 // gente del barrio
 const WALKERS=Array.from({length:12},(_,k)=>{const r=hash(k*37+3),r2=hash(k*53+11);const g=r<.5?'f':'m';
   return {t:hash(k*17+1)*RLEN,sp:(0.5+r2*0.6)*(k%2?1:-1),off:k%2?-0.75:0.75,ch:{name:'',g,skin:SKINS[(k*3)%SKINS.length],hair:HAIRCOLS[(k*5)%7],style:g==='f'?['melena','coleta','corto','mono','rizos'][k%5]:['corto','rapado','calvo','rizos'][k%4],beard:g==='m'&&k%3===0?'corta':'no',glasses:k%4===0,build:['media','delgada','ancha'][k%3],shirt:SHIRTC[(k*7)%SHIRTC.length],pants:PANTSC[k%PANTSC.length],eyes:'#3b2a20'},ph:k};});

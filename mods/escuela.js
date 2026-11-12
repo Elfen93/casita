@@ -58,9 +58,6 @@ const esPub=k=>k==='colegio'||k==='instituto';
 // al recogerlo, la criatura vuelve a casa con quien la recoge (crianza.js la manda fuera hasta las 17)
 {const _ur=updateResidents;updateResidents=function(gm){const r=_ur.apply(this,arguments);
   try{for(const rs of S.res||[]){if(rs.kind!=='kid'||!rs.away)continue;const k=(S.kids||[])[rs.kid];if(k&&k.recDay===S.day&&S.t>=k.recT){rs.x=rs.away.back[0];rs.y=rs.away.back[1];rs.away=null;}}}catch(e){}return r;};}
-// ---- una franja de suelo más en el barrio: los tres centros están al este del parque ----
-{const _g=drawBarrioGround;drawBarrioGround=function(night){const r=_g.apply(this,arguments);try{const a=vrect([34,-14,42.5,34]);prism(a[0],a[1],a[2],a[3],-30,-4,'#7d6a55');prism(a[0],a[1],a[2],a[3],-4,0,'#cfc7b6');topQuad(a[0],a[1],a[2],a[3],.02,'#d8d2c4');}catch(e){}return r;};}
-
 // =================== escenas ===================
 const eqY=(x0,x1,y,z0,z1,c)=>poly([P(x0,y,z0),P(x1,y,z0),P(x1,y,z1),P(x0,y,z1)],c);
 const eqX=(x,y0,y1,z0,z1,c)=>poly([P(x,y0,z0),P(x,y1,z0),P(x,y1,z1),P(x,y0,z1)],c);

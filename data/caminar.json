@@ -1,0 +1,51 @@
+{
+  "_": "Textos de caminar por el barrio (mods/caminar.js). {clave} se rellena con huecos(); {n} es el nombre del personaje.",
+
+  "trayecto": "Trayecto: {min} min{y} por viaje",
+
+  "trayecto_pie": "Trayecto: {min} min a pie",
+
+  "y_precio": " y {eur} €",
+
+  "ir_boton": "🚶 Ir allí andando",
+
+  "ir_punto": "🚶 Ir a ese punto",
+
+  "casa_boton": "🏠 Volver a casa",
+
+  "ir_toast": "🚶 {n} va andando a {lugar}",
+
+  "ir_punto_toast": "🚶 {n} va andando a ese punto de la calle",
+
+  "ir_ya": "{n} ya está ahí",
+
+  "ir_no": "No hay camino hasta ahí",
+
+  "ir_cerrado": "{n} no puede ir ahora: está en mitad de otra cosa",
+
+  "vuelve_toast": "🏠 {n} vuelve a casa andando",
+
+  "titulo_ida": "De camino: {lugar}",
+
+  "titulo_vuelta": "Volviendo a casa",
+
+  "titulo_espera": "Esperando: {linea}",
+
+  "viaje": "{linea} · {min} min",
+
+  "paso": "A pie a {barrio} · {min} min",
+
+  "espera": "Esperando: {linea} · {parada}",
+
+  "billete": "🎟️ {linea}: {eur} €",
+
+  "frente": "Sin interior: {n} se queda en la puerta",
+
+  "llega_barrio": "📍 {barrio}",
+
+  "paseo_calle": "Un punto de la calle {calle}",
+
+  "reparto": "Repartiendo por el barrio",
+
+  "ir_min": 45
+}
