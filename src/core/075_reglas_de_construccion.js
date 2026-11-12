@@ -1,6 +1,6 @@
 // ---------- reglas de construcción ----------
 {const _ap=apply;apply=function(x,y,t=tool,quiet){const r=_ap.apply(this,arguments);if(!r&&!quiet&&t&&HT().build!=='all'&&inb(x,y)){const i=idx(x,y);const own=inArea(x,y)&&!(S.obj[i]&&S.obj[i].priv);const tk=(S.home&&S.home.type)||'casita';
-    if((!own||['wall','fence','door','win','floor'].includes(t.kind))&&throttled('ajeno',2500))toast(['wall','fence','door','win','floor'].includes(t.kind)?`🔒 En ${HOMES[tk].n.toLowerCase()} no se pueden hacer obras: las paredes no son tuyas`:tk==='padres'?'🔒 Eso es de tu madre: solo puedes tocar lo de tu cuarto':tk==='habitacion'?'🔒 Eso es de tus compañeros de piso: solo puedes tocar lo de tu cuarto':'🔒 Eso no es tuyo');}return r;};}
+    if((!own||['wall','fence','door','win','floor'].includes(t.kind))&&throttled('ajeno',2500))toast(['wall','fence','door','win','floor'].includes(t.kind)?huecos(TXN.obras.ajeno_paredes,{casa:HOMES[tk].n.toLowerCase()}):tk==='padres'?TXN.obras.ajeno_madre:tk==='habitacion'?TXN.obras.ajeno_pisos:TXN.obras.ajeno);}return r;};}
 {const _ca=canApply;canApply=function(x,y,t){if(!_ca(x,y,t))return false;if(HT().build==='all')return true;const k=t.kind;
   if(k==='obj'||k==='move'||k==='rot'||k==='craft')return inArea(x,y)&&!(S.obj[idx(x,y)]&&S.obj[idx(x,y)].priv);
   if(k==='paint'){const a=homeArea();return x>=a[0]-1&&y>=a[1]-1&&x<=a[2]+1&&y<=a[3]+1;}

@@ -397,5 +397,318 @@
       ],
       "puerta": ["Delante de Las Eras, {a} espera a {v}, aunque «ya no hace falta venir». Hoy, sí.", "Delante de Las Eras, {a} habla de notas, de exámenes y de qué hacer en bachillerato."]
     }
+  },
+
+  "nucleo_consecuencias": {
+    "vacio": {"tell": "En el comedor, la mesa de siempre se queda en silencio cuando llega Ana. Saben lo de la lista.", "rem": "Le hacen el vacío por la lista de despidos."},
+    "represalia": {"baja": "Reestructuración: a Ana {a} han bajado a {c}. «Nada personal».", "no": "La represalia no ha llegado. Quizá porque media plantilla se enteró de que Ana se negó."},
+    "filtracion": {"si": "La dirección ha descubierto quién filtró la lista. Despido disciplinario. El sindicato convoca una concentración en la puerta.", "no": "Nadie sabe quién filtró la lista. Los despidos se han quedado en el cajón."},
+    "topo": {"si": "Alguien le ha ido con el cuento a la dirección: saben que Ana avisaba a la plantilla. Degradación inmediata.", "no": "Gracias a los avisos de Ana, la plantilla llegó preparada a la reunión con la dirección. Esta vez no hubo despidos."},
+    "esquirol": {"tell": "Desde la huelga, nadie le guarda sitio en la máquina del café. «{esq}», ha escrito alguien en su taquilla.", "rem": "La llaman esquirol por cruzar el piquete."},
+    "sindican": {"tell": "Tu empleada se ha afiliado a un sindicato y exige el convenio. Hay que pagarle más o ir a juicio."},
+    "terapia": {"tell": ["Terapia: {p} ha dicho algo que Ana nunca le había oído.", "En terapia han aprendido a discutir sin herirse. Casi.", "La terapeuta les ha mandado deberes: una cena a la semana sin móviles."]},
+    "silencio": {"tell": "Ana y {p} viven como compañeros de piso. Cordiales. Fríos."},
+    "devolver": {"ok": "Ana le ha devuelto a {p} los {m}. Hasta el último euro.", "ko": "Ana todavía no puede devolverle el dinero a {p}. Nadie lo menciona, y eso es peor."},
+    "arrepentimiento": {"tell": "Ana ve la manifestación desde el balcón. Su gente está ahí abajo. Ella, aquí arriba."},
+    "antecedentes": {"tell": "En la entrevista han buscado su nombre en internet. Sale la foto de la detención. «Ya te llamaremos»."},
+    "respuesta": {"si": "Han ido juntas al despacho: cinco personas y una lista. {b} ha cedido en lo principal. No ha sido una huelga: ha sido un aviso.", "no": "Al final solo {c} y Ana fueron al despacho. {b} les escuchó «con mucho interés» y no cambió nada."},
+    "marcada": {"tell": "Semana de turnos partidos y tareas que nadie quiere. {c} le ha dicho en voz baja: «te la tienen jurada»."},
+    "adelanto": {"tell": "Nómina con {m} menos: el adelanto. {b} le ha pedido «un favor» este fin de semana. No ha podido decir que no."},
+    "masgente": {"si": "Ya son más de la mitad. En el vestuario alguien ha escrito en la pizarra: «cuando queráis».", "no": "La cosa va lenta. Dos se han echado atrás: «yo tengo hipoteca»."},
+    "lodger": {"si": "{p} ha encontrado habitación. Ha dejado {s} y una nota: «gracias por no hacerme sentir que molestaba».", "no": "{p} sigue durmiendo {d}. No encuentra nada por menos de {m} a la semana. Nadie lo menciona."},
+    "proveedor": {"si": "Ha encontrado otro proveedor, más barato y más lejos. Dos horas de furgoneta cada martes.", "no": "No hay otro proveedor: son todos el mismo con distinto nombre. Ha pagado la subida."}
+  },
+
+  "nucleo_golpes": {
+    "alquiler": {"k": 0.12, "x": "Carta del casero: el alquiler sube {m} a la semana «por actualización del mercado». Nadie ha arreglado la persiana."},
+    "caldera": {"a": 0.45, "v": 0.3, "x": "La caldera ha muerto. El casero dice que «el mantenimiento es cosa del inquilino». Arreglarla: {m}."},
+    "muela": {"a": 0.35, "v": 0.45, "x": "Dolor de muelas desde el martes. El dentista: {m}. La sanidad pública no cubre la boca; por lo visto no es parte del cuerpo."},
+    "luz": {"a": 0.22, "v": 0.2, "x": "Factura de la luz: {m}, el doble que el mes pasado. La compañía ha ganado mil millones este trimestre."},
+    "multa": {"a": 0.22, "v": 0.25, "x": "Multa de {m} por aparcar donde aparca todo el barrio. A la furgoneta de la obra de al lado no se la ponen nunca."}
+  },
+
+  "nucleo_personal": {
+    "madre": {
+      "t": "🤒 Su madre",
+      "x": "{m} se ha caído en casa: cadera. Dos semanas sin poder valerse. Ana es quien vive más cerca.",
+      "o": [
+        {"t": "Faltar al trabajo y cuidarla", "s": "Reputación y sueldo abajo; su madre, arriba.", "tell": "Ana ha faltado cuatro días. {b} lo ha apuntado. Su madre no ha dejado de darle las gracias."},
+        {"t": "Pagar a una cuidadora ({c})", "tell": "Ha contratado a Dolores, que cobra {c} por dos semanas y tiene otras tres casas. Cuidar también es un trabajo mal pagado."},
+        {"t": "Pedir permiso en el trabajo", "s": "Depende de quién mande.", "tell_ok": "Le han dado cinco días por cuidado de familiar. Ni una pega.", "tell_ko": "{b}: «¿Y quién te cubre? Aquí todos tenemos madre». Al final ha ido por las tardes, después del turno. Dos semanas sin dormir."},
+        {"t": "Que se encargue su hermano", "s": "Tiene coche y tiempo. Nunca se ha encargado de nada.", "tell": "Su hermano ha ido dos veces y ha dicho que «ya estaba mejor». Ana ha acabado yendo igual, pero más tarde y con más culpa."}
+      ]
+    },
+    "vecina": {
+      "t": "🏘️ Desahucio",
+      "x": "A {v}, del piso de al lado, la desahucian el jueves a las nueve. Debe tres meses. En el portal hay un cartel: «Este desahucio lo paramos».",
+      "o": [
+        {
+          "t": "Ir a las nueve a la puerta",
+          "s": "Puede acabar en comisaría.",
+          "cap": "El jueves a las nueve",
+          "capx": "Había sesenta personas en el portal. La comitiva judicial se dio la vuelta. {v} lloraba y Ana también. Por ahora.",
+          "arresto": "en el desahucio",
+          "tell_ko": "Eran veinte. La policía los apartó uno a uno. {v} salió con dos bolsas y el gato. Ana no durmió."
+        },
+        {"t": "Darle {c} para el hostal", "tell": "{v} ha aceptado el dinero sin mirarla. Esa noche el piso de al lado estaba vacío y muy silencioso."},
+        {"t": "No meterse", "s": "No es asunto suyo. ¿O sí?", "tell": "Ana se fue a trabajar a las ocho y media para no cruzarse con nadie. Al volver, la puerta de al lado tenía la cerradura cambiada."}
+      ]
+    },
+    "amiga": {
+      "t": "🫶 Su mejor amig{g}",
+      "x": "{p} ha aparecido con una maleta. {l} han echado del piso: no podía pagar. Pregunta si puede quedarse «unos días».",
+      "o": [
+        {"t": "Que se quede lo que haga falta", "tell": "{p} duerme {d}. Paga la mitad de la compra y hace las mejores lentejas del barrio."},
+        {"t": "Una semana, y que busque algo", "tell": "{p} ha entendido el mensaje. Duerme {d}, con la maleta sin deshacer, y esa misma noche ya está mirando anuncios."},
+        {"t": "Prestarle {c} para una fianza", "tell": "{p} ha encontrado una habitación. Devolverá el dinero «en cuanto pueda»."}
+      ]
+    }
+  },
+
+  "nucleo_incidentes": {
+    "super": {
+      "horas": "A las {fin}:00, {b} le dice que se quede dos horas más: falta gente. Sin cobrarlas, claro: «hoy por ti».",
+      "caja": "Falta dinero en la caja de Ana: {m}. {B} se lo descuenta del sueldo sin preguntar si la caja la tocó alguien más.",
+      "turnos": "Han cambiado los turnos otra vez: Ana cierra el sábado y abre el domingo. Siete horas entre uno y otro."
+    },
+    "oficina": {
+      "viernes": "Viernes, 19:40. {B} le manda un informe «para el lunes a primera hora». Son ocho horas de trabajo.",
+      "merito": "Ana ha hecho el informe entero. En la reunión, {B} lo ha presentado como suyo. {c} ha mirado a Ana y ha negado con la cabeza.",
+      "conexion": "Un mensaje a las once de la noche: «¿Puedes mirar esto?». Y otro a las siete. {B} cree que el sueldo incluye el móvil."
+    },
+    "hosteleria": {
+      "propinas": "El bote de las propinas ha desaparecido: {b} dice que «va para la caja». Eran {m} de Ana y de {c}.",
+      "doble": "{B} le pide que doble turno: comida y cena. Catorce horas. «Mañana libras», pero mañana ya estaba libre.",
+      "cliente": "Un cliente le ha gritado y le ha tirado la bandeja. {B} ha pedido perdón… al cliente."
+    },
+    "obra": {"arnes": "No hay arneses para todos. {B} dice que se suba igual, «que son diez minutos».", "lluvia": "Llueve a mares y el andamio resbala. {B} no para la obra: «el plazo es el plazo».", "horas": "Han hecho diez horas cuatro días seguidos. En la nómina siguen saliendo ocho."},
+    "cuidados": {
+      "doble": "{c} está de baja y no la sustituyen. Ana lleva su planta y la de {c}: veinte personas que asear, dar de comer y acostar.",
+      "ratio": "Esta noche hay una auxiliar para treinta residentes. Una señora se ha caído mientras Ana atendía a otra. El parte lo firmará Ana.",
+      "guantes": "Se han acabado los guantes. {B} dice que «se estiren». Ana lleva los suyos de casa."
+    },
+    "tech": {"sprint": "«Somos una familia»: {B} anuncia un sprint de fin de semana para llegar al lanzamiento. Sin pagar, «con pizza».", "guardia": "Guardia de madrugada sin cobrar. El servidor se ha caído a las tres y Ana ha estado hasta las seis. A las diez tenía reunión."},
+    "funcion": {
+      "plazas": "Dos plazas sin cubrir desde hace un año. {B} reparte su trabajo entre los que quedan. Ana lleva tres puestos y cobra uno.",
+      "ventanilla": "Una cola de cuarenta personas, un ordenador que no arranca y un señor que la llama inútil. El sistema lo arreglarán «cuando haya presupuesto»."
+    },
+    "reparto": {"lluvia": "Diluvia. Ana rechaza un pedido a cuarenta minutos y la app baja su puntuación. Ahora le llegan los peores pedidos.", "accidente": "Un coche le ha dado un golpe en el semáforo. Nada grave: la rueda doblada. La app pregunta si «completará la entrega»."},
+    "arte": {"consumo": "{B} le paga el concierto en consumiciones. «Es visibilidad». La sala estaba llena.", "bolo": "Le cancelan el bolo del sábado el viernes por la noche. Ya había rechazado otro."},
+    "negocio": {"proveedor": "El proveedor principal sube los precios un 20 % de golpe. Si Ana lo repercute, pierde clientes; si no, pierde margen.", "alquiler": "El casero del local quiere subir el alquiler. «Hay una franquicia interesada»."},
+    "coop": {"asamblea": "Asamblea de tres horas para decidir los turnos de verano. {c} propone que decida una comisión; otros dicen que eso es volver a tener jefes."}
+  },
+
+  "nucleo_hitos": {
+    "primer": {
+      "titulo": "El primer día de verdad",
+      "self": "Primera venta en {e}. {m}. Ana se ha quedado mirando el ticket como si fuera un diploma. Luego ha hecho cuentas: hacen falta cuarenta como ese cada día.",
+      "coop": "Asamblea de bienvenida en {e}. Nadie le ha dicho qué hacer: le han preguntado qué sabe hacer. Ha tardado en contestar; no estaba acostumbrada.",
+      "reparto": "Primer día con la mochila. La app le ha dado nueve pedidos, una tormenta y una valoración de tres estrellas por «tardar». Ha ganado {m} y se ha pagado la gasolina.",
+      "duro": "Primer día de verdad en {e}. Nadie le ha explicado nada. A las {fin}:00 ha recogido y {b} le ha dicho sin {mirarla}: «aquí se sale cuando se acaba». {c} le ha hecho un gesto: ya te acostumbras.",
+      "medio": "Primer día de verdad en {e}. {c} le ha enseñado dónde está todo y a quién no conviene llevar la contraria. {B} parece normal. «Parece», ha dicho {c}.",
+      "suave": "Primer día de verdad en {e}. {B} se ha presentado y le ha preguntado si necesitaba algo. {c} le ha dicho que aquí se está bien, «dentro de lo que cabe»."
+    },
+    "semana": {
+      "x": "Primera semana. {t}; el alquiler se lleva {r}. Quedan {q} para comer, la luz y lo que surja.",
+      "sin_trabajo": "Sin trabajo todavía",
+      "cobro": "Ha cobrado {p}",
+      "colchon": ["Si pasa cualquier cosa, no hay colchón.", "Llega, pero sin alegrías.", "Por ahora, respira."],
+      "alquiler": "Casi la mitad de lo que gana se va a la casa. Alguien cobra ese alquiler sin trabajar una hora."
+    },
+    "incidente": {"paro": "Semana de currículos. Tres respuestas automáticas y un «ya te llamaremos»."},
+    "eco": {"x": "Ana repasa estos dos meses: {c}. {f}", "cierre": ["No sabe si volvería a hacer lo mismo.", "Lo volvería a hacer.", "Cada cosa le ha costado algo."]},
+    "epilogo": {
+      "x": "Han pasado dos meses. {pat}. ",
+      "mas": "Tiene {m} más que al empezar",
+      "menos": "Tiene {m} menos que al empezar",
+      "paro": "Está sin trabajo. ",
+      "igual": "Sigue de {p} en {e}. ",
+      "ahora": "Ahora es {p}{en}. ",
+      "en": " en {e}",
+      "ideo": "Ya no piensa como antes: se siente {i}. ",
+      "cerca": "Si algo se tuerce, llamará a {l}. ",
+      "cerca_union": " o a ",
+      "decidio": "Decidió: {d}. ",
+      "cierre_igual": "Sesenta días de trabajo para estar donde estaba. La diferencia se la ha quedado alguien.",
+      "cierre_gana": "Ha ganado alguna. Sabe que se puede.",
+      "cierre_ahorro": "Ha ahorrado. Ya veremos cuánto dura.",
+      "cierre_sigue": "Sigue en pie. Que no es poco.",
+      "titulo": "Temporada {t}: dos meses",
+      "toast": "📖 Empieza la temporada {t}"
+    }
+  },
+
+  "nucleo_arcos": {
+    "marxista": [
+      {"at": 4, "id": "m1", "t": "Conciencia de clase", "x": "Ha empezado a ir a reuniones. Ha descubierto que lo que le pasa en el trabajo no es mala suerte: tiene nombre."},
+      {"at": 15, "id": "m2", "t": "La plantilla", "x": "Ya no está sola en el trabajo: hay un grupo de compañeras que se reúnen en el descanso."},
+      {"at": 35, "id": "m3", "t": "El barrio", "x": "La lucha sale del trabajo: asambleas de barrio, sindicato de inquilinas, cajas de resistencia."},
+      {"at": 60, "id": "m4", "t": "La hora de las asambleas", "x": "La crisis lo arrasa todo y la gente ya no tiene miedo. Su nombre suena en las asambleas."}
+    ],
+    "anarquista": [
+      {"at": 4, "id": "a1", "t": "Apoyo mutuo", "x": "En el ateneo nadie manda. Se reparten comida, herramientas y turnos para cuidar a quien lo necesita."},
+      {"at": 18, "id": "a2", "t": "Sindicato de inquilinas", "x": "Con sus vecinas ha formado un sindicato de inquilinas. Si suben el alquiler, no pagarán la subida."},
+      {"at": 38, "id": "a3", "t": "La cooperativa", "x": "Con varias compañeras ha montado una cooperativa: sin jefes, se reparte lo que se gana."},
+      {"at": 60, "id": "a4", "t": "Redes en la tormenta", "x": "Las redes de apoyo mutuo sostienen medio barrio. Ya no piden permiso."}
+    ],
+    "socialdemocrata": [
+      {"at": 4, "id": "s1", "t": "Afiliada", "x": "Se ha afiliado a la agrupación local. Mucha reunión, mucho café, alguna buena idea."},
+      {"at": 15, "id": "s2", "t": "Delegada", "x": "La han elegido delegada sindical. Negocia por toda la plantilla y no la pueden despedir así como así."},
+      {"at": 32, "id": "s3", "t": "En las listas", "x": "La agrupación la quiere en las listas municipales. Ahora toca convencer al barrio."}
+    ],
+    "ecologista": [
+      {"at": 4, "id": "e1", "t": "El colectivo", "x": "Se ha unido a un colectivo ecologista. Bicis, semillas y mucha paciencia."},
+      {"at": 15, "id": "e2", "t": "Huerto comunitario", "x": "Han convertido un solar abandonado en un huerto comunitario. Cada semana vuelve con verduras."},
+      {"at": 30, "id": "e3", "t": "Cooperativa energética", "x": "Se ha pasado a una cooperativa de energía renovable. La factura de la luz baja y la conciencia también descansa."},
+      {"at": 50, "id": "e4", "t": "La campaña", "x": "Han parado una macrogranja que iban a construir al lado del río. Medio pueblo salió a la calle."}
+    ],
+    "liberal": [
+      {"at": 4, "id": "l1", "t": "Mentalidad de crecimiento", "x": "Ha empezado a ir a eventos de networking. Tarjetas, sonrisas y LinkedIn."},
+      {"at": 15, "id": "l2", "t": "Red de contactos", "x": "Su red de contactos empieza a dar frutos: le llegan ofertas sin buscarlas."},
+      {"at": 25, "id": "l3", "t": "Cartera indexada", "x": "Ha abierto una cartera de fondos indexados. Cada mes aparta una parte, pase lo que pase."},
+      {"at": 45, "id": "l4", "t": "En las listas", "x": "El partido liberal local le ha ofrecido ir en las listas municipales."}
+    ],
+    "libertaria": [
+      {"at": 4, "id": "b1", "t": "Hazte a ti misma", "x": "Ha dejado de esperar nada de nadie. Si hay que buscarse la vida, se la busca."},
+      {"at": 12, "id": "b2", "t": "El side hustle", "x": "Ahora tiene trabajitos por su cuenta casi cada semana."},
+      {"at": 22, "id": "b3", "t": "Cripto", "x": "Ha metido sus ahorros en cripto. Mira el gráfico antes de desayunar."},
+      {"at": 40, "id": "b4", "t": "Sin jefe", "x": "Tiene su propio negocio. Nadie le dice a qué hora entrar; nadie le paga si no vende."}
+    ],
+    "conservadora": [
+      {"at": 4, "id": "c1", "t": "Raíces", "x": "Ha vuelto a ir a la parroquia y a la asociación de vecinos. Gente de toda la vida."},
+      {"at": 18, "id": "c2", "t": "Patrimonio", "x": "Tiene su casa. Lo que es suyo, es suyo."},
+      {"at": 32, "id": "c3", "t": "En las listas", "x": "La asociación la ha propuesto para ir en las listas municipales del barrio."}
+    ]
+  },
+
+  "nucleo_rasgos_ocultos": {
+    "celosa": {"n": "Celos", "e": "😒", "neg": 1, "need": 1, "why": "los celos", "d": "Lleva fatal que Ana salga sin {art}.", "txt": "{p} le ha mirado el móvil a Ana mientras se duchaba. «¿Quién es esa gente con la que sales tanto?». No era una pregunta."},
+    "tacana": {"n": "Tacañería", "e": "🪙", "neg": 1, "why": "el dinero", "d": "Cuenta cada euro, también los ajenos.", "txt": "{p} ha hecho una hoja de cálculo con lo que gasta cada uno. Hasta el papel higiénico. Al céntimo."},
+    "clasista": {"n": "Clasismo", "e": "🎩", "neg": 1, "why": "su trabajo", "d": "Mira por encima del hombro los trabajos «de poca cosa».", "txt": "En una cena con gente de {p}, alguien preguntó a Ana a qué se dedicaba. {p} contestó por ella, adornándolo. Luego le dijo: «es que suena mejor así»."},
+    "trepa": {"n": "Ambición sin freno", "e": "📈", "neg": 1, "why": "su carrera", "d": "Su carrera va primero. Siempre.", "txt": "{p} ha aceptado un puesto con viajes sin comentarlo con Ana. «Era ahora o nunca». Lo de cenar juntos queda para cuando se pueda."},
+    "mentirosa": {
+      "n": "Mentiras",
+      "e": "🤥",
+      "neg": 1,
+      "why": "la confianza",
+      "d": "Ocultaba algo importante.",
+      "txt": ["Ana ha encontrado cartas del banco a nombre de {p}: debe más de lo que gana en un año. Nunca se lo había contado.", "{p} no estaba donde dijo que estaba. Ana lo ha sabido por casualidad, y ya no sabe qué más no sabe."]
+    },
+    "deprimida": {
+      "n": "Depresión",
+      "e": "🌧️",
+      "neg": 1,
+      "care": 1,
+      "why": "cuidar sin descanso",
+      "d": "Arrastra una tristeza que no se cura con un fin de semana.",
+      "txt": "{p} lleva semanas sin ganas de nada. Hoy no se ha levantado de la cama. Ana ha llamado a su médico de cabecera: tres semanas de espera."
+    },
+    "reaccionaria": {
+      "n": "Ideas reaccionarias",
+      "e": "🗯️",
+      "neg": 1,
+      "why": "la política",
+      "d": "Culpa a inmigrantes y «vagos» de lo que hacen los de arriba.",
+      "txt": "En la sobremesa, {p} soltó que «los de fuera vienen a quitarnos lo nuestro». Ana se quedó mirando el plato. Lo nuestro: un alquiler que no paramos de subir."
+    },
+    "esquirola": {
+      "n": "Esquirola",
+      "e": "🐀",
+      "neg": 1,
+      "need": 1,
+      "only": "compi",
+      "why": "la huelga",
+      "d": "En la huelga se puso del lado de la empresa.",
+      "txt": "{p} ha entrado a trabajar por la puerta de atrás mientras el piquete aguantaba en la de delante. Y luego le ha pasado a la jefa la lista de quién estaba fuera."
+    },
+    "generosa": {"pos": 1, "n": "Generosidad", "e": "🤲", "d": "Da sin llevar la cuenta.", "txt": "Sin decir nada, {p} le ha hecho una transferencia a Ana. En el concepto pone: «para que llegues a fin de mes, no me lo devuelvas»."},
+    "leal": {"pos": 1, "n": "Lealtad", "e": "🫶", "d": "Está a las duras y a las maduras.", "txt": "Las cosas van mal y {p} no se ha ido a ningún sitio. Ha aparecido con un táper y se ha quedado hasta tarde. Sin preguntar, sin dar lecciones."},
+    "cuidadora": {"pos": 1, "n": "Cuidados a medias", "e": "🧺", "d": "Reparte tareas y cuidados a medias de verdad, sin que se lo pidan.", "txt": "{p} ha hecho la lista de la compra, ha pedido cita en el pediatra y ha puesto lavadoras. Sin anunciarlo. Ana no sabía que se podía vivir así."},
+    "conciencia": {
+      "pos": 1,
+      "n": "Conciencia de clase",
+      "e": "✊",
+      "why": "la política",
+      "d": "Tiene más conciencia de clase de la que aparentaba.",
+      "txt": "Resulta que {p} lleva años yendo a la asamblea de su barrio. «No te lo dije porque no me preguntaste». {s}",
+      "izq": "Ana sonríe: hay más gente de la que creía."
+    }
+  },
+
+  "nucleo_aspiraciones": {
+    "categorias": {"trabajo": "💼", "dinero": "💰", "gente": "🫂", "politica": "✊", "aficion": "🎨", "animo": "🌤️"},
+    "sin": {"ascenso": "el trabajo", "huir": "este trabajo", "juntos": "su pareja", "boda": "su pareja", "madre": "su madre", "vecina": "la vecina", "organizar": "su trabajo", "convencer": "su pareja", "obra": "Terminar una obra en casa"},
+    "lista": [
+      {"id": "ascenso", "c": "trabajo", "e": "📈", "r": 1.2, "t": "Conseguir un ascenso en {x}"},
+      {"id": "cima", "c": "trabajo", "e": "🏔️", "r": 4.0, "t": "Llegar a {x}"},
+      {"id": "huir", "c": "trabajo", "e": "🚪", "r": 1.5, "t": "Salir de {x}: aquí no se puede seguir"},
+      {"id": "aumento", "c": "trabajo", "e": "💶", "r": 1.0, "t": "Arrancar una subida de sueldo"},
+      {"id": "trabajo", "c": "trabajo", "e": "📝", "r": 1.0, "t": "Encontrar trabajo"},
+      {"id": "opos", "c": "trabajo", "e": "📚", "r": 3.0, "t": "Aprobar unas oposiciones"},
+      {"id": "negocio", "c": "trabajo", "e": "🏪", "r": 2.0, "t": "Montar su propio negocio"},
+      {"id": "coop", "c": "trabajo", "e": "🤝", "r": 2.0, "t": "Trabajar sin jefes, en una cooperativa"},
+      {"id": "puntual", "c": "trabajo", "e": "⏰", "r": 1.0, "t": "Un mes sin llegar tarde ni faltar"},
+      {"id": "colchon", "c": "dinero", "e": "🐷", "r": 1.5, "t": "Tener un colchón de {x}"},
+      {"id": "rojos", "c": "dinero", "e": "🆘", "r": 1.0, "t": "Salir de los números rojos"},
+      {"id": "casa", "c": "dinero", "e": "🔑", "r": 5.0, "t": "Comprar la casa"},
+      {"id": "capricho", "c": "dinero", "e": "🛍️", "r": 0.8, "t": "Darse un capricho Premium"},
+      {"id": "amigos3", "c": "gente", "e": "🫂", "r": 1.2, "t": "Hacer tres amistades de verdad en el barrio"},
+      {"id": "unaamiga", "c": "gente", "e": "☕", "r": 1.0, "t": "Encontrar una persona con la que hablar de todo"},
+      {"id": "pareja", "c": "gente", "e": "❤️", "r": 1.5, "t": "Encontrar pareja"},
+      {"id": "juntos", "c": "gente", "e": "🏠", "r": 1.5, "t": "Irse a vivir con {x}"},
+      {"id": "boda", "c": "gente", "e": "💍", "r": 2.0, "t": "Casarse con {x}"},
+      {"id": "hijo", "c": "gente", "e": "👶", "r": 2.0, "t": "Tener un hijo o una hija"},
+      {"id": "madre", "c": "gente", "e": "👩‍🦳", "r": 1.0, "t": "Arreglar las cosas con {x}"},
+      {"id": "vecina", "c": "gente", "e": "🏘️", "r": 0.7, "t": "Ganarse a {x}"},
+      {"id": "soltera", "c": "gente", "e": "🧭", "r": 1.0, "t": "Dos meses de soltería feliz"},
+      {"id": "fiestas", "c": "gente", "e": "🎉", "r": 1.0, "t": "Salir diez veces con amigos"},
+      {"id": "afiliarse", "c": "politica", "e": "🪪", "r": 0.8, "t": "Afiliarse al sindicato"},
+      {"id": "huelgaW", "c": "politica", "e": "✊", "r": 3.0, "t": "Ganar una huelga"},
+      {"id": "organizar", "c": "politica", "e": "🗣️", "r": 2.0, "t": "Organizar a media plantilla de {x}"},
+      {"id": "influencia", "c": "politica", "e": "📣", "r": 2.0, "t": "Que su nombre suene en el barrio (influencia 30)"},
+      {"id": "concejala", "c": "politica", "e": "🏛️", "r": 3.0, "t": "Ir en las listas municipales"},
+      {"id": "desahucio", "c": "politica", "e": "🚪", "r": 2.5, "t": "Parar un desahucio"},
+      {"id": "convencer", "c": "politica", "e": "💬", "r": 1.5, "t": "Que {x} se implique también"},
+      {"id": "despolitizar", "c": "politica", "e": "🫥", "r": 0.7, "t": "Desconectar: un mes sin asambleas ni telediario"},
+      {"id": "musica", "c": "aficion", "e": "🎸", "r": 1.5, "t": "Tocar la guitarra de verdad (música 5)"},
+      {"id": "cocina", "c": "aficion", "e": "🍳", "r": 1.2, "t": "Cocinar como su abuela (cocina 5)"},
+      {"id": "logica", "c": "aficion", "e": "🧠", "r": 1.5, "t": "Estudiar algo a fondo (lógica 6)"},
+      {"id": "carisma", "c": "aficion", "e": "🗣️", "r": 1.5, "t": "Saber hablar en público (carisma 6)"},
+      {"id": "forma", "c": "aficion", "e": "🏃", "r": 1.0, "t": "Ponerse en forma"},
+      {"id": "huerto", "c": "aficion", "e": "🥕", "r": 1.2, "t": "Comer de su propio huerto"},
+      {"id": "manitas", "c": "aficion", "e": "🔨", "r": 1.5, "t": "Dominar un oficio (nivel 5)"},
+      {"id": "todoterreno", "c": "aficion", "e": "🔀", "r": 2.0, "t": "Saber un poco de todo (nivel 3 en cinco habilidades)"},
+      {"id": "acabar", "c": "aficion", "e": "🏁", "r": 2.0, "t": "Acabar un proyecto sin cambiar de idea"},
+      {"id": "obra", "c": "aficion", "e": "🏗️", "r": 1.0, "t": "Hacer realidad: {x}"},
+      {"id": "semana", "c": "animo", "e": "😄", "r": 1.2, "t": "Una semana entera de buen humor"},
+      {"id": "descanso", "c": "animo", "e": "🏖️", "r": 0.8, "t": "Coger unas vacaciones"}
+    ]
+  },
+
+  "nucleo_objetivos": {
+    "toast": "🏆 Objetivo: {t}",
+    "lista": [
+      {"id": "room1", "t": "Construye una habitación nueva con la herramienta Habitación", "r": 100},
+      {"id": "work1", "t": "Ve a trabajar por primera vez", "r": 80},
+      {"id": "windows", "t": "Instala 3 ventanas", "r": 150},
+      {"id": "paint", "t": "Pinta 10 paredes de color", "r": 100},
+      {"id": "fogon", "t": "Compra un fogón y cocina algo", "r": 100},
+      {"id": "fence", "t": "Rodea el jardín con 12 tramos de valla", "r": 120},
+      {"id": "deco", "t": "Pon 6 plantas, setos, flores o árboles", "r": 150},
+      {"id": "rooms3", "t": "Ten 3 habitaciones distintas (baño, cocina, dormitorio…)", "r": 250},
+      {"id": "star4", "t": "Consigue una habitación de ★★★★", "r": 250},
+      {"id": "pool", "t": "Construye una piscina de 6 casillas", "r": 200},
+      {"id": "happy", "t": "Pon a Ana de muy buen humor 😄", "r": 120},
+      {"id": "promo", "t": "Consigue un ascenso", "r": 200},
+      {"id": "big", "t": "Casa de 100 m² o más", "r": 300},
+      {"id": "star5", "t": "Consigue una habitación de ★★★★★", "r": 400},
+      {"id": "value", "t": "Casa valorada en 100.000 €", "r": 500},
+      {"id": "diy", "t": "Ana monta o construye algo ella sola", "r": 100},
+      {"id": "hire", "t": "Contrata a alguien de la cooperativa", "r": 100},
+      {"id": "craft1", "t": "Ana fabrica su primer mueble en el banco", "r": 150},
+      {"id": "diy5", "t": "Nivel 4 en algún oficio", "r": 250},
+      {"id": "premium", "t": "Ten 3 muebles Premium 🥇", "r": 300},
+      {"id": "boss", "t": "Ana llega a Directora", "r": 1000}
+    ]
   }
 }

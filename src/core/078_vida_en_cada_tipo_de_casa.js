@@ -1,17 +1,17 @@
 // ---------- vida en cada tipo de casa ----------
 function homeWeekly(){if(!S.home)S.home={type:'casita',area:[0,0,N-1,N-1],since:S.day,mates:[]};const t=S.home.type||'casita',H=HOMES[t],c=CH();
   if(H.damp){for(const o of S.obj)if(o&&!o.priv)o.c=Math.max(0,(o.c??100)-5);S.needs.energia=Math.max(0,S.needs.energia-6);
-    if(Math.random()<.12&&!S.sick){S.sick=1+(Math.random()*3|0);tell(`${c.name} ha cogido un catarro que no se le va. En el cuarto hay moho detrás del armario y la ropa nunca acaba de secarse.`,'🦠');}
-    else if(Math.random()<.25)tell(pickR(['Ha vuelto a salir la mancha de humedad del techo. Más grande.','El casero no coge el teléfono. La persiana lleva tres semanas rota.','Esta noche se ha ido la luz otra vez: alguien del edificio enganchado a la red.','Una cucaracha en la ducha. Ana ya ni grita.']),'🏚️');}
+    if(Math.random()<.12&&!S.sick){S.sick=1+(Math.random()*3|0);tell(huecos(TXN.tipos_de_casa.catarro,{c:c.name}),'🦠');}
+    else if(Math.random()<.25)tell(pickR(TXN.tipos_de_casa.humedad),'🏚️');}
   if(t==='habitacion'){const ms=S.home.mates.map(k=>(S.people||[]).find(p=>p.k===k)).filter(Boolean);const m=pickR(ms);
-    if(m&&Math.random()<.55)tell(pickR([`${m.n} ha vuelto a dejar los platos en el fregadero tres días. Hay una nota en la nevera, con mayúsculas.`,`${m.n} ha montado una fiesta hasta las cuatro. ${c.name} ha dormido con tapones.`,`Bronca en el grupo del piso por el papel higiénico. Nadie compra nunca papel higiénico.`,`${m.n} y ${c.name} han cenado juntas y se han reído un montón. A veces compartir piso está bien.`.replace('juntas',m.g==='m'?'juntos':'juntas'),`Cola para el baño a las siete y media. ${m.n} lleva veinte minutos dentro.`,`${m.n} le ha cogido la leche otra vez. ${c.name} ha empezado a esconder la comida en su cuarto.`]),'🛋️');
+    if(m&&Math.random()<.55)tell(huecos(pickR(TXN.tipos_de_casa.piso),{m:m.n,c:c.name,juntas:m.g==='m'?'juntos':'juntas'}),'🛋️');
     if(m&&Math.random()<.4){m.rel=Math.max(0,Math.min(100,m.rel+(Math.random()<.5?6:-5)));}
-    if(Math.random()<.04&&ms.length){const out=pickR(ms);S.home.mates=S.home.mates.filter(k=>k!==out.k);S.res=(S.res||[]).filter(r=>r.pid!==out.k);out.stage='conocida';out.mate=false;const nw=newMate();S.home.mates.push(nw.k);tell(`${out.n} se va del piso. Ha entrado ${nw.n}, ${nw.mjob}. Primera impresión: ${pickR(['maja','rara','muy callada','demasiado simpática'])}.`,'📦');}
+    if(Math.random()<.04&&ms.length){const out=pickR(ms);S.home.mates=S.home.mates.filter(k=>k!==out.k);S.res=(S.res||[]).filter(r=>r.pid!==out.k);out.stage='conocida';out.mate=false;const nw=newMate();S.home.mates.push(nw.k);tell(huecos(TXN.tipos_de_casa.relevo,{out:out.n,nw:nw.n,job:nw.mjob,imp:pickR(TXN.tipos_de_casa.relevo_imp)}),'📦');}
     if(Math.random()<.5)S.needs.energia=Math.max(0,S.needs.energia-5);}
-  if(t==='padres'){const m=P_('madre');if(m){m.rel=Math.min(100,m.rel+1);if(Math.random()<.45)tell(pickR([`${m.n} ha entrado en el cuarto sin llamar. Otra vez.`,`«¿Vas a cenar en casa?», pregunta ${m.n} cada día a las ocho. Cada día.`,`${m.n} le ha planchado la ropa sin que se lo pidiera. ${c.name} no sabe si agradecerlo o gritar.`,`Domingo de cocido con ${m.n}. Hay cosas de vivir en casa que no tienen precio.`,`${m.n} ha preguntado otra vez cuándo piensa independizarse. «Cuando los alquileres bajen», le ha dicho. Las dos se han reído sin ganas.`.replace('Las dos',c.g==='m'?'Los dos':'Las dos')]),'👩‍🦳');}
+  if(t==='padres'){const m=P_('madre');if(m){m.rel=Math.min(100,m.rel+1);if(Math.random()<.45)tell(huecos(pickR(TXN.tipos_de_casa.padres),{m:m.n,c:c.name,dos:c.g==='m'?'Los dos':'Las dos'}),'👩‍🦳');}
     S.needs.social=Math.min(100,S.needs.social+8);}
-  if(t==='bueno'&&Math.random()<.2)tell(pickR(['El portero le ha subido un paquete. Le ha llamado «señora».'.replace('señora',ga('señora','señor','señore')),'Junta de vecinos: se quejan de los «ruidos de la calle». La calle es donde vive el resto.','Calefacción a 22 grados en enero. Ana se acuerda del bajo de su amiga y le da algo de vergüenza.']),'🏙️');
-  if(t==='chalet'&&Math.random()<.2)tell(pickR(['El jardinero viene los martes. Ana aún no sabe cómo se llama.','La piscina hay que mantenerla aunque nadie se bañe. Cloro, filtros, la factura del agua.','Barbacoa con gente del trabajo. Todos hablan de dónde invertir.']),'🏊');
+  if(t==='bueno'&&Math.random()<.2)tell(huecos(pickR(TXN.tipos_de_casa.bueno),{senora:ga('señora','señor','señore')}),'🏙️');
+  if(t==='chalet'&&Math.random()<.2)tell(pickR(TXN.tipos_de_casa.chalet),'🏊');
   // decidir mudarse sola
   if(S.autoHome&&!S.owned&&S.day-(S.home.since||0)>=28){const rent=weeklyRent(),inc=S.jobless?0:salary()*TR().days.length;
     const down=HOME_ORDER.slice(0,HOME_ORDER.indexOf(t)).reverse().find(k=>HOMES[k].rent*Dm().rent<rent*.7&&canMove(k).ok);

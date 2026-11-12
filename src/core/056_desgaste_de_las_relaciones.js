@@ -24,13 +24,7 @@ function wearWeekly(){const c=ex(),cl=classOf();let fought=0;
     if(isPartner(p)&&p.wear>=68&&!c.dlg&&!c.dq.some(d=>d.id==='crisis'))askDilemma('crisis',{p:p.k});
     // revelar
     if(S.day-(p.metDay||0)>=6)for(const h of p.hid){if((p.rev||[]).includes(h))continue;const H=HID[h];if(!H)continue;if(H.need&&!(H.rev&&H.rev(p)))continue;const ch=.03+closeTo(p)/100*.1+(H.rev&&H.rev(p)?.22:0);
-      if(Math.random()<ch){p.rev=p.rev||[];p.rev.push(h);tell(H.txt(p),H.e,'big');if(H.onRev)H.onRev(p);remember(`Descubrió algo de ${p.n}: ${H.n.toLowerCase()}.`);break;}}}}
-function fight(p,why){const n=p.n;const T_={'la militancia':[`Bronca con ${n}: «el sindicato te importa más que esta casa».`,`${n} ha cenado solo otra vez. Ana estaba en una asamblea.`.replace('solo',p.g==='f'?'sola':'solo')],
-  'el dinero':[`Discusión con ${n} por dinero. Otra vez. Nadie levanta la voz por cien euros si le sobran.`,`${n} y Ana han discutido por quién paga qué. No era por el dinero, o sí.`],
-  'la política':[`Cena tensa con ${n}. Empezó hablando de la huelga y acabó en «tú no sabes lo que es trabajar».`,`${n} ha cambiado de canal cuando salía la manifestación. Ana lo ha vuelto a poner.`],
-  'su trabajo':[`${n} le ha soltado: «¿y ahora eres tú la que manda?». Duele porque tiene parte de razón.`,`${n} no soporta cómo habla Ana del trabajo últimamente.`],
-  'su carrera':[`${n} ha vuelto a cancelar la cena: «reunión de última hora». Es la tercera esta semana.`,`${n} habla de su ascenso como si fuera de los dos. Las renuncias, en cambio, siempre las pone Ana.`],
-  'los celos':[`${n} quería saber con quién estuvo Ana el sábado. Con detalles.`],'los cuidados':[`${n} dice que ayuda en casa. Ana lleva la cuenta de quién se levanta de noche.`],
-  'cuidar sin descanso':[`Ana está agotada de sostener a ${n}. Y se siente culpable por estarlo.`],'la confianza':[`Ana ya no cree lo que le dice ${n}. Ni lo bueno.`],'el mal humor':[`Ana lleva días de mal humor y ${n} se lo está comiendo todo.`],'la huelga':[`Ana no le dirige la palabra a ${n} desde la huelga.`]};
-  return pickR(T_[why]||[`${n} y Ana no están en su mejor momento: ${why}.`]);}
+      if(Math.random()<ch){p.rev=p.rev||[];p.rev.push(h);tell(H.txt(p),H.e,'big');if(H.onRev)H.onRev(p);remember(huecos(TXN.desgaste.descubrio,{p:p.n,h:H.n.toLowerCase()}));break;}}}}
+function fight(p,why){const n=p.n;const T_=TXN.desgaste.pelea;
+  return huecos(pickR(T_[why]||[TXN.desgaste.pelea_resto]),{n,why,solo:p.g==='f'?'sola':'solo'});}
 

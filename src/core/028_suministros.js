@@ -15,6 +15,6 @@ function payUtilities(){
   if(S.owned)bill.ibi=Math.round((S.housePaid||housePrice())*0.006/12);
   bill.total=Object.values(bill).reduce((a,b)=>a+b,0);
   if(S.union&&S.union.member){bill.sindicato=unionFee();bill.total+=bill.sindicato;}{const ps=partnerShare(bill.total);if(ps){bill.total-=ps;}}S.money-=bill.total;bumpMoney();S.util={luz:0,agua:0,gas:0};S.lastBill=bill;
-  toast(`💡 Facturas del mes: ${fmt(bill.total)} · luz ${fmt(bill.luz)} · agua ${fmt(bill.agua)} · gas ${fmt(bill.gas)}${bill.internet?' · internet '+fmt(bill.internet):''}${bill.ibi?' · IBI y seguro '+fmt(bill.ibi):''}${bill.sindicato?' · sindicato '+fmt(bill.sindicato):''}`,true);
+  toast(huecos(TXN.suministros.facturas,{total:fmt(bill.total),luz:fmt(bill.luz),agua:fmt(bill.agua),gas:fmt(bill.gas),internet:bill.internet?huecos(TXN.suministros.factura_internet,{m:fmt(bill.internet)}):'',ibi:bill.ibi?huecos(TXN.suministros.factura_ibi,{m:fmt(bill.ibi)}):'',sindicato:bill.sindicato?huecos(TXN.suministros.factura_sindicato,{m:fmt(bill.sindicato)}):''}),true);
 }
 function utilEstimate(){const u=S.util||{luz:0,agua:0,gas:0};const f=Hm().util*(Dm().soul?MK().util:1)*utilMul();return Math.round((u.luz+6+u.agua+4+u.gas)*f+((has('compu')||has('tele'))?35*f:0));}

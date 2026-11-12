@@ -7,9 +7,9 @@ function socialWeekly(){
       if(S.money<0)d-=2;const cmp=compatOf(p);d+=(cmp-50)/25;if(L.kids!=='quiza'&&p.kids!=='quiza'&&L.kids!==p.kids&&(p.stage==='convive'||p.stage==='casada'))d-=2;
       if(isI('marxista','anarquista')&&comp()===3&&p.ideo==='apolitica')d-=1;
       p.love=Math.max(0,Math.min(100,p.love+d));
-      if(d<-2&&Math.random()<.35)tell(pickR([`Discusión con ${p.n} por dinero. Otra vez.`,`${p.n} dice que ${c.name} nunca está en casa.`,`Bronca con ${p.n} por política en la cena.`,`${p.n} y ${c.name} llevan días sin hablarse bien.`]),'😤');
-      if(p.love<18&&p.stage!=='cita'){breakUp(p,pickR(['ya no era lo mismo','demasiadas discusiones','querían cosas distintas']));continue;}
-      if(p.stage==='cita'&&p.love<10){setStage(p,'amiga');tell(`Lo de ${p.n} no ha cuajado. Se quedan como amigos… o eso dicen.`,'🤷');}}}
+      if(d<-2&&Math.random()<.35)tell(huecos(pickR(TXN.acciones_semana.discusion),{p:p.n,c:c.name}),'😤');
+      if(p.love<18&&p.stage!=='cita'){breakUp(p,pickR(TXN.acciones_semana.ruptura_motivo));continue;}
+      if(p.stage==='cita'&&p.love<10){setStage(p,'amiga');tell(huecos(TXN.acciones_semana.no_cuajo,{p:p.n}),'🤷');}}}
   if(!S.autoHome)return;
   // buscar pareja o rollo según lo que quiere
   if(L.orient!=='nadie'&&L.rel!=='soltera'&&!pt){const cands=(S.people||[]).filter(p=>canLove(p)&&['conocida','amiga','cita','rollo'].includes(p.stage));
@@ -24,23 +24,23 @@ function socialWeekly(){
     if(['convive','casada'].includes(pt.stage)&&!S.baby&&(S.kids||[]).length<2&&(L.kids==='si'||(L.kids==='quiza'&&Math.random()<.3))&&pt.kids!=='no'&&pt.love>=70&&daysT>=25&&Math.random()<.2)tryBaby(pt);}
   else if(L.kids==='si'&&!S.baby&&!(S.kids||[]).length&&(CH().age||27)>=36&&L.rel!=='libre'&&Math.random()<.06)tryBaby(null);
   // gastos de los críos
-  const kids=S.kids||[];if(kids.length){const cost=Math.round(kids.reduce((a,k)=>a+(kidAge(k)<1?30:22),0)*PM()*(liveIn()?0.5:1)+(dayType(S.day)==='work'&&!onLeave()&&!S.jobless?kids.filter(k=>kidAge(k)<3).length*Math.round(28*PM()):0));S.money-=cost;if(Math.random()<.4)tell(`Pañales, ropa que se queda pequeña y guardería: ${fmt(cost)} esta semana.`,'🍼');}
+  const kids=S.kids||[];if(kids.length){const cost=Math.round(kids.reduce((a,k)=>a+(kidAge(k)<1?30:22),0)*PM()*(liveIn()?0.5:1)+(dayType(S.day)==='work'&&!onLeave()&&!S.jobless?kids.filter(k=>kidAge(k)<3).length*Math.round(28*PM()):0));S.money-=cost;if(Math.random()<.4)tell(huecos(TXN.acciones_semana.gasto_hijos,{coste:fmt(cost)}),'🍼');}
 }
 // cuando la pareja vive en casa, paga la mitad
 function partnerShare(amount){const p=liveIn();return p?Math.round(amount*0.5):0;}
 function socialDaily(){
   if(S.baby&&S.day>=S.baby.due)babyBorn();
   if(S.baby&&S.baby.mode==='ana'){S.needs.energia=Math.max(0,S.needs.energia-6);}
-  for(const k of S.kids||[]){const a=kidAge(k);if(a>0&&(S.day-k.born)%60===0)tell(`🎂 ${k.n} cumple ${a} año${a>1?'s':''}. ${a===1?'Ya da sus primeros pasos.':a===2?'Ya dice «no» a todo.':a===3?'Empieza el cole.':'Crece demasiado rápido.'}`,'🎂');}
+  for(const k of S.kids||[]){const a=kidAge(k);if(a>0&&(S.day-k.born)%60===0)tell(huecos(TXN.acciones_semana.cumple,{n:k.n,a,s:a>1?'s':'',frase:a===1?TXN.acciones_semana.cumple_1:a===2?TXN.acciones_semana.cumple_2:a===3?TXN.acciones_semana.cumple_3:TXN.acciones_semana.cumple_mas}),'🎂');}
   if((S.kids||[]).some(k=>kidAge(k)<1)&&Math.random()<.5){S.needs.energia=Math.max(5,S.needs.energia-12);}
   // visitas que acaban
   S.res=(S.res||[]).filter(r=>!(r.kind==='guest'&&r.until<S.day*1440+S.t));
 }
 // app de citas
-function datingApp(auto){const L=LIFE();if(L.orient==='nadie'){toast('A Ana no le interesan las citas');return;}const n=1+(Math.random()<.5?1:0);const ps=[];for(let i=0;i<n;i++)ps.push(newPerson('la app de citas',true));
-  tell(`${CH().name} ha abierto la app de citas: ${ps.map(p=>p.n+' ('+roleTxt(p)+')').join(' y ')}. ${pickR(['Match.','Hay conversación.','Parece majo/a.'.replace('majo/a',ps[0].g==='m'?'majo':ps[0].g==='f'?'maja':'maje')])}`,'📱');if(!auto)toast(`📱 ${ps.length} match nuevo${ps.length>1?'s':''}`);return ps;}
+function datingApp(auto){const L=LIFE();if(L.orient==='nadie'){toast(TXN.acciones_semana.citas_nadie);return;}const n=1+(Math.random()<.5?1:0);const ps=[];for(let i=0;i<n;i++)ps.push(newPerson(TXN.acciones_semana.donde_app,true));
+  tell(huecos(TXN.acciones_semana.app_citas,{n:CH().name,ps:ps.map(p=>p.n+' ('+roleTxt(p)+')').join(' y '),r:pickR([...TXN.acciones_semana.app_citas_r,huecos(TXN.acciones_semana.app_citas_parece,{m:ps[0].g==='m'?'majo':ps[0].g==='f'?'maja':'maje'})])}),'📱');if(!auto)toast(huecos(TXN.acciones_semana.app_match,{k:ps.length,s:ps.length>1?'s':''}));return ps;}
 // conocer gente al salir
-function maybeMeet(k){const where={amigos:'unas cañas',militancia:'una reunión',networking:'un afterwork',sindicato:'la asamblea',voluntariado:'el voluntariado',deporte:'el parque',manifestacion:'la manifestación',biblioteca:'la biblioteca',misa:'la parroquia'}[k];if(!where)return;
+function maybeMeet(k){const where=TXN.acciones_semana.donde[k];if(!where)return;
   if(Math.random()>.18)return;const L=LIFE();const rom=L.orient!=='nadie'&&L.rel!=='soltera'&&!partner()&&Math.random()<.6;const p=newPerson(where,rom);
   if(['militancia','manifestacion','sindicato'].includes(k)&&S.ideo!=='apolitica'&&(!p.ideo||p.ideo==='apolitica')&&Math.random()<.3)p.ideo=S.ideo;p.rel+=10;
-  tell(`En ${where} ha conocido a ${p.n}, ${roleTxt(p)}.${rom&&canLove(p)?' Hubo miradas.':''}`,'👋');}
+  tell(huecos(TXN.acciones_semana.conoce,{donde:where,p:p.n,rol:roleTxt(p),miradas:rom&&canLove(p)?TXN.acciones_semana.conoce_miradas:''}),'👋');}

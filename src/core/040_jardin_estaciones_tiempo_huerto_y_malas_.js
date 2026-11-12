@@ -25,8 +25,8 @@ function gardenDaily(){
     if(W!=='lluvia'&&W!=='tormenta')cr.w=Math.max(0,cr.w-dry);
     cr.wd=Math.min(1,(cr.wd||0)+(s==='pri'?0.12:0.07));
     if(cr.w<=0){cr.dry=(cr.dry||0)+1;if(cr.dry>=3){cr.dead=true;dead.push(CROPS[cr.k].n.toLowerCase());}}else cr.dry=0;}
-  if(dead.length)tell(`Se han secado ${[...new Set(dead)].join(' y ')} del huerto. Nadie los regó a tiempo.`,'🥀');
-  if(rot.length)tell(`Se han echado a perder ${[...new Set(rot)].join(' y ')} por no recogerlos a tiempo.`,'🥀');
+  if(dead.length)tell(huecos(TXN.jardin.secan,{que:[...new Set(dead)].join(' y ')}),'🥀');
+  if(rot.length)tell(huecos(TXN.jardin.pudren,{que:[...new Set(rot)].join(' y ')}),'🥀');
   // malas hierbas
   S.weeds=(S.weeds||[]).filter(i=>S.floor[i]===0&&!S.obj[i]&&!S.wall[i]);
   const n={pri:3,ver:1,oto:2,inv:0}[s]+((W==='lluvia'||W==='tormenta')?1:0);
@@ -38,11 +38,11 @@ function gardenCare(i){
   const o=S.obj[i];if(!o)return;let cr=o.crop;const c=CH();
   if(cr&&cr.g>=1&&!cr.dead){const C=CROPS[cr.k];const y=Math.max(1,Math.round(C.y*(0.7+0.12*lvl('jard'))*TIERS[o.q??3].eff));S.pantry=(S.pantry||0)+y;tally('harvest',(S.today&&S.today.harvest||0)+y);
     gainSkill('jard',6);floatText(`+${y} ${C.e}`,i%N+.5,(i/N|0)+.5,30,'#2e8b57');burst('chip',i%N+.5,(i/N|0)+.5,12,10,.6,{vz:90,life:.9,col:C.col});popBubble(C.e);
-    if(!S.story||!S.story.chap.cosecha)chapter('cosecha','Lo que da la tierra',`${c.name} recogió sus primeros ${C.n.toLowerCase()}. Sabían a algo que no se puede comprar.`);
-    else if(Math.random()<0.5)tell(`${c.name} recogió ${y} raciones de ${C.n.toLowerCase()} del huerto.`,C.e);
+    if(!S.story||!S.story.chap.cosecha)chapter('cosecha',TXN.jardin.cosecha_titulo,huecos(TXN.jardin.cosecha,{n:c.name,cultivo:C.n.toLowerCase()}));
+    else if(Math.random()<0.5)tell(huecos(TXN.jardin.cosecha_raciones,{n:c.name,raciones:y,cultivo:C.n.toLowerCase()}),C.e);
     cr=o.crop=null;
-    if((S.pantry||0)>12){const v=P_('vecina');const give=Math.min(S.pantry-8,6);S.pantry-=give;if(v){v.rel=Math.min(100,v.rel+12);tell(`Le sobraban verduras y le llevó unas cuantas a ${v.n}, ${v.r}. ${pickR(['Se lo agradeció con un bizcocho.','Acabaron charlando en el rellano.','Le prometió devolverle el táper lleno.'])}`,'🧺');}}}
-  if(!cr||cr.dead){const k=seedFor();const cost=Math.round(4*PM());S.money-=cost;o.crop={k,g:0,w:100,wd:0};if(!S.sowed){S.sowed=1;tell(`Sembró ${CROPS[k].n.toLowerCase()} en el huerto. Ahora toca regar y esperar.`,'🌱');}
+    if((S.pantry||0)>12){const v=P_('vecina');const give=Math.min(S.pantry-8,6);S.pantry-=give;if(v){v.rel=Math.min(100,v.rel+12);tell(huecos(TXN.jardin.regalo_vecina,{p:v.n,rol:v.r,cierre:pickR(TXN.jardin.regalo_cierre)}),'🧺');}}}
+  if(!cr||cr.dead){const k=seedFor();const cost=Math.round(4*PM());S.money-=cost;o.crop={k,g:0,w:100,wd:0};if(!S.sowed){S.sowed=1;tell(huecos(TXN.jardin.siembra,{cultivo:CROPS[k].n.toLowerCase()}),'🌱');}
     floatText('🌱 '+CROPS[k].n,i%N+.5,(i/N|0)+.5,26,'#2e8b57');waterAround(i);return;}
   cr.w=100;cr.wd=0;cr.dry=0;
   waterAround(i);

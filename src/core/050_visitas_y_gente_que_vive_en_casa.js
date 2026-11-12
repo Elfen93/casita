@@ -1,10 +1,10 @@
 // ---------- visitas y gente que vive en casa ----------
-function inviteHome(p,stay){if(S.sim.work>0)return toast('Ana no está en casa');if((S.res||[]).some(r=>r.pid===p.k))return toast(`${p.n} ya está aquí`);
+function inviteHome(p,stay){if(S.sim.work>0)return toast(TXN.visitas.no_en_casa);if((S.res||[]).some(r=>r.pid===p.k))return toast(huecos(TXN.visitas.ya_aqui,{p:p.n}));
   const h=S.t/60;const until=stay?(S.day+1)*1440+9*60:S.day*1440+Math.min(23.9*60,S.t+180);
   S.res=S.res||[];const [sx,sy]=simCell();const e=bfs([sx,sy],(x,y)=>x===0||y===0||x===N-1||y===N-1);const ex=e&&e.length?e[e.length-1]:[sx,sy];
   S.res.push({kind:'guest',pid:p.k,x:ex[0]+.5,y:ex[1]+.5,path:[],phase:0,until,stay});talkTo(p);p.rel=Math.min(100,p.rel+6);if(['cita','rollo','pareja'].includes(p.stage))p.love=Math.min(100,p.love+6);
-  tally('calls',p.n);toast(`🏠 ${p.n} viene a casa${stay?' (se queda a dormir)':''}`);
-  if(stay&&['rollo','cita','pareja'].includes(p.stage))tell(`${p.n} se quedó a dormir. ${pickR(['Desayunaron tarde y con calma.','Lo que pasó esa noche se queda en esa casa.','Por la mañana había dos tazas en el fregadero.'])}`,'🌙');}
+  tally('calls',p.n);toast(huecos(TXN.visitas.viene,{p:p.n,dormir:stay?TXN.visitas.viene_dormir:''}));
+  if(stay&&['rollo','cita','pareja'].includes(p.stage))tell(huecos(TXN.visitas.se_quedo,{p:p.n,r:pickR(TXN.visitas.se_quedo_r)}),'🌙');}
 function residents(){const list=[...(S.res||[])];const pt=liveIn();const h=S.t/60;const ptWork=pt&&dayType(S.day)==='work'&&h>8.2&&h<17.8;
   if(pt&&!ptWork&&!list.some(r=>r.pid===pt.k)){S.res=S.res||[];const r={kind:'partner',pid:pt.k,x:S.sim.x+1,y:S.sim.y,path:[],phase:0};const [x,y]=simCell();const n=neighborsOf(idx(x,y));if(n.length){r.x=n[0]%N+.5;r.y=(n[0]/N|0)+.5;}S.res.push(r);list.push(r);}
   if(pt&&ptWork)S.res=(S.res||[]).filter(r=>r.kind!=='partner');
