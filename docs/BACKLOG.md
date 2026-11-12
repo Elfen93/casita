@@ -18,7 +18,11 @@ Orden del frente A (12 nov 2026): 1 población · 2 lugares · 3 interacciones y
 ### T-121 · Pulido del mapa y de los vecinos
 Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son cajas con rótulo); rótulos de las casas del censo que no tapen tejados; horario de súper, bar y obra en la ficha; romance con vecinos adultos; `SCENES.comedor` falla con acciones que no son suyas (hoy se esquiva desde `barrio.js`).
 
-### T-113 · Elegir colegio para los hijos
+### ✅ (hecho) T-122 · Tratar con los vecinos (`mods/trato.js`, `data/trato.json`) · horarios `abre` en lugares · burofax con plazo
+
+Pendiente menor: «Hacer la compra» deja ir en domingo aunque el súper cierre (unificar salidas con `abre`); botones de romance con vecinos solo en Opciones; unificar en el núcleo la comprobación `k.startsWith('p')` del romance.
+
+### ✅ (hecho, `mods/escuela.js`) T-113 · Elegir colegio para los hijos
 Rol: sistemas + guion. Hoy los hijos del personaje van a la pública. Poder elegir concertado (cuota «voluntaria» mensual, uniforme) con consecuencias reales y sin monigotes.
 
 ### T-114 · Escenas grandes en el móvil

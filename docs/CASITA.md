@@ -48,7 +48,7 @@ casita/
                       ideologías, gobiernos, reglas y sucesos (data/README.md). Lo comparten el juego web y Godot
   src/head.html, src/tail.html
   src/core/NNN_*.js   núcleo: 99 archivos numerados (motor, dibujo, casa, trabajo, mundo…)
-  mods/*.js           66 módulos que amplían el núcleo, en el orden de build.json
+  mods/*.js           67 módulos que amplían el núcleo, en el orden de build.json
   mods/movil.css      estilos de todas las ventanas
   p3d/, q3d/          librería 3D y modelos de los personajes
   pwa/                registro del service worker
@@ -137,6 +137,7 @@ Abreviaturas del estado que más aparecen: `S` (partida), `S.sim` (el personaje 
 | Godot y no Unity para el salto gráfico | Se puede compilar y exportar desde un servidor sin pantalla, es libre y exporta a Android y web. |
 | Godot en este mismo repositorio, en `godot/` | Los dos juegos leen el mismo `data/` y se publican juntos; con dos repos habría que copiar los datos y se desincronizarían. |
 | Empezar con arte libre | Paquetes libres de calidad (CC0 o con atribución, apuntada en el README) para edificios, muebles y animaciones. Los de pago se valoran cuando la prueba pequeña convenza. |
+| No invertir en dibujo nuevo del juego web mientras se decide Godot (12 nov 2026) | El dibujo está hecho a mano para este motor y no se puede llevar; reglas, datos y textos sí. El frente A sigue solo con eso. |
 | La fábrica usa modelos baratos para volumen y el modelo caro solo integra | Ver `docs/COSTE.md`. |
 
 ## 7. El plan
@@ -156,7 +157,7 @@ Agentes en paralelo, cada uno en su copia del repo y con un encargo cerrado (`do
    - ✅ En las escenas: cada cual donde le toca a su hora, quien trabaja en su puesto, las criaturas con una adulta de su casa (`mods/poblacion.js`).
    - ✅ Casas visitables: el piso o la casa de cada hogar por dentro, según su nivel y quién vive allí (`mods/hogares.js`).
 2. **Lugares visitables: primero los lugares.** ✅ Centro de salud y oficina de empleo. ✅ Colegio público, colegio concertado e instituto (las criaturas del censo van a clase; con hijos propios, «Recoger del cole» y «Reunión con la tutora»). ✅ Universidad pública y privada (se elige al matricularse: mismo título, otro precio y otro horario). ✅ El mapa del barrio, con «Mirar dentro» de cualquier lugar (`mods/barrio.js`, `data/barrio.json`). Siguen: mercado, polideportivo y más bares; después, otros barrios y ciudades.
-3. **Interacciones y personajes con los que se puede tratar**, entre toda la población nueva: ✅ conocer a los vecinos del censo: ficha, presentarse, pasan a Gente con su hogar, visitarles, lazos que se descubren (`mods/vecinos.js`). Siguen: interacciones nuevas en los lugares y en casa, y romance con vecinos adultos (T-121).
+3. **Interacciones y personajes con los que se puede tratar**, entre toda la población nueva: ✅ conocer a los vecinos del censo: ficha, presentarse, pasan a Gente con su hogar, visitarles, lazos que se descubren (`mods/vecinos.js`). ✅ Tratar con ellos: opciones por oficio y lugar, favores con memoria, cotilleo que descubre, política y sindicato del bloque, romance con adultos, vecinos que te buscan (`mods/trato.js`, `data/trato.json`). ✅ Elegir colegio para los hijos; horarios de los lugares como dato.
 
 Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git worktree add ../wt/t0NN -b fab/t0NN main`); cada agente lee solo los documentos que su tarea cite; entrega con prueba propia y regresión en verde; el integrador revisa, junta y publica. La revisión es de diseño y tiene la última palabra: un defecto que se ve no se publica ni se apunta, se arregla antes (`docs/FABRICA.md`, «Revisión de diseño»).
 
