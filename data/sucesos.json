@@ -1,0 +1,260 @@
+{
+  "_": "Los textos de los dilemas (DLG): título, cuerpo y opciones, y las frases de lo que pasa al elegir. Campos en data/README.md.",
+
+  "dilemas": {
+    "ideo": {
+      "t": "Ana duda",
+      "x": "Ha sido {why}. Cada vez se reconoce menos en lo que {antes}, y se siente más cerca de lo {ideo}.",
+      "antes_apolitica": "pensaba (o no pensaba)",
+      "antes": "defendía como {i}",
+      "o": [{"t": "Dejarse llevar: ahora es {i}"}, {"t": "Mantenerse firme", "s": "La duda seguirá ahí, y volverá.", "tell": "Ana ha decidido no cambiar de ideas. Le ha costado; nadie dijo que fuera fácil."}]
+    },
+    "crisis": {
+      "t": "💔 Crisis de pareja",
+      "x": "Ana y {p} están en su peor momento. {por} Cada conversación acaba en reproche.",
+      "por": "Sobre todo por {w}.",
+      "desgaste": "el desgaste",
+      "o_sin": [{"t": "Seguir"}],
+      "o": [
+        {"t": "Sentarse a hablarlo de verdad", "s": "Depende del carisma… y de que el problema tenga arreglo.", "tell_ok": "Ana y {p} hablaron hasta las tres de la mañana. Lloraron, se rieron y se prometieron cosas concretas.", "tell_ko": "Intentaron hablarlo. Acabó peor que empezó."},
+        {"t": "Ir a terapia de pareja ({c}/semana, 4 semanas)", "tell": "Ana y {p} han pedido cita con una terapeuta. Primera sesión el martes."},
+        {"t": "Dejarlo"},
+        {"t": "Aguantar y no tocar el tema", "s": "El silencio también desgasta."}
+      ]
+    },
+    "contra": {
+      "t": "⚖️ Contradicción",
+      "x": {
+        "mando": "Ana es {clase}. Ahora le toca repartir los turnos malos y transmitir los recortes. Con sus ideas, se le hace bola: por las noches no duerme.",
+        "patrona": "Ana tiene gente a su cargo en su negocio. Les paga lo que el negocio aguanta, que no es lo que ella cree justo. Se ha convertido en lo que antes criticaba.",
+        "rentista": "Ana cobra un alquiler a otra trabajadora. Lo mismo que antes le parecía un robo, ahora le cuadra las cuentas.",
+        "parada": "Ana vive de la prestación por desempleo, esa que siempre dijo que no debería existir.",
+        "otra": "Lo que vive y lo que piensa ya no encajan."
+      },
+      "o": {
+        "mando": [
+          {"t": "Renunciar al cargo y volver a la base", "s": "Menos sueldo; sus compañeras no lo olvidarán.", "cap": "La renuncia", "capx": "Ana ha devuelto el cargo. «No estoy para apretar a mis compañeras». Gana menos y duerme mejor."},
+          {"t": "Usar el cargo para proteger a la plantilla", "s": "Ayuda a organizar desde dentro. Si la pillan, la despiden.", "tell": "Ana avisa de los despidos antes de que lleguen y reparte los turnos con justicia. La dirección todavía no sospecha."},
+          {"t": "Aceptar que las cosas han cambiado", "s": "Se acomoda. Sus ideas, también.", "rem": "Se acomodó en su puesto de mando."}
+        ],
+        "patrona": [
+          {"t": "Subir los sueldos aunque gane menos", "tell": "Ana ha subido el sueldo a su gente. Este mes ella cobra menos que ellos."},
+          {"t": "Convertir el negocio en cooperativa", "cap": "De patrona a socia", "capx": "Ana ha convertido su negocio en una cooperativa: ahora es una socia más, con un voto como todas."},
+          {"t": "El mercado es el mercado"}
+        ],
+        "rentista": [{"t": "Bajar el alquiler a precio social", "tell": "Ana ha bajado el alquiler a su inquilina. Ganará menos, pero no pensará en ello cada día."}, {"t": "Precio de mercado"}],
+        "otra": [{"t": "Necesita ese dinero y punto"}, {"t": "Avergonzarse en silencio"}]
+      }
+    },
+    "ascenso": {
+      "t": "📈 Te ofrecen mandar",
+      "x": "Le ofrecen ser {puesto}. Más sueldo, más responsabilidad… y ahora será quien aplique las órdenes de arriba a sus compañeras.",
+      "o": [{"t": "Aceptar el puesto", "rem": "Aceptó un puesto de mando."}, {"t": "Rechazarlo y seguir con los suyos", "s": "Menos dinero; más confianza en la plantilla.", "tell": "Ana ha rechazado el ascenso. En el descanso, alguien le ha dejado un café pagado."}]
+    },
+    "despedir": {
+      "t": "✂️ Señala a dos",
+      "x": "La dirección quiere «ajustar la plantilla» y le pide a Ana, como {puesto}, que señale a dos personas para despedir antes del viernes.",
+      "o": [
+        {"t": "Cumplir la orden", "s": "La empresa lo valorará.", "tell": "Ana entregó dos nombres. Esa noche no cenó."},
+        {"t": "Negarse", "s": "Puede haber represalias.", "tell": "Ana se ha negado: «eso hacedlo vosotros». La directora ha apuntado algo en su libreta."},
+        {"t": "Avisar en secreto al sindicato", "s": "Organiza la respuesta. Si se descubre, despido.", "tell": "Ana ha pasado la lista al sindicato. Al día siguiente había un cartel en el comedor: «Si tocan a una, nos tocan a todas»."}
+      ]
+    },
+    "piquete": {
+      "t": "🪧 Huelga en el trabajo",
+      "x": "La plantilla ha convocado huelga. Hacerla significa perder {sal} cada día{justa}. No hacerla significa cruzar el piquete delante de sus compañeras.",
+      "justa": " y Ana ya va justa",
+      "o": [{"t": "Secundar la huelga", "rem": "Hizo la huelga."}, {"t": "Ir a trabajar", "s": "Las compañeras se acordarán."}]
+    },
+    "prestamo": {
+      "t": "💸 No llega",
+      "x": "La cuenta está en números rojos. {oferta} También hay una financiera que da microcréditos en el acto.",
+      "oferta": "{p} se ofrece a prestarle {m}.",
+      "amistad": "su amistad",
+      "o": [
+        {"t": "Aceptar el préstamo de {p}", "tell": "{p} le ha prestado {m}. «Cuando puedas». Ana ha apuntado la fecha en el calendario."},
+        {"t": "Microcrédito al 30 % ({m})", "s": "Rápido y caro.", "tell": "Microcrédito concedido en dos minutos. Las condiciones estaban en letra de seis puntos."},
+        {"t": "Apretarse el cinturón", "s": "Comer peor, no salir, aguantar."}
+      ]
+    },
+    "militancia": {
+      "t": "💬 {p} quiere que lo dejes",
+      "x": "{p} le ha dicho a Ana que no aguanta más: reuniones, asambleas, piquetes. «O la militancia o yo». Lo dice en serio.",
+      "o_sin": [{"t": "Vale"}],
+      "o": [
+        {"t": "Dejar la militancia", "s": "Gana tiempo en casa. Pierde algo de sí misma.", "tell": "Ana ha dejado la militancia por {p}. Ha borrado el grupo de la asamblea del móvil. Le temblaba el dedo."},
+        {"t": "Seguir militando", "s": "La relación sufrirá.", "tell": "Ana ha dicho que no. «No me pidas que deje de ser yo». {p} se ha ido a dormir sin decir nada."},
+        {"t": "Proponerle que venga a una asamblea", "s": "Puede que cambie de idea… o que se ría de ella.", "cap": "Juntas", "capx": "{p} fue a la asamblea «solo para ver». Ahora tiene su propio carné.", "tell_ko": "{p} aguantó media asamblea y se fue. «Esto es una secta»."}
+      ]
+    },
+    "incidente": {
+      "t": "⚠️ En el trabajo",
+      "o": {
+        "self": [
+          {"t": "Pagar y apretar el margen", "chose": "Tragó la subida del proveedor"},
+          {"t": "Subir los precios", "tell_a": "Ha subido los precios. Dos clientas de toda la vida ya no vienen.", "tell_b": "Ha subido los precios y nadie ha protestado. Debería haberlo hecho antes.", "chose": "Subió los precios"},
+          {"t": "Buscar otro proveedor", "chose": "Buscó otro proveedor"}
+        ],
+        "coop": [
+          {"t": "Aguantar la asamblea hasta el final", "chose": "Se quedó en la asamblea hasta el final", "tell": "A las once de la noche había turnos para todos. Nadie manda; todo cuesta más."},
+          {"t": "Proponer una comisión", "chose": "Propuso una comisión", "tell": "Se ha creado una comisión de turnos. Funciona. Y ya hay quien dice que es un jefe con otro nombre."}
+        ],
+        "base": [
+          {"t": "Tragar", "s": "Hoy no es el día. Tiene facturas.", "chose": "Tragó", "tell": ["Ana no dijo nada. Esa noche cenó de pie.", "Ana asintió. En el baño, se miró al espejo un rato largo."]},
+          {
+            "t": "Plantarse",
+            "s": "Depende del carisma. Y de quién mande.",
+            "chose": "Se plantó",
+            "tell_ok": "Ana dijo que no. Hubo un silencio largo y {jefe} cambió de tema. {compi} {miro} como si hubiera visto un unicornio.",
+            "miro": ["la miró", "lo miró", "le miró"],
+            "tell_ko": "Ana dijo que no. {jefe} sonrió: «Vale». Desde entonces le tocan los peores turnos y ni un buenos días."
+          },
+          {"t": "Hablarlo con {compi} y el resto", "s": "Más lento. Más seguro. Más gente.", "chose": "Lo habló con las compañeras", "tell": "En el descanso, Ana lo contó. {compi} dijo «a mí también». Luego otra. Luego otra."}
+        ]
+      }
+    },
+    "golpe": {
+      "t": "💸 El golpe",
+      "madre": "su madre",
+      "o": [
+        {"t": "Pedir un adelanto en el trabajo", "s": "Se lo descontarán. Y le deberá un favor a quien manda.", "chose": "Pidió un adelanto", "tell": "{jefe} le ha adelantado {m}. «Ya sabes que aquí cuidamos a la gente». Ana sabe lo que eso significa: ahora no puede decir que no."},
+        {"t": "Pedírselo a {mo}", "s": "Su madre tiene menos que ella.", "chose": "Pidió dinero a su madre", "tell": "{mo} le ha dado {m} de la pensión. «No me lo devuelvas». Ana sabe que ese mes su madre no pondrá la calefacción."},
+        {"t": "Trabajar el fin de semana por fuera", "s": "Dinero rápido, cuerpo roto.", "chose": "Trabajó el fin de semana por fuera", "tell": "Dos días de mudanzas en negro: {m}. El lunes no podía con la espalda."},
+        {"t": "Apretarse el cinturón", "s": "Comer peor, no salir, aguantar.", "chose": "Se apretó el cinturón", "tell": "Arroz, lentejas y la tele. Dos semanas sin pisar un bar."}
+      ]
+    },
+    "asamblea": {
+      "t": "✊ En el descanso",
+      "x": "{compi} lo dice en voz baja, pero lo dice: «¿Y si paramos?». {estado} Todos miran a Ana.",
+      "alta": "Media plantilla está harta.",
+      "baja": "Hay gente harta, pero también mucho miedo.",
+      "o": [
+        {"t": "Convocar la huelga", "s_baja": "Con poca gente. Arriesgado.", "s_alta": "Están preparadas.", "chose": "Convocó la huelga"},
+        {"t": "Esperar a ser más", "s": "Organizar primero. Parar después.", "chose": "Organizó antes de parar", "tell": "Ana propuso ir una a una. Un mes de cafés, de hablar en el aparcamiento, de callar delante del jefe."},
+        {"t": "No meterse", "s": "Hoy no. Quizá nunca.", "chose": "No se metió", "tell": "Ana dijo que tenía que pensarlo. {compi} no volvió a sacar el tema."}
+      ]
+    },
+    "envenenado": {
+      "t": "🍬 El ascenso envenenado",
+      "x": "{jefe} {llama} al despacho: le ofrece ser {puesto}. Más sueldo. «Y necesito que me cuentes cómo está el ambiente. Quién protesta, quién no». Lo dice sonriendo.",
+      "llama": ["la llama", "lo llama", "le llama"],
+      "mirar": ["mirarla", "mirarlo", "mirarle"],
+      "o": [
+        {"t": "Aceptar", "chose": "Aceptó el ascenso", "tell": "Ana aceptó. El primer día de {puesto}, {compi} le dio la enhorabuena sin {mirar} a los ojos."},
+        {
+          "t": "Aceptar… y no contar nada",
+          "s": "Cobra el ascenso y protege a la gente. Si lo descubren, a la calle.",
+          "chose": "Aceptó el ascenso para proteger a la plantilla",
+          "tell": "Ana aceptó. En el despacho, cuando le preguntan por el ambiente, dice: «bien, todo bien». Mientras, avisa a quien haga falta."
+        },
+        {"t": "Rechazar", "s": "Se queda donde está. Con los suyos.", "chose": "Rechazó el ascenso", "tell": "«Gracias, pero no». {jefe} no entendía nada. {compi} sí."}
+      ]
+    },
+    "oferta": {
+      "t": "📩 Una oferta",
+      "x": "{e} le ofrece un puesto de {puesto} por {pago} el turno (ahora cobra {sueldo}). {amb}",
+      "amb_mal": "Dicen que allí el ambiente es malo.",
+      "amb_bien": "Dicen que allí se está bien.",
+      "amb_nada": "Del ambiente no se sabe nada.",
+      "o": [
+        {"t": "Aceptar", "chose": "Cambió de empresa"},
+        {"t": "Enseñársela a su jefe para negociar", "s": "Puede salir bien… o marcarla.", "chose": "Negoció con la oferta"},
+        {"t": "Quedarse", "chose": "Rechazó la oferta", "tell": "Ana dijo que no. Por la gente, por la rutina, por no empezar otra vez de cero."}
+      ]
+    },
+    "entrevista": {
+      "t": "🪑 La entrevista",
+      "x": "Por fin una entrevista. Ofrecen {puesto} con contrato de tres meses, sueldo «según convenio» y «muchas ganas». {q}",
+      "o": [
+        {"t": "Decir que sí a todo", "chose": "Aceptó lo que había"},
+        {
+          "t": "Decir la verdad",
+          "s": "Esas preguntas son ilegales. Lo saben.",
+          "chose": "Dijo la verdad en la entrevista",
+          "tell_ok": "Ha contestado que esas preguntas no se pueden hacer. La entrevistadora ha sonreído: «Por fin alguien con criterio». Empieza el lunes.",
+          "tell_ko": "Ha contestado que esas preguntas no se pueden hacer. «Ya te llamaremos». No han llamado."
+        },
+        {"t": "Levantarse e irse", "chose": "Se fue de la entrevista", "tell": "Se ha levantado a mitad de entrevista. En el ascensor temblaba, pero bajaba con la espalda recta."}
+      ]
+    },
+    "cliente": {
+      "t": "🏪 El cliente grande",
+      "x": {"coop": "Una cadena quiere contratar a la cooperativa: un pedido enorme, a la mitad de precio y con plazos imposibles.", "negocio": "Una cadena quiere comprar el negocio de Ana: buen dinero y un puesto de encargada en la franquicia."},
+      "o": [{"t": "Aceptar", "chose": "Aceptó el trato con la cadena", "tell": "Han aceptado. Hay más trabajo que nunca y menos margen que nunca."}, {"t": "Rechazar", "chose": "Rechazó a la cadena", "tell": "Han dicho que no. Seguirán pequeños. Seguirán suyos."}]
+    },
+    "personal": {"o_sin": [{"t": "Seguir"}]},
+    "j_hora": {
+      "t": "⏰ «Quédate una horita»",
+      "x": "{jefe} pide a {n} que se quede «una horita» al salir. No habla de pagarla. Nunca habla de pagarla.",
+      "o": [
+        {"t": "Quedarse", "s": "Energía abajo. Sin cobrar.", "tell": "{n} lleva {h} horas extra sin cobrar. A {hora} la hora, son {total} que se ha quedado la empresa."},
+        {"t": "«Hoy no puedo»", "s": "Reputación abajo; una tarde que es suya.", "tell": "{jefe} ha dicho «vale» con la cara de quien apunta."},
+        {"t": "«Si la pagáis, me quedo»", "s": "Pocas veces cuela. Cuando cuela, cuela para todos.", "tell_ok": "Hora extra pagada. {jefe} lo ha dicho bajito, para que no lo oyera nadie más. Lo han oído todos.", "tell_ko": "«Aquí las horas se echan, no se cobran». {n} se ha ido a su hora."}
+      ]
+    },
+    "j_cliente": {
+      "t": "😤 Un cliente",
+      "x": "{caso}. {jefe} mira desde lejos.",
+      "casos": ["Un cliente ha tirado el cambio al mostrador", "Un señor le ha gritado por algo que no depende de {ella}", "Una clienta ha pedido hablar con «alguien que sea de aquí»", "Un cliente le ha hecho una foto para «quejarse»"],
+      "ella": {"a": "ella", "o": "él"},
+      "o": [
+        {"t": "Aguantar y sonreír", "s": "Es el trabajo. Se paga por dentro."},
+        {"t": "Contestar", "s": "Alivio. Y un aviso.", "tell": "{jefe} ha llamado a {n} al despacho: «el cliente siempre…». {n} ya sabe cómo acaba la frase."},
+        {"t": "Que lo gestione el encargado", "s": "Para eso cobra más.", "tell": "{jefe} ha calmado al cliente dándole la razón. A {n} le ha dicho que «la próxima vez»."}
+      ]
+    },
+    "j_cubrir": {
+      "t": "🔁 Cubrir un turno",
+      "x": "{quien} pide a {n} que le cubra el turno del {dia}: {motivo}.",
+      "alguien": "Una compañera",
+      "dias": ["sábado", "domingo", "viernes por la noche"],
+      "motivos": ["tiene al crío malo", "un entierro", "una cita en el médico que lleva meses esperando"],
+      "o": [{"t": "Cubrirla", "s": "Un día libre menos. Alguien que te debe una."}, {"t": "No puede", "s": "Nadie se lo reprocha. Nadie lo olvida."}]
+    },
+    "j_turno": {
+      "t": "📅 Cambio de turno",
+      "x": "{jefe} ha cambiado los cuadrantes: {n} entra mañana {cuando}. Se ha enterado por el grupo.",
+      "cuando": ["dos horas antes", "por la tarde en vez de por la mañana", "el día que tenía libre"],
+      "why": "los turnos",
+      "o": [
+        {"t": "Tragar", "s": "Los planes de mañana, fuera."},
+        {"t": "Pedir que se avise con tiempo", "s": "Es la ley. Decirlo tiene precio.", "tell_ok": "{jefe} ha vuelto a cambiar el cuadrante. Esta vez, para bien. Ha costado decirlo delante de todos.", "tell_ko": "«El cuadrante es el cuadrante». Mañana, a la hora que diga {jefe}."}
+      ]
+    },
+    "j_riesgo": {
+      "t": "⚠️ Sin EPI",
+      "x": "Hay que {tarea}. {jefe} dice que «rápido, que luego viene inspección».",
+      "tareas": ["subir a una escalera que baila", "mover un palé a mano", "limpiar con un producto sin etiqueta", "cargar sin faja ni ayuda"],
+      "o": [
+        {"t": "Hacerlo", "s": "Es lo que hay. Hasta que no lo es.", "tell": "{n} se ha hecho daño. {dias} días de baja. En el parte pone «accidente in itinere», que es mentira y es lo que la empresa quería."},
+        {
+          "t": "Negarse hasta que haya medios",
+          "s": "Tiene derecho. Tener derecho no siempre sirve.",
+          "tell_ok": "{n} se ha negado. Dos compañeros se han puesto a su lado. Ha aparecido una escalera nueva en media hora.",
+          "tell_ko": "{n} se ha negado. Lo ha hecho otro compañero, más joven, que necesita el contrato."
+        }
+      ]
+    },
+    "j_chivato": {
+      "t": "🤫 El despacho",
+      "x": "{jefe} llama a {n} al despacho. «Sé que alguien ha ido al sindicato. Tú eres de confianza. ¿Quién?»",
+      "o": [
+        {"t": "«No sé nada»", "s": "Lo normal. Lo que cuesta."},
+        {"t": "Dar un nombre", "s": "Un ascenso más cerca. Una persona en la calle.", "tell": "{n} ha dado un nombre. Al salir, en el vestuario, nadie ha hablado. Esa semana han despedido a alguien."},
+        {"t": "«Si tenéis algo que decir, decídselo al comité»", "s": "Se acabó la confianza del jefe. Empieza otra.", "tell": "{n} ha salido del despacho con la puerta abierta, para que se oyera. En el descanso, tres cafés pagados."}
+      ]
+    },
+    "cr_recoger": {
+      "t": "🎒 ¿Quién recoge?",
+      "x": "{k} sale del cole a las cinco. {n} sale del trabajo a las {h}. Todos los días.",
+      "why": "los cuidados",
+      "ella": ["ella", "él"],
+      "o": [
+        {"t": "Reducción de jornada", "s": "Un 25 % menos de sueldo. Legal. Mal visto.", "tell": "{n} ha pedido reducción de jornada. Concedida, con cara. La hoja de cálculo de casa ya no cuadra."},
+        {"t": "Pagar comedor y extraescolares", "s": "{h} a la semana por crío", "tell": "Comedor, ludoteca y «refuerzo» hasta las seis y media. {c} a la semana para que {n} pueda trabajar lo que ya trabajaba."},
+        {"t": "Que vaya su madre", "s": "Gratis. Para {n}.", "tell": "Su madre dice que sí, claro. Lo dice siempre."},
+        {"t": "Que se apañe {p}", "s": "A ver quién cede.", "tell": "{p} recoge. Ha dicho que «vale» y ha pedido reducción {ella}. Ahora se discute de dinero cada domingo."}
+      ]
+    }
+  }
+}

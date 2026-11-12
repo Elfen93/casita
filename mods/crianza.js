@@ -29,11 +29,11 @@ function kidSickCare(k){const n=CH().name;const m=grandma();const p=liveIn();
   if(S.recoger==='pagar'&&dateOf(S.day).wd===0){const c=hrs(9)*esc.length;bkAdd('Críos',-c);toast(`🎒 Comedor y extraescolares: ${fmt(c)}`);}
   if(S.recoger==='madre'&&Math.random()<.03){const m=grandma();if(m){m.rel=Math.max(0,m.rel-1);tell(`Su madre ha ido a recoger a ${esc[0]?esc[0].n:'los niños'} otra vez. Le duele la cadera. No lo dice.`,'👩‍🦳');}else{S.recoger=null;}}
   }catch(e){console.error(e);}return r;};}
-Object.assign(DLG,{cr_recoger:{t:()=>'🎒 ¿Quién recoge?',x:d=>`${d.k} sale del cole a las cinco. ${CH().name} sale del trabajo a las ${TR().sh[1]}. Todos los días.`,
-  o:()=>{const m=grandma();const p=liveIn();return [{t:'Reducción de jornada',s:'Un 25 % menos de sueldo. Legal. Mal visto.',f:()=>{S.recoger='reduccion';S.payMul=(S.payMul||1)*.75;S.rep=Math.max(0,(S.rep??70)-5);tell(`${CH().name} ha pedido reducción de jornada. Concedida, con cara. La hoja de cálculo de casa ya no cuadra.`,'🎒');}},
-    {t:'Pagar comedor y extraescolares',s:hrs(9)+' a la semana por crío',f:()=>{S.recoger='pagar';tell(`Comedor, ludoteca y «refuerzo» hasta las seis y media. ${fmt(hrs(9))} a la semana para que ${CH().name} pueda trabajar lo que ya trabajaba.`,'🎒');}},
-    ...(m?[{t:'Que vaya su madre',s:'Gratis. Para '+CH().name+'.',f:()=>{S.recoger='madre';m.rel=Math.min(100,m.rel+3);tell(`Su madre dice que sí, claro. Lo dice siempre.`,'👩‍🦳');}}]:[]),
-    ...(p?[{t:'Que se apañe '+p.n,s:'A ver quién cede.',f:()=>{S.recoger='pareja';p.wear=Math.min(100,(p.wear||0)+8);p.wearWhy='los cuidados';tell(`${p.n} recoge. Ha dicho que «vale» y ha pedido reducción ${p.n.endsWith('a')?'ella':'él'}. Ahora se discute de dinero cada domingo.`,'🎒');}}]:[])];},
+Object.assign(DLG,{cr_recoger:{t:()=>DT.cr_recoger.t,x:d=>huecos(DT.cr_recoger.x,{k:d.k,h:TR().sh[1]}),
+  o:()=>{const m=grandma();const p=liveIn();const O=DT.cr_recoger.o;return [{t:O[0].t,s:O[0].s,f:()=>{S.recoger='reduccion';S.payMul=(S.payMul||1)*.75;S.rep=Math.max(0,(S.rep??70)-5);tell(huecos(O[0].tell,{}),'🎒');}},
+    {t:O[1].t,s:huecos(O[1].s,{h:hrs(9)}),f:()=>{S.recoger='pagar';tell(huecos(O[1].tell,{c:fmt(hrs(9))}),'🎒');}},
+    ...(m?[{t:O[2].t,s:huecos(O[2].s,{}),f:()=>{S.recoger='madre';m.rel=Math.min(100,m.rel+3);tell(O[2].tell,'👩‍🦳');}}]:[]),
+    ...(p?[{t:huecos(O[3].t,{p:p.n}),s:O[3].s,f:()=>{S.recoger='pareja';p.wear=Math.min(100,(p.wear||0)+8);p.wearWhy=DT.cr_recoger.why;tell(huecos(O[3].tell,{p:p.n,ella:DT.cr_recoger.ella[p.n.endsWith('a')?0:1]}),'🎒');}}]:[])];},
   auto:()=>{const m=grandma();return m?2:S.money>hrs(100)?1:0;}}});
 Object.assign(DLG_CD,{cr_recoger:200});
 // ---- el cole: por la mañana no están ----
