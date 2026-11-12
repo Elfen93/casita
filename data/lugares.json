@@ -62,7 +62,7 @@
     "parque": {"n": "Paseo por el parque", "e": "🌳", "dur": 90, "h": [8, 21], "why": "hablar con calma, aire libre"},
     "visita": {"n": "Ir a su casa", "e": "🏡", "dur": 160, "h": [10, 22], "why": "verse en su terreno"},
     "medico": {"n": "Ir al médico", "e": "🩺", "dur": 90, "h": [8, 19], "why": "la cita de la que lleva días hablando"},
-    "sepe": {"n": "Oficina de empleo", "e": "📋", "dur": 120, "h": [9, 13], "wd": [0, 1, 2, 3, 4], "why": "sellar, esperar, volver a esperar"},
+    "sepe": {"n": "Sellar el paro", "e": "📋", "dur": 120, "h": [9, 13], "wd": [0, 1, 2, 3, 4], "why": "sellar, esperar, volver a esperar"},
     "cole": {"n": "Recoger del cole", "e": "🎒", "dur": 40, "wd": [0, 1, 2, 3, 4], "h": [14, 16.25], "why": "esperar en la verja a que salga"},
     "tutoria": {"n": "Reunión con la tutora", "e": "🍎", "dur": 60, "wd": [0, 1, 2, 3, 4], "h": [16, 18], "why": "veinte minutos de tutoría fuera de horario"}
   },

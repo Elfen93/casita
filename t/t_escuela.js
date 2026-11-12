@@ -11,7 +11,7 @@ setTimeout(()=>{try{
  const alumnos=V.filter(v=>v.estudia==='cole'||v.estudia==='instituto');
  ck(ESC.every(k=>PLACES[k]),'faltan lugares');ck(alumnos.length>=10,'pocos alumnos: '+alumnos.length);
  for(const v of alumnos)ck(ESC.includes(v.centro),v.id+' sin centro');
- for(const v of V.filter(v=>v.estudia==='uni'||v.estudia==='fp'||!v.estudia))ck(!v.centro,v.id+' no debería tener centro');
+ for(const v of V.filter(v=>v.estudia==='fp'||!v.estudia))ck(!v.centro,v.id+' no debería tener centro'); // quien estudia uni lleva su campus (mods/universidad.js)
  ck(V.some(v=>v.centro==='concertado'),'nadie en el concertado');ck(V.some(v=>v.centro==='colegio'),'nadie en el cole público');ck(V.some(v=>v.centro==='instituto'),'nadie en el instituto');
  ck(V.filter(v=>v.trabajo&&ESC.includes(v.trabajo.lugar)).length>=3,'poco personal');
  let enClase=0,vistoEnCentro=0;

@@ -2,7 +2,6 @@
 conLogica(OUT,{
   medico:{req:()=>{const H=HP();return !!H.citaDue&&H.citaDue===S.day;}},
   sepe:{req:()=>!!S.jobless}});
-if(OUT.sepe)OUT.sepe.n='Sellar el paro';
 {const _d=destOf;destOf=function(k){if(k==='medico')return 'ambulatorio';if(k==='sepe'||k==='ssociales')return 'sepe';return _d.apply(this,arguments);};}
 {const _oc=outCost;outCost=function(k){if(k==='medico'||k==='sepe')return 0;return _oc.apply(this,arguments);};}
 // ---- la cita: el día señalado sale; si no puede, se resuelve como siempre antes de acabar el día ----
