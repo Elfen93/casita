@@ -7,12 +7,12 @@ const resInBed=(p,i)=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(!r||r.away)re
 {const _bm=bedMate;bedMate=function(){const p=_bm.apply(this,arguments);const s=S.sim;if(!p||!s.use)return p;if(s.use.intimo)return p;return resInBed(p,s.use.i)?p:null;};}
 // ---- ir a la cama: los dos andando. Si no está en casa, se la llama y viene ----
 intimo=function(p){const r=(S.res||[]).find(x=>x.pid===p.k);const n=CH().name;
-  if(!r||r.away){if(S.intimoPending===p.k)return `Ya viene ${p.n}.`;if(typeof inviteHome!=='function')return `${p.n} no está en casa.`;const h=S.t/60;if(h>=23.5||h<7)return `A estas horas ${p.n} no va a venir.`;S.intimoPending=p.k;inviteHome(p,h>=20);return `${n} llama a ${p.n}: «¿te vienes?». Viene.`;}
+  if(!r||r.away){if(S.intimoPending===p.k)return huecos(TXHZ.intimo.ya_viene,{p:p.n});if(typeof inviteHome!=='function')return huecos(TXHZ.intimo.esta_casa,{p:p.n});const h=S.t/60;if(h>=23.5||h<7)return huecos(TXHZ.intimo.estas_horas_va_venir,{p:p.n});S.intimoPending=p.k;inviteHome(p,h>=20);return huecos(TXHZ.intimo.llama_te_vienes_viene,{nom:n,p:p.n});}
   const h=S.t/60;const others=(S.res||[]).filter(x=>x!==r&&x.kind!=='kid'&&!x.away&&!(x.doing&&x.doing.act==='sleep'));
-  if(others.length&&!(h>=23||h<7)){const q=(S.people||[]).find(z=>z.k===others[0].pid);toast(`Con ${q?q.n:'gente'} en casa, mejor no.`);return null;}
-  const beds=findObjs((d,t)=>['cama','camamat','colchon','sofacama'].includes(t));if(!beds.length){toast('No hay cama');return null;}
-  if(S.needs.energia<15){toast(`${n} está demasiado cansad${oa()}`);return null;}
-  const b=bestObjFor('energia');if(!b||!b.path){toast('No se llega a la cama');return null;}const i=b.obj;
+  if(others.length&&!(h>=23||h<7)){const q=(S.people||[]).find(z=>z.k===others[0].pid);toast(huecos(TXHZ.intimo.casa_mejor,{x:q?q.n:TXHZ.intimo.gente}));return null;}
+  const beds=findObjs((d,t)=>['cama','camamat','colchon','sofacama'].includes(t));if(!beds.length){toast(TXHZ.intimo.hay_cama);return null;}
+  if(S.needs.energia<15){toast(huecos(TXHZ.intimo.esta_demasiado_cansad,{nom:n}));return null;}
+  const b=bestObjFor('energia');if(!b||!b.path){toast(TXHZ.intimo.llega_cama);return null;}const i=b.obj;
   // Ana va; la pareja va por su lado
   go(b,'intimo',true);S.sim.think=0;
   const cx=Math.floor(r.x),cy=Math.floor(r.y);const ox=i%N,oy=i/N|0;const tgt=new Set();for(const [a,c] of [[ox+1,oy],[ox-1,oy],[ox,oy+1],[ox,oy-1]])if(walkable(a,c))tgt.add(a+','+c);
@@ -25,7 +25,7 @@ intimo=function(p){const r=(S.res||[]).find(x=>x.pid===p.k);const n=CH().name;
   if(S.intimoPending){const p=(S.people||[]).find(q=>q.k===S.intimoPending);const r=p&&(S.res||[]).find(x=>x.pid===p.k);if(!p||!r){S.intimoPending=null;}else if(!r.away&&typeof inArea==='function'&&inArea(Math.floor(r.x),Math.floor(r.y))&&!(S.sim.work>0)){S.intimoPending=null;const t=intimo(p);if(t)tell(t,'🔥');}}
   }catch(e){}return r0;};}
 // Ana espera en la cama a que llegue; el rato empieza cuando están los dos
-{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim;const u=s.use;if(u&&u.intimo&&S.intimo){const rr=(S.res||[]).find(x=>x.pid===u.intimo);const there=rr&&rr.doing&&rr.doing.act==='love';if(there){S.needs.diversion=Math.min(100,S.needs.diversion+.55*gm);S.needs.social=Math.min(100,S.needs.social+.45*gm);}if(!there){u.waited=(u.waited||0)+gm;if(u.waited>40||!rr||rr.away){toast(`${(S.people||[]).find(q=>q.k===u.intimo)?.n||'Nadie'} no ha llegado`);u.intimo=null;S.intimo=null;s.use=null;s.cmd=false;if(rr){rr.plan=null;rr.next=0;}return r;}u.actUntil=S.day*1440+S.t+45;if(rr&&!(rr.path&&rr.path.length)&&!rr.plan&&!there){// se ha perdido por el camino: que venga
+{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim;const u=s.use;if(u&&u.intimo&&S.intimo){const rr=(S.res||[]).find(x=>x.pid===u.intimo);const there=rr&&rr.doing&&rr.doing.act==='love';if(there){S.needs.diversion=Math.min(100,S.needs.diversion+.55*gm);S.needs.social=Math.min(100,S.needs.social+.45*gm);}if(!there){u.waited=(u.waited||0)+gm;if(u.waited>40||!rr||rr.away){toast(huecos(TXHZ.intimo.ha_llegado,{x:(S.people||[]).find(q=>q.k===u.intimo)?.n||TXHZ.intimo.nadie}));u.intimo=null;S.intimo=null;s.use=null;s.cmd=false;if(rr){rr.plan=null;rr.next=0;}return r;}u.actUntil=S.day*1440+S.t+45;if(rr&&!(rr.path&&rr.path.length)&&!rr.plan&&!there){// se ha perdido por el camino: que venga
           const i=u.i;const cx=Math.floor(rr.x),cy=Math.floor(rr.y);const ox=i%N,oy=i/N|0;const tgt=new Set();for(const [a,c] of [[ox+1,oy],[ox-1,oy],[ox,oy+1],[ox,oy-1]])if(walkable(a,c))tgt.add(a+','+c);const path=tgt.has(cx+','+cy)?[]:bfs([cx,cy],(x,y)=>tgt.has(x+','+y));if(path){rr.path=path;rr.plan={i,act:'love',pose:'lie',dur:45,t:S.obj[i].t,fixed:true};rr.next=99;}}}}}catch(e){}return r;};}
 // ---- que no parezca dormir: la manta se mueve, las cabezas juntas, corazones ----
 {const _bsl=bedSleepLayers;bedSleepLayers=function(L,sl,blanket,tt){const s=S.sim;const love=s.use&&s.use.intimo&&sl.length>1;if(!love)return _bsl.apply(this,arguments);
@@ -39,16 +39,16 @@ intimo=function(p){const r=(S.res||[]).find(x=>x.pid===p.k);const n=CH().name;
 {const _up2=update;update=function(gm){const s=S.sim;if(s.gest&&!(s.path&&s.path.length)){const g=s.gest;const p=(S.people||[]).find(q=>q.k===g.p);const r=p&&(S.res||[]).find(x=>x.pid===p.k);
     if(!r||r.away){s.gest=null;}
     else{const d=Math.hypot(r.x-s.x,r.y-s.y);if(d<=2.0){s.gest=null;try{if(present(p))runGest(p,g.g);}catch(e){console.error(e);}}
-      else if((g.tries||0)<3){g.tries=(g.tries||0)+1;const cx=Math.floor(r.x),cy=Math.floor(r.y);const [sx,sy]=simCell();const path=bfs([sx,sy],(x,y)=>Math.abs(x-cx)+Math.abs(y-cy)<=1&&walkable(x,y));if(path&&path.length){s.path=path;s.cmd=true;}else{s.gest=null;toast(`No hay forma de llegar hasta ${p.n}`);}}
-      else{s.gest=null;toast(`${p.n} no para quieta`);}}}
+      else if((g.tries||0)<3){g.tries=(g.tries||0)+1;const cx=Math.floor(r.x),cy=Math.floor(r.y);const [sx,sy]=simCell();const path=bfs([sx,sy],(x,y)=>Math.abs(x-cx)+Math.abs(y-cy)<=1&&walkable(x,y));if(path&&path.length){s.path=path;s.cmd=true;}else{s.gest=null;toast(huecos(TXHZ.intimo.hay_forma_llegar_hasta,{p:p.n}));}}
+      else{s.gest=null;toast(huecos(TXHZ.intimo.para_quieta,{p:p.n}));}}}
   return _up2.apply(this,arguments);};}
 // mientras Ana se acerca, la otra persona se queda donde está
 {const _om=openPerMenu;openPerMenu=function(p){_om.apply(this,arguments);try{perMenuEl.querySelectorAll('[data-g]').forEach(b=>{const prev=b.onclick;b.onclick=()=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r&&!(r.doing&&(r.doing.act==='sleep'||r.doing.act==='love'))&&b.dataset.g!=='cama'){if(!r.doing){r.path=[];r.plan=null;r.next=Math.max(r.next||0,8);}}prev();};});}catch(e){}};}
 // ---- pedirle que se quede a dormir, desde el menú de la persona ----
 conLogica(GEST,{quedarse:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return !!r&&r.kind==='guest'&&!r.stay&&p.k.startsWith('p')&&['cita','rollo','pareja'].includes(p.stage)&&S.t/60>=18;},
-  run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(!r)return null;const ok=p.stage!=='cita'||(p.love||0)>=50||Math.random()<.4;if(!ok){bubbleFor(p,'😅');p.rel=Math.max(0,p.rel-1);return `${p.n} dice que mañana madruga. Otro día.`;}
-    r.stay=true;r.until=(S.day+1)*1440+9*60;try{r.bedUid=null;}catch(e){}bubbleFor(p,'😊');p.love=Math.min(100,(p.love||0)+4);return `${p.n} se queda a dormir. ${pickR(['Ha pedido un cepillo de dientes.','Se ha puesto una camiseta de '+CH().name+'.','Han puesto el despertador a la misma hora.'])}`;}}});
-conLogica(GEST,{irse:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return !!r&&r.kind==='guest'&&r.stay&&S.t/60<23;},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.stay=false;r.until=S.day*1440+S.t+30;}return `${p.n} se va a dormir a su casa.`;}}});
+  run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(!r)return null;const ok=p.stage!=='cita'||(p.love||0)>=50||Math.random()<.4;if(!ok){bubbleFor(p,'😅');p.rel=Math.max(0,p.rel-1);return huecos(TXHZ.intimo.dice_manana_madruga_otro_dia,{p:p.n});}
+    r.stay=true;r.until=(S.day+1)*1440+9*60;try{r.bedUid=null;}catch(e){}bubbleFor(p,'😊');p.love=Math.min(100,(p.love||0)+4);return huecos(TXHZ.intimo.se_queda,{p:p.n,x:huecos(pickR(TXHZ.intimo.se_queda_lista),{})});}}});
+conLogica(GEST,{irse:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return !!r&&r.kind==='guest'&&r.stay&&S.t/60<23;},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.stay=false;r.until=S.day*1440+S.t+30;}return huecos(TXHZ.intimo.va_dormir_casa,{p:p.n});}}});
 // la pareja o la invitada que se queda: de noche se va a la cama de Ana andando (aunque Ana ya esté en ella)
 {const _rc=rvChoose;rvChoose=function(r){try{const h=S.t/60;if(romRes(r)&&(h>=23.2||h<7)&&!r.doing&&!(S.sim.work>0)){const anaInBed=S.sim.use&&BEDS.includes(S.sim.use.type)&&!S.sim.use.nap;if(h>=23.6||anaInBed||h<7){const i=myBed(r);if(i>=0&&['cama','camamat'].includes(S.obj[i].t)){const cx=Math.floor(r.x),cy=Math.floor(r.y);const ox=i%N,oy=i/N|0;const tgt=new Set();for(const [a,c] of [[ox+1,oy],[ox-1,oy],[ox,oy+1],[ox,oy-1]])if(walkable(a,c))tgt.add(a+','+c);const path=tgt.has(cx+','+cy)?[]:bfs([cx,cy],(x,y)=>tgt.has(x+','+y));if(path){const wake=7*60+Math.random()*40;const until=(h>=12?1440:0)+wake-S.t;r.path=path;r.plan={i,act:'sleep',pose:'lie',dur:Math.max(60,until),t:S.obj[i].t,fixed:true};return true;}}}}}catch(e){}return _rc.apply(this,arguments);};}
 // al dormir en la cama de Ana, tumbada en la cama
@@ -56,4 +56,4 @@ conLogica(GEST,{irse:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return !!r
 // la pareja que vuelve del trabajo entra por la puerta, no aparece al lado
 {const _rs=residents;residents=function(){const before=new Set((S.res||[]).map(r=>r.pid));const L=_rs.apply(this,arguments);try{for(const r of S.res||[]){if(r.kind==='partner'&&!before.has(r.pid)){const e=S.sim.exit||[N/2|0,N-1];r.x=e[0]+.5;r.y=e[1]+.5;r.path=[];r.next=0;}}}catch(e){}return L;};}
 // en el HUD no pone «durmiendo»
-{const _ul=useLabel;useLabel=function(u){if(u&&u.intimo){const p=(S.people||[]).find(q=>q.k===u.intimo);const r=p&&(S.res||[]).find(x=>x.pid===p.k);const there=r&&r.doing&&r.doing.act==='love';return {b:there?'🔥':'⏳',v:there?'En la cama con '+(p?p.n:'alguien'):'Esperando a '+(p?p.n:'alguien')+' en la cama'};}return _ul.apply(this,arguments);};}
+{const _ul=useLabel;useLabel=function(u){if(u&&u.intimo){const p=(S.people||[]).find(q=>q.k===u.intimo);const r=p&&(S.res||[]).find(x=>x.pid===p.k);const there=r&&r.doing&&r.doing.act==='love';return {b:there?'🔥':'⏳',v:huecos(there?TXHZ.intimo.en_cama:TXHZ.intimo.esperando,{p:p?p.n:TXHZ.intimo.alguien})};}return _ul.apply(this,arguments);};}

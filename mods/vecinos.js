@@ -34,11 +34,11 @@ function vcProb(v,via){let c=.42+(lvl('carisma')||0)*.05;
   try{const a=S.ideo,b=v.ideo;if(a&&b){if(a===b&&a!=='apolitica')c+=.12;else if((LEFT.includes(a)&&RIGHT.includes(b))||(RIGHT.includes(a)&&LEFT.includes(b)))c-=.12;}}catch(e){}
   if(via)c+=.28;return Math.max(.15,Math.min(.92,c));}
 // presentarse: pasa a S.people (una sola vez) y deja una tarjeta con lo que ha pasado
-function vcConocer(v,o){if(typeof BM!=='undefined'&&BM.obs){toast('👁️ Desde el mapa solo se mira: ve allí para hablar');return;}o=o||{};if(!v)return null;const ya=vcPer(v.id);if(ya)return ya;if(vcMenor(v,12))return null;
+function vcConocer(v,o){if(typeof BM!=='undefined'&&BM.obs){toast(TXHZ.vecinos.desde_mapa_solo_mira_ve);return;}o=o||{};if(!v)return null;const ya=vcPer(v.id);if(ya)return ya;if(vcMenor(v,12))return null;
   const via=o.via||null,ok=Math.random()<vcProb(v,via);
   const rel=Math.round(((ok?16+Math.random()*8:6+Math.random()*4)+(via?8:0))*10)/10;
   const p={k:vcK(v.id),vid:v.id,hogar:v.hogar,n:v.n,g:v.g,age:v.edad,ch:vcCh(v),ideo:v.ideo||'apolitica',rel,love:0,stage:'conocida',
-    e:'🙂',r:vcResumen(v),mi:null,met:'el barrio',metDay:S.day,last:S.day,adult:!vcMenor(v,18),spark:0};
+    e:'🙂',r:vcResumen(v),mi:null,met:TXHZ.vecinos.barrio,metDay:S.day,last:S.day,adult:!vcMenor(v,18),spark:0};
   if(via)p.via=via.id;
   S.people=Array.isArray(S.people)?S.people:[];S.people.push(p);
   S.needs.social=Math.min(100,(S.needs.social||0)+(ok?6:2));
@@ -48,7 +48,7 @@ function vcConocer(v,o){if(typeof BM!=='undefined'&&BM.obs){toast('👁️ Desde
   try{sfxCard(ok?'🤝':'👋',huecos(L[0],vars),huecos(L[1],vars),ok?true:null,p,{rel:0,stage:p.stage});}catch(e){}
   return p;}
 // charlar un rato con alguien ya conocido (una vez al día): sube la relación y avisa si se ha soltado
-function vcCharla(p){if(typeof BM!=='undefined'&&BM.obs){toast('👁️ Desde el mapa solo se mira: ve allí para hablar');return;}if(!p||vcMenorP(p))return false;const v=vecinoPorId(p.vid);if(!v)return false;
+function vcCharla(p){if(typeof BM!=='undefined'&&BM.obs){toast(TXHZ.vecinos.desde_mapa_solo_mira_ve);return;}if(!p||vcMenorP(p))return false;const v=vecinoPorId(p.vid);if(!v)return false;
   const D=S.vcharla=S.vcharla||{};if(D[p.k]===S.day){toast(vcT('charla_hoy'));return false;}D[p.k]=S.day;
   const r0=p.rel||0,b={rel:r0,stage:p.stage};p.rel=Math.min(100,r0+2+Math.min(4,(lvl('carisma')||0)*.4)+Math.random()*1.5);p.last=S.day;
   S.needs.social=Math.min(100,(S.needs.social||0)+6);
@@ -62,11 +62,11 @@ const vcClose=()=>{if(vcEl)vcEl.classList.remove('on');};
 function vcFicha(v){const p=vcPer(v.id),m12=vcMenor(v,12),m18=vcMenor(v,18),f=VCF(),rel=p?Math.round(p.rel||0):0;
   let h=`<div class="vfh"><canvas class="vfp" width="144" height="144"></canvas><div class="vft"><b>${vcEsc(v.n)}</b><div class="vfs">${vcEsc([vcEdad(v),m12?'':vcOficio(v)].filter(Boolean).join(' · '))}</div>`;
   if(m12)h+=`<div class="vfq">${vcEsc(vcDeQuien(v))}</div>`;
-  else if(p){const s=vcSitio(v);if(s)h+=`<div class="vfs">Vive en ${vcEsc(s)}</div>`;}
+  else if(p){const s=vcSitio(v);if(s)h+=`<div class="vfs">${huecos(TXHZ.vecinos.vive,{vcEsc:vcEsc(s)})}</div>`;}
   h+=`</div></div>`;
   if(m12)return h+`<div class="vfb"><button class="btn grey" data-vfc="1">${f.cerrar}</button></div>`;
   if(v.d)h+=`<div class="vfd">${vcEsc(v.d)}</div>`;
-  if(p){h+=`<div class="vfbar"><span>🤝 Relación</span><div class="bar"><i style="width:${rel}%"></i></div><b>${rel}</b></div>`;
+  if(p){h+=`<div class="vfbar"><span>${TXHZ.vecinos.relacion}</span><div class="bar"><i style="width:${rel}%"></i></div><b>${rel}</b></div>`;
     if(rel>=VC_HIST&&v.historia)h+=`<div class="vfsec">${f.historia_titulo}</div><div class="vfh2">${vcEsc(v.historia)}</div>`;else h+=`<div class="vfpi">${f.pista_historia}</div>`;
     if(rel>=VC_LAZOS){const rows=(v.lazos||[]).map(([id,t])=>{const o=vecinoPorId(id),lb=(f.lazo||{})[t];if(!o||!lb)return '';
         const act=vcPer(o.id)?`<i>${f.via_ya}</i>`:!vcMenor(o,12)?`<button class="mini" data-vfv="${o.id}">${f.via[o.g==='m'?1:0]}</button>`:'';

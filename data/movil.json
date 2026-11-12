@@ -1,0 +1,890 @@
+{
+ "_": "El móvil (mods/movil.js): plantillas de mensajes con sus respuestas, lo que contesta la gente cuando escribes tú, noticias, red social, llamadas y las etiquetas del móvil. Los pesos y las condiciones de cada mensaje, y el azar, son código. Huecos: {n} el personaje, {o} su terminación, {kid} «hijo/hija/hije», {nov} «novio/novia/novie», {po} y {po2} la terminación de la otra persona, {p} su nombre. Cada plantilla: t texto, r tipo de respuesta (clave de interacciones.movil_respuestas) o lista de respuestas [etiqueta, relación, acción, lo que contesta, lo que escribe].",
+ "apps": [
+  [
+   "msg",
+   "💬",
+   "Mensajes",
+   "#2fb36a"
+  ],
+  [
+   "call",
+   "📞",
+   "Llamar",
+   "#3a86ff"
+  ],
+  [
+   "news",
+   "📰",
+   "Noticias",
+   "#e2513c"
+  ],
+  [
+   "red",
+   "📸",
+   "Fotogram",
+   "#c13584"
+  ],
+  [
+   "bank",
+   "🏦",
+   "Banco",
+   "#2c3a5c"
+  ],
+  [
+   "citas",
+   "💘",
+   "Citas",
+   "#f15bb5"
+  ],
+  [
+   "cal",
+   "📅",
+   "Agenda",
+   "#ff8a5b"
+  ],
+  [
+   "curro",
+   "💼",
+   "Empleo",
+   "#6b6e3c"
+  ]
+ ],
+ "plantillas": {
+  "madre": {
+   "comido": {
+    "t": "¿Has comido? Que te conozco.",
+    "r": [
+     [
+      "🍽️ «Sí, mamá, ya he comido»",
+      3,
+      null,
+      "Más te vale. ¿Y qué has comido? 🤨",
+      "Sí, mamá, ya he comido"
+     ],
+     [
+      "😅 «Ahora iba»",
+      1,
+      null,
+      "Pues ve, que luego te duele la cabeza.",
+      "Ahora iba a comer algo"
+     ],
+     [
+      "🙄 «Tengo 27 años, mamá»",
+      -2,
+      null,
+      "Y yo 58 y sigo siendo tu madre.",
+      "Que tengo 27 años, mamá"
+     ]
+    ]
+   },
+   "domingo": {
+    "t": "¿Vienes el domingo? Hago croquetas 🥘",
+    "r": [
+     [
+      "🥘 «Allí estaré»",
+      7,
+      null,
+      "¡Pues no llegues tarde! 🥰",
+      "Allí estaré, guárdame muchas"
+     ],
+     [
+      "😬 «No puedo, tengo lío»",
+      -3,
+      null,
+      "Bueno… te guardo un táper 😔",
+      "Este domingo no puedo, tengo lío"
+     ],
+     [
+      "❓ «¿Puedo llevar a alguien?»",
+      4,
+      null,
+      "¡Claro! ¿Quién es? 👀",
+      "¿Puedo llevar a alguien?"
+     ]
+    ]
+   },
+   "audio": {
+    "t": "🎤 Audio de 4:37",
+    "r": [
+     [
+      "🎧 Escucharlo entero",
+      5,
+      null,
+      "¿Lo has oído? Es importante 😤",
+      "(escuchado entero)"
+     ],
+     [
+      "⏩ A 2x",
+      2,
+      null,
+      null,
+      "(escuchado a 2x)"
+     ],
+     [
+      "👍 Responder sin escuchar",
+      -2,
+      null,
+      "¿Lo has escuchado? 🤨",
+      "👍"
+     ]
+    ]
+   },
+   "tia": {
+    "t": "Me ha llamado tu tía. Pregunta que cuándo te echas {nov} 🙄",
+    "r": [
+     [
+      "😂 «Dile que estoy en ello»",
+      3,
+      null,
+      "Se lo digo. Ya sabes cómo es tu tía 🙄",
+      "Dile que estoy en ello 😂"
+     ],
+     [
+      "🙃 «Dile que no es asunto suyo»",
+      1,
+      null,
+      "Jajaja no se lo digo ni loca. Pero razón tienes.",
+      "Dile que no es asunto suyo"
+     ],
+     [
+      "💘 «Pues mira… igual hay alguien»",
+      2,
+      "gossip",
+      "¿¿QUIÉN?? Cuéntame TODO 😱",
+      "Pues mira… igual hay alguien"
+     ]
+    ]
+   },
+   "luz": {
+    "t": "¿Has visto lo que ha subido la luz? Una vergüenza.",
+    "r": [
+     [
+      "😤 «Y el alquiler, y todo»",
+      3,
+      null,
+      "Así no hay quien viva, {kid}.",
+      "Y el alquiler, y la compra, y todo"
+     ],
+     [
+      "💡 «Cámbiate de compañía, mamá»",
+      2,
+      null,
+      "¿Y eso cómo se hace? Ven y me lo miras.",
+      "Cámbiate de compañía, mamá"
+     ],
+     [
+      "🤷 «Es lo que hay»",
+      -1,
+      null,
+      "Pues no debería serlo.",
+      "Es lo que hay…"
+     ]
+    ]
+   },
+   "delgad": {
+    "t": "Cuídate, {kid}, que te veo muy delgad{o}.",
+    "r": [
+     [
+      "❤️ «Estoy bien, mamá. Te quiero»",
+      5,
+      null,
+      "Y yo a ti. Come.",
+      "Estoy bien, mamá. Te quiero ❤️"
+     ],
+     [
+      "😂 «Es que no tengo tus croquetas»",
+      4,
+      null,
+      "Pues ven a por ellas 🥘",
+      "Es que no tengo tus croquetas"
+     ],
+     [
+      "📞 Llamarla",
+      6,
+      "call",
+      null,
+      null
+     ]
+    ]
+   },
+   "gatito": {
+    "t": "[Imagen: un gatito con flores] Buenos días ☀️🌸",
+    "r": [
+     [
+      "😊 «Buenos días, mamá»",
+      3,
+      null,
+      "¡Que tengas buen día! 🌸",
+      "Buenos días, mamá ☀️"
+     ],
+     [
+      "😂 «Otro gatito no»",
+      1,
+      null,
+      "Pues a mí me gustan 😤",
+      "Otro gatito no, mamá 😂"
+     ],
+     [
+      "👍",
+      0,
+      null,
+      null,
+      "👍"
+     ]
+    ]
+   },
+   "paro": {
+    "t": "¿Has mirado lo del paro, {kid}? Aquí siempre tienes un plato.",
+    "r": [
+     [
+      "🫶 «Gracias, mamá. Estoy en ello»",
+      5,
+      null,
+      "Lo sé. Y si no, aquí estamos.",
+      "Gracias, mamá. Estoy en ello"
+     ],
+     [
+      "😔 «Está todo fatal»",
+      3,
+      null,
+      "Ya saldrá algo. Siempre sale.",
+      "Está todo fatal, mamá"
+     ],
+     [
+      "📞 Llamarla",
+      6,
+      "call",
+      null,
+      null
+     ]
+    ]
+   },
+   "casero": {
+    "t": "¿Otra vez te ha subido el casero? Esos no tienen madre.",
+    "r": [
+     [
+      "😤 «Y lo que te rondaré»",
+      3,
+      null,
+      "Si hubiera un sindicato de inquilinos… ¿no hay?",
+      "Y lo que te rondaré"
+     ],
+     [
+      "🏠 «Igual me vuelvo contigo»",
+      2,
+      null,
+      "Tu cuarto sigue como lo dejaste 🥹",
+      "Igual acabo volviendo contigo"
+     ],
+     [
+      "👍",
+      0,
+      null,
+      null,
+      "👍"
+     ]
+    ]
+   }
+  },
+  "amor": {
+   "haces": {
+    "t": "¿Qué haces? 🙈",
+    "r": "amor"
+   },
+   "pienso": {
+    "t": "Pienso en ti, tont{o}.",
+    "r": "amor"
+   },
+   "cenamos": {
+    "t": "¿Cenamos juntos esta noche?",
+    "r": "cena"
+   },
+   "dormir": {
+    "t": "¿Te quedas a dormir hoy? 🌙",
+    "r": "dormir"
+   },
+   "curro": {
+    "t": "Hoy en el curro he tenido un día de mierda 😩",
+    "r": "apoyo"
+   },
+   "perro": {
+    "t": "[Foto: un perro con chubasquero] Es tu espíritu animal",
+    "r": "risa"
+   },
+   "buenos_dias": {
+    "t": "Buenos días, guap{o} ☀️",
+    "r": "amor"
+   }
+  },
+  "compi": {
+   "jefe": {
+    "t": "El jefe hoy estaba insoportable. Otra vez con lo de las horas extra «voluntarias».",
+    "r": "queja"
+   },
+   "recortes": {
+    "t": "¿Te has enterado? Dicen que van a recortar turnos.",
+    "r": "queja"
+   },
+   "asamblea": {
+    "t": "Mañana hay asamblea en el descanso. ¿Vienes?",
+    "r": "asamblea"
+   },
+   "meme": {
+    "t": "😂😂 [Meme: «yo cuando el jefe dice que somos una familia»]",
+    "r": "risa"
+   },
+   "piquete": {
+    "t": "Piquete a las 6 en la puerta. Trae termo. ✊",
+    "r": "asamblea"
+   }
+  },
+  "vecina": {
+   "ascensor": {
+    "t": "Se ha vuelto a romper el ascensor. Ya van tres veces este mes.",
+    "r": [
+     [
+      "😤 «Hay que reclamar al administrador»",
+      3,
+      null,
+      "Yo ya he llamado dos veces. Ni caso.",
+      "Hay que reclamar al administrador"
+     ],
+     [
+      "😅 «Pues a subir andando»",
+      1,
+      null,
+      "Con mis rodillas… 😩",
+      "Pues a subir andando"
+     ],
+     [
+      "👍",
+      0,
+      null,
+      null,
+      "👍"
+     ]
+    ]
+   },
+   "reunion": {
+    "t": "Reunión de la comunidad el jueves. Lleva paciencia.",
+    "r": "gen"
+   },
+   "carta": {
+    "t": "¿Te ha llegado a ti también la carta del administrador? Quieren cobrarnos la fachada.",
+    "r": "gen"
+   },
+   "tupper": {
+    "t": "Te he dejado un táper de lentejas en la puerta 🥘",
+    "r": "regalo"
+   }
+  },
+  "amiga": {
+   "canas": {
+    "t": "¿Cañas el viernes? 🍻",
+    "r": "canas"
+   },
+   "meme": {
+    "t": "😂😂😂 [Meme de un gato con chaleco de sindicato]",
+    "r": "risa"
+   },
+   "alquiler": {
+    "t": "Me han subido el alquiler OTRA VEZ. 80 pavos. Me quiero morir.",
+    "r": "apoyo"
+   },
+   "echo_menos": {
+    "t": "Te echo de menos, ¿cuándo nos vemos?",
+    "r": "canas"
+   },
+   "noticias": {
+    "t": "¿Has visto lo de las noticias? Flipo.",
+    "r": "gen"
+   },
+   "curro_paro": {
+    "t": "¿Cómo llevas lo del curro? Si necesitas algo, dímelo, eh.",
+    "r": "carino"
+   }
+  },
+  "ex": {
+   "hola": {
+    "t": "Hola… ¿qué tal estás?",
+    "r": "ex"
+   },
+   "peli": {
+    "t": "He visto una peli que te habría gustado. Ya está, solo eso.",
+    "r": "ex"
+   }
+  },
+  "conocida": {
+   "hola": {
+    "t": "¡Hola! ¿Qué tal todo?",
+    "r": "gen"
+   },
+   "quedar": {
+    "t": "¿Te apetece quedar algún día? ☕",
+    "r": "canas"
+   },
+   "enlace": {
+    "t": "[Enlace: «10 trucos para llegar a fin de mes» ¡el 7 te sorprenderá!]",
+    "r": "risa"
+   }
+  }
+ },
+ "libre": {
+  "perdon": {
+   "madre": [
+    "Ay, {kid}. Si no pasa nada.",
+    "Bueno, bueno. Ven el domingo y en paz."
+   ],
+   "amor": [
+    "Vale… pero no me lo vuelvas a hacer.",
+    "Perdonad{o}. Ven aquí 🫂",
+    "Gracias por decirlo."
+   ],
+   "otro": [
+    "Tranqui, no pasa nada.",
+    "Agua pasada 👍",
+    "Jaja no te rayes."
+   ]
+  },
+  "gracias": {
+   "madre": "Para eso estoy, {kid}. Come.",
+   "amor": "A ti, siempre 🥰",
+   "otro": [
+    "¡De nada!",
+    "Para eso estamos.",
+    "🫶"
+   ]
+  },
+  "estudio": {
+   "madre": [
+    "¡Qué orgullosa! Tu padre no llegó a eso.",
+    "Estudia, {kid}, que es lo único que no te pueden quitar.",
+    "¿Y te da tiempo con el trabajo? No te mates."
+   ],
+   "amor": [
+    "¡Qué bien! Te ayudo a repasar si quieres 😏",
+    "Estoy orgullos{po2} de ti.",
+    "Luego lo celebramos 🍻"
+   ],
+   "compi": [
+    "Haces bien. Yo me arrepiento de no haberlo hecho.",
+    "¿Y luego nos dejas aquí tirados? Jaja",
+    "Bien, tío. Ya cuentas lo que vale."
+   ],
+   "otro": [
+    "¡Grande! ¿Qué estudias?",
+    "Qué envidia, yo lo dejé.",
+    "Aprovecha, que luego no hay tiempo."
+   ]
+  },
+  "enfermo": {
+   "madre": [
+    "¿Tienes fiebre? Voy para allá con caldo.",
+    "Abrígate y no vayas a trabajar.",
+    "Te lo dije. Come bien."
+   ],
+   "amor": [
+    "¿Quieres que vaya? 🥺",
+    "Descansa, te llevo algo luego.",
+    "Cuídate, porfa."
+   ],
+   "otro": [
+    "Vaya… mejórate.",
+    "Si necesitas algo, dímelo.",
+    "Aprovecha la baja 😉"
+   ]
+  },
+  "declaracion_si": {
+   "otro": [
+    "Vaya… no me lo esperaba 😳",
+    "Jaja ¿en serio? Hablamos en persona, anda.",
+    "Tú también a mí, un poco. Pero vamos despacio."
+   ]
+  },
+  "declaracion_no": {
+   "otro": [
+    "Ay… te veo como amig{o}. Lo siento.",
+    "Creo que no, {n}. Pero no cambies, ¿eh?",
+    "Uf. No. Pero gracias por decirlo."
+   ]
+  },
+  "adios": {
+   "madre": "Cuídate, {kid}. Y come.",
+   "amor": [
+    "Buenas noches, amor 😘",
+    "Sueña conmigo 🌙",
+    "Hasta mañana ❤️"
+   ],
+   "otro": [
+    "¡Hasta luego!",
+    "Nos vemos 👋",
+    "Chao"
+   ]
+  },
+  "grosero": {
+   "madre": [
+    "Oye, que soy tu madre. Un respeto.",
+    "Muy bien, {kid}. Ya hablaremos.",
+    "…"
+   ],
+   "amor": [
+    "Vale. 👍",
+    "No sé qué te pasa hoy, pero no me hables así.",
+    "Ok."
+   ],
+   "otro": [
+    "Vale, tío. 👋",
+    "Pues nada. Ya si eso.",
+    "Ok…"
+   ]
+  },
+  "dormir": {
+   "amor": [
+    "¡Voy! 😘 Llevo el cepillo de dientes",
+    "Cojo el metro ya 🌙",
+    "Pensaba que no lo ibas a pedir nunca 🙈"
+   ]
+  },
+  "plan": {
+   "madre": [
+    "¡Ay, qué alegría! Hago croquetas 🥘",
+    "¿Vienes de verdad? Preparo la mesa.",
+    "¡Sí! Pero avisa, que compro pan."
+   ],
+   "amor": [
+    "¡Sí! ¿A qué hora? 😍",
+    "Me pongo guap{po2} 💃",
+    "Reservo yo 🍝"
+   ],
+   "compi": [
+    "Vale, pero no hablamos del curro. Ok, un poco sí.",
+    "¡Venga! Después del turno.",
+    "Me apunto si invitas la primera 🍻"
+   ],
+   "otro": [
+    "¡Vamos! 🍻",
+    "Dime hora y bajo.",
+    "¡Hacía falta! 🙌"
+   ]
+  },
+  "dinero": {
+   "madre": [
+    "Si necesitas algo me lo dices, ¿eh? Tengo un dinerillo guardado.",
+    "Ay, {kid}, esto está imposible.",
+    "No te agobies. Entre todos salimos."
+   ],
+   "amor": [
+    "Lo que haga falta, lo vemos juntos.",
+    "No te preocupes por eso ahora.",
+    "¿Te hace falta algo? En serio."
+   ],
+   "compi": [
+    "Con lo que nos pagan, normal.",
+    "Pide un adelanto, que a mí me lo dieron.",
+    "Ya ves. Y el jefe con coche nuevo."
+   ],
+   "otro": [
+    "Ya ves cómo está todo.",
+    "Qué me vas a contar…",
+    "Un sindicato de inquilinos, te lo digo yo."
+   ]
+  },
+  "curro": {
+   "madre": [
+    "Tú no te dejes pisar, que te conozco.",
+    "Descansa, que trabajas demasiado.",
+    "¿Y te pagan las horas esas? 🤨"
+   ],
+   "compi": [
+    "Ni me hables. Hoy el jefe ha superado su propio récord.",
+    "Mañana lo hablamos en el descanso. Con más gente.",
+    "Esto hay que organizarlo, {n}."
+   ],
+   "otro": [
+    "Qué pereza, tío.",
+    "Aguanta, que es viernes pronto.",
+    "Déjalo y monta algo, yo te ayudo 😂"
+   ]
+  },
+  "pregunta": {
+   "madre": [
+    "Bien, {kid}. Aquí, con la tele y tu padre, que sigue igual. ¿Y tú?",
+    "Bien. ¿Has comido?",
+    "Pues aquí, haciendo croquetas. Adivina para quién."
+   ],
+   "amor": [
+    "Pensando en ti 🙈 ¿Y tú?",
+    "En el curro, aburrid{po2}. Cuéntame algo.",
+    "Bien, ahora que me escribes 😊"
+   ],
+   "compi": [
+    "Sobreviviendo al turno. ¿Tú?",
+    "Aquí, fichando. Luego te cuento.",
+    "Bien. El jefe no. Jaja"
+   ],
+   "otro": [
+    "¡Bien! ¿Y tú?",
+    "Aquí, tirando. ¿Qué tal tú?",
+    "Todo bien por aquí 🙂"
+   ]
+  },
+  "afecto": {
+   "madre": [
+    "Y yo a ti, {kid} mío. Come bien.",
+    "Ay, que me haces llorar 🥹",
+    "Eres lo mejor que he hecho en la vida. Y las croquetas."
+   ],
+   "amor": [
+    "🥰🥰🥰",
+    "Yo más, tont{o}",
+    "Ven aquí y me lo dices a la cara 😏"
+   ],
+   "amiga": [
+    "Ayyy 🫶",
+    "¡Te quiero, {n}!",
+    "Para ya que me emociono en el bus"
+   ],
+   "otro": [
+    "¡Qué majo! 🫶",
+    "Gracias, de verdad.",
+    "🥹"
+   ]
+  },
+  "resto": {
+   "madre": [
+    "Vale, {kid}. Cuídate.",
+    "Ya. ¿Y has comido?",
+    "Bueno, bueno. Luego te llamo.",
+    "Jajaja qué cosas tienes."
+   ],
+   "amor": [
+    "Jaja 😘",
+    "Ven y me lo cuentas mejor 😏",
+    "🥰",
+    "Qué tont{o} eres. Me encanta."
+   ],
+   "otro": [
+    "Jajaja",
+    "Ya ves.",
+    "Total.",
+    "👍",
+    "Jaja qué dices"
+   ]
+  },
+  "_": "Respuestas a lo que escribe el jugador, por palabra clave: madre, amor, compi, amiga o otro (el resto). Cadena = una sola frase; lista = al azar.",
+  "sin_plan": [
+   "Bueno, cuando puedas. Avísame.",
+   "Ok, otro día entonces 🙂"
+  ],
+  "rapidas": {
+   "quedamos_si": "¡Venga! ¿Cuándo?",
+   "quedamos_no": "Uf, ando liad{po}…",
+   "carino_si": "Y yo a ti 🫶",
+   "carino_no": "Ah… vale 😅",
+   "hola": [
+    "Bien, aquí, sobreviviendo. ¿Y tú?",
+    "Liad{po} con el curro. ¿Tú qué tal?",
+    "¡Bien! Hacía mucho 🙂"
+   ]
+  }
+ },
+ "noticias": {
+  "gobierno": {
+   "e": "🏛️",
+   "t": "{gob}: {frase}",
+   "frases": [
+    "«La economía va como un cohete», dice el ministro",
+    "El Gobierno presume de cifras macro; en los barrios no se nota",
+    "Nueva rueda de prensa sin preguntas",
+    "Se aprueba el decreto ómnibus de madrugada"
+   ]
+  },
+  "crisis_alta": [
+   "📉",
+   "Las empresas anuncian EREs «por la incertidumbre» mientras reparten dividendos récord",
+   "El paro sube por tercer mes. Los beneficios del IBEX, también."
+  ],
+  "crisis_media": [
+   "📊",
+   "La inflación se come la subida salarial: la cesta de la compra, un 9 % más cara",
+   "Los supermercados niegan especular. Sus márgenes dicen otra cosa."
+  ],
+  "crisis_baja": [
+   "📈",
+   "El empleo crece, pero la mitad de los contratos duran menos de un mes",
+   "«Récord de afiliados», titula la prensa. Récord de temporalidad, dicen los sindicatos."
+  ],
+  "vivienda": {
+   "e": "🏠",
+   "frases": [
+    "El alquiler medio en el barrio supera ya el 45 % del sueldo",
+    "Un fondo de inversión compra el bloque de la calle Mayor entera",
+    "Desahucio parado en la calle del Río gracias a la vecindad",
+    "Los pisos turísticos se comen el centro: 1 de cada 4 portales"
+   ]
+  },
+  "movimiento": {
+   "e": "✊",
+   "frases": [
+    "La marea de la sanidad llena la plaza un domingo más",
+    "Las kellys convocan huelga en cinco hoteles",
+    "Las riders ganan en los tribunales: eran falsas autónomas"
+   ],
+   "sub": "El movimiento social crece en el barrio."
+  },
+  "huelga": {
+   "e": "🪧",
+   "t": "Huelga en {empresa}: la plantilla aguanta",
+   "sub": "La empresa habla de «minoría radical». Son el 80 %."
+  },
+  "elecciones": {
+   "e": "🗳️",
+   "t": "Quedan {d} días para las elecciones generales",
+   "sub": "Campaña a base de banderas y promesas de bajar impuestos a quien ya no los paga."
+  },
+  "futbol": {
+   "e": "⚽",
+   "frases": [
+    "El club del barrio sube de categoría con un presupuesto de 3.000 euros",
+    "Polémica arbitral: todo el mundo tiene razón",
+    "Un futbolista firma por 200 millones; la enfermera de su hija cobra 1.400"
+   ]
+  },
+  "tiempo": {
+   "e": "🌦️",
+   "t": "El tiempo: {tiempo}. {frase}",
+   "con": "{e} {t} °C",
+   "sin": "variable",
+   "frases": [
+    "Lleva chaqueta, por si acaso.",
+    "Ni frío ni calor: tiempo de terraza (si llega el sueldo).",
+    "Ola de calor en los pisos sin aislar; los ricos, en la sierra."
+   ]
+  }
+ },
+ "feed": {
+  "_": "Publicaciones diarias de la gente, por tipo de persona (al azar).",
+  "madre": [
+   "🌸 Buenos días a todos menos a los que suben la luz",
+   "🥘 Croquetas para un regimiento. ¿Quién viene?",
+   "📿 Que Dios reparta suerte (y mejores sueldos)"
+  ],
+  "amor": [
+   "☕ Café y lluvia. No pido más",
+   "🌆 Atardecer desde el bus. Gratis, como lo mejor",
+   "🎶 Esta canción me recuerda a alguien"
+  ],
+  "compi": [
+   "😴 Turno de 10 horas. «Somos una familia», dicen",
+   "✊ Hoy en el descanso hemos hablado de cosas. Cosas importantes",
+   "🍕 Viernes de pizza con la plantilla"
+  ],
+  "vecina": [
+   "🌿 Mis geranios están mejor que la sanidad pública",
+   "🔧 Tercera avería del ascensor. Vamos por el récord",
+   "🎂 Hoy cumple mi nieto. ¡Felicidades, campeón!"
+  ],
+  "amiga": [
+   "🍻 Martes de cañas porque la vida es corta y el sueldo más",
+   "🐈 Mi gato tiene más vacaciones que yo",
+   "📦 Nueva mudanza. Cuarta en dos años. Viva el mercado"
+  ],
+  "ex": [
+   "🌙 Nuevos comienzos",
+   "📚 Leyendo mucho últimamente"
+  ],
+  "conocida": [
+   "🏃 10 km. Ahora mismo no siento las piernas",
+   "🍳 Receta de la abuela: hoy sí ha salido",
+   "🎸 Concierto en El Sótano, ¡qué nivel!"
+  ]
+ },
+ "publicar": {
+  "ya": "Ya ha publicado hoy. No hay que dar la chapa",
+  "salida": "🍻 {out}",
+  "tranquilo": "☕ Día tranquilo. Que dure.",
+  "paro": "📭 Buscando curro. Se aceptan contactos (y ánimos)",
+  "trabajo": "💼 Otro día más en el tajo. Lo que hay que hacer por un sueldo…",
+  "politico": "✊ Si no nos organizamos, nos organizan",
+  "apolitico": "🌅 Hoy toca disfrutar de lo pequeño",
+  "pareja": "¿Y esa foto? ¿Con quién estabas? 🤨",
+  "amigos": [
+   "Me ha encantado tu publicación 😂",
+   "Jajaja muy tú",
+   "Así se habla 👏"
+  ],
+  "hecho": "📸 Publicado · {likes} me gusta"
+ },
+ "llamada": {
+  "temas": [
+   "de la familia",
+   "del curro y de lo mal que paga",
+   "del alquiler",
+   "de política (un poco a gritos)",
+   "de nada en concreto, que es lo mejor",
+   "de planes para el finde",
+   "de una serie que están viendo los dos"
+  ],
+  "hablaron": "Hablaron {m} minutos {tema}."
+ },
+ "avisos": {
+  "mensaje": "💬 {p}: {txt}{mas}",
+  "no_puede": "Ahora no puede salir: {why}",
+  "gossip_yo": "Se llama {pt}…",
+  "gossip_nada": "Nada serio todavía. Ya te contaré.",
+  "gossip_ella": "¿{pt}? ¿Y cuándo l{la} traes a comer? 🥘",
+  "gossip_ella_nada": "Ya me contarás, ya. Que yo me entero de todo.",
+  "enganche": "{n} ha pasado más de dos horas hoy mirando el móvil. Scroll, scroll, scroll.",
+  "contesta": "📱 {n} contesta a {p}",
+  "auto_yo": "📱 Mensajes: los contesto yo",
+  "auto_ella": "📱 Mensajes: contesta sol{o} si tardo",
+  "titulo": "Móvil"
+ },
+ "ui": {
+  "mensajes": "Mensajes",
+  "sin_mensajes": "Sin mensajes",
+  "tu": "Tú: ",
+  "hoy": "Hoy",
+  "ayer": "Ayer",
+  "dia": "Día {d}",
+  "vacio": "Aún no os habéis escrito.",
+  "rapidos": [
+   [
+    "👋 ¿Qué tal?",
+    "¿Qué tal?"
+   ],
+   [
+    "🍻 ¿Quedamos?",
+    "¿Quedamos?"
+   ],
+   [
+    "❤️ Te echo de menos",
+    "Te echo de menos"
+   ]
+  ],
+  "escribe": "Escribe un mensaje…",
+  "llamando": "Llamando…",
+  "colgar": "Colgar",
+  "contactos": "Contactos",
+  "noticias": "Noticias del día",
+  "fotogram": "Fotogram",
+  "sin_publicaciones": "Todavía no hay publicaciones. Vuelve mañana.",
+  "hoy_min": "hoy",
+  "hace": "hace {d} d",
+  "alguien": "Alguien",
+  "fecha": "{sem} {dm} de {mes}",
+  "banco": {
+   "titulo": "Banco del Barrio",
+   "saldo": "Saldo",
+   "descubierto": "Descubierto: el banco cobra comisiones por no tener dinero. Así funciona.",
+   "disponible": "Disponible",
+   "ingreso": "💼 Ingreso semanal",
+   "hipoteca": "🏦 Hipoteca semanal",
+   "alquiler": "🏠 Alquiler semanal",
+   "colchon": "🛟 Colchón recomendado",
+   "ultimos": "Últimos días",
+   "dia": "Día {d}"
+  }
+ }
+}

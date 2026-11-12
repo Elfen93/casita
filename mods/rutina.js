@@ -7,7 +7,7 @@ const SHOWERS=new Set(['ducha','banera']);
   try{if(o&&SHOWERS.has(o.t)){const h=S.t/60;const R=S.shw||(S.shw={m:0,n:0,last:0});const slot=h>=5&&h<13?'m':(h>=18||h<3)?'n':null;
     const prev=R.m===R.n?null:(R.m>R.n?'m':'n');if(slot)R[slot]=Math.min(12,R[slot]+1);if(slot){const o2=slot==='m'?'n':'m';R[o2]=Math.max(0,R[o2]-.5);}
     R.last=S.day*1440+S.t;const now=R.m===R.n?null:(R.m>R.n?'m':'n');
-    if(now&&now!==prev&&Math.max(R.m,R.n)>=3)toast(`🚿 ${CH().name} ya tiene su rutina: se ducha ${now==='m'?'por la mañana':'por la noche'}`);}}catch(e){console.error(e);}
+    if(now&&now!==prev&&Math.max(R.m,R.n)>=3)toast(huecos(TXHZ.rutina.ya_tiene_rutina_ducha,{x:now==='m'?TXHZ.rutina.manana:TXHZ.rutina.noche}));}}catch(e){console.error(e);}
   return r;};}
 function showerPref(){const R=S.shw||{m:0,n:0};if(R.m!==R.n)return R.m>R.n?'m':'n';return (S.track&&!S.jobless)?'m':'n';}
 function routineShower(){const s=S.sim;if(s.leaving||s.use||s.target!=null||s.path&&s.path.length||s.work>0)return false;
@@ -22,7 +22,7 @@ function routineShower(){const s=S.sim;if(s.leaving||s.use||s.target!=null||s.pa
   const r=bestObjFor('higiene');if(!r||!r.path)return false;go(r,'higiene',false);return true;}
 {const _au=autonomy;autonomy=function(){try{if(routineShower())return;}catch(e){console.error(e);}return _au.apply(this,arguments);};}
 // de noche: si aprieta la vejiga, se levanta a hacer pis en vez de mojar la cama
-{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim,u=s.use;if(u&&['cama','camamat','litera','colchon','sofacama'].includes(u.type)&&S.needs.vejiga<9&&!s.work){const b=bestObjFor('vejiga');if(b&&b.path){s.use=null;go(b,'vejiga',false);if(throttled('pisnoche',600000))tell(`${CH().name} se levantó medio dormid${oa()} a hacer pis.`,'🚽');}}}catch(e){}return r;};}
+{const _up=update;update=function(gm){const r=_up.apply(this,arguments);try{const s=S.sim,u=s.use;if(u&&['cama','camamat','litera','colchon','sofacama'].includes(u.type)&&S.needs.vejiga<9&&!s.work){const b=bestObjFor('vejiga');if(b&&b.path){s.use=null;go(b,'vejiga',false);if(throttled('pisnoche',600000))tell(huecos(TXHZ.rutina.levanto_medio_dormid_hacer_pis,{}),'🚽');}}}catch(e){}return r;};}
 // ducha realista: 10-15 minutos, no una hora (need.higiene de ducha, bañera y lavabo en data/objetos.json)
 // energía en el trabajo: una jornada de 8 h debe gastar ~30 puntos (35 en la obra), no 50
 {const _upE=update;update=function(gm){const s=S.sim;const work=s.work>0&&!s.outingActive;const e0=S.needs.energia;const r=_upE.apply(this,arguments);
