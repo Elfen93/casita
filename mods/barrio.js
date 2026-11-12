@@ -103,7 +103,22 @@ body.obra #mapbtn{display:none}
   const c=document.getElementById('center');if(c){const _c=c.onclick;c.onclick=function(){if(BM.on){if(!BM.obs){bmCenter(N/2,N/2);bmClamp();}return;}return _c&&_c.apply(this,arguments);};}}
 // ---- fichas ----
 function bmEstado(k){const st=placeState(k),o=[];if(st.closed)o.push('cerrado por huelga');if(st.forRent)o.push('cerrado: se alquila');return o.join(' · ');}
+// ---- horarios de apertura: el dato `abre` de data/lugares.json ([[desde,hasta,[días]],…]; hasta > 24 = cierra de madrugada). Hoy solo informa: el horario de cada salida sigue siendo OUT[k].h / .wd ----
+const bmDiaEf=day=>festivo(day)?6:dateOf(day).wd; // los festivos cuentan como domingo
+function bmAbreTxt(k){const ab=PLACES[k]&&PLACES[k].abre;if(!ab)return '';const nm=['lunes','martes','miércoles','jueves','viernes','sábados','domingos'];
+  const t=ab.map(([d0,h0,ds])=>(d0===0&&h0===24?'las 24 horas':bmH(d0)+'–'+bmH(h0>24?h0-24:h0))+(ds.length>=7?(d0===0&&h0===24?'':' · todos los días'):' · '+bmDias(ds)));
+  const cer=[0,1,2,3,4,5,6].filter(d=>!ab.some(f=>f[2].includes(d))).map(d=>nm[d]);
+  return t.join('; ')+(cer.length?' · cierra los '+(cer.length>1?cer.slice(0,-1).join(', ')+' y '+cer[cer.length-1]:cer[0]):'');}
+function bmAhora(k,day,h){const ab=PLACES[k]&&PLACES[k].abre;if(!ab)return null;const wd=bmDiaEf(day),pw=bmDiaEf(day-1);
+  for(const [d0,h0,ds] of ab){if(ds.includes(wd)&&h>=d0&&h<Math.min(h0,24))return {on:true,hasta:h0>24?h0-24:h0};if(h0>24&&ds.includes(pw)&&h<h0-24)return {on:true,hasta:h0-24};}
+  let best=null;for(let o=0;o<=7&&!best;o++){const ed=bmDiaEf(day+o);let c=null;for(const [d0,,ds] of ab)if(ds.includes(ed)&&(o>0||d0>h)&&(c===null||d0<c))c=d0;if(c!==null)best={o,h:c,wd:dateOf(day+o).wd};}
+  return {on:false,abre:best};}
+function bmAhoraTxt(k){const r=bmAhora(k,S.day,S.t/60);if(!r)return null;const st=placeState(k);
+  if(st.closed||st.forRent)return {on:false,w:st.closed?'por huelga':'se alquila'};
+  if(r.on)return {on:true,w:'cierra a las '+bmH(r.hasta)};
+  const b=r.abre;return {on:false,w:b?'abre '+(b.o===0?'a las ':b.o===1?'mañana a las ':'el '+DATA.reglas.dias[b.wd].toLowerCase()+' a las ')+bmH(b.h):''};}
 function bmSchedule(k){const p=PLACES[k],rows=[],ESC=typeof ESC_T!=='undefined'?ESC_T[k]:null;
+  {const ab=bmAbreTxt(k);if(ab){rows.push(['🕘','Abierto',ab]);const a=bmAhoraTxt(k);if(a)rows.push([a.on?'🟢':'🔴','Ahora: '+(a.on?'abierto':'cerrado'),a.w]);}}
   if(ESC)rows.push(['🎒','Clases','lun–vie · '+bmH(ESC.ent[0]+.5)+' a '+bmH(ESC.sal[0])]);
   for(const o of p.outs||[]){const q=OUT[o];if(!q||o==='comedor')continue;const nm=typeof outName==='function'?outName(o):q.n;rows.push([q.e||'•',nm,(q.h?`${bmH(q.h[0])} a ${bmH(q.h[1])}`:'')+(q.wd?(q.h?' · ':'')+bmDias(q.wd):'')]);}
   return rows;}

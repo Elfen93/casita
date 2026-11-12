@@ -102,6 +102,23 @@ def comprobar(d):
     for k,p in lug.items():
         dentro('lugares.%s.outs'%k,p.get('outs',[]),sal,'lugares.salidas')
         if len(p.get('r',[]))!=4:E.append('lugares.%s.r: hacen falta 4 números [x0,y0,x1,y1]'%k)
+    # horarios de apertura: [[desde,hasta,[días]],…]; hasta > 24 = cierra de madrugada del día siguiente
+    for k,p in lug.items():
+        ab=p.get('abre')
+        if ab is None:
+            if k not in ('casaV','casa2'):E.append('lugares.%s: falta abre [[desde,hasta,[días]],…] (solo las casas particulares no lo llevan)'%k)
+            continue
+        q='lugares.%s.abre'%k;porDia={}
+        if not isinstance(ab,list) or not ab:E.append(q+': tiene que ser una lista de franjas');continue
+        for f in ab:
+            if not(isinstance(f,list) and len(f)==3 and all(isinstance(x,(int,float)) for x in f[:2]) and isinstance(f[2],list) and f[2]):E.append(q+': franja mal formada %s'%f);continue
+            d0,h0,ds=f
+            if not(0<=d0<h0<=30 and h0-d0<=24):E.append(q+': horas incoherentes %s'%f)
+            if any(not isinstance(x,int) or not 0<=x<=6 for x in ds) or len(set(ds))!=len(ds):E.append(q+': días de 0 (lunes) a 6, sin repetir: %s'%f);continue
+            for x in ds:
+                for o in porDia.get(x,[]):
+                    if d0<o[1] and o[0]<h0:E.append(q+': franjas que se pisan el día %d'%x)
+                porDia.setdefault(x,[]).append((d0,h0))
     mismas('lugares.trabajo_en',L['trabajo_en'],sec)
     dentro('lugares.trabajo_en',[v for v in L['trabajo_en'].values() if v!='_ride'],lug,'lugares.lugares')
     dentro('lugares.salidas_necesidades',L['salidas_necesidades'],sal,'lugares.salidas')
@@ -109,6 +126,20 @@ def comprobar(d):
     for nom,ks in L['salidas_grupos']:dentro('lugares.salidas_grupos «%s»'%nom,ks,sal,'lugares.salidas')
     for k,s in sal.items():
         if not(isinstance(s.get('dur'),(int,float)) and len(s.get('h',[]))==2):E.append('lugares.salidas.%s: faltan dur o h [desde,hasta]'%k)
+    # sucesos: los textos de cada colegio
+    import re as _re
+    CE=d['sucesos'].get('centros',{})
+    for c in ('colegio','concertado','instituto'):
+        if c not in CE or c not in lug:E.append('sucesos.centros.%s: falta (o no es un lugar)'%c);continue
+        ids=[x.get('id') for x in CE[c].get('sucesos',[])]
+        if len(ids)<2 or len(set(ids))!=len(ids):E.append('sucesos.centros.%s.sucesos: dos o tres, con id distinto'%c)
+        for x in CE[c].get('sucesos',[]):
+            if not(0<x.get('p',0)<=.05):E.append('sucesos.centros.%s.%s.p: probabilidad por día entre 0 y 0.05'%(c,x.get('id')))
+            if x.get('hap',0)!=x.get('hap',0) or not isinstance(x.get('tell'),str):E.append('sucesos.centros.%s.%s: falta tell'%(c,x.get('id')))
+        if not CE[c].get('puerta'):E.append('sucesos.centros.%s.puerta: sin frases'%c)
+    ok={'k','c','c2','v','a','p','n','o','m','t','q','y','d','h','lo','ampa'}
+    for m in _re.finditer(r'\{(\w+)\}',json.dumps([CE]+[d['sucesos']['dilemas'][q] for q in ('cr_cole','cr_cole_cambio','calentador_plazo')],ensure_ascii=False)):
+        if m.group(1) not in ok:E.append('sucesos: hueco {%s} que el código no rellena (centros, cr_cole*, calentador_plazo)'%m.group(1))
     # viviendas
     dentro('viviendas.orden',V['orden'],V['viviendas'],'viviendas.viviendas')
     mismas('viviendas.compra',V['compra'],RG['dificultades'])

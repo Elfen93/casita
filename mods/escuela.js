@@ -25,9 +25,11 @@ const escPresente=(v,h,wd)=>!!v.centro&&(v.estudia==='cole'||v.estudia==='instit
 // ---- sus criaturas: qué centro les toca, quién cuenta como criatura en edad escolar ----
 const esKD=k=>{k.hap=k.hap??70;k.sick=k.sick||0;k.play=k.play||0;return k;};
 const esKids=(a0,a1)=>(S.kids||[]).map(esKD).filter(k=>{const a=kidAge(k);return a>=a0&&a<=a1;});
-function esCentroDe(k){const a=kidAge(k),H=HOMES[(S.home&&S.home.type)||'casita'],c=H&&typeof H.cls==='number'?H.cls:1;
+function esCentroDe(k){const a=kidAge(k);
+  if(k.centro)return k.centro==='concertado'?'concertado':a>=12?'instituto':'colegio'; // lo elegido (dilema cr_cole); sin elegir, lo de siempre
+  const H=HOMES[(S.home&&S.home.type)||'casita'],c=H&&typeof H.cls==='number'?H.cls:1;
   if(c>=3||(c===2&&esR(k.n+'|'+k.born)<.5))return 'concertado';return a>=12?'instituto':'colegio';}
-const esKid=(a0,a1)=>esKids(a0,a1).find(k=>!k.sick)||null;
+const esKid=(a0,a1)=>esKids(a0,a1).find(k=>!k.sick&&k.huelga!==S.day)||null;
 conLogica(OUT,{
   cole:{req:()=>!festivo(S.day)&&!!esKid(3,11)},
   tutoria:{req:()=>!festivo(S.day)&&esKids(3,16).some(k=>!k.sick&&!(k.tutDay&&S.day-k.tutDay<30))}});
@@ -42,11 +44,11 @@ const esPub=k=>k==='colegio'||k==='instituto';
   if(k!=='cole'&&k!=='tutoria')return r;
   try{const ks=S.kids||[];let q=ks[S.sim.escKid];if(!q||kidAge(q)<3)q=k==='cole'?esKid(3,11):esKids(3,16)[0];if(!q)return r;esKD(q);const n=CH().name,e=q.g==='f'?'ella':'él',c=esCentroDe(q);
     q.play++;S.needs.social=Math.min(100,S.needs.social+4);
-    if(k==='cole'){q.hap=Math.min(100,q.hap+4);q.recDay=S.day;q.recT=S.t;
+    if(k==='cole'){q.hap=Math.min(100,q.hap+4);q.recDay=S.day;q.recT=S.t;const pu=colPuerta(c,q);
       const ext=esPub(c)?pickR([' Veintiocho por clase y una profe de baja sin sustituir.',' En la verja, el cartel de la huelga y otro de la AMPA pidiendo voluntarias.',' El barracón sigue en el patio. «Provisional», desde 2009.']):pickR([' En la puerta, un sobre con la cuota «voluntaria». Ya es el tercer recordatorio.',' Todas con el mismo jersey y la misma sonrisa de foto.',' El patio, con césped. Alguien lo paga y no es el colegio.']);
       tell(pickR([`${q.n} ha salido con la mochila a medio cerrar y un dibujo arrugado. «Mira». ${n} lo ha mirado hasta que ${e} se ha cansado de esperar.${ext}`,
         `${q.n} ha tardado en salir: se había quedado «ayudando a la profe». ${n} no ha preguntado más y han ido andando despacio.${ext}`,
-        `${q.n} ha contado todo el camino lo del recreo, en el orden equivocado. ${n} ha escuchado. Hoy sí podía.${ext}`]),'🎒');}
+        `${q.n} ha contado todo el camino lo del recreo, en el orden equivocado. ${n} ha escuchado. Hoy sí podía.${ext}`])+(pu?' '+pu:''),'🎒');}
     else{q.hap=Math.min(100,q.hap+5);q.tutDay=S.day;
       const ext=esPub(c)?pickR([' Orientadora, una para tres colegios.',' La reunión, a las cinco: a esa hora ya no hay clase y casi nadie sale del trabajo.',' Once familias detrás de la puerta y un solo despacho.']):pickR([' Aquí la tutora habló de «actividades complementarias» y de lo que cuestan.',' Antes de irse, una carpeta con el precio de las excursiones.',' La directora pasó a saludar. Siempre pasa cuando se habla de la cuota.']);
       tell(pickR([`La tutora de ${q.n} tenía veinte minutos y la cola detrás. Ha dicho que ${e} es ${q.g==='f'?'muy lista':'muy listo'} y que hay que «reforzar». ${n} ha salido con una fotocopia.${ext}`,
@@ -268,3 +270,70 @@ function escScene(key,E){const h=E.h!=null?E.h:S.t/60,wd=dateOf(S.day).wd,lect=e
   if(m==='clase'||m==='tutoria')return escAula(key,E,m,L);
   return escPatio(key,E,m,L);}
 for(const k of ESC_K)SCENES[k]=E=>escScene(k,E);
+
+// =================== ELEGIR COLEGIO (T-113) ===================
+// Estado en la criatura: k.centro ('colegio' | 'concertado' | 'instituto'; sin él, lo de siempre), k.pend (decisión por tomar: cole3, cole12, cambio),
+// k.pagado (lo que lleva este curso), k.debe (recibos devueltos), k.huelga (día de huelga), k.sucDay (último suceso del centro).
+// Textos en data/sucesos.json (dilemas cr_cole y cr_cole_cambio, sección centros).
+const colNom=c=>c==='concertado'?'San Roque':c==='instituto'?'Las Eras':'La Ribera';
+const colPub=k=>kidAge(k)>=12?'instituto':'colegio';
+const colCuota=k=>hrs(kidAge(k)>=12?12:10),colExtra=()=>hrs(4),colMat=()=>hrs(1.5); // cuota «voluntaria» ≈ 85 € (lo que pone el cartel de San Roque), extraescolares y material
+const colK=d=>(S.kids||[])[d.i]||{n:d.k||'la criatura',g:'f',born:S.day-60*3};
+const colHue=k=>({k:k.n,lo:k.g==='f'?'a':'o',m:fmt(colMat()),t:fmt(colCuota(k)+colExtra()),q:6,h:TR().sh[1]});
+// admisión del concertado: puntos de renta (menos ingresos, más puntos), cercanía, hermanos en el centro y un sorteo de desempate; con 6 se entra (con hermano dentro, siempre)
+function colPuntos(k){const H=HOMES[(S.home&&S.home.type)||'casita'],cl=H&&typeof H.cls==='number'?H.cls:1;
+  const r=S.jobless?0:salary()/(8*HW());const renta=S.jobless||r<=1.15?2:r<=1.8?1:0;
+  const cerca=typeof homeless==='function'&&homeless()?0:cl>=4?4:cl>=3?4:cl>=2?3:2;
+  const herm=(S.kids||[]).some(q=>q!==k&&q.centro==='concertado')?3:0;
+  return {p:renta+cerca+herm+(Math.random()*4|0),q:6};}
+function colSolicitar(k,O){const r=colPuntos(k),h={...colHue(k),p:r.p,q:r.q};k.debe=0;
+  if(r.p>=r.q){k.centro='concertado';k.centroDesde=S.day;tell(huecos(O.tell_ok,h),'🏫');return true;}
+  k.centro=colPub(k);k.centroDesde=S.day;tell(huecos(O.tell_ko,h),'🏫');return false;}
+function colCapitulo(k,O,ok){const T=O.capx||(ok?O.capx_ok:O.capx_ko);if(!O.cap||!T)return;
+  chapter('cole_'+k.n,O.cap,huecos(T,{...colHue(k),n:CH().name,ampa:DT.cr_cole.ampa[W_().mov>=50?0:1]}));}
+const colCaso=(d,k)=>d.e==='cole12'?(esCentroDe(k)==='concertado'?'doce_con':'doce_pub'):'tres';
+Object.assign(DLG,{cr_cole:{t:d=>huecos(DT.cr_cole.t,{k:colK(d).n}),
+  x:d=>{const k=colK(d);return huecos(DT.cr_cole.x[colCaso(d,k)],{k:k.n});},
+  o:d=>{const k=colK(d),cs=colCaso(d,k),O=DT.cr_cole.o[cs],h=colHue(k);
+    const pub=(o)=>({t:o.t,s:huecos(o.s,h),f:()=>{k.centro=colPub(k);k.centroDesde=S.day;k.pend=null;tell(huecos(o.tell,h),'🏫');colCapitulo(k,o,true);}});
+    const sol=(o)=>({t:o.t,s:huecos(o.s,h),f:()=>{k.pend=null;const ok=colSolicitar(k,o);colCapitulo(k,o,ok);}});
+    const stay=(o)=>({t:o.t,s:huecos(o.s,h),f:()=>{k.centro='concertado';k.centroDesde=S.day;k.pend=null;tell(huecos(o.tell,h),'🏫');}});
+    return cs==='doce_con'?[stay(O[0]),pub(O[1])]:[pub(O[0]),sol(O[1])];},
+  auto:d=>{const k=colK(d);return colCaso(d,k)==='doce_con'?(S.money>hrs(120)?0:1):(S.money>hrs(250)?1:0);}},
+ cr_cole_cambio:{t:()=>DT.cr_cole_cambio.t,
+  x:d=>{const k=colK(d),con=esCentroDe(k)==='concertado';return huecos(DT.cr_cole_cambio.x[con?(k.debe>=1?'concertado_debe':'concertado'):(k.hap<45?'publico_flojo':'publico')],{k:k.n,c:colNom(esCentroDe(k)),y:fmt(k.pagado||0)});},
+  o:d=>{const k=colK(d),con=esCentroDe(k)==='concertado',O=DT.cr_cole_cambio.o[con?'concertado':'publico'];
+    const nx=kidAge(k)+1>=12?'instituto':'colegio',h={...colHue(k),c:colNom(esCentroDe(k)),c2:colNom(nx)};
+    const stay={t:huecos(O[0].t,h),s:O[0].s,f:()=>{k.pend=null;tell(huecos(O[0].tell,h),'🏫');}};
+    return [stay,con?{t:huecos(O[1].t,h),s:huecos(O[1].s,h),f:()=>{k.pend=null;k.centro=colPub(k);k.centroDesde=S.day;k.debe=0;tell(huecos(O[1].tell,h),'🏫');}}
+      :{t:O[1].t,s:huecos(O[1].s,h),f:()=>{k.pend=null;colSolicitar(k,{tell_ok:O[1].tell_ok,tell_ko:huecos(O[1].tell_ko,{c:h.c})});}}];},
+  auto:d=>{const k=colK(d);return esCentroDe(k)==='concertado'&&(k.debe>=1||S.money<hrs(60))?1:0;}}});
+// con quién coincide a la puerta: una familia del censo que recoge en ese centro (la elección se nota en las caras)
+function colPuerta(c,q){try{const T=DATA.sucesos.centros[c];if(!T||c==='instituto'||esR(q.n+S.day+'pf')>=.6)return '';
+  const ks=pbVec().filter(v=>v&&v.centro===c&&v.estudia==='cole');if(!ks.length)return '';const v=esPick(ks,q.n+S.day+'v');
+  const a=pbVec().find(x=>x&&x.hogar===v.hogar&&pbAdult(x));if(!a)return '';
+  return huecos(esPick(T.puerta,q.n+S.day+'p'),{a:a.n,v:v.n});}catch(e){return '';}}
+// la huelga educativa de la pública: la criatura se queda en casa y alguien tiene que cubrirlo
+function colHuelga(k,c){const T=DATA.sucesos.centros.huelga,m=grandma(),p=liveIn(),h={k:k.n,c:PLACES[c].n,p:p&&p.n};k.huelga=S.day;
+  if(!anaWorksToday())tell(huecos(T.libre,h),'🪧');
+  else if(m&&Math.random()<.65){m.rel=Math.min(100,m.rel+1);tell(huecos(T.abuela,h),'🪧');}
+  else if(p&&partnerHome()){p.wear=Math.min(100,(p.wear||0)+3);tell(huecos(T.pareja,h),'🪧');}
+  else{S.rep=Math.max(0,(S.rep??70)-2);bkAdd('Críos',-Math.round(salary()*.5));tell(huecos(T.falta,h),'🪧');}}
+function colSuceso(k,a,c){const T=DATA.sucesos.centros[c];if(!T||(k.sucDay&&S.day-k.sucDay<14))return;
+  if(c!=='concertado'&&Math.random()<.008){k.sucDay=S.day;colHuelga(k,c);return;}
+  for(const x of T.sucesos){if(Math.random()>=x.p)continue;k.sucDay=S.day;
+    const ks=pbVec().filter(v=>v&&v.centro===c&&v.estudia&&v.estudia!=='fp');const v=ks.length?esPick(ks,k.n+S.day+x.id):null;
+    tell(huecos(x.tell,{k:k.n,c:fmt(hrs(x.gasto||0)),v:v?v.n:'una compañera'}),'🏫');
+    k.hap=Math.max(0,Math.min(100,(k.hap??70)+(x.hap||0)));if(x.social)S.needs.social=Math.min(100,S.needs.social+x.social);
+    if(x.gasto){bkAdd('Críos',-hrs(x.gasto));if(c==='concertado')k.pagado=(k.pagado||0)+hrs(x.gasto);}return;}}
+// cada día: recibo del mes (días 1, de septiembre a junio), fin de curso (24 de junio) y lo que pasa en el centro
+{const _dl=dailyEvents;dailyEvents=function(){const r=_dl.apply(this,arguments);
+  try{const ks=esKids(3,16);if(!ks.length)return r;const d=dateOf(S.day),curso=d.m!==6&&d.m!==7,lect=d.wd<5&&!festivo(S.day)&&curso,T=DATA.sucesos.centros;let cuo=0,mat=0;
+    for(const k of ks){const a=kidAge(k),c=esCentroDe(k),con=c==='concertado';
+      if(d.m===5&&d.dm===24&&k.centro&&a<=15&&!k.pend){const flojo=(k.hap??70)<45;if(con?(k.debe>=1||flojo||S.money<hrs(40)):(flojo||S.money>hrs(400)))k.pend='cambio';}
+      if(d.dm===1&&curso){if(con){const m=colCuota(k)+colExtra();bkAdd('Críos',-m);k.pagado=(k.pagado||0)+m;cuo+=m;
+          if(S.money<0){k.debe=(k.debe||0)+1;if(k.debe>=2)tell(huecos(pickR(T.impago),{k:k.n}),'📨');}else k.debe=0;}
+        else{const m=colMat();bkAdd('Críos',-m);mat+=m;}}
+      if(lect&&!k.sick)colSuceso(k,a,c);}
+    if(cuo)toast(huecos(T.mes.concertado,{c:fmt(cuo)}));if(mat)toast(huecos(T.mes.publico,{c:fmt(mat)}));
+  }catch(e){console.error(e);}return r;};}

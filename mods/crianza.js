@@ -21,23 +21,27 @@ function kidSickCare(k){const n=CH().name;const m=grandma();const p=liveIn();
     const wk=dateOf(S.day).wd;k.hap=Math.max(0,Math.min(100,k.hap+(k.play>0?3:-1.2)+(S.jobless?.5:0)+(liveIn()?.5:0)-(typeof homeless==='function'&&homeless()?4:0)));k.play=0;
     if(k.hap<30&&a>=3&&Math.random()<.08)tell(pickR([`La tutora de ${k.n} ha pedido una reunión. «${k.g==='f'?'La':'El'} notamos distraíd${k.g==='f'?'a':'o'}». ${n} ha pedido permiso para ir. Se lo han dado sin sueldo.`,`${k.n} ha preguntado por qué ${n} nunca está. No había respuesta buena.`,`${k.n} se ha hecho pis en la cama otra vez. El pediatra habla de «ansiedad». Tiene ${a} años.`]),'🧒');
     if(k.hap>=80&&Math.random()<.04)tell(pickR([`${k.n} ha dibujado a ${n}. Con una sonrisa enorme y las manos muy grandes.`,`${k.n} se ha dormido en el sofá encima de ${n}. Nadie se ha movido en una hora.`]),'🧒');
-    // cole: septiembre, libros y material (la pública es gratis; lo demás no)
-    const d=dateOf(S.day);if(a>=3&&d.m===8&&d.dm===1){const c=hrs(a>=6?14:8);bkAdd('Críos',-c);tell(`Vuelta al cole de ${k.n}: libros, mochila, uniforme de deporte, la cuota «voluntaria» del AMPA. ${fmt(c)}. La educación es gratuita, dice la ley.`,'🎒');}
-    if(a===3&&(S.day-k.born)%60===0)chapter('cole_'+k.n,'El cole',`${k.n} empieza el cole. Público, en el barrio: ${W_().mov>=50?'con AMPA que se mueve y comedor becado':'con 28 por clase y una profe de baja sin sustituir'}. A las cinco hay que recogerl${k.g==='f'?'a':'o'}, y ${n} sale a las ${TR().sh[1]}.`);}
+    // cole: septiembre, libros y material (la pública es gratis; lo demás no; la concertada, además, uniforme y cuota)
+    const d=dateOf(S.day);if(d.m===8&&d.dm===1)k.pagado=0;
+    if(a>=3&&d.m===8&&d.dm===1){const con=esCentroDe(k)==='concertado';const c=hrs(a>=6?14:8)+(con?hrs(a>=6?18:12):0);bkAdd('Críos',-c);k.pagado=(k.pagado||0)+c;tell(con?huecos(DATA.sucesos.centros.sept_concertado,{k:k.n,c:fmt(c)}):`Vuelta al cole de ${k.n}: libros, mochila, uniforme de deporte, la cuota «voluntaria» del AMPA. ${fmt(c)}. La educación es gratuita, dice la ley.`,'🎒');}
+    // a los tres años y al pasar a secundaria (12) se elige centro; el dilema vuelve cada día hasta que se responde (los que ya iban a la pública siguen ahí)
+    if(a===3&&(S.day-k.born)%60===0&&!k.centro)k.pend='cole3';
+    if(a===12&&(S.day-k.born)%60===0)k.pend='cole12';
+    if(k.pend&&a>=3)askDilemma(k.pend==='cambio'?'cr_cole_cambio':'cr_cole',{i:(S.kids||[]).indexOf(k),e:k.pend});}
   // recoger del cole: quién puede
-  const esc=ks.filter(k=>kidAge(k)>=3&&kidAge(k)<12);if(esc.length&&anaWorksToday()&&TR().sh[1]>16.5&&!S.recoger&&dateOf(S.day).wd===1){askDilemma('cr_recoger',{k:esc[0].n});}
-  if(S.recoger==='pagar'&&dateOf(S.day).wd===0){const c=hrs(9)*esc.length;bkAdd('Críos',-c);toast(`🎒 Comedor y extraescolares: ${fmt(c)}`);}
+  const esc=ks.filter(k=>kidAge(k)>=3&&kidAge(k)<12);const larga=esc.length>0&&esc.every(k=>esCentroDe(k)==='concertado');/* la concertada acoge hasta las cinco y media: concilia salvo turnos largos */if(esc.length&&anaWorksToday()&&TR().sh[1]>(larga?17.5:16.5)&&!S.recoger&&dateOf(S.day).wd===1){askDilemma('cr_recoger',{k:esc[0].n});}
+  if(S.recoger==='pagar'&&dateOf(S.day).wd===0){const c=esc.reduce((t,k)=>t+(esCentroDe(k)==='concertado'?hrs(5):hrs(9)),0);bkAdd('Críos',-c);toast(`🎒 Comedor y extraescolares: ${fmt(c)}`);}
   if(S.recoger==='madre'&&Math.random()<.03){const m=grandma();if(m){m.rel=Math.max(0,m.rel-1);tell(`Su madre ha ido a recoger a ${esc[0]?esc[0].n:'los niños'} otra vez. Le duele la cadera. No lo dice.`,'👩‍🦳');}else{S.recoger=null;}}
   }catch(e){console.error(e);}return r;};}
 Object.assign(DLG,{cr_recoger:{t:()=>DT.cr_recoger.t,x:d=>huecos(DT.cr_recoger.x,{k:d.k,h:TR().sh[1]}),
-  o:()=>{const m=grandma();const p=liveIn();const O=DT.cr_recoger.o;return [{t:O[0].t,s:O[0].s,f:()=>{S.recoger='reduccion';S.payMul=(S.payMul||1)*.75;S.rep=Math.max(0,(S.rep??70)-5);tell(huecos(O[0].tell,{}),'🎒');}},
-    {t:O[1].t,s:huecos(O[1].s,{h:hrs(9)}),f:()=>{S.recoger='pagar';tell(huecos(O[1].tell,{c:fmt(hrs(9))}),'🎒');}},
+  o:()=>{const m=grandma();const p=liveIn();const O=DT.cr_recoger.o;const kz=kidsAll().filter(k=>kidAge(k)>=3&&kidAge(k)<12);const hl=kz.length>0&&kz.every(k=>esCentroDe(k)==='concertado');return [{t:O[0].t,s:O[0].s,f:()=>{S.recoger='reduccion';S.payMul=(S.payMul||1)*.75;S.rep=Math.max(0,(S.rep??70)-5);tell(huecos(O[0].tell,{}),'🎒');}},
+    {t:O[1].t,s:huecos(O[1].s,{h:hrs(hl?5:9)}),f:()=>{S.recoger='pagar';tell(huecos(O[1].tell,{c:fmt(hrs(hl?5:9))}),'🎒');}},
     ...(m?[{t:O[2].t,s:huecos(O[2].s,{}),f:()=>{S.recoger='madre';m.rel=Math.min(100,m.rel+3);tell(O[2].tell,'👩‍🦳');}}]:[]),
     ...(p?[{t:huecos(O[3].t,{p:p.n}),s:O[3].s,f:()=>{S.recoger='pareja';p.wear=Math.min(100,(p.wear||0)+8);p.wearWhy=DT.cr_recoger.why;tell(huecos(O[3].tell,{p:p.n,ella:DT.cr_recoger.ella[p.n.endsWith('a')?0:1]}),'🎒');}}]:[])];},
   auto:()=>{const m=grandma();return m?2:S.money>hrs(100)?1:0;}}});
 Object.assign(DLG_CD,{cr_recoger:200});
 // ---- el cole: por la mañana no están ----
-{const _ur=updateResidents;updateResidents=function(gm){try{const h=S.t/60;const wk=dateOf(S.day).wd;for(const r of S.res||[]){if(r.kind!=='kid')continue;const k=(S.kids||[])[r.kid];if(!k)continue;const a=kidAge(k);const school=a>=3&&wk>=1&&wk<=5&&!k.sick&&!festivo(S.day);
+{const _ur=updateResidents;updateResidents=function(gm){try{const h=S.t/60;const wk=dateOf(S.day).wd;for(const r of S.res||[]){if(r.kind!=='kid')continue;const k=(S.kids||[])[r.kid];if(!k)continue;const a=kidAge(k);const school=a>=3&&wk>=1&&wk<=5&&!k.sick&&!festivo(S.day)&&k.huelga!==S.day;
       if(school&&h>=9&&h<(S.recoger==='pagar'?18.5:17)&&!r.away){r.away={until:S.day*1440+(S.recoger==='pagar'?18.5:17)*60,back:[r.x,r.y]};}
       if(r.away&&S.day*1440+S.t>=r.away.until){r.x=r.away.back[0];r.y=r.away.back[1];r.away=null;}}}catch(e){}return _ur.apply(this,arguments);};}
 // ---- tocar al crío: jugar, cuento, deberes, bañar ----
@@ -57,6 +61,6 @@ function openKidMenu(r){const k=KD((S.kids||[])[r.kid]);const a=kidAge(k);if(!ob
       if(Math.random()<.25)tell({jugar:pickR([`${CH().name} y ${k.n} han jugado a ${pickR(['las cocinitas','los piratas','construir una cabaña con el sofá','el escondite en 40 metros cuadrados'])}. Media hora que no se parece a nada del resto del día.`,`${k.n} ha ganado. ${k.n} siempre gana.`]),cuento:`Cuento. ${k.n} se ha dormido antes del final. ${CH().name} ha terminado de leerlo igual.`,deberes:`Deberes de ${k.n}: ${pickR(['divisiones con decimales','un dibujo del sistema solar','una redacción sobre «mi familia»'])}. ${CH().name} ha tenido que mirar en el móvil.`,banar:`Baño de ${k.n}. Agua por todas partes. Risas.`,hablar:`«¿Qué tal el cole?» «Bien». «¿Y los amigos?» «Bien». ${k.n} ha contado algo a los diez minutos, sin que se lo preguntaran.`}[A.k],'🧒');}}}catch(e){}return r;};}
 {const _lt=liveTap;liveTap=function(x,y){try{if(!viewPlace&&!(S.sim.work>0)){const r=kidAtScreen(lastPtr[0],lastPtr[1]);if(r){openKidMenu(r);sfx('tap');return;}}}catch(e){console.error(e);}return _lt.apply(this,arguments);};}
 // Gente: cómo están
-{const _gt=genteTab;genteTab=function(...a){let h=_gt.apply(this,a);try{for(const k of kidsAll()){const ag=kidAge(k);h=h.replace(`<span>${ag<1?'bebé':ag+' años'}</span>`,`<span>${ag<1?'bebé':ag+' años'} · ${k.hap>=70?'😊':k.hap>=40?'😐':'😟'} ${Math.round(k.hap)}${k.sick?' · 🤒':''}${ag>=3?' · cole':''}</span>`);}}catch(e){}return h;};}
+{const _gt=genteTab;genteTab=function(...a){let h=_gt.apply(this,a);try{for(const k of kidsAll()){const ag=kidAge(k);h=h.replace(`<span>${ag<1?'bebé':ag+' años'}</span>`,`<span>${ag<1?'bebé':ag+' años'} · ${k.hap>=70?'😊':k.hap>=40?'😐':'😟'} ${Math.round(k.hap)}${k.sick?' · 🤒':''}${ag>=3?' · cole'+(esCentroDe(k)==='concertado'?' concertado':''):''}</span>`);}}catch(e){}return h;};}
 // la IA también juega con los críos (cuando puede)
 {const _au=autonomy;autonomy=function(){try{const s=S.sim;const h=S.t/60;if(S.autoHome&&!S.kidAct&&!s.use&&!(s.path&&s.path.length)&&!(s.work>0)&&h>=17&&h<21.5&&Math.random()<.05&&S.needs.energia>25){const r=(S.res||[]).find(x=>x.kind==='kid'&&!x.away);if(r){const k=KD((S.kids||[])[r.kid]);const a=kidAge(k);const kk=k.hap<50?'jugar':pickR(['jugar','cuento',a>=6?'deberes':'banar','hablar']);const m={jugar:30,cuento:20,deberes:35,banar:20,hablar:8}[kk];S.kidAct={r:r.kid,k:kk,m,t:0};const cx=Math.floor(r.x),cy=Math.floor(r.y);const [sx,sy]=simCell();const path=bfs([sx,sy],(x,y)=>Math.abs(x-cx)+Math.abs(y-cy)<=1&&walkable(x,y));if(path){S.sim.path=path;S.sim.target=null;S.sim.cmd=true;return;}S.kidAct=null;}}}catch(e){}return _au.apply(this,arguments);};}

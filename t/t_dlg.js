@@ -34,6 +34,14 @@ setTimeout(()=>{try{
  add('cr_recoger','a',()=>{},()=>({k:'Leo'}));add('cr_recoger','b',()=>{abu();conv();},()=>({k:'Leo'}));add('cr_recoger','c',()=>{abu();},()=>({k:'Leo'}));add('cr_recoger','d',()=>{conv();P_(pk()).n='Dani';},()=>({k:'Leo'}));
  add('cr_recoger','e',()=>{conv();P_(pk()).n='Marta';},()=>({k:'Leo'}));
  const cal=(sind)=>()=>{const g=HG();g.boiler=1;g.boilerSince=S.day-3;S.money=5000;if(sind)S.pol.tenant=true;};add('calentador','a',cal(0),()=>({}));add('calentador','b',cal(1),()=>({}));
+ const kid=(a,g,x)=>()=>{S.kids=[{n:'Nora',g:g||'f',born:S.day-60*a-3,ch:{...randomChar(),g:g||'f',name:'Nora',beard:'no'},...(x||{})}];};
+ add('cr_cole','tres',kid(3),()=>({i:0,e:'cole3'}));add('cr_cole','tres_pobre',()=>{kid(3)();S.jobless=true;S.money=20;},()=>({i:0,e:'cole3'}));
+ add('cr_cole','tres_hermano',()=>{kid(3)();S.kids.push({n:'Leo',g:'m',born:S.day-60*6,centro:'concertado',ch:{...randomChar(),g:'m'}});},()=>({i:0,e:'cole3'}));
+ add('cr_cole','doce_pub',kid(12,'m',{centro:'colegio'}),()=>({i:0,e:'cole12'}));add('cr_cole','doce_con',kid(12,'f',{centro:'concertado'}),()=>({i:0,e:'cole12'}));
+ add('cr_cole_cambio','con',kid(8,'f',{centro:'concertado',pagado:900,debe:0}),()=>({i:0,e:'cambio'}));add('cr_cole_cambio','con_debe',kid(8,'f',{centro:'concertado',pagado:1200,debe:2}),()=>({i:0,e:'cambio'}));
+ add('cr_cole_cambio','pub',kid(8,'m',{centro:'colegio'}),()=>({i:0,e:'cambio'}));add('cr_cole_cambio','pub_flojo',kid(8,'m',{centro:'colegio',hap:30}),()=>({i:0,e:'cambio'}));
+ const bur=(dias,sind)=>()=>{const g=HG();g.boiler=1;g.boilerSince=S.day-dias-3;g.req=2;g.reqDay=S.day-dias;S.money=5000;if(sind)S.pol.tenant=true;};
+ add('calentador_plazo','a',bur(11,0),()=>({}));add('calentador_plazo','b',bur(12,1),()=>({}));
  const R={};const errs={};const ids=Object.keys(DLG);const bad=new Set();
  const log=[];const stub={};for(const f of ['tell','toast','chapter','remember','chose']){stub[f]=globalThis[f];}
  tell=(a,b)=>{log.push('tell|'+a+'|'+b);};toast=(a)=>{log.push('toast|'+a);};chapter=(a,b,c)=>{log.push('chapter|'+a+'|'+b+'|'+c);};remember=(a)=>{log.push('rem|'+a);};chose=(a)=>{log.push('chose|'+a);};

@@ -260,7 +260,7 @@
       "t": "🚿 El calentador",
       "x": "{d} días sin agua caliente. El casero ha visto los mensajes y no contesta. El arreglo le toca a él: el calentador es suyo y viene en el contrato.",
       "o": [
-        {"t": "Reclamarlo por burofax", "s": "{c}. Que conste la fecha y que conste por escrito.", "tell": "{n} ha mandado un burofax al casero: diez días para arreglar el calentador. Esto ya no se puede dejar en visto."},
+        {"t": "Reclamarlo por burofax", "s": "{c}. Que conste la fecha y que conste por escrito.", "tell": "{n} ha mandado un burofax al casero: diez días para arreglar el calentador. Esto ya no se puede dejar en visto.", "s_ya": "Ya está enviado, hace {d} días. El plazo es de diez."},
         {
           "t": "Pagar el arreglo ({c}) y descontarlo del alquiler",
           "s": "Agua caliente mañana. Lo de descontarlo, ya se verá.",
@@ -271,7 +271,131 @@
         {"t": "Aguantar", "s": "Ducha fría y a esperar.", "tell": "{n} calienta agua en una olla para lavarse. El casero sigue sin contestar."}
       ],
       "fin_burofax": "El burofax ha hecho efecto: el casero ha mandado a un fontanero. {d} días de ducha fría. Con un papel delante, sí encontró el teléfono.",
-      "fin_sindicato": "Ha venido el fontanero, con el casero detrás y mala cara. {d} días de ducha fría; solo se movió cuando fueron varias a la vez."
+      "fin_sindicato": "Ha venido el fontanero, con el casero detrás y mala cara. {d} días de ducha fría; solo se movió cuando fueron varias a la vez.",
+      "toast": "🚿 Ya hay agua caliente",
+      "vida": "burofax enviado hace {d} días (plazo: {p})",
+      "vida_vencido": "plazo vencido"
+    },
+    "cr_cole": {
+      "t": "🏫 ¿A qué colegio va {k}?",
+      "x": {
+        "tres": "{k} cumple tres años y toca cole. En el barrio hay dos: La Ribera, público, y San Roque, concertado. En la puerta de los dos pone «educación gratuita». En uno, además, hay un sobre.",
+        "doce_pub": "{k} acaba primaria. Secundaria es el instituto Las Eras, público y en el barrio, o San Roque, concertado, si salen los puntos.",
+        "doce_con": "{k} acaba primaria en San Roque. Puede seguir allí, con una cuota que sube en secundaria, o pasar al instituto Las Eras, público."
+      },
+      "ampa": ["con una AMPA que se mueve y comedor becado", "con veintiocho por clase y una profe de baja sin sustituir"],
+      "o": {
+        "tres": [
+          {
+            "t": "Colegio público La Ribera",
+            "s": "Gratis; material y salidas, {m} al mes. Veintiocho por clase y una AMPA que tapa agujeros. Niñas y niños de todo el barrio. A veces, huelga.",
+            "tell": "{k} irá a La Ribera, a diez minutos andando. Entra con gente de todas las escaleras del barrio y una AMPA que no se cansa.",
+            "cap": "El cole",
+            "capx": "{k} empieza el cole. Público, en el barrio: {ampa}. Hay que recogerl{lo} a la salida, y {n} sale a las {h}."
+          },
+          {
+            "t": "Colegio San Roque (concertado)",
+            "s": "{t} al mes entre cuota «voluntaria» y extraescolares, más el uniforme. Acogida hasta las cinco y media y grupo parejo. Entra por puntos: puede no tocar.",
+            "tell_ok": "{k} ha entrado en San Roque: {p} puntos, hacían falta {q}. Primer recibo, uniforme azul y una lista de extraescolares que «no son obligatorias».",
+            "tell_ko": "Listas de San Roque: {k} se queda fuera, {p} puntos y hacían falta {q}. Plaza garantizada en La Ribera. Los puntos los pone la Consejería; la cuota, el colegio.",
+            "cap": "El cole",
+            "capx_ok": "{k} empieza el cole en San Roque, concertado: grupo pequeño, acogida hasta las cinco y media y una cuota «voluntaria» que ya figura en la hoja de gastos. Hay que recogerl{lo}, y {n} sale a las {h}: aquí hay margen.",
+            "capx_ko": "{k} empieza el cole en La Ribera, público. En San Roque no entró por puntos. Hay que recogerl{lo} a la salida, y {n} sale a las {h}."
+          }
+        ],
+        "doce_pub": [
+          {"t": "Instituto público Las Eras", "s": "Gratis; material, {m} al mes. Más gente, más mezcla y más huelgas. Se va andando.", "tell": "{k} empieza en Las Eras. Treinta por aula, una orientadora para todo el curso y los chavales de todo el barrio en el mismo patio."},
+          {
+            "t": "Colegio San Roque (concertado)",
+            "s": "{t} al mes, con la subida de secundaria, más el uniforme. Grupo parejo y horario largo. Plazas por puntos.",
+            "tell_ok": "{k} ha conseguido plaza en San Roque para secundaria: {p} puntos de {q}. La cuota sube un escalón con el curso.",
+            "tell_ko": "San Roque no tiene plaza para {k}: {p} puntos, hacían falta {q}. Queda Las Eras, a diez minutos andando."
+          }
+        ],
+        "doce_con": [
+          {"t": "Seguir en San Roque", "s": "{t} al mes: la cuota sube con secundaria. Mismo grupo, mismo uniforme.", "tell": "{k} sigue en San Roque. La cuota sube; el uniforme, también, porque ha crecido."},
+          {"t": "Pasar al instituto Las Eras", "s": "Sin cuota; material, {m} al mes. Cambia el grupo y la puerta.", "tell": "{k} deja San Roque y pasa a Las Eras. Sin uniforme, sin cuota y con ganas de contarlo todo. Los amigos de antes, a la salida."}
+        ]
+      }
+    },
+    "cr_cole_cambio": {
+      "t": "🏫 Fin de curso: ¿el mismo cole?",
+      "x": {
+        "concertado": "Acaba el curso de {k} en San Roque. Este año han sido {y} entre cuotas, uniforme y extras. Se puede repetir o pasar a la pública.",
+        "concertado_debe": "Acaba el curso de {k} en San Roque. {y} este año, y ya hay recibos devueltos: la secretaría llama con voz amable. Se puede repetir o pasar a la pública.",
+        "publico": "Acaba el curso de {k} en {c}. Si se quiere probar con San Roque, hay que pedirlo ahora y esperar a las listas.",
+        "publico_flojo": "Acaba el curso de {k} en {c}, y {k} lo ha llevado regular. Se puede seguir o pedir plaza en San Roque, que va por puntos."
+      },
+      "o": {
+        "concertado": [
+          {"t": "Seguir en {c}", "s": "Todo igual, cuota incluida.", "tell": "{k} repite en San Roque. Otro año de lo mismo, que a veces es lo que se pide."},
+          {"t": "Pasar a {c2}, público", "s": "Sin cuota; material, {m} al mes. Cambia el grupo y los amigos de la puerta.", "tell": "{k} cambia a {c2}. La cuota se acaba; los amigos de San Roque, a ratos."}
+        ],
+        "publico": [
+          {"t": "Seguir en {c}", "s": "Sin cambios.", "tell": "{k} sigue en {c}. Los mismos pasillos y las mismas familias en la puerta."},
+          {
+            "t": "Pedir plaza en San Roque",
+            "s": "{t} al mes y uniforme. Va por puntos; si no sale, se queda donde está.",
+            "tell_ok": "{k} ha entrado en San Roque: {p} puntos de {q}. Septiembre traerá recibo y uniforme.",
+            "tell_ko": "Listas de San Roque: {k} se queda fuera ({p} puntos, hacían falta {q}). Sigue en {c}."
+          }
+        ]
+      }
+    },
+    "calentador_plazo": {
+      "t": "🚿 El plazo del burofax ha vencido",
+      "x": "Han pasado {d} días desde el burofax y el calentador sigue roto. El casero tenía diez para arreglarlo y tiene el papel con la fecha. {n} sigue con la ducha fría.",
+      "o": [
+        {
+          "t": "Arreglarlo y descontarlo del alquiler",
+          "s": "Fontanero ya: {c}, que se restan del próximo recibo. El casero protestará y tragará. Letra pequeña: a algún casero no se le olvida, y a la hora de renovar puede pesar.",
+          "tell": "Fontanero, factura de {c} y copia del burofax al casero: se descuenta del recibo. Ha escrito «esto no se hace así» y lo ha pagado."
+        },
+        {
+          "t": "Llevarlo al sindicato de inquilinas",
+          "s": "Con el burofax y la fecha encima de la mesa. Más presión, y no vas sola.",
+          "tell": "El burofax fue a la asamblea: otras tres vecinas con el plazo vencido. Han ido juntas a la puerta del casero con los papeles. El fontanero viene esta semana."
+        },
+        {"t": "Seguir esperando", "s": "Ya son {d} días. El burofax no caduca; la paciencia, sí.", "tell": "{n} guarda el burofax en un cajón y se ducha donde puede. Se lo recordará al casero en unos días."}
+      ],
+      "pasa_renovar": "Carta del casero al renovar: no renueva. «Necesidad propia». El descuento de aquel recibo no estaba en el contrato, dice. Tres meses para encontrar otro piso."
+    }
+  },
+
+  "centros": {
+    "_": "Lo que pasa en cada colegio a lo largo del curso. Ver data/README.md (sucesos.json).",
+    "mes": {"concertado": "🎒 Cuota del cole y extraescolares: {c}", "publico": "🎒 Material y salidas del cole: {c}"},
+    "sept_concertado": "Vuelta al cole de {k}: libros, mochila, el uniforme de San Roque y la cuota de septiembre. {c}. La matrícula es gratuita; lo demás, no.",
+    "impago": ["Recibo devuelto de San Roque. La secretaría ha llamado «para ver si hay algún problema». Lo hay: el mes.", "San Roque ha reclamado la cuota de {k}. Con amabilidad. Se nota que lo hacen a menudo."],
+    "huelga": {
+      "libre": "Huelga en {c}: piden menos criaturas por aula. {n} no trabajaba hoy y se ha ido con {k} al parque. Un día libre que nadie ha elegido.",
+      "abuela": "Huelga en {c}: piden bajar ratios, que es lo que le conviene a {k}. Hoy, con turno, a {n} le conviene otra cosa. Su madre ha cogido el autobús.",
+      "pareja": "Huelga en {c}: piden bajar ratios, que también le conviene a {k}. {p} se ha quedado hoy con {k}. Mañana, ya se verá.",
+      "falta": "Huelga en {c}: piden bajar ratios, y nadie dice que no tengan razón. Pero no hay con quién dejar a {k}. {n} ha llamado al trabajo: un día sin cobrar. Las profes pierden el suyo; la Consejería, ninguno."
+    },
+    "colegio": {
+      "sucesos": [
+        {"id": "ampa", "p": 0.005, "tell": "La AMPA de La Ribera busca voluntarias para la fiesta de fin de trimestre. {n} se ha apuntado a las tortillas. El grupo de mensajes tiene ciento doce sin leer.", "hap": 2, "social": 6},
+        {"id": "baja", "p": 0.005, "tell": "La profe de {k} sigue de baja y sin sustituta. Los de su clase se reparten por otras aulas. {k} ha vuelto con una ficha de otro curso.", "hap": -3},
+        {"id": "cumple", "p": 0.006, "tell": "A {k} le han invitado al cumpleaños de {v}, en el parque, con toda la clase. Vienen de todas las escaleras del barrio. La tarta, de supermercado; el regalo, a escote.", "hap": 3, "social": 4, "gasto": 1.5}
+      ],
+      "puerta": ["En la verja, {a} espera a {v}. Hablan de turnos y de si habrá huelga.", "{a}, que espera a {v}, le da un teléfono: «por si un día no llegas».", "En la puerta, {a} cuenta que ha cambiado el turno para llegar a la salida. Aquí lo hace casi todo el mundo."]
+    },
+    "concertado": {
+      "sucesos": [
+        {"id": "cuota", "p": 0.005, "tell": "Carta de San Roque: la cuota «voluntaria» sube «para mejoras en las instalaciones». Nadie ha preguntado cuáles. Pagarla es voluntario. Dejar de hacerlo, también.", "gasto": 3},
+        {"id": "excursion", "p": 0.005, "tell": "San Roque organiza tres días de nieve en febrero. Voluntario, {c}. {k} ya ha dicho que va. Quien no va se queda en el aula «de repaso».", "hap": 4, "gasto": 10},
+        {"id": "moda", "p": 0.005, "tell": "En la clase de {k} llevan todos las mismas zapatillas. {k} no ha dicho nada: ha dejado la lista de la tienda en la mesa, doblada.", "hap": -1, "gasto": 5}
+      ],
+      "puerta": ["{a} espera a {v} con el coche en doble fila. Cinco minutos de conversación sobre la próxima excursión.", "En la puerta, {a}: «¿Tú también has pagado ya la cuota del trimestre?».", "{a} espera a {v} y habla de extraescolares: inglés, ajedrez, natación. Los martes, todas."]
+    },
+    "instituto": {
+      "sucesos": [
+        {"id": "orienta", "p": 0.005, "tell": "Orientadora de Las Eras: una para ochocientos alumnos. {k} ha tenido su cita de cinco minutos. «Ya veremos en tercero».", "hap": -2},
+        {"id": "mezcla", "p": 0.006, "tell": "{k} ha traído a casa a {v}, que vive en la otra punta del barrio. Han hecho los deberes en la cocina. Se han caído bien.", "hap": 4, "social": 4},
+        {"id": "frio", "p": 0.004, "tell": "Las Eras lleva tres semanas sin calefacción. La AMPA ha recogido firmas y la Consejería ha contestado que está «en trámite». {k} va a clase con el abrigo puesto.", "hap": -2}
+      ],
+      "puerta": ["Delante de Las Eras, {a} espera a {v}, aunque «ya no hace falta venir». Hoy, sí.", "Delante de Las Eras, {a} habla de notas, de exámenes y de qué hacer en bachillerato."]
     }
   }
 }
