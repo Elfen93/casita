@@ -21,7 +21,9 @@
     "comedor": {"n": "Banco de alimentos", "e": "🥫", "r": [25, 14, 30, 18], "h": 24, "c": "#c9d6c3", "d": "Cada semana, más gente en la cola.", "outs": ["voluntariado", "comedor"]},
     "coop": {"n": "Cooperativa La Colmena", "e": "🤝", "r": [25, 19, 31, 23], "h": 26, "c": "#e9d27a", "d": "Taller y cooperativa de trabajo. Aquí se decide en asamblea.", "outs": []},
     "gym": {"n": "FitBarrio 24h", "e": "🏋️", "r": [-12, 23, -6, 25], "h": 30, "c": "#2b2b33", "acc": "#b5ff3a", "d": "Nave con máquinas, espejos y nadie que te explique nada. Barato. Permanencia de un año.", "outs": ["gimnasio"]},
-    "gymbueno": {"n": "Club Aqua", "e": "🏊", "r": [34, -12, 40, -5], "h": 34, "c": "#dfe8ec", "glass": 1, "d": "Piscina climatizada, clases dirigidas, toallas que huelen a suavizante. Cuota de quien puede.", "outs": ["gimnasio"]}
+    "gymbueno": {"n": "Club Aqua", "e": "🏊", "r": [34, -12, 40, -5], "h": 34, "c": "#dfe8ec", "glass": 1, "d": "Piscina climatizada, clases dirigidas, toallas que huelen a suavizante. Cuota de quien puede.", "outs": ["gimnasio"]},
+    "ambulatorio": {"n": "Centro de salud", "e": "🩺", "r": [22.5, -12, 25.5, -6], "h": 30, "c": "#e3eef0", "acc": "#3f9a8f", "d": "Cita en la pública: sala de espera, pantalla de turnos y siete minutos de consulta.", "outs": ["medico"]},
+    "sepe": {"n": "Oficina de empleo", "e": "📋", "r": [22.5, 26, 25.5, 32], "h": 28, "c": "#e8dcc4", "acc": "#8a6a3a", "d": "Cola, ventanillas y un cartel que no admite réplica.", "outs": ["sepe", "ssociales"]}
   },
 
   "trabajo_en": {"oficina": "torre", "tech": "torre", "super": "super", "hosteleria": "bar", "obra": "obra", "cuidados": "residencia", "funcion": "ayto", "reparto": "_ride", "arte": "sala", "negocio": "tienda", "coop": "coop"},
@@ -53,7 +55,9 @@
     "calistenia": {"n": "Barras del parque", "e": "🤸", "dur": 60, "h": [7, 21], "why": "dominadas con los del barrio, gratis"},
     "compra": {"n": "Hacer la compra", "e": "🛒", "dur": 60, "h": [9, 21], "why": "llenar la nevera para la semana"},
     "parque": {"n": "Paseo por el parque", "e": "🌳", "dur": 90, "h": [8, 21], "why": "hablar con calma, aire libre"},
-    "visita": {"n": "Ir a su casa", "e": "🏡", "dur": 160, "h": [10, 22], "why": "verse en su terreno"}
+    "visita": {"n": "Ir a su casa", "e": "🏡", "dur": 160, "h": [10, 22], "why": "verse en su terreno"},
+    "medico": {"n": "Ir al médico", "e": "🩺", "dur": 90, "h": [8, 19], "why": "la cita de la que lleva días hablando"},
+    "sepe": {"n": "Oficina de empleo", "e": "📋", "dur": 120, "h": [9, 13], "wd": [0, 1, 2, 3, 4], "why": "sellar, esperar, volver a esperar"}
   },
 
   "salidas_necesidades": {
@@ -82,8 +86,10 @@
     "ssociales": {"diversion": -0.03},
     "pillar": {"diversion": 0.2},
     "parque": {"social": 0.22, "diversion": 0.15},
-    "visita": {"social": 0.3, "diversion": 0.14, "hambre": 0.05}
+    "visita": {"social": 0.3, "diversion": 0.14, "hambre": 0.05},
+    "medico": {"diversion": -0.03},
+    "sepe": {"diversion": -0.05}
   },
 
-  "salidas_grupos": [["🎓 Estudiar", ["clase"]], ["📚 Libros", ["libreria", "mercadillo", "presta"]], ["🏋️ Cuerpo", ["gimnasio", "calistenia"]], ["🧠 Cabeza", ["terapia", "beber", "pillar"]], ["🧳 Cuando no hay nada", ["comedor", "albergue", "pedir", "chatarra", "ssociales"]], ["🛒 Casa", ["compra"]]]
+  "salidas_grupos": [["🎓 Estudiar", ["clase"]], ["📚 Libros", ["libreria", "mercadillo", "presta"]], ["🏋️ Cuerpo", ["gimnasio", "calistenia", "medico"]], ["🧠 Cabeza", ["terapia", "beber", "pillar"]], ["🧳 Cuando no hay nada", ["comedor", "albergue", "pedir", "chatarra", "ssociales", "sepe"]], ["🛒 Casa", ["compra"]]]
 }
