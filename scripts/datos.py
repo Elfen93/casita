@@ -160,6 +160,19 @@ def comprobar(d):
         if v['ideo'] is not None:dentro('personas.vecinos.%s.ideo'%v['id'],[v['ideo']],ideo,'ideologias.ideologias')
         dentro('personas.vecinos.%s.donde'%v['id'],[x[0] for x in v['donde']],lug,'lugares.lugares')
     censo(P,lug,ideo,E,dentro)
+    # mapa del barrio: cada edificio del censo tiene su sitio
+    B=d.get('barrio')
+    if B:
+        mismas('barrio.edificios',B.get('edificios',{}),P['edificios'])
+        for k,e in B.get('edificios',{}).items():
+            r=e.get('r',[])
+            if len(r)!=4 or not(r[0]<r[2] and r[1]<r[3]):E.append('barrio.edificios.%s.r: [x0,y0,x1,y1] con x0<x1 e y0<y1'%k)
+            if not e.get('rotulo'):E.append('barrio.edificios.%s: falta rotulo'%k)
+        rs=[('lugares.'+k,p['r']) for k,p in lug.items()]+[('barrio.'+k,e['r']) for k,e in B.get('edificios',{}).items() if len(e.get('r',[]))==4]
+        for i,(n1,a) in enumerate(rs):
+            for n2,c in rs[i+1:]:
+                if n1.startswith('lugares.') and n2.startswith('lugares.'):continue
+                if len(a)==4 and len(c)==4 and a[0]<c[2] and c[0]<a[2] and a[1]<c[3] and c[1]<a[3]:E.append('barrio: %s y %s se pisan en el mapa'%(n1,n2))
     dentro('ideologias.reparto',[r[0] for r in ID['reparto']],ideo,'ideologias.ideologias')
     dentro('ideologias.voces',ID['voces'],gov,'gobiernos.gobiernos')
     for g,v in ID['voces'].items():dentro('ideologias.voces.%s'%g,v,ideo,'ideologias.ideologias')

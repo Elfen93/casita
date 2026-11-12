@@ -64,6 +64,7 @@
   "escuela.js",
   "universidad.js",
   "vecinos.js",
+  "barrio.js",
   "rotulos.js"
  ]
 }
