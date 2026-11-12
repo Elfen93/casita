@@ -26,6 +26,15 @@
     "curso_manip": {"n": "Curso · Manipulador de alimentos", "lv": null, "h": 20, "cost": 30, "req": [], "sk": "cocina", "d": "Obligatorio en hostelería. Dos tardes.", "sched": [17, 20], "days": [1, 2], "place": "academia", "cert": "manipulador"}
   },
 
+  "privada": {
+    "_": "Dónde se cursa un grado o un máster (los programas con place «uni»). Se elige al matricularse y queda en la matrícula (cur.centro: publica | privada; si falta, publica). La pública cobra lo que cobra cada programa. La privada: cost × mult[nivel], con su propio horario. Mismo título y mismas horas h: el dinero compra horario y trato, no saber. examenes: meses (0 = enero) y día del mes desde el que hay exámenes.",
+    "centros": {"publica": {"n": "Universidad Pública del Río", "lugar": "uni_publica", "grupo": 80, "energia": 1}, "privada": {"n": "Campus Nébula", "lugar": "uni_privada", "grupo": 20, "energia": 0}},
+    "mult": {"grado": 8, "master": 6},
+    "sched": {"grado": [16, 21], "master": [18, 21]},
+    "days": {"grado": [0, 1, 2, 3, 4], "master": [0, 1, 2, 3, 4]},
+    "examenes": {"meses": [0, 5], "desde": 10}
+  },
+
   "requisitos": {"tech": ["fps", "grado"], "funcion": ["bach", "fps", "grado"], "cuidados": ["fpm", "fps", "grado"], "oficina": []},
 
   "sueldo": {

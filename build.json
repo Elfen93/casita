@@ -59,6 +59,7 @@
   "aula.js",
   "poblacion.js",
   "servicios.js",
-  "hogares.js"
+  "hogares.js",
+  "universidad.js"
  ]
 }

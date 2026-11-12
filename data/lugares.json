@@ -23,7 +23,9 @@
     "gym": {"n": "FitBarrio 24h", "e": "🏋️", "r": [-12, 23, -6, 25], "h": 30, "c": "#2b2b33", "acc": "#b5ff3a", "d": "Nave con máquinas, espejos y nadie que te explique nada. Barato. Permanencia de un año.", "outs": ["gimnasio"]},
     "gymbueno": {"n": "Club Aqua", "e": "🏊", "r": [34, -12, 40, -5], "h": 34, "c": "#dfe8ec", "glass": 1, "d": "Piscina climatizada, clases dirigidas, toallas que huelen a suavizante. Cuota de quien puede.", "outs": ["gimnasio"]},
     "ambulatorio": {"n": "Centro de salud", "e": "🩺", "r": [22.5, -12, 25.5, -6], "h": 30, "c": "#e3eef0", "acc": "#3f9a8f", "d": "Cita en la pública: sala de espera, pantalla de turnos y siete minutos de consulta.", "outs": ["medico"]},
-    "sepe": {"n": "Oficina de empleo", "e": "📋", "r": [22.5, 26, 25.5, 32], "h": 28, "c": "#e8dcc4", "acc": "#8a6a3a", "d": "Cola, ventanillas y un cartel que no admite réplica.", "outs": ["sepe", "ssociales"]}
+    "sepe": {"n": "Oficina de empleo", "e": "📋", "r": [22.5, 26, 25.5, 32], "h": 28, "c": "#e8dcc4", "acc": "#8a6a3a", "d": "Cola, ventanillas y un cartel que no admite réplica.", "outs": ["sepe", "ssociales"]},
+    "uni_publica": {"n": "Universidad Pública del Río", "e": "🎓", "r": [34, -3, 42, 6], "h": 34, "c": "#d9c8a6", "acc": "#8a3b22", "d": "Aulas de ochenta, tasas de las de siempre y una cafetería donde el café cuesta lo que debe. Clases por la mañana.", "outs": []},
+    "uni_privada": {"n": "Campus Nébula", "e": "🏢", "r": [34, 9, 41, 17], "h": 30, "c": "#e9eef2", "acc": "#2a8f9a", "glass": true, "d": "Universidad privada de Nébula. Grupos de veinte, clases por la tarde y una matrícula que se financia a plazos.", "outs": []}
   },
 
   "trabajo_en": {"oficina": "torre", "tech": "torre", "super": "super", "hosteleria": "bar", "obra": "obra", "cuidados": "residencia", "funcion": "ayto", "reparto": "_ride", "arte": "sala", "negocio": "tienda", "coop": "coop"},
