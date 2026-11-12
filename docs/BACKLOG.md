@@ -18,6 +18,11 @@ Orden del frente A (12 nov 2026): 1 población · 2 lugares · 3 interacciones y
 ### T-121 · Pulido del mapa y de los vecinos
 Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son cajas con rótulo); rótulos de las casas del censo que no tapen tejados; horario de súper, bar y obra en la ficha; romance con vecinos adultos; `SCENES.comedor` falla con acciones que no son suyas (hoy se esquiva desde `barrio.js`).
 
+### ✅ (hecho) T-130 · La ciudad por barrios (`data/ciudad.json`, `mods/barrio.js`)
+
+### ⚡ T-131 · Caminar por la ciudad
+Rol: motor. El personaje va andando por las calles de `ciudad.json` de puerta a puerta (`cdCamino`, `cdTrayecto`), y en transporte entre barrios. Sustituir los usos del `r` antiguo en `src/core/047` y borrarlo. Dibujo mínimo.
+
 ### ✅ (hecho) T-122 · Tratar con los vecinos (`mods/trato.js`, `data/trato.json`) · horarios `abre` en lugares · burofax con plazo
 
 Pendiente menor: «Hacer la compra» deja ir en domingo aunque el súper cierre (unificar salidas con `abre`); botones de romance con vecinos solo en Opciones; unificar en el núcleo la comprobación `k.startsWith('p')` del romance.
