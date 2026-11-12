@@ -3,7 +3,7 @@
 // (su puesto de trabajo o el lugar), favores en los dos sentidos con memoria («te debe una», «le debes una»), cotilleo que descubre datos reales
 // del censo, política (afinidad, y con carisma moverles un poco; organizar el bloque), romance con adultos libres y vecinos que te buscan.
 // Todo el contenido (textos, tablas, efectos) está en data/trato.json; aquí solo la lógica. Estado: S.trato (se crea si falta).
-// Menores de 18: nada romántico por ninguna vía (ficha, menú Gente, móvil, visitas, salidas, «quedarse a dormir»).
+// Menores de 18: nada romántico por ninguna vía (ficha, menú Gente, móvil, visitas, salidas, «quedarse a dormir»): lo cierra romPersona().
 const TRD=()=>(DATA.trato)||{};
 const TRF=()=>TRD().ficha||{};
 const trT=(k,v)=>huecos(String(TRF()[k]!=null?TRF()[k]:''),v||{});
@@ -46,9 +46,10 @@ function trEnsure(p){if(!p||p.vid==null)return p;const v=vecinoPorId(p.vid);if(!
   const r=_ih.apply(this,arguments);try{if(p&&p.vid!=null&&(S.res||[]).some(x=>x.pid===p.k))trVisitaLlega(p);}catch(e){console.error(e);}return r;};}
 {const _pg=peGo;peGo=function(p,k){if(p&&vcMenorP(p)){toast(TRD().romance.menor);return;}return _pg.apply(this,arguments);};}
 {const _do=doOut;doOut=function(k){try{const p=S.outWith&&(S.people||[]).find(q=>q.k===S.outWith);if(p&&vcMenorP(p)){S.outWith=null;S.dateOut=false;toast(TRD().romance.menor);return;}}catch(e){}return _do.apply(this,arguments);};}
-// los gestos románticos: las comprobaciones de la casa miran que la clave empiece por «p»; a los vecinos adultos se les ve como a cualquiera, a los menores nunca
-for(const g of ['ligar','besar','cama','hotel','sucasa','quedarse']){const G=typeof GEST!=='undefined'&&GEST[g];if(!G||!G.ok)continue;const o=G.ok;
-  G.ok=function(p){if(p&&p.vid!=null){trEnsure(p);if(vcMenorP(p))return false;const q=new Proxy(p,{get:(t,k)=>k==='k'?'p'+t.k:t[k]});return o.apply(this,[q].concat([].slice.call(arguments,1)));}return o.apply(this,arguments);};}
+// ¿caben opciones románticas con esta persona? Una sola respuesta para la lista de Gente, el menú de opciones, los gestos, las visitas y quedarse a dormir
+// (las comprobaciones del núcleo llaman a romPersona): un vecino adulto libre (o que ya está contigo) como cualquier otra persona; un menor, nunca
+{const _rp=romPersona;romPersona=function(p){if(p&&p.vid!=null){trEnsure(p);return p.adult!==false&&!vcMenorP(p)&&trRomOkP(p);}return _rp.apply(this,arguments);};}
+{const _pc=puedeConvivir;puedeConvivir=function(p){return p&&p.vid!=null?false:_pc.apply(this,arguments);};}
 // visitas: quien está en pareja o en citas con el personaje viene como pareja, no como vecino
 {const _vs=vsCandidates;vsCandidates=function(){const L=_vs.apply(this,arguments);try{const pt=partner();
   for(const p of S.people||[]){if(p.vid==null||vcMenorP(p)||!TRK_ROM.includes(p.stage)||p.dead||(S.res||[]).some(r=>r.pid===p.k))continue;
@@ -273,21 +274,10 @@ function trAct(pk,code){const p=(S.people||[]).find(q=>q.k===pk),v=p&&vecinoPorI
   if(code==='curro'){const b=sxSnap(p),res=trFx({pista:1,rel:1},v,p,{});try{tell(trT('diario_curro',{v:v.n,n:CH().name}),'📣');}catch(e){}trCard('📣',v.n,trT('aviso_curro',{v:v.n}),true,p,b,res);return;}
   if(code==='chisme'){const r=trChisme(v);const b=sxSnap(p);if(r)trCard('🗣️',huecos(pickR(TRD().cotilleo.titulo),{v:v.n}),r.txt,true,p,b,{tags:[trT('dicen')+': '+r.x.n]});return;}
   if(code==='asamblea'){trAsamblea(v,p);return;}}
-// ---------- Gente: romance con adultos, estado de la relación y lo que se debe ----------
+// ---------- Gente: lo que os debéis (la lista la pinta el núcleo, con los mismos botones que a cualquiera) ----------
 function trNota(p){const f=TT().f[p.vid]||{},L=[];if(f.te>0)L.push(f.te===1?TRF().te_debe_una:trT('te_debe_n',{n:f.te}));if(f.le>0)L.push(f.le===1?TRF().le_debes_una:trT('le_debes_n',{n:f.le}));
   for(const d of TT().deudas)if(d.vid===p.vid)L.push(trT(d.dir==='le'?'le_debes_euros':'te_debe_euros',{c:fmt(d.amt)}));return L.join(' · ');}
-{const _gt=genteTab;genteTab=function(){let h=_gt.apply(this,arguments);try{for(const p of S.people||[]){if(p.vid==null)continue;trEnsure(p);if(vcMenorP(p))continue;
-    const i=h.indexOf('data-por="'+p.k+'"');if(i<0)continue;const s=h.lastIndexOf('<div class="pers">',i);let e=h.indexOf('<div class="pers">',i);if(e<0)e=h.length;let blk=h.slice(s,e);
-    const rom=TRK_ROM.includes(p.stage),nota=trNota(p),st=rom?`<div class="sub" style="font-size:11px;color:#c0577c">💘 ${vcEsc(trT('stage',{st:STAGE[p.stage]||p.stage,l:Math.round(p.love||0)}))}</div>`:'';
-    const j=blk.indexOf('<div class="minibars">');if(j>=0)blk=blk.slice(0,j)+st+(nota?`<div class="sub" style="font-size:11px;color:#7a4fa0">${vcEsc(nota)}</div>`:'')+blk.slice(j);
-    if(rom){const k=blk.indexOf('</div>',blk.indexOf('<div class="minibars">'))+6;blk=blk.slice(0,k)+`<div class="minibars"><i style="width:${Math.round(p.love||0)}%;background:#e88aa8"></i></div>`+blk.slice(k);}
-    const B=(a,t)=>`<button class="mini" data-act="${a}" data-p="${p.k}">${t}</button>`;let bt='';
-    if(['conocida','amiga'].includes(p.stage)&&canLove(p))bt+=B('flirt',TXHZ.trato.ligar);
-    if(p.stage==='cita'||p.stage==='rollo')bt+=B('date',TXHZ.trato.cita)+B('stay',TXHZ.trato.quede)+B('ask',TXHZ.trato.pedir_salir);
-    if(p.stage==='pareja')bt+=B('date',TXHZ.trato.cita)+B('stay','🌙');
-    if(rom)bt+=B('break','💔');
-    if(bt){const m=blk.lastIndexOf('</div></div></div>');if(m>=0)blk=blk.slice(0,m)+bt+blk.slice(m);}
-    h=h.slice(0,s)+blk+h.slice(e);}}catch(e){console.error(e);}return h;};}
+{const _np=notaPersona;notaPersona=function(p){const r=_np.apply(this,arguments);try{if(p&&p.vid!=null&&!vcMenorP(p)){const n=trNota(p);if(n)return vcEsc(n);}}catch(e){}return r;};}
 // ---------- vecinos que te buscan (mensaje o visita), a horas en que no trabajan ----------
 function trLibreEn(v,h,wd){const t=v.trabajo;if(!(t&&Array.isArray(t.h)&&pbDia(t.dias,wd)))return true;return ![h-1.5,h,h+1].some(x=>pbIn(t.h[0],t.h[1],((x%24)+24)%24));}
 function trHoraLibre(v,wd,win){let lo=win?win[0]:10,hi=win?win[1]:21.5;const t=v.trabajo;

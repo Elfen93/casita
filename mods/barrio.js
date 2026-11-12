@@ -241,16 +241,17 @@ const bmAlq=x=>'×'+String(x).replace('.',',');
 // dónde está ella ahora: el barrio y, si está fuera, el sitio
 function bmDonde(){const s=S.sim;if(s&&s.work>0&&s.dest&&s.dest!=='_ride'&&typeof cmPos==='function'){const p=cmPos();if(p&&p.b)return {b:p.b,id:p.id||cmDest(s.dest),fuera:true,pos:p};}return {b:cdHome(),id:'casa',fuera:false};}
 // la ficha de un barrio (desde el plano de la ciudad)
+// «Vivir aquí»: lo concreto de vivir en ese barrio (mods/barrios_vida.js lo rellena; sin ese módulo no sale)
+function bmVivirAqui(id){return '';}
+// una sola ficha, corta, para leerla en el móvil: frase del barrio, «Vivir aquí», qué hay y cómo se llega
 function bmFichaBarrio(id){const C=CDX(),B=C.barrios[id];if(!B)return false;BM.ficha='b:'+id;const dd=bmDonde();
   const lug=[...Object.keys(PLACES).filter(k=>cdBarrioDe(k)===id&&k!=='casaV'&&k!=='casa2'),...Object.keys(DATA.lugares.solo_mapa||{}).filter(k=>DATA.lugares.solo_mapa[k].barrio===id)];
-  const hogs=Object.entries(DATA.personas.hogares).filter(([,q])=>cdBarrioDe(q.edificio)===id),gente=DATA.personas.vecinos.filter(v=>hogs.some(([hid])=>hid===v.hogar));
   const lin=C.enlaces.lineas.filter(l=>l.paradas.some(s=>s.b===id)),pie=C.enlaces.pie.filter(l=>l.a===id||l.b===id).map(l=>l.a===id?l.b:l.a);
-  let h=`<h2>${B.e} ${B.n}</h2><div class="sub"><b>${B.tipo_n}</b> · alquiler ${bmAlq(B.alquiler)} la media de la ciudad</div><div class="sub">${B.d}</div>`;
+  let h=`<h2>${B.e} ${B.n}</h2><div class="sub"><b>${B.tipo_n}</b>. ${B.d}</div>`;
   if(cdHome()===id)h+=bmRow('🏠','Vives aquí',bmCasaN());
   if(dd.fuera&&dd.b===id)h+=bmRow('📍','Estás aquí ahora',bmName(dd.id));
-  h+=bmRow('👍','Lo bueno',B.bueno)+bmRow('😮‍💨','Lo que cuesta',B.cuesta);
+  h+=bmVivirAqui(id);
   h+=bmRow('🏪','Qué hay · '+lug.length,lug.map(k=>cdLug(k).e+' '+bmName(k)).join(', '));
-  if(gente.length)h+=bmRow('👥','Vive aquí del censo · '+gente.length,gente.slice(0,9).map(v=>v.n).join(', ')+(gente.length>9?' y '+(gente.length-9)+' más':''));
   if(lin.length||pie.length)h+=bmRow('🚏','Cómo se llega',(lin.length?lin.map(l=>({metro:'🚇',bus:'🚌',tren:'🚆'}[l.modo])+' '+l.n+' ('+l.paradas.find(s=>s.b===id).n+')').join(' · '):'')+(pie.length?(lin.length?' · ':'')+'a pie desde '+pie.map(b=>C.barrios[b].n).join(', '):''));
   h+=`<button class="btn" id="brver">🗺️ Ver el barrio</button><button class="btn grey" id="brx">Cerrar</button>`;
   card.innerHTML=h;menu.classList.add('open');card.scrollTop=0;

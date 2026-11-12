@@ -328,7 +328,7 @@ def ciudad(d,E,dentro,mismas):
     tam={}
     for b,x in B.items():
         q='ciudad.barrios.%s'%b
-        for f in ('n','tipo','tipo_n','e','c','d','bueno','cuesta'):
+        for f in ('n','tipo','tipo_n','e','c','d'):
             if not x.get(f):E.append('%s: falta %s'%(q,f))
         if not isinstance(x.get('alquiler'),(int,float)) or x['alquiler']<=0:E.append(q+'.alquiler: número > 0 (1 = la media de la ciudad)')
         pl=x.get('plano',[])

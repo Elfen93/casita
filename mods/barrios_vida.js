@@ -89,7 +89,7 @@ function bvConRentas(fn){if(!bvRentaOn())return fn();const old={},cur=(S.home&&S
 // al mirar casas: cada vivienda dice lo que supone vivir en su barrio
 {const _hb=homeBlock;homeBlock=function(){let h=bvConRentas(()=>_hb.apply(this,arguments));try{const cur=(S.home&&S.home.type)||'casita';
   for(const k of HOME_ORDER){if(k===cur||!HOMES[k]||!HOMES[k].d)continue;const b=CDX().vivienda[k],t=bvTab(b),mark='<div class="sub" style="font-size:11px">'+HOMES[k].d+'</div>',i=h.indexOf(mark);if(i<0)continue;
-    const ln=bvT('casa_linea',{b:CDX().barrios[b].n,f:String(bvFBarrio(b)).replace('.',','),m:bvMinTrabajo(b)==null?'—':bvMinTrabajo(b),compra:String(t.compra).replace('.',','),ruido:t.ruido});
+    const ln=bvT('casa_linea',{b:CDX().barrios[b].n,m:bvMinTrabajo(b)==null?'—':bvMinTrabajo(b),compra:String(t.compra).replace('.',','),ruido:t.ruido});
     h=h.slice(0,i+mark.length)+'<div class="sub" style="font-size:11px;color:#6b6178">'+ln+'</div>'+h.slice(i+mark.length);}}catch(e){}return h;};}
 
 // ====================== 3. LO QUE PASA CADA DÍA, CADA SEMANA Y CADA AÑO ======================
@@ -137,13 +137,14 @@ function bvPuertaProxy(b){if(b===cdHome())return 'casa';const E=DATA.personas.ed
 function bvMinTrabajo(b){try{if(S.jobless||!S.track)return null;const w=destOf('work');if(!w||w==='_ride')return null;const a=bvPuertaProxy(b);if(!a||!cdPuerta(w))return null;const r=cdTrayecto(a,w);return r?Math.round(r.min):null;}catch(e){return null;}}
 function bvVivirAqui(b){const t=bvTab(b),f=bvFBarrio(b),fs=String(f).replace('.',','),tipos=Object.keys(CDX().vivienda).filter(k=>CDX().vivienda[k]===b&&k!=='calle'&&k!=='padres');
   let ej=Infinity;for(const k of tipos)if(HOMES[k]&&HOMES[k].rent>0)ej=Math.min(ej,Math.round(HOMES[k].rent*Dm().rent*(bvRentaOn()?f:1)));
-  const w=S.jobless||!S.track?null:destOf('work'),m=bvMinTrabajo(b),aqui=cdHome()===b;
+  const w=S.jobless||!S.track?null:destOf('work'),m=bvMinTrabajo(b),aqui=cdHome()===b,sg=x=>String(x).replace('.',',');
   let h=`<div class="clab">${BVX.ficha_titulo}</div>`;
-  h+=bmRow('💶',bvT('ficha_alquiler',{f:fs}),ej<Infinity?bvT('ficha_ejemplo',{r:fmt(ej)})+(aqui&&!S.owned?bvT('ficha_tuyo',{r:fmt(weeklyRent())}):''):BVX.ficha_sin_vivienda);
-  h+=bmRow('🚶',m!=null?bvT('ficha_trayecto',{sitio:placeName(w),m}):BVX.ficha_trayecto_sin,bvT('ficha_efectos',{compra:String(t.compra).replace('.',','),bar:String(t.bar).replace('.',','),ruido:t.ruido,seg:t.seguridad,red:t.red>1.15?'mucho trato':t.red<.9?'poco trato':'trato normal'}));
-  h+=bmRow('🏪',bvT('ficha_pie',{parada:t.pie.parada,cole:t.pie.cole,amb:t.pie.ambulatorio}),'');
-  h+=bmRow('👍',t.ficha.gana,'')+bmRow('😮‍💨',t.ficha.pierde,'');return h;}
-{const _fb=bmFichaBarrio;bmFichaBarrio=function(id){const r=_fb.apply(this,arguments);try{const el=card.querySelector('#brver');if(r&&el)el.insertAdjacentHTML('beforebegin',bvVivirAqui(id));}catch(e){console.error('barrios_vida ficha',e);}return r;};}
+  h+=bmRow('💶',ej<Infinity?bvT('ficha_ejemplo',{r:fmt(ej)})+(aqui&&!S.owned?bvT('ficha_tuyo',{r:fmt(weeklyRent())}):''):BVX.ficha_sin_vivienda,bvT('ficha_alquiler',{f:fs}));
+  h+=bmRow('🚶',m!=null?bvT('ficha_trayecto',{sitio:placeName(w),m}):BVX.ficha_trayecto_sin,'');
+  h+=bmRow('👣',BVX.ficha_pie_t,bvT('ficha_pie',{parada:t.pie.parada,cole:t.pie.cole,amb:t.pie.ambulatorio}));
+  h+=bmRow('👍',BVX.ficha_gana_t,t.ficha.gana);
+  h+=bmRow('😮‍💨',BVX.ficha_cuesta_t,t.ficha.pierde+' '+bvT('ficha_cuesta_cifras',{compra:sg(t.compra),bar:sg(t.bar),ruido:t.ruido}));return h;}
+bmVivirAqui=bvVivirAqui;
 
 // ====================== 5. LOS INTERIORES: una sola función, doce lugares ======================
 const bvInt=BVD.interiores,bvTipos=BVD.piezas;

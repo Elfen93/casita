@@ -161,6 +161,31 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const fails=[];const chk=(c,
    p.stage='cita';p.orient='ambos';p.adult=true;trEnsure(p);chk(p.adult===false&&p.orient==null,'estado corrupto se repara '+v.id);p.stage='conocida';}
   // por el móvil: ni mensajes de pareja ni citas
   for(let i=0;i<60;i++){try{phTick();}catch(e){}}const th=PH().th;for(const v of menores)chk(!(th['v_'+v.id]||[]).length,'sin mensajes de '+v.id);}
+ // ===== 6c. la lista de Gente: un vecino adulto libre se trata como cualquier otra persona; un menor, con nada romántico =====
+ base();
+ {const blq=k=>{const g=genteTab();return (g.match(new RegExp('<div class="pers">(?:(?!<div class="pers">)[\\s\\S])*data-por="'+k+'"(?:(?!<div class="pers">)[\\s\\S])*'))||[''])[0].split('<div class="pers">')[0];};
+  const acts=k=>[...blq(k).matchAll(/data-act="([a-z]+)"/g)].map(m=>m[1]).join(',');
+  const cand=V.filter(x=>x.edad>=18&&trRomOk(x)&&likes(trOrient(x),'f')&&x.id!=='paca');const v=cand.find(x=>['quino','lucia','dani','begona','yolanda','quique','ruben','irene'].includes(x.id))||cand[0];
+  S.life.orient=v.g==='f'?'mujeres':v.g==='m'?'hombres':'ambos';const p=conoce(v.id,60);
+  chk(romPersona(p)&&p.adult===true,'romPersona: vecino adulto libre');
+  // la misma persona como «de las de siempre» (clave p…): mismos botones en cada etapa
+  const q=Object.assign({},p,{k:'p9',n:'Marta'});delete q.vid;S.people.push(q);chk(romPersona(q),'romPersona: una de siempre');
+  for(const st of ['conocida','amiga','cita','rollo','pareja']){p.stage=st;q.stage=st;p.love=q.love=50;
+   chk(acts(p.k)===acts(q.k)||(st==='pareja'&&acts(p.k)===acts(q.k).replace(',movein','')),'Gente, etapa '+st+': mismos botones vecino y amiga de siempre ('+acts(p.k)+' | '+acts(q.k)+')');
+   chk(!/(^|,)movein(,|$)/.test(acts(p.k)),'Gente: al vecino no se le ofrece un «vivir juntos» que no puede ser');
+   if(['cita','rollo','pareja'].includes(st)){S.res=[{kind:'guest',pid:p.k,x:3,y:3,path:[],phase:0},{kind:'guest',pid:q.k,x:4,y:3,path:[],phase:0}];S.t=20*60;
+    chk(GEST.quedarse.ok(p)===GEST.quedarse.ok(q)&&GEST.quedarse.ok(p),'quedarse a dormir: igual que a una de siempre ('+st+')');S.res=[];}}
+  p.stage='conocida';q.stage='conocida';openMenu('gente');openPe(p.k);const sh1=[...peEl.querySelectorAll('[data-pe]')].map(b=>b.dataset.pe).join(',');openPe(q.k);const sh2=[...peEl.querySelectorAll('[data-pe]')].map(b=>b.dataset.pe).join(',');
+  chk(sh1===sh2&&/a:flirt/.test(sh1),'Opciones: el vecino y la amiga de siempre ofrecen lo mismo ('+sh1+')');peEl.classList.remove('on');menu.classList.remove('open');
+  S.people=S.people.filter(x=>x!==q);
+  // menores: ni en la lista ni en Opciones, en ninguna etapa (aunque el estado venga corrupto)
+  S.life.orient='ambos';S.char.age=17;
+  for(const m of V.filter(x=>x.edad>=12&&x.edad<18)){const pm=conoce(m.id,90);
+   for(const st of ['conocida','amiga','cita','rollo','pareja','convive']){pm.stage=st;pm.adult=true;pm.orient='ambos';pm.love=90;pm.chispa=5;
+    chk(!romPersona(pm),'romPersona falso para el menor '+m.id+' ('+st+')');const a=acts(pm.k);chk(!/flirt|date|stay|ask|movein|wed|hecho|break/.test(a),'Gente: nada romántico para '+m.id+' ('+st+'): '+a);
+    chk(!/💘|💔|🌹/.test(blq(pm.k)),'Gente: ni rosas ni corazones para '+m.id+' ('+st+')');}
+   pm.stage='conocida';}
+  openMenu('gente');for(const m of V.filter(x=>x.edad>=12&&x.edad<18)){const pm=vcPer(m.id);if(pm)chk(!card.querySelector('[data-pm="'+pm.k+'"]'),'Gente: el menor '+m.id+' no tiene «Opciones»');}menu.classList.remove('open');}
  // ===== 7. vecinos que te buscan =====
  base();
  {const v=vid('paca'),p=conoce('paca',55);S.res=[];let got=false;

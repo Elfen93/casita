@@ -71,9 +71,17 @@ La ciudad por barrios (`mods/barrio.js`; `scripts/datos.py` la comprueba entera)
 |---|---|
 | `ciudad` | `n` nombre · `m_casilla`, `m_plano` metros · `min_km` minutos a pie por km (12). |
 | `orden`, `vivienda` | Orden de los barrios y barrio de cada tipo de `viviendas` (el personaje vive ahí, y ahí están `casaV` y `casa2`). |
-| `barrios` | `n` · `tipo` (`centro`, `nuevo`, `residencial`, `obrero`, `marginal`, `industrial`) y `tipo_n` · `e` emoji · `c` color · `alquiler` (1 = la media de la ciudad) · `d` quién vive y quién manda, `bueno`, `cuesta` · `plano` `[x0,y0,x1,y1]` · `calles` `[{n, a, b, w}]` rectas horizontales o verticales (de `a` a `b`, `w` ancho; se cruzan y se tocan en nodos sin más) · `puertas` `{id: [x, y, calle]}`: el punto del eje de la calle donde está la entrada de cada lugar, edificio del censo y casa (a menos de `w/2+2,5` de su fachada; los del censo, en la calle de su dirección) · `casa` `{casa, casaV, casa2}` rectángulos, solo en los barrios de `vivienda` · `arboles`. |
+| `barrios` | `n` · `tipo` (`centro`, `nuevo`, `residencial`, `obrero`, `marginal`, `industrial`) y `tipo_n` · `e` emoji · `c` color · `alquiler` (1 = la media de la ciudad) · `d` la frase del barrio (quién vive y quién manda: es lo único que dice la ficha del mapa sobre el barrio en general; lo bueno y lo que cuesta de vivir ahí NO están aquí sino en `barrios_vida.json` → `barrios.<id>.ficha`, para no decirlo dos veces) · `plano` `[x0,y0,x1,y1]` · `calles` `[{n, a, b, w}]` rectas horizontales o verticales (de `a` a `b`, `w` ancho; se cruzan y se tocan en nodos sin más) · `puertas` `{id: [x, y, calle]}`: el punto del eje de la calle donde está la entrada de cada lugar, edificio del censo y casa (a menos de `w/2+2,5` de su fachada; los del censo, en la calle de su dirección) · `casa` `{casa, casaV, casa2}` rectángulos, solo en los barrios de `vivienda` · `arboles`. |
 | `enlaces.pie` | Barrios que se tocan a pie: `a`, `b`, `pa`, `pb` (el punto de paso en cada uno, sobre una calle y en el mismo sitio del plano) y `m` metros del paso. |
 | `enlaces.lineas` | `id`, `n`, `modo` (`metro`, `bus`, `tren`), `c` color, `cada` minutos entre coches (se espera la mitad), `precio_h` horas de salario por billete (`hrs(precio_h)` en euros), `paradas` `[{b, n, p}]` y `min` (minutos entre paradas consecutivas). De cualquier barrio se llega a cualquier otro (lo comprueba `datos.py`, que además avisa de quién vive y trabaja en barrios distintos). |
+
+### barrios_vida.json
+Vida de barrio (`mods/barrios_vida.js`): interiores genéricos de los doce lugares nuevos, lo que cuesta cada salida y la tabla por barrio. Quien manda sobre cada cosa:
+- **La frase del barrio** (`d`), el tipo y el factor de alquiler (`alquiler`): `ciudad.json`. **Lo concreto de vivir allí** (lo que se gana, lo que cuesta, a pie, números): este archivo, `barrios.<id>`. `bueno` y `cuesta` ya no existen en `ciudad.json`.
+- `barrios.<id>`: `compra` y `bar` (factor sobre el precio de la compra y de las salidas de bar) · `ruido` 0–3 (resta energía algunos días y ánimo cada lunes) · `seguridad` y `servicios` 1–5 (ánimo semanal, sobre 3) · `red` (1 = normal; más trato de vecinas: más mensajes y visitas) · `policia` (`p` probabilidad diaria; `pobre`/`rico` multiplicadores según la vivienda; textos) · `visitas_casero` (probabilidad diaria) · `presion` (subida extra del alquiler en cada renovación) · `pie` minutos a pie a la parada, el cole y el ambulatorio · `ficha.gana` y `ficha.pierde` (las dos frases de «Vivir aquí»). `abandono` y `control` están en la tabla pero el código aún no los lee.
+- `pesos`: cuánto pesa cada efecto del barrio en el ánimo y la energía.
+- `textos`: la ficha «Vivir aquí» (alquiler de un piso de ejemplo, trayecto a tu trabajo, a pie, lo que ganas, lo que cuesta) y la línea que sale en cada vivienda al mudarse. `alquiler_por_barrio`: interruptor, **apagado a propósito** (el alquiler de cada tipo de vivienda ya está a precio real de su barrio).
+- La ficha de barrio del mapa (`mods/barrio.js`) sale entera así: frase (`d`), «Vivir aquí» (este archivo), qué hay, cómo se llega y «Ver el barrio». Ningún dato se dice dos veces.
 
 ### profesiones.json
 | Sección | En el código | Qué es |
@@ -174,7 +182,7 @@ Tratar con los vecinos (`mods/trato.js`). Secciones:
 - `favores`: `pedir` (le pides algo) y `pide` (te lo pide a ti, con `modo` `ya` o `visita`). Cada uno con `msg`, `ok`, `ko` o `rechazo`, `fx`, `mem` (la nota de «te debe una» / «le debes una»).
 - `cotilleo`: textos del chisme que descubre una `historia` o un `lazo` real del censo.
 - `politica`: afinidad entre ideologías (`cercanas`, claves de `ideologias.json`), reacciones y textos de organizar el bloque.
-- `romance`: `edad_min` (nunca menos de 18), `dif_edad`, pesos de `orientacion` (suman 1) y rechazos.
+- `romance`: (un vecino adulto libre se trata como cualquier otra persona de la lista de Gente: lo decide `romPersona()`, que el núcleo ya usa y `mods/trato.js` amplía; un menor, nunca) `edad_min` (nunca menos de 18), `dif_edad`, pesos de `orientacion` (suman 1) y rechazos.
 - `buscan`: mensajes del móvil (`mensajes`, con `rel`, `req`, `resp`) y visitas (`visita`).
 - `ficha`: textos de la interfaz y del diario.
 

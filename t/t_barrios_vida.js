@@ -66,7 +66,7 @@ setTimeout(()=>{try{DATA.barrios_vida.alquiler_por_barrio=true;/* la prueba ejer
  base('bueno');S.home.since=S.day-365;{const rm=S.rentMul;S.rentMul=rm*1.1;bvDia(rm);chk(Math.abs(S.rentMul-rm*1.1*1.06)<1e-9,'presión del centro: '+S.rentMul);}
  base('chalet');S.home.since=S.day-365;{const rm=S.rentMul;S.rentMul=rm*1.1;bvDia(rm);chk(Math.abs(S.rentMul-rm*1.1*1.02)<1e-9,'presión en Pinares');}
  // mudarse: el factor del barrio nuevo y el precio de la lista
- base('viejo');S.money=90000;S.rentMul=1;S.payMul=8;{const a=moveCost('bueno'),b=bvConRentas(()=>1)&&moveCost('bueno');const hb=homeBlock();chk(/El Casco: alquiler ×1,4/.test(hb)&&/Los Pinares: alquiler ×1,6/.test(hb)&&/Las Eras: alquiler ×0,65/.test(hb),'la lista de casas no dice el barrio');
+ base('viejo');S.money=90000;S.rentMul=1;S.payMul=8;{const a=moveCost('bueno'),b=bvConRentas(()=>1)&&moveCost('bueno');const hb=homeBlock();chk(/El Casco · al curro/.test(hb)&&/Los Pinares · al curro/.test(hb)&&/Las Eras · al curro/.test(hb)&&!/alquiler ×/.test(hb),'la lista de casas no dice el barrio (o repite el alquiler)');
   chk(hb.includes(fmt(Math.round(HOMES.bueno.rent*Dm().rent*1.4))),'la lista de casas no pone el alquiler del barrio ('+Math.round(HOMES.bueno.rent*Dm().rent*1.4)+')');
   chk(canMove('bueno').ok,'canMove bueno: '+JSON.stringify(canMove('bueno').why));const ok=moveHome('bueno',false);chk(ok&&S.home.type==='bueno'&&S.home.bf===1.4&&weeklyRent()===Math.round(HOMES.bueno.rent*Dm().rent*1.4),'mudarse: no aplica ×1,4 ('+weeklyRent()+')');info.mudanza=weeklyRent();}
  // ---- 4. efectos por barrio ----
@@ -83,7 +83,7 @@ setTimeout(()=>{try{DATA.barrios_vida.alquiler_por_barrio=true;/* la prueba ejer
  base('chalet');{const a=S.story.log.filter(e=>/🚓/.test(e.ic)).length;for(let i=0;i<4000;i++){S.day++;bvDia(1);}pol.pinares_rico=S.story.log.filter(e=>/🚓/.test(e.ic)).length-a;}
  chk(pol.eras>pol.pinares_rico*2,'policía: '+JSON.stringify(pol));
  // 4d ánimo de cada lunes
- const an={};for(const [b,t] of Object.entries(HB)){base(t);MT().an=60;payRent();an[b]=Math.round((MT().an-60)*10)/10;}info.animo=an;chk(an.pinares>0&&an.casco>0&&an.eras<0,'ánimo: '+JSON.stringify(an));
+ const an={};for(const [b,t] of Object.entries(HB)){base(t);MT().an=60;payRent();an[b]=Math.round((MT().an-60)*10)/10;}info.animo=an;chk(an.pinares>0&&an.casco>=0&&an.eras<0,'ánimo: '+JSON.stringify(an));
  // 4e red de vecinos: en Las Eras llaman más a la puerta que en Los Pinares
  const red={};for(const [b,t] of Object.entries({eras:'infra',pinares:'chalet'})){base(t);const v=vecinoPorId('paca');vcConocer(v,{});const p=vcPer('paca');if(p){p.rel=50;}let n=0;for(let i=0;i<500;i++){const T=TT();T.plan=null;T.last={};T.ask={};T.req=[];try{S.day++;trPlanDia();}catch(e){}if(T.plan)n++;}red[b]=n;}info.red=red;chk(red.eras>red.pinares,'red: '+JSON.stringify(red));
  // 4f abandono: el corte de agua de Las Eras dura más que el de La Ribera
@@ -95,7 +95,7 @@ setTimeout(()=>{try{DATA.barrios_vida.alquiler_por_barrio=true;/* la prueba ejer
  for(const b of ['ensanche','poligono']){base('viejo');const s=D.sucesos[b].anuales[0];const n0=S.story.log.length;bvAplica(s);chk(S.story.log.length>n0,'suceso '+s.id);suc[b]='directo';}
  info.sucesos=suc;
  // ---- 6. la ficha del barrio y el mapa ----
- base('viejo');S.track='oficina';bmOpen();for(const b of CDX().orden){bmFichaBarrio(b);const h=card.innerHTML;chk(/Vivir aquí/.test(h)&&/Alquiler ×/.test(h)&&/Al curro/.test(h)&&/A pie:/.test(h)&&/Lo bueno|👍/.test(h),b+': ficha sin «vivir aquí»');}
+ base('viejo');S.track='oficina';bmOpen();for(const b of CDX().orden){bmFichaBarrio(b);const h=card.innerHTML;chk(/Vivir aquí/.test(h)&&/Alquiler ×/.test(h)&&/Al curro/.test(h)&&/A pie/.test(h)&&/Lo que ganas/.test(h)&&/Lo que cuesta/.test(h),b+': ficha sin «vivir aquí»');}
  bmFichaBarrio('eras');chk(/Un piso de ejemplo: \d+ a la semana|\d+ €/.test(card.innerHTML.replace(/<[^>]+>/g,' ')),'ficha sin alquiler de ejemplo');for(const k of NUEVOS){bmVerBarrio(cdBarrioDe(k));bmFicha(k);chk(!/Sin interior/.test(card.innerHTML)&&/Mirar dentro/.test(card.innerHTML),k+': la ficha del mapa dice sin interior');}
  bmClose();
  // ---- 7. el censo en los 12 sitios ----

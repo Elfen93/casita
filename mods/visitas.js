@@ -1,11 +1,11 @@
 // =================== VISITAS: la pareja y los amigos de verdad se pasan por casa (la tuya, no la de tu madre) ===================
 const VS=()=>{if(!S.vs)S.vs={last:{},day:-1};S.vs.last=S.vs.last||{};return S.vs;};
 const ownHome=()=>S.home&&!['padres','calle'].includes(S.home.type)&&!(S.sofaUntil&&S.day<S.sofaUntil);
-const isFlirtish=p=>p.k.startsWith('p')&&!isRom(p)&&(p.chispa||0)>0;
+const isFlirtish=p=>romPersona(p)&&!isRom(p)&&(p.chispa||0)>0;
 const bestFriend=p=>!p.k.startsWith('p')&&p.k!=='madre'&&p.rel>=65;
 function vsCandidates(){const pt=partner();const L=[];for(const p of S.people||[]){if(p.dead)continue;if((S.res||[]).some(r=>r.pid===p.k))continue;
     if(pt&&p.k===pt.k&&!liveIn())L.push([p,.4,'pareja']);
-    else if(p.k.startsWith('p')&&!isRom(p)&&['cita','rollo'].includes(p.stage)&&!pt)L.push([p,.25,'rollo']);
+    else if(romPersona(p)&&!isRom(p)&&['cita','rollo'].includes(p.stage)&&!pt)L.push([p,.25,'rollo']);
     else if(isFlirtish(p)&&!pt)L.push([p,.08,'ligue']);
     else if(bestFriend(p))L.push([p,.18,'amig'+oa()]);
     else if(!p.k.startsWith('p')&&p.k!=='madre'&&!p.mjob&&(p.rel||0)>=45)L.push([p,.07,'amig'+oa()]);}

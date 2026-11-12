@@ -56,7 +56,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
  const snap=()=>JSON.stringify([S.sim,S.t,S.day,S.needs,S.money]);const s0=snap();
  bmOpen();R();ok(BM.on&&BM.v==='ciudad','abre en la ciudad');
  {const q=BM.cdHit.find(x=>x.id==='ribera');BM.pt=[(q.x0+q.x1)/2,(q.y0+q.y1)/2];liveTap(0,0);ok(BM.ficha==='b:ribera','tocar el barrio abre su ficha');
-  const h=card.innerHTML;for(const w of ['La Ribera','Obrero','Lo bueno','Lo que cuesta','Qué hay','Cómo se llega'])ok(h.includes(w),'ficha de barrio sin «'+w+'»');ok(/Vive aquí del censo/.test(h),'ficha de barrio sin gente del censo');
+  const h=card.innerHTML;for(const w of ['La Ribera','Obrero','Vivir aquí','Lo que ganas','Lo que cuesta','Qué hay','Cómo se llega'])ok(h.includes(w),'ficha de barrio sin «'+w+'»');ok((h.match(/Alquiler ×/g)||[]).length===1&&(h.match(/Lo que cuesta/g)||[]).length===1,'ficha de barrio: cada dato una sola vez');ok(!Object.values(CDX().barrios).some(b=>b.bueno||b.cuesta),'ciudad.json ya no repite «bueno»/«cuesta» (los dice barrios_vida.json)');
   card.querySelector('#brver').onclick();R();ok(BM.v==='barrio'&&BM.b==='ribera','Ver el barrio');
   bmFicha('colegio');ok(card.querySelector('#brin'),'ficha del colegio con Mirar dentro');card.querySelector('#brin').onclick();R();R();ok(BM.obs==='colegio'&&CW.sc&&CW.sc.id==='colegio','mirar dentro del colegio (abierto en su sitio del barrio)');
   document.getElementById('brback').click();R();ok(!BM.obs&&BM.v==='barrio','vuelve al barrio');

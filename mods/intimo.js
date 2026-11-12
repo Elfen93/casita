@@ -45,7 +45,7 @@ intimo=function(p){const r=(S.res||[]).find(x=>x.pid===p.k);const n=CH().name;
 // mientras Ana se acerca, la otra persona se queda donde está
 {const _om=openPerMenu;openPerMenu=function(p){_om.apply(this,arguments);try{perMenuEl.querySelectorAll('[data-g]').forEach(b=>{const prev=b.onclick;b.onclick=()=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r&&!(r.doing&&(r.doing.act==='sleep'||r.doing.act==='love'))&&b.dataset.g!=='cama'){if(!r.doing){r.path=[];r.plan=null;r.next=Math.max(r.next||0,8);}}prev();};});}catch(e){}};}
 // ---- pedirle que se quede a dormir, desde el menú de la persona ----
-conLogica(GEST,{quedarse:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return !!r&&r.kind==='guest'&&!r.stay&&p.k.startsWith('p')&&['cita','rollo','pareja'].includes(p.stage)&&S.t/60>=18;},
+conLogica(GEST,{quedarse:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return !!r&&r.kind==='guest'&&!r.stay&&romPersona(p)&&['cita','rollo','pareja'].includes(p.stage)&&S.t/60>=18;},
   run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(!r)return null;const ok=p.stage!=='cita'||(p.love||0)>=50||Math.random()<.4;if(!ok){bubbleFor(p,'😅');p.rel=Math.max(0,p.rel-1);return huecos(TXHZ.intimo.dice_manana_madruga_otro_dia,{p:p.n});}
     r.stay=true;r.until=(S.day+1)*1440+9*60;try{r.bedUid=null;}catch(e){}bubbleFor(p,'😊');p.love=Math.min(100,(p.love||0)+4);return huecos(TXHZ.intimo.se_queda,{p:p.n,x:huecos(pickR(TXHZ.intimo.se_queda_lista),{})});}}});
 conLogica(GEST,{irse:{ok:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);return !!r&&r.kind==='guest'&&r.stay&&S.t/60<23;},run:p=>{const r=(S.res||[]).find(x=>x.pid===p.k);if(r){r.stay=false;r.until=S.day*1440+S.t+30;}return huecos(TXHZ.intimo.va_dormir_casa,{p:p.n});}}});
