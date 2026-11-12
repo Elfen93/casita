@@ -114,6 +114,15 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
   viewPlace=false;placeAuto=false;cam.z=.5;const a=cmPos(),dest0=s.dest;cmFrame(bar);const t=bmTargets().find(z=>z.id==='parque'||z.id==='coop'||z.id==='biblioteca');
   if(t){cam.x=W/2-t.cx+cam.x;cam.y=H/2-t.cy+cam.y;const t2=bmTargets().find(z=>z.id===t.id);menu.classList.remove('open');lastPtr=[t2.cx,t2.cy];liveTap(-9,-9);ok(menu.classList.contains('open')&&card.innerHTML.length>50,'tocar un lugar en «Ver casa» no abre su ficha');ok(s.dest===dest0,'tocar un lugar la mueve');menu.classList.remove('open');}
   info.verCasa=t?t.id:'ninguno';}
+ // 12. vecinos del censo por la calle (mods/calle.js): nadie en la calle y dentro de un sitio a la vez, menores de 12 con una persona adulta, la ficha dice adónde va
+ {nuevo('viejo');const C=clAgenda(),wd=dateOf(S.day).wd;let dup=0,solos=0,ficha=0,maxN={};
+  for(let m=360;m<1380;m+=5){const h=m/60;S.t=m;const calle=new Set(C.recs.filter(r=>h>=r.t0&&h<r.te).map(r=>r.vid));
+   for(const k of clLugares())for(const q of vecinosEn(k,h,wd))if(calle.has(q.v.id))dup++;
+   for(const r of C.recs)if(h>=r.t0&&h<r.te&&typeof r.v.edad==='number'&&r.v.edad<12&&r.R){const adult=C.recs.some(q=>q!==r&&q.R===r.R&&Math.abs(q.t0-r.t0)<.04&&pbAdult(q.v));if(!adult)solos++;}}
+  ok(dup===0,'vecinos en la calle y dentro de un sitio a la vez: '+dup);ok(solos===0,'criaturas de menos de 12 andando sin adulta: '+solos);
+  for(const [casa,bar] of [['viejo','ribera'],['infra','eras'],['habitacion','casco']]){nuevo(casa);const f={};for(const [a,b] of [[8,9],[13.5,14.5],[17,19],[3,5]]){let mx=0;for(let h=a;h<b;h+=.25)mx=Math.max(mx,cmPlanGente(bar,h,dateOf(S.day).wd).length);f[a]=mx;}maxN[bar]=f;}
+  ok(maxN.ribera[8]>=1&&maxN.ribera[3]===0,'vecinos andando: ribera '+JSON.stringify(maxN.ribera));info.censoCalle=maxN;
+  const r=C.recs.find(z=>z.R&&z.k==='trabajo');if(r){const t=clFichaTxt(r.v);S.t=(r.t0+r.m/2)*60;const t2=clFichaTxt(r.v);ok(/Va al trabajo: /.test(t2),'la ficha no dice adónde va: '+t2);ficha=t2;}info.ficha=ficha;}
 
  console.error=oe;
  document.title=(bad.length||__errs.length?'ERR ':'OK ')+JSON.stringify({bad:[...new Set(bad)].slice(0,12),nbad:bad.length,errs:__errs.slice(0,3),info});

@@ -68,6 +68,7 @@
   "barrio.js",
   "barrios_vida.js",
   "caminar.js",
+  "calle.js",
   "rotulos.js"
  ]
 }

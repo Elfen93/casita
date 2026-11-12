@@ -150,11 +150,9 @@ function cmPlanGente(bar,h,wd){const out=[],C=DATA.personas||{},H=C.hogares||{};
       else if(h>=b-.08&&h<b+m2+.1)out.push({v,R:R2,f:(h-b)/m2,t:e[4]==='t'});}}
   return out;}
 function cmGente(bar,tt,night){const items=[],h=S.t/60,wd=dateOf(S.day).wd,key=Math.floor(S.t)+'|'+S.day+'|'+bar+'|'+cmHome();
-  if(CW.gk!==key){CW.gk=key;try{CW.gl=cmPlanGente(bar,h,wd);}catch(e){console.error('gente',e);CW.gl=[];}}
-  const [vx,vy,vw,vh]=[0,0,W,H],vis=(x,y)=>{const [u,v]=cmW2V(x,y),[px,py]=P(u,v),sx=cam.x+px*cam.z,sy=cam.y+py*cam.z;return sx>-30&&sx<vw+30&&sy>-90&&sy<vh+50;};
-  for(const q of CW.gl){const {i,lf}=cmEnRuta(q.R,q.f),l=q.R.legs[i];if(l.b!==bar||l.k==='viaje')continue;
-    const p=l.k==='pie'?cmAlong(l.pts,lf):{x:l.p[0],y:l.p[1],dx:0,dy:-1};if(!vis(p.x,p.y))continue;const [u,v]=cmW2V(p.x,p.y);
-    items.push({d:u+v,f:()=>cmFigura(p.x,p.y,p.dx,p.dy,cmChOf(q.v),{walk:l.k==='pie'&&q.f>.001&&q.f<.999,ph:tt*8+q.v.id.length,name:q.v.n,edad:q.v.edad,rot:{hogar:q.v.hogar,trab:false}})});}
+    const [vx,vy,vw,vh]=[0,0,W,H],vis=(x,y)=>{const [u,v]=cmW2V(x,y),[px,py]=P(u,v),sx=cam.x+px*cam.z,sy=cam.y+py*cam.z;return sx>-30&&sx<vw+30&&sy>-90&&sy<vh+50;};
+  try{clRelleno(bar,h);}catch(e){console.error('relleno',e);}
+  for(const a of clActivos(bar,h))for(const it of clItems(a,tt,vis))items.push(it);   // los vecinos del censo (mods/calle.js)
   // paseantes sin nombre: unos por cada tramo de calle, de ida y vuelta a su ritmo (menos de noche)
   if(h>=6.5&&h<23.5){const SP=15;
     for(const q of cmPlanPaseos(bar)){if(h>=21&&q.k%2)continue;const m=q.d/SP,per=2*m+8,u0=(S.t+q.ph*per)%per;let pts=q.f,f,walk=true;

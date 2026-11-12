@@ -84,5 +84,35 @@
     "uni_privada": "la universidad",
     "residencia": "la residencia",
     "parque": "el parque"
+  },
+
+  "va_trabajo": "Va al trabajo: {lugar}",
+  "va_clase": "Va a clase: {lugar}",
+  "va_recoger": "Va a recoger a una criatura: {lugar}",
+  "va_lugar": "Va a {lugar}",
+  "va_casa": "Vuelve a casa",
+  "va_con": "Va con {quien}",
+  "va_pan": "Baja a por el pan: {lugar}",
+  "va_perro": "Pasea al perro",
+  "va_banco": "Se sienta en un banco, al sol",
+  "va_pan_vuelta": "Vuelve a casa con el pan",
+  "va_corrillo": "Charla en la puerta: {lugar}",
+  "va_paseo": "Sale a dar una vuelta",
+  "va_portal": "Charla en el portal con los vecinos",
+  "va_cole": "Espera a la salida: {lugar}",
+  "va_espera": "Espera: {linea}",
+  "va_viaje": "Va en {linea}",
+
+  "calle": {
+    "_": "Vida de calle con los vecinos del censo (mods/calle.js). recados: lo que hace quien no tiene nada asignado: franjas [desde,hasta] en horas, p probabilidad por franja y vecino (se multiplica por la red del barrio de barrios_vida), dentro/quieto/paseo minutos o casillas, edad [min,max], destinos: lugares del barrio de su casa. radio (casillas) y objetivo [[desde,hasta,gente cerca]]: la vida de calle que se busca cerca de lo que se mira. salida_cole_min: lo que se queda la gente en la acera del centro al salir.",
+    "salida_cole_min": 6,
+    "radio": 42,
+    "objetivo": [[0, 6.5, 0], [6.5, 7.5, 1], [7.5, 9.5, 3], [9.5, 12.5, 1.5], [12.5, 14.5, 3], [14.5, 17, 1.5], [17, 19.5, 3], [19.5, 22, 2], [22, 24, 0.3]],
+    "recados": [
+      {"id": "pan", "txt": "va_pan", "destinos": ["super", "tienda", "mercado", "coop"], "franjas": [[7.5, 9.5], [12.5, 14.5], [17, 19.5]], "p": 0.7, "dentro": [3, 7], "edad": [16, 200]},
+      {"id": "perro", "txt": "va_perro", "franjas": [[7, 9.5], [13.5, 15], [17, 21]], "p": 0.4, "paseo": [14, 40], "edad": [16, 200]},
+      {"id": "banco", "txt": "va_banco", "destinos": ["parque", "glorieta", "gran_plaza", "@casa"], "franjas": [[8.5, 13], [16.5, 19.5]], "p": 0.8, "quieto": [40, 90], "edad": [60, 200]},
+      {"id": "corrillo", "txt": "va_corrillo", "destinos": ["bar", "bar_cruce", "bar_esperanza", "cafe_brindis", "super", "tienda", "@casa"], "franjas": [[8, 10], [13, 15], [17, 21]], "p": 0.7, "quieto": [15, 40], "edad": [16, 200]}
+    ]
   }
 }
