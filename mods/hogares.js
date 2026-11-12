@@ -33,15 +33,15 @@ function hgChar(seed,g,edad){const kind=edad>=65?'old':edad<12?'kid':'adult';con
   if(kind==='old'){o.style=f?'mono':'corto';if(f)o.beard=undefined;}else if(kind==='kid')o.style=f?'coleta':'corto';else{o.style=f?['melena','coleta','rizos','afro'][Math.floor(svH(seed+5)*4)]:['corto','rizos','corto','rapado'][Math.floor(svH(seed+5)*4)];if(f)o.beard=undefined;}return o;}
 // los presentes en la casa a esta hora: [{n,edad,g,cat,ch,v}]
 function hgPresentes(p,hd,day,h){const out=[];const quien=(hd.miembros||[]);
-  quien.forEach((v,i)=>{if(v.id!=null&&(v.id===p.id||v.n===p.n))return;if(v.anon&&false)return;if(hgFuera(v,day,h))return;const e=v.edad==null?35:v.edad;const g=hgGen(v.g)||(v.g==='x'?null:null);
-    out.push({n:v.anon?null:v.n,edad:e,cat:hgCat(e),ch:hgChar(v.anon?hgStr((p.k||p.n)+i):hgStr(v.id!=null?v.id:v.n),g,e),v});});
+  quien.forEach((v,i)=>{if(v.id!=null&&(v.id===p.id||v.id===p.vid||v.n===p.n))return;if(v.anon&&false)return;if(hgFuera(v,day,h))return;const e=v.edad==null?35:v.edad;const g=hgGen(v.g)||(v.g==='x'?null:null);
+    out.push({n:v.anon?null:v.n,edad:e,cat:hgCat(e),ch:(!v.anon&&v.id!=null&&typeof pbLook==='function')?pbLook(v):hgChar(v.anon?hgStr((p.k||p.n)+i):hgStr(v.id!=null?v.id:v.n),g,e),v});}); // el vecino del censo se ve igual que en la calle
   return out;}
 // ---------- primitivas ----------
 const hgQ=(y,x0,x1,z0,z1,c)=>faceY(x0,x1,y,z0,z1,c),hgR=(x,y0,y1,z0,z1,c)=>faceX(x,y0,y1,z0,z1,c);
 const hgBox=(x0,y0,x1,y1,z0,z1,c)=>sBox(x0,y0,x1,y1,z0,z1,c);
 function hgPer(x,y,m,o){const sc=hgSc(m.edad);const [a,b]=P(x,y);ctx.save();if(sc<1){ctx.translate(a,b);ctx.scale(sc,sc);ctx.translate(-a,-b);}
   sPerson(x,y,m.ch,{front:true,right:true,...o});ctx.restore();
-  if(m.n&&!(typeof rotular==='function'&&rotular(m.n))){ctx.save();ctx.globalAlpha=.92;label(m.n,a,b-((o.pose==='sit'?58:66)*sc)-2,'rgba(255,253,248,.92)','#3b3247',8);ctx.restore();}}
+  if(m.n&&!(typeof rotular==='function'&&rotular(m.n,null,m.ch&&m.ch.vid))){ctx.save();ctx.globalAlpha=.92;label(m.n,a,b-((o.pose==='sit'?58:66)*sc)-2,'rgba(255,253,248,.92)','#3b3247',8);ctx.restore();}}
 function hgSteam(x,y,z,tt){const [a,b]=P(x,y,z);ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.2;for(let k=0;k<2;k++){ctx.beginPath();const ph=tt*2+k*2;ctx.moveTo(a+k*3-1.5,b);ctx.bezierCurveTo(a+k*3-4+Math.sin(ph)*2,b-5,a+k*3+3+Math.cos(ph)*2,b-9,a+k*3-1+Math.sin(ph+1)*2,b-14);ctx.stroke();}}
 // ---------- distribución ----------
 const HGL={
@@ -186,7 +186,7 @@ SCENES['hogar']=function(E){const {tt,night}=E;const h=E.h!=null?E.h:S.t/60;cons
   // gente
   for(const a of asign)add(a.x+a.y+(a.butaca?1.6:a.pose==='sit'?.5:.1),0,()=>{if(a.pose==='sit'&&a.butaca===false)svChair(a.x,a.y,'#a98c68');hgPer(a.x,a.y-(a.pose==='sit'?.02:0),a.m,{pose:a.pose,act:a.act,front:a.front,right:a.right,prop:a.prop,ph:tt*5});});
   // la visita: el personaje y la persona visitada, en el sofá, con café
-  const pe=p.age||p.edad||(p.k==='madre'?68:34);const g0=hgGen(p.g)||(p.k==='madre'?'f':null);const vis={n:p.n,edad:pe,ch:hgChar(hgStr(p.k||p.n),g0,pe)};
+  const pe=p.age||p.edad||(p.k==='madre'?68:34);const g0=hgGen(p.g)||(p.k==='madre'?'f':null);const vis={n:p.n,edad:pe,ch:p.vid!=null&&p.ch?p.ch:hgChar(hgStr(p.k||p.n),g0,pe)};
   if(!dorm)add(L.seats[1]+.2,1.2,()=>hgPer(L.seats[1],.93,vis,{pose:'sit',act:null,front:true,right:false,ph:tt*3}));
   // lámpara de pie (siempre una luz)
   const lamp=[L.sofa[0]-.35,1.0];add(lamp[0]+.2,lamp[1]+.2,()=>{cyl(lamp[0],lamp[1],.18,0,3,'#2f3338','#3a3f46');cyl(lamp[0],lamp[1],.04,3,50,'#2f3338','#3a3f46');cyl(lamp[0],lamp[1],.32,50,60,'#f4e9c8','#fff6d8');});

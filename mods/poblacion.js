@@ -2,7 +2,7 @@
 const pbH=s=>{s=String(s);let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);h^=h>>>13;}return (h>>>0)/4294967296;};
 const pbPick=(a,s)=>a[Math.floor(pbH(s)*a.length)%a.length];
 function pbLook(v){const o=v.id,old=v.edad>=60;const g=v.g;
-  return {name:v.n,g,skin:pbPick(SKINS,o+'s'),hair:old?'#bdbdbd':pbPick(HAIRCOLS.slice(0,6),o+'h'),
+  return {vid:v.id,name:v.n,g,skin:pbPick(SKINS,o+'s'),hair:old?'#bdbdbd':pbPick(HAIRCOLS.slice(0,6),o+'h'),
     style:g==='f'?pbPick(['melena','coleta','corto','mono','rizos'],o+'y'):pbPick(['corto','rapado','calvo','rizos'],o+'y'),
     beard:g==='m'&&pbH(o+'b')<.35?'corta':'no',glasses:old||pbH(o+'g')<.25,build:pbPick(['media','delgada','ancha'],o+'c'),
     shirt:pbPick(SHIRTC,o+'t'),pants:pbPick(PANTSC,o+'p'),eyes:'#3b2a20'};}
@@ -109,7 +109,7 @@ function crowd(E,key,r){const c=POB[key];if(!c)return [];r=r||{};const tt=E.tt||
     list=adK.concat(me.filter(q=>(q.v.hogar!=null&&hk.has(q.v.hogar))||(typeof q.v.edad==='number'&&q.v.edad>=12)||parqueTarde)).slice(0,12);}
   const lv=pbLevel(c,h,wd);
   const n=Math.min(14,Math.max(4,Math.round(c.lo+(c.hi-c.lo)*lv),list.length+2));
-  const ns=NPCS();const known=(Array.isArray(S.people)?S.people:[]).filter(p=>p&&p.ch&&p.n);
+  const ns=NPCS();const known=(Array.isArray(S.people)?S.people:[]).filter(p=>p&&p.ch&&p.n&&p.vid==null); // los vecinos del censo que ya conoces salen por su horario (vecinosEn), no al azar
   const usados=new Set(list.map(q=>q.v.n));const ana=r.ana||{x:-9,y:-9};
   const g=r.g||pbMk(r.W||10,r.D||8,[],[]);const cells=pbCells(g,key);const taken=[[ana.x,ana.y]];
   const spot=(s,gap)=>{if(!cells.length)return null;for(let t=0;t<30;t++){const q=cells[Math.floor(pbH(s+'c'+t)*cells.length)%cells.length];

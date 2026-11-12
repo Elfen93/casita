@@ -104,5 +104,72 @@
     ["nada", "🛋️", "Libre", "free"]
   ],
 
-  "agenda_horas": [[7, "7:00"], [9, "9:00"], [11, "11:00"], [13, "13:00"], [15, "15:00"], [17, "17:00"], [18.5, "18:30"], [20, "20:00"], [21.5, "21:30"]]
+  "agenda_horas": [[7, "7:00"], [9, "9:00"], [11, "11:00"], [13, "13:00"], [15, "15:00"], [17, "17:00"], [18.5, "18:30"], [20, "20:00"], [21.5, "21:30"]],
+
+  "vecinos_ficha": {
+    "presentarse": "🤝 Presentarse",
+    "charlar": "💬 Charlar un rato",
+    "ficha": "👤 Ficha",
+    "cerrar": "Cerrar",
+    "ir_casa": "🏡 Ir a su casa",
+    "edad": "{e} años",
+    "bebe": "bebé",
+    "estudia": {"cole": "Va al colegio", "instituto": "Estudia en el instituto", "fp": "Hace una FP", "uni": "Estudia en la universidad"},
+    "hijo_de": ["Hija de {quien}", "Hijo de {quien}"],
+    "nieto_de": ["Nieta de {quien}", "Nieto de {quien}"],
+    "vive_con": "Vive con {quien}",
+    "sin_familia": "Va con su gente.",
+    "vive": "Vive en {sitio}",
+    "no_conoces": "No os conocéis todavía.",
+    "conoces": "Os conocéis de vista.",
+    "pista_historia": "Con más confianza te contará su historia.",
+    "pista_lazos": "Cuando haya más confianza sabrás con quién se trata.",
+    "historia_titulo": "Su historia",
+    "lazos_titulo": "Su gente",
+    "lazo": {
+      "pareja": ["Su pareja", "Su pareja"],
+      "amiga": ["Su amiga", "Su amigo"],
+      "madre": ["Su madre", "Su madre"],
+      "padre": ["Su padre", "Su padre"],
+      "hija": ["Su hija", "Su hija"],
+      "hijo": ["Su hijo", "Su hijo"],
+      "hermana": ["Su hermana", "Su hermano"],
+      "hermano": ["Su hermana", "Su hermano"],
+      "abuela": ["Su abuela", "Su abuela"],
+      "abuelo": ["Su abuelo", "Su abuelo"],
+      "nieta": ["Su nieta", "Su nieta"],
+      "nieto": ["Su nieto", "Su nieto"],
+      "ex": ["Su ex", "Su ex"],
+      "casera": ["Su casera", "Su casero"],
+      "inquilina": ["Su inquilina", "Su inquilino"],
+      "jefa": ["Su jefa", "Su jefe"],
+      "empleada": ["Su empleada", "Su empleado"],
+      "mal_rollo": ["Mal rollo", "Mal rollo"]
+    },
+    "via": ["🤝 Que me la presente", "🤝 Que me lo presente"],
+    "via_ya": "Ya os conocéis",
+    "sube_historia": "Se ha soltado: ya conoces su historia (mira su ficha).",
+    "sube_lazos": "Ya sabes con quién se trata (mira su ficha).",
+    "bien": [
+      ["Le has caído bien", "{v} se ha quedado un rato. Ha preguntado por ti y, lo raro, ha esperado la respuesta."],
+      ["Buen comienzo con {v}", "Habéis hablado del barrio, del precio de todo y de quién deja el contenedor abierto. Ya os conocéis."],
+      ["{v} se ha animado", "Dos frases de cortesía y una tercera de verdad. Eso aquí ya es casi amistad."]
+    ],
+    "saludo": [
+      ["Un saludo y poco más", "{v} ha dicho «hola», ha mirado el reloj y ha seguido a lo suyo. Ya sabe cómo te llamas. Es algo."],
+      ["{v} iba con prisa", "Un apretón de manos a medias. La próxima vez, con más tiempo."],
+      ["Se ha quedado en un «encantado»", "Ni química ni conversación. Hay días así."]
+    ],
+    "via_bien": [["{via} te presenta a {v}", "Con esa recomendación, {v} ha abierto la puerta de par en par."], ["De parte de {via}", "{v} ya sabía quién eras. Se nota que {via} habla bien de ti."]],
+    "via_saludo": [["{via} te presenta a {v}", "Un «hola» educado y poco más. Tiene el día torcido, o el carácter."], ["Presentación de compromiso", "{v} ha sonreído por cortesía a {via}. Ya habrá otra ocasión."]],
+    "charla": [
+      ["Rato de charla con {v}", "Del tiempo, del alquiler y de alguien que no ha bajado el contenedor. Ha estado bien."],
+      ["Un rato con {v}", "Habéis arreglado el barrio en diez minutos. Mañana seguirá igual, pero habéis hablado."],
+      ["{v} tenía ganas de hablar", "Ha contado media vida sin que se la pidieras. Tú has asentido bien."]
+    ],
+    "charla_hoy": "Hoy ya habéis charlado. Mañana, más.",
+    "diario_conoce": "{n} se ha presentado a {v}. {linea}",
+    "diario_via": "{via} le ha presentado a {v}.",
+    "diario_charla": "{n} ha charlado un rato con {v}."
+  }
 }

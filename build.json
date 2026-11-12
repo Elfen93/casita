@@ -63,6 +63,7 @@
   "hogares.js",
   "escuela.js",
   "universidad.js",
+  "vecinos.js",
   "rotulos.js"
  ]
 }

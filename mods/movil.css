@@ -287,3 +287,23 @@
 .bk3ad{margin:10px 12px;padding:10px 12px;border-radius:12px;background:#fff6dd;font:700 12px Nunito,sans-serif;color:#6b5200;display:flex;flex-direction:column}
 .bk3foot{padding:12px 14px 20px;color:#9aa0ad;font:700 11px Nunito,sans-serif}
 .bk-pub .bklogo,.bk-est .bklogo{background:#fff!important}
+
+/* ficha de vecino */
+#vecficha{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:58;display:none;width:min(94vw,392px);max-height:78vh;overflow:auto;background:#fffdf8;border-radius:16px;box-shadow:0 10px 30px rgba(40,30,60,.35);padding:12px 14px 10px;font-family:Nunito,sans-serif;color:#3b3247;box-sizing:border-box}
+#vecficha.on{display:block}
+#vecficha .vfh{display:flex;gap:12px;align-items:center}
+#vecficha .vfp{position:static;inset:auto;width:72px;height:72px;border-radius:50%;background:#efe8dc;flex:none}
+#vecficha .vft{min-width:0}
+#vecficha .vft b{display:block;font:900 17px/1.15 Nunito,sans-serif}
+#vecficha .vfs{font:700 12px/1.3 Nunito,sans-serif;color:#6b6078;margin-top:2px}
+#vecficha .vfq{font:900 14px/1.25 Nunito,sans-serif;color:#7a4fa0;margin-top:6px}
+#vecficha .vfd{font:700 13px/1.35 Nunito,sans-serif;font-style:italic;margin:10px 2px 2px;color:#4a4058}
+#vecficha .vfbar{display:flex;align-items:center;gap:8px;margin-top:10px;font:800 11.5px Nunito,sans-serif;color:#5a4e6a}
+#vecficha .vfbar span{width:84px}#vecficha .vfbar .bar{flex:1;height:7px;background:#eee8f1;border-radius:5px;overflow:hidden}#vecficha .vfbar .bar i{display:block;height:100%;background:#7a6fd0}#vecficha .vfbar b{min-width:24px;text-align:right}
+#vecficha .vfsec{font:900 11px Nunito,sans-serif;color:#8a8294;text-transform:uppercase;letter-spacing:.05em;margin:12px 2px 3px}
+#vecficha .vfh2{font:700 12.5px/1.4 Nunito,sans-serif;margin:0 2px}
+#vecficha .vfpi{font:700 11.5px/1.35 Nunito,sans-serif;color:#8a8294;margin:8px 2px 0}
+#vecficha .vfl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 2px;font:700 12.5px Nunito,sans-serif;border-top:1px solid rgba(60,45,80,.08)}
+#vecficha .vfl i{font:700 11.5px Nunito,sans-serif;color:#8a8294;white-space:nowrap}
+#vecficha .vfl .mini{flex:none}
+#vecficha .vfb{display:flex;gap:8px;margin-top:10px}#vecficha .vfb .btn{margin-top:0;flex:1}

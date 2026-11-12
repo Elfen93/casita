@@ -19,7 +19,7 @@ sPerson=function(x,y,ch,o){if(!RT.on)return _sp.apply(this,arguments);o=o||{};co
   const r=_sp.call(this,x,y,ch,nm?{...o,name:null}:o);
   try{const [px,py]=P(x,y),m=ctx.getTransform(),s=m.a/rtD(),top=py-(o.pose==='sit'?50:59);const [hx,hy]=rtPt(px,top);
     const id=RT.heads.push({x:hx,y:hy,w:15*s,h:17*s})-1;
-    if(nm)RT.names.push({name:nm,x:hx,y:hy,id,rot:o.rot||null});}catch(e){}
+    if(nm)RT.names.push({name:nm,x:hx,y:hy,id,rot:o.rot||null,vid:ch&&ch.vid!=null?ch.vid:null});}catch(e){}
   return r;};}
 {const _lb=label;
 label=function(text,x,y,bg,fg,size){if(!RT.on)return _lb.apply(this,arguments);
@@ -60,7 +60,7 @@ function rtLayout(names,heads,obst,A,fs){const cp=rtCp();const fs2=RT.fs2,pad=6;
       if(line){const n=Math.ceil(Math.hypot(q.x-lx,q.y-2-ly)/3);for(let i=1;i<n&&!bad;i++){const px=lx+(q.x-lx)*i/n,py=ly+(q.y-2-ly)*i/n,pr=[px-1,py-1,px+1,py+1];
         for(const p of placed)if(rtHit(pr,[p.x0,p.y0,p.x1,p.y1],0)){bad=true;break;}
         if(!bad&&q.prio>2)for(let j=0;j<heads.length;j++){if(j===q.id)continue;const hd=heads[j];if(rtHit(pr,[hd.x-hd.w/2,hd.y,hd.x+hd.w/2,hd.y+hd.h],0)){bad=true;break;}}}}
-      if(bad)continue;best={x0,y0,x1,y1,name:q.name,puesto:pu,prio:q.prio,hx:q.x,hy:q.y-2,lx,ly,line,h1:Math.round(fs*1.45),fs2,ana:!!q.ana,grupo:!!(q.rot&&q.rot.grupo)};bc=c;}
+      if(bad)continue;best={x0,y0,x1,y1,name:q.name,puesto:pu,prio:q.prio,hx:q.x,hy:q.y-2,lx,ly,line,h1:Math.round(fs*1.45),fs2,ana:!!q.ana,grupo:!!(q.rot&&q.rot.grupo),vid:q.vid!=null?q.vid:null};bc=c;}
     if(best)placed.push(best);}
   cv.restore();return placed;}
 function rtPaint(){const A=rtAreas();const fs=RT.fs;
@@ -79,7 +79,7 @@ drawScene=function(key,tt,night){RT.names=[];RT.heads=[];RT.obst=[];RT.ana=null;
   RT.pend=true; // se pintan al acabar el fotograma, después del tinte de noche: son interfaz, no mundo
   return sc;};}
 // apunta el nombre de la última figura pintada: para las escenas que dibujan a escala propia (criaturas) y antes ponían su etiqueta pequeña
-function rotular(nombre,puesto){if(!RT.on||!RT.heads.length||!nombre)return false;const id=RT.heads.length-1,h=RT.heads[id];RT.names.push({name:nombre,x:h.x,y:h.y,id,rot:puesto?{trab:true,puesto}:null});return true;}
+function rotular(nombre,puesto,vid){if(!RT.on||!RT.heads.length||!nombre)return false;const id=RT.heads.length-1,h=RT.heads[id];RT.names.push({name:nombre,x:h.x,y:h.y,id,rot:puesto?{trab:true,puesto}:null,vid:vid!=null?vid:null});return true;}
 // letreros de interfaz que una escena quiere encima de todo (la dirección de una casa)
 function rotuloDespues(fn){if(!RT.on)return false;RT.post=RT.post||[];RT.post.push(fn);return true;}
 {const _rn=render;
