@@ -6,3 +6,7 @@ Aquí se dejan los packs tal como se descargan (mejor en .zip), para que la inte
 - Esta carpeta lleva un archivo `.gdignore`: Godot no la importa ni la mete en el juego, así que lo que haya aquí no engorda la descarga.
 - Lo que se usa de verdad se copia a `godot/arte/muebles/`, `ciudad/` o `personaje/` y se anota en `godot/arte/FUENTES.md`.
 - Límite de GitHub al subir desde el navegador: 25 MB por archivo y 100 archivos por tanda.
+
+## Packs partidos
+
+GitHub no admite archivos de más de 100 MB, así que dos packs de Quaternius van en trozos (`quaternius_…_1-…zip`, `_2-…`). Se descomprimen todos en la misma carpeta y queda el árbol original. Llevan los modelos glTF y las texturas; se han dejado fuera las copias en FBX, OBJ y Unity, que Godot no usa.
