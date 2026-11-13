@@ -1,0 +1,261 @@
+{
+ "formas": [
+  {
+   "id": "peso",
+   "n": "Peso",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "musculo",
+   "n": "Músculo",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "altura",
+   "n": "Altura",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "edad",
+   "n": "Edad",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "genero",
+   "n": "Género (femenino ↔ masculino)",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "pecho",
+   "n": "Pecho",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "cintura",
+   "n": "Cintura",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "cadera",
+   "n": "Cadera",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "barriga",
+   "n": "Barriga",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "hombros",
+   "n": "Hombros",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "piernas_largo",
+   "n": "Largo de piernas",
+   "grupo": "cuerpo",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "cara_ancho",
+   "n": "Ancho de cara",
+   "grupo": "cara",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "nariz",
+   "n": "Nariz",
+   "grupo": "cara",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "labios",
+   "n": "Labios",
+   "grupo": "cara",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "ojos_tam",
+   "n": "Tamaño de ojos",
+   "grupo": "cara",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  },
+  {
+   "id": "mandibula",
+   "n": "Mandíbula",
+   "grupo": "cara",
+   "min": -1,
+   "max": 1,
+   "def": 0.0
+  }
+ ],
+ "pieles": [
+  {
+   "id": "clara",
+   "n": "Clara"
+  },
+  {
+   "id": "media",
+   "n": "Media"
+  },
+  {
+   "id": "morena",
+   "n": "Morena"
+  },
+  {
+   "id": "oscura",
+   "n": "Oscura"
+  }
+ ],
+ "expresiones": [
+  {
+   "id": "sonrisa",
+   "n": "Sonrisa"
+  },
+  {
+   "id": "enfado",
+   "n": "Enfado"
+  },
+  {
+   "id": "tristeza",
+   "n": "Tristeza"
+  },
+  {
+   "id": "sorpresa",
+   "n": "Sorpresa"
+  },
+  {
+   "id": "ojos_cerrados",
+   "n": "Ojos cerrados"
+  }
+ ],
+ "dh": {
+  "peso+": 0.0,
+  "peso-": 0.0,
+  "musculo+": 0.0,
+  "musculo-": 0.0,
+  "altura+": 0.7405,
+  "altura-": -0.3759,
+  "edad+": -0.0141,
+  "edad-": -0.1367,
+  "genero+": 0.0728,
+  "genero-": -0.0713,
+  "pecho+": 0.0,
+  "pecho-": 0.0,
+  "cintura+": 0.0,
+  "cintura-": 0.0,
+  "cadera+": 0.0,
+  "cadera-": 0.0,
+  "barriga+": 0.0,
+  "barriga-": 0.0,
+  "hombros+": 0.0,
+  "hombros-": 0.0,
+  "piernas_largo+": 0.0,
+  "piernas_largo-": 0.0,
+  "cara_ancho+": 0.0,
+  "cara_ancho-": 0.0,
+  "nariz+": 0.0,
+  "nariz-": 0.0,
+  "labios+": 0.0,
+  "labios-": 0.0,
+  "ojos_tam+": 0.0,
+  "ojos_tam-": 0.0,
+  "mandibula+": 0.0,
+  "mandibula-": 0.0
+ },
+ "pelos": [
+  {
+   "id": "",
+   "n": "Sin pelo"
+  },
+  {
+   "id": "corto",
+   "n": "Corto"
+  },
+  {
+   "id": "media",
+   "n": "Media melena"
+  },
+  {
+   "id": "largo",
+   "n": "Largo"
+  }
+ ],
+ "ropas": [
+  {
+   "id": "camiseta",
+   "n": "Camiseta",
+   "capa": "arriba"
+  },
+  {
+   "id": "sudadera",
+   "n": "Sudadera",
+   "capa": "arriba"
+  },
+  {
+   "id": "vaqueros",
+   "n": "Vaqueros",
+   "capa": "abajo"
+  },
+  {
+   "id": "chandal",
+   "n": "Pantalón de chándal",
+   "capa": "abajo"
+  },
+  {
+   "id": "zapatillas",
+   "n": "Zapatillas",
+   "capa": "pies"
+  },
+  {
+   "id": "vestido",
+   "n": "Vestido",
+   "capa": "entero"
+  },
+  {
+   "id": "falda",
+   "n": "Falda",
+   "capa": "abajo"
+  }
+ ]
+}
