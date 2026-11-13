@@ -24,6 +24,13 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 
 ### ✅ (hecho) T-140 censo ampliado · T-141 piquetes, colas y rider · T-142 romance en Gente, ficha de barrio y equilibrio
 
+### GD-8 · Godot, fase 2, segunda tanda
+- Acciones de casa y necesidades completas (nevera, cocina, ducha, váter, lavabo, sofá y tele); higiene en el HUD.
+- Modo comprar y colocar muebles, con dinero y guardado (sección nueva en `guardado.gd`).
+- Cambiar los muebles hechos con primitivas (váter, lavabo, lavadora, tele) por los de `godot/arte/entrada/kenney_furniture-kit.zip`; el `fregadero` no casa con `cocina` (encimera naranja, más ancho).
+- Las personas no se estorban (el jugador puede quedar encima de la camarera). Al dormir, el aro amarillo se queda a los pies de la cama.
+- De lejos, el solar marrón de casa se vuelve verde (pelea de profundidad con la hierba).
+
 ### T-144 · Lo que quedó de la ciudad habitada
 Rol: motor + datos. Hecho en T-143: averías por barrio, piquete que llega y se va, pancarta, manifestación con el personaje. Queda: (1) el rider cobra por entrega con la misma paga media (`profesiones.json` → `reparto`, `gig`); (2) menores de 12 yendo al colegio con su adulta y los 49 que trabajan «fuera» saliendo del portal a la parada (hoy 214 de 263 vistos en una semana); (3) convivir con vecinos que viven solos o en piso compartido; (4) con la manifestación, la barra de arriba sigue diciendo el destino anterior en el visor: comprobar jugando; (5) capturas pendientes: piquete del súper, rider entregando, aula con el censo nuevo.
 
