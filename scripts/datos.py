@@ -898,14 +898,26 @@ def _g2a_interiores(d,E):
     for k,r in R.items():
         if not r.get('pasos'):E.append('interiores.recetas.%s: sin pasos'%k)
     for k,i in I.get('interiores',{}).items():
-        if i.get('lugar') not in lug:E.append('interiores.interiores.%s: lugar desconocido'%k)
+        if i.get('lugar') not in lug and i.get('lugar')!='casa':E.append('interiores.interiores.%s: lugar desconocido'%k)
+        # tabiques: segmentos alineados con un eje (a, b en metros desde la puerta), dentro del plano, con huecos de >= 1 m
+        izq=i.get('izq',i['tam'][0]//2);W,H=i['tam']
+        for tb in i.get('tabiques',[]):
+            n=tb.get('id','?');a_,b_=tb.get('a'),tb.get('b')
+            if not(a_ and b_ and len(a_)==2 and len(b_)==2):E.append('interiores.interiores.%s.tabiques.%s: faltan a y b'%(k,n));continue
+            if a_[0]!=b_[0] and a_[1]!=b_[1]:E.append('interiores.interiores.%s.tabiques.%s: no está alineado con un eje'%(k,n));continue
+            if not(-izq<=min(a_[0],b_[0]) and max(a_[0],b_[0])<=W-izq and 0<=min(a_[1],b_[1]) and max(a_[1],b_[1])<=H):E.append('interiores.interiores.%s.tabiques.%s: fuera del plano'%(k,n))
+            ej=1 if a_[0]==b_[0] else 0;lo,hi=sorted((a_[ej],b_[ej]));prev=lo
+            for h0,h1 in sorted(tb.get('huecos',[])):
+                if h1-h0<1:E.append('interiores.interiores.%s.tabiques.%s: hueco de menos de 1 m'%(k,n))
+                if h0<prev or h1>hi:E.append('interiores.interiores.%s.tabiques.%s: hueco fuera del tabique o solapado'%(k,n))
+                prev=h1
         ids=set()
         for m in i.get('muebles',[]):
             if m.get('tipo') not in T:E.append('interiores.interiores.%s: mueble «%s» de tipo desconocido'%(k,m.get('id')))
             if m.get('id') in ids:E.append('interiores.interiores.%s: id repetido «%s»'%(k,m.get('id')))
             ids.add(m.get('id'))
             w,h=i['tam']
-            if not (-w/2<=m['pos'][0]<=w/2 and 0<=m['pos'][1]<=h):E.append('interiores.interiores.%s: «%s» fuera del plano'%(k,m.get('id')))
+            if not (-izq<=m['pos'][0]<=w-izq and 0<=m['pos'][1]<=h):E.append('interiores.interiores.%s: «%s» fuera del plano'%(k,m.get('id')))
 _g2a_comprobar=comprobar
 def comprobar(d):
     E=_g2a_comprobar(d);_g2a_interiores(d,E);return E

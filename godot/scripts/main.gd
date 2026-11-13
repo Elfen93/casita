@@ -60,7 +60,8 @@ var hab := {"cocteleria": 0.0}
 var trabaja_bar := false     # PROVISIONAL: interruptor de prueba hasta que exista el sistema de trabajo en Godot
 var interiores: Dictionary
 var tipos_obj: Dictionary
-var interior: Interior
+var interior: Interior          # el interior en el que está el jugador ahora (null si está fuera)
+var interiores_v: Array = []    # todos los interiores construidos (bar, tu casa…)
 var bar: BarCtl
 var cola: Cola
 var en_interior := false
@@ -206,8 +207,8 @@ func _sol() -> void:
 	if absf(noche - _noche_f) > 0.02:
 		_noche_f = noche
 		Fachada.set_noche(clampf(noche * 1.6 - 0.25, 0.0, 1.0))
-	if interior != null:
-		interior.set_noche(noche)
+	for it_ in interiores_v:
+		it_.set_noche(noche)
 
 # =============== el mundo ===============
 func _mat(c: Color, rug := 0.9) -> StandardMaterial3D:
@@ -599,6 +600,15 @@ func _registrar(id: String, n: String, e: String, rb: Array, h: float, col: Colo
 	var r := Escala.rect(rb)
 	if propio:
 		r = _patio_casa(r)
+	# tu piso: si hay interior andable, el bloque es la cáscara de fuera del bajo y se oculta al entrar (plantas de arriba y tejado)
+	var it_casa: Interior = null
+	var bloque: Node3D = null
+	if propio and _id_con_interior(id) != "":
+		it_casa = _interior_nuevo(_id_con_interior(id), r)
+		r = it_casa.rect.grow(0.6)
+		bloque = Node3D.new()
+		add_child(bloque)
+		it_casa.al_entrar.append(bloque)
 	var altura := h
 	var cx := r.get_center().x
 	var cz := r.get_center().y
@@ -607,7 +617,17 @@ func _registrar(id: String, n: String, e: String, rb: Array, h: float, col: Colo
 		var q = B["puertas"][id]
 		var px := clampf(Escala.m(float(q[0])), r.position.x + 1.5, r.end.x - 1.5)
 		pu = Vector2(px, r.end.y + 1.5)
-		est.caja(Vector3(px, 1.1, r.end.y), Vector3(1.8, 2.2, 0.25), Color(0.28, 0.2, 0.15))
+		if it_casa != null:
+			pu = Vector2(it_casa.puerta.x, r.end.y + 1.5)
+			var pt := MeshInstance3D.new()
+			var pb := BoxMesh.new()
+			pb.size = Vector3(1.8, 2.2, 0.25)
+			pt.mesh = pb
+			pt.material_override = _mat(Color(0.28, 0.2, 0.15))
+			pt.position = Vector3(it_casa.puerta.x, 1.1, r.end.y)
+			bloque.add_child(pt)
+		else:
+			est.caja(Vector3(px, 1.1, r.end.y), Vector3(1.8, 2.2, 0.25), Color(0.28, 0.2, 0.15))
 	var cuerpo := MeshInstance3D.new()
 	var bm := BoxMesh.new()
 	bm.size = Vector3(r.size.x, altura, r.size.y)
@@ -616,10 +636,20 @@ func _registrar(id: String, n: String, e: String, rb: Array, h: float, col: Colo
 	cuerpo.rotation.y = PI    # el portal del sombreador mira a -Z; las puertas del dato dan al sur
 	var col_f := col.lerp(Color(0.85, 0.78, 0.66), 0.35)
 	cuerpo.material_override = Fachada.material(bm.size, col_f, 3.0 if altura > 6.0 else 3.4, float(absi(hash(id)) % 97), false, techo if techo is Color else Color(0.42, 0.34, 0.3))
-	add_child(cuerpo)
-	nav.solido_rect(r, true)
+	(bloque if bloque != null else self).add_child(cuerpo)
+	if it_casa == null:
+		nav.solido_rect(r, true)
 	if techo is Color:
-		if tipo == "casa":
+		if it_casa != null:
+			var tj := MeshInstance3D.new()
+			var tb := BoxMesh.new()
+			tb.size = Vector3(r.size.x + 0.8, 0.5, r.size.y + 0.8)
+			tj.mesh = tb
+			tj.material_override = _mat(techo)
+			tj.position = Vector3(cx, altura + 0.25, cz)
+			bloque.add_child(tj)
+			altura += 0.5
+		elif tipo == "casa":
 			var mi := MeshInstance3D.new()
 			var pm := PrismMesh.new()
 			pm.size = Vector3(r.size.x + 1.0, 3.2, r.size.y + 1.0)
@@ -637,7 +667,9 @@ func _registrar(id: String, n: String, e: String, rb: Array, h: float, col: Colo
 	etq.set_meta("sec", (not propio) and (str(e) == "🏢" or str(e) == "🏠"))  # portales del censo: de lejos sobran
 	etiquetas.append(etq)
 	edificios[id] = {"id": id, "n": n, "e": e, "rb": r, "h": altura, "puerta": pu, "d": d, "abre": abre,
-		"aabb": AABB(Vector3(r.position.x, 0, r.position.y), Vector3(r.size.x, altura, r.size.y)), "etq": etq}
+		"aabb": AABB(Vector3(r.position.x, 0, r.position.y), Vector3(r.size.x, altura, r.size.y)), "etq": etq, "interior": it_casa}
+	if it_casa != null:
+		it_casa.etq = etq
 
 # Tu casa (vivienda «viejo»): un piso en un bloque de 4 plantas con su portal, 14 x 10 m, pegado a la calle donde está la puerta
 # del dato; el resto de la parcela (que a escala son 60 x 60 m) es patio: hierba con valla, árboles y un banco.
@@ -664,16 +696,23 @@ func _id_con_interior(lugar: String) -> String:
 			return k
 	return ""
 
+# construye un interior en la parcela dada y lo apunta en la lista
+func _interior_nuevo(k: String, parcela: Rect2) -> Interior:
+	var it := Interior.construir(self, k, interiores["interiores"][k], tipos_obj, parcela)
+	interiores_v.append(it)
+	return it
+
 func _interior(id: String, v: Dictionary) -> void:
 	var k := _id_con_interior(id)
 	var parcela := Escala.rect(v["rb"])
-	interior = Interior.construir(self, k, interiores["interiores"][k], tipos_obj, parcela)
-	bar = BarCtl.new(self, interior)
-	var r := interior.rect
-	var etq := etiqueta("%s %s" % [v.get("e", "🏢"), v["n"]], Vector3(r.get_center().x, interior.alto + 2.5, r.position.y), 44, Color(1, 1, 0.96), 330.0)
-	etq_interior = etq
+	var it := _interior_nuevo(k, parcela)
+	if id == "bar":
+		bar = BarCtl.new(self, it)    # el controlador del bar (camarero, clientes) es solo del bar
+	var r := it.rect
+	var etq := etiqueta("%s %s" % [v.get("e", "🏢"), v["n"]], Vector3(r.get_center().x, it.alto + 2.5, r.position.y), 44, Color(1, 1, 0.96), 330.0)
+	it.etq = etq
 	etiquetas.append(etq)
-	edificios[id] = {"id": id, "n": v["n"], "e": v.get("e", "🏢"), "rb": r, "h": 0.5, "puerta": Vector2(interior.puerta.x, interior.puerta.y + 1.5), "d": v.get("d", ""), "abre": v.get("abre", null),
+	edificios[id] = {"id": id, "n": v["n"], "e": v.get("e", "🏢"), "rb": r, "h": 0.5, "puerta": Vector2(it.puerta.x, it.puerta.y + 1.5), "d": v.get("d", ""), "abre": v.get("abre", null),
 		"aabb": AABB(Vector3(r.position.x, 0, r.position.y), Vector3(r.size.x, 0.5, r.size.y)), "etq": etq}
 
 func _edificios() -> void:
@@ -768,6 +807,8 @@ func _camara() -> void:
 
 func _poner_camara() -> void:
 	dist = clampf(dist, 7.0, 520.0)
+	if en_interior:
+		dist = minf(dist, 14.5)   # más lejos el suelo del interior se confunde con la hierba (precisión de profundidad)
 	# lejos, la cámara baja para ver el horizonte
 	inclin = lerpf(deg_to_rad(52.0), deg_to_rad(24.0), clampf((dist - 40.0) / 300.0, 0.0, 1.0))
 	camara.position = Vector3(0, sin(inclin) * dist, cos(inclin) * dist)
@@ -1121,11 +1162,10 @@ func _llegar() -> void:
 	destino = ""
 	var e: Dictionary = edificios[id]
 	if id == "casa":
-		dentro = true
-		jugador.nodo.visible = false
-		_ficha("🏠 Tu casa", "Tu piso de La Ribera. Hay una cama y una nevera casi vacía.", [
-			["🛏️ Dormir 8 horas", func(): _accion_dormir(480.0)],
-			["😴 Echar una siesta (1 h)", func(): _accion_dormir(60.0)]])
+		# se entra andando: unos pasos más allá de la puerta, ya dentro del piso
+		var it_c: Interior = e["interior"]
+		if it_c != null:
+			_ir_a_punto(Vector2(it_c.puerta.x, it_c.puerta.y - 2.5))
 		return
 	if e["abre"] != null and not _abierto(id):
 		_aviso("%s está cerrado. %s" % [e["n"], _horario_hoy(id)])
@@ -1151,6 +1191,13 @@ func _accion_super() -> void:
 		dinero -= PRECIO_SUPER
 		nec["hambre"] = minf(100.0, nec["hambre"] + 45.0)
 		_aviso("Has comido algo. Hambre arriba."))
+
+# dormir en la cama (acción «dormir» de cola.gd): salto de tiempo con velo; al acabar se llama a fin
+func dormir_cama(dm: float, k: float, fin: Callable) -> void:
+	_cerrar_ficha_y_saltar(dm, "Durmiendo…" if dm > 100.0 else "Siesta…", func():
+		nec["energia"] = minf(100.0, nec["energia"] + k * dm)
+		_aviso("Has dormido. Energía arriba.")
+		fin.call())
 
 func _accion_dormir(dm: float) -> void:
 	_cerrar_ficha_y_saltar(dm, "Durmiendo…" if dm > 100.0 else "Siesta…", func():
@@ -1431,6 +1478,8 @@ func _tap(p: Vector2, solo_elegir := false, probar := false) -> bool:
 	for id in edificios:
 		if edificios[id]["h"] <= 1.0:
 			continue
+		if interior != null and edificios[id].get("interior", null) == interior:
+			continue    # dentro de tu piso el bloque no se toca: se anda por el suelo
 		var ab: AABB = edificios[id]["aabb"]
 		var r = ab.intersects_ray(o, n)
 		if r != null:
@@ -1587,6 +1636,15 @@ func _process(dt: float) -> void:
 		fps_t = 0.0
 		print("fps:%d" % Engine.get_frames_per_second())
 
+# mueble por id en cualquiera de los interiores (el del jugador primero)
+func _objeto_por_id(id: String) -> Objeto:
+	if interior != null and interior.por_id.has(id):
+		return interior.por_id[id]
+	for it_ in interiores_v:
+		if it_.por_id.has(id):
+			return it_.por_id[id]
+	return null
+
 # =============== puente para pruebas (solo web) ===============
 # LOD de personas: solo las que están a menos de LOD_DIST m de la cámara y dentro de pantalla (como mucho LOD_MAX, las
 # más cercanas) llevan esqueleto y animación; el resto es una cápsula de una malla, o nada si no se ven.
@@ -1596,8 +1654,8 @@ var LOD_ON := true
 var _lod_t := 0.0
 func _lod() -> void:
 	var cp := camara.global_position
-	if interior != null:
-		interior.lod(cp)
+	for it_ in interiores_v:
+		it_.lod(cp)
 	var cand: Array = []
 	if not LOD_ON:
 		for x in vecinos:
@@ -1613,7 +1671,11 @@ func _lod() -> void:
 			continue
 		var g: Vector3 = a.nodo.global_position
 		var d: float = cp.distance_to(g)
-		var oculto_en_bar: bool = interior != null and not en_interior and a != jugador and interior.dentro(a.pos2())
+		var oculto_en_bar := false
+		if a != jugador:
+			for it_ in interiores_v:
+				if it_ != interior and it_.dentro(a.pos2()):
+					oculto_en_bar = true
 		if a == jugador or (d < LOD_DIST and not oculto_en_bar and camara.is_position_in_frustum(g + Vector3(0, 0.9, 0))):
 			cand.append([d if a != jugador else -1.0, a])
 		else:
@@ -1623,15 +1685,25 @@ func _lod() -> void:
 		cand[i][1].set_lod(i < LOD_MAX, cand[i][0] < 35.0)
 
 func _interior_vista() -> void:
-	if interior == null:
+	if interiores_v.is_empty():
 		return
-	var d := interior.dentro(jugador.pos2()) or jugador.postura == "oculto"
-	interior.cortar(d)
-	if d != en_interior:
+	var act: Interior = null
+	for it_ in interiores_v:
+		if it_.dentro(jugador.pos2()):
+			act = it_
+	if act == null and jugador.postura == "oculto" and bar != null:
+		act = bar.it
+	for it_ in interiores_v:
+		it_.cortar(it_ == act)
+	if act != interior:
+		interior = act
+		var d := act != null
 		en_interior = d
-		if etq_interior != null:
-			etq_interior.set_meta("sec_dentro", d)
-			etq_interior.visible = not d
+		for it_ in interiores_v:
+			if it_.etq != null:
+				var dentro_it: bool = it_ == act
+				it_.etq.set_meta("sec_dentro", dentro_it)
+				it_.etq.visible = not dentro_it
 		dist = DIST_INTERIOR if d else DIST_CALLE
 		_poner_camara()
 
@@ -1695,7 +1767,7 @@ func _cmd_js(args: Array) -> void:
 			trabaja_bar = bool(a)
 			_hud()
 		"accion":
-			var o = interior.por_id.get(str(a), null)
+			var o = _objeto_por_id(str(a))
 			var ok := false
 			if o != null:
 				for e in Acciones.lista(o, self):
@@ -1726,11 +1798,10 @@ func _cmd_js(args: Array) -> void:
 		"pant":
 			# dónde cae en pantalla un mueble del interior y si hay panel abierto (pruebas del gesto de dedo)
 			var sp := Vector2(-1, -1)
-			if interior != null:
-				for ob in interior.objetos:
-					if str(ob.id) == str(a):
-						var ab: AABB = ob.aabb()
-						sp = camara.unproject_position(ab.position + ab.size * Vector3(0.5, 1.0, 0.5))
+			var ob = _objeto_por_id(str(a))
+			if ob != null:
+				var ab: AABB = ob.aabb()
+				sp = camara.unproject_position(ab.position + ab.size * Vector3(0.5, 1.0, 0.5))
 			print("pant: %d,%d ficha=%s" % [int(sp.x), int(sp.y), str(panel_ficha.visible)])
 		"donde":
 			var t2 := []
