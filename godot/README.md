@@ -34,7 +34,7 @@ python3 t/cdpshot.py "http://127.0.0.1:8731/play3d/index.html" 25 /tmp/x.png 420
 En la web, `window.casita_cmd('ir','bar')`, `('hora',22)`, `('vel',5)`, `('zoom',30)`, `('vecino',3)`, `('boton',0)`, `('estado')` sirven para probar sin tocar.
 
 ## Controles
-Un dedo arrastra la cámara, dos dedos hacen zoom (rueda del ratón en el ordenador). Tocar una calle o un edificio: el personaje va andando; en el bar, el súper y casa aparece el menú. Tocar a un vecino: su ficha. 1× / 5× cambian la velocidad (un día = 16 min a 1×).
+Un dedo arrastra la cámara, dos dedos hacen zoom (rueda del ratón en el ordenador). Tocar una calle o un edificio: el personaje va andando; en el bar, el súper y casa aparece el menú. Tocar a un vecino: su ficha. **Con el dedo**: dos toques seguidos, o dejar el dedo quieto medio segundo, mandan andar a ese punto aunque haya algo debajo (un mueble, una persona, un edificio). **Con ratón**: botón derecho anda, izquierdo elige. 1× / 5× cambian la velocidad (un día = 16 min a 1×).
 
 ## Qué sale de los datos y qué no
 De `data/`: calles, puertas, huellas (`rb`), colores, nombres, descripciones y horarios de apertura, casa del jugador (vivienda «viejo» → La Ribera), censo del barrio y sus horarios, tasas de necesidades (`reglas.json`), efecto del bar (`salidas_necesidades.amigos`). Provisional en el código: precios (bar 6 €, súper 12 €), efecto del súper y del sueño, alturas de los cubos.

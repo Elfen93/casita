@@ -66,14 +66,22 @@ func libre_cerca(p: Vector2) -> Vector2i:
 	var c := celda(p)
 	if not grid.is_point_solid(c):
 		return c
+	# la celda libre más cercana al punto pedido (no la primera del anillo): al señalar un mueble se llega por el lado señalado
 	for r in range(1, 14):
+		var mejor := c
+		var md := 1e18
 		for dy in range(-r, r + 1):
 			for dx in range(-r, r + 1):
 				if maxi(absi(dx), absi(dy)) != r:
 					continue
 				var q := c + Vector2i(dx, dy)
 				if q.x >= 0 and q.y >= 0 and q.x < ancho and q.y < alto and not grid.is_point_solid(q):
-					return q
+					var d := centro(q).distance_squared_to(p)
+					if d < md:
+						md = d
+						mejor = q
+		if md < 1e17:
+			return mejor
 	return c
 
 func _peso(p: Vector2) -> float:

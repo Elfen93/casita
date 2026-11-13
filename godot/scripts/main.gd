@@ -106,6 +106,19 @@ var toque_ini := {}
 var gesto_max := 0
 var mov_total := 0.0
 var t_ini := 0
+# --- dedo: un toque elige (o anda si es suelo); dos toques seguidos o el dedo quieto mandan andar ahí, haya lo que haya debajo
+const DOBLE_S := 0.32            # margen entre los dos toques
+const DOBLE_PX := 56.0
+const LARGO_S := 0.45            # dedo quieto
+var toque_real := false          # el gesto en curso es de dedo (no ratón emulado)
+var largo_hecho := false         # el dedo quieto ya mandó andar: al soltar no cuenta como toque
+var ult_tap_t := -100.0
+var dedo_t := 0.0                # reloj de los gestos: avanza con el juego (un tirón de imagen no cuenta como dedo quieto)
+var dedo_ini := 0.0
+var ult_tap_p := Vector2.ZERO
+var tap_pend := false            # toque sobre algo, a la espera por si llega el segundo
+var tap_pend_p := Vector2.ZERO
+var pista_dedo := 0              # veces que se ha enseñado la pista del gesto
 var d_pinza := 0.0
 
 func _ready() -> void:
@@ -1091,7 +1104,8 @@ func _ir_a_punto(p: Vector2, id := "") -> void:
 	if not cam_libre:
 		seguir = true
 	marca.visible = true
-	marca.position = Vector3(p.x, 0.08, p.y)
+	var fin: Vector2 = ruta[-1]
+	marca.position = Vector3(fin.x, 0.08, fin.y)
 	if ruta.size() == 1 and (ruta[0] as Vector2).distance_to(jugador.pos2()) < 0.05:
 		jugador.ruta = []
 		_llegar()
@@ -1299,6 +1313,9 @@ func _input(ev: InputEvent) -> void:
 				mov_total = 0.0
 				gesto_max = 0
 				t_ini = Time.get_ticks_msec()
+				toque_real = ev.device != InputEvent.DEVICE_ID_EMULATION
+				dedo_ini = dedo_t
+				largo_hecho = false
 			toques[ev.index] = ev.position
 			toque_ini[ev.index] = ev.position
 			gesto_max = maxi(gesto_max, toques.size())
@@ -1306,14 +1323,16 @@ func _input(ev: InputEvent) -> void:
 		else:
 			if not toques.has(ev.index):
 				return
-			var era_tap := gesto_max == 1 and mov_total < 14.0 and Time.get_ticks_msec() - t_ini < 1500
+			var era_tap := gesto_max == 1 and mov_total < 14.0 and Time.get_ticks_msec() - t_ini < 1500 and not largo_hecho
 			toques.erase(ev.index)
 			d_pinza = 0.0
 			if toques.is_empty() and era_tap:
-				# un toque que viene del ratón (ordenador) solo elige: personas, objetos, edificios. En el móvil el toque también manda andar.
 				if ev.device == InputEvent.DEVICE_ID_EMULATION:
+					# un toque que viene del ratón (ordenador) solo elige: personas, objetos, edificios
 					con_raton = true
-				_tap(ev.position, ev.device == InputEvent.DEVICE_ID_EMULATION)
+					_tap(ev.position, true)
+				else:
+					_tap_dedo(ev.position)
 			if toques.is_empty():
 				gesto_max = 0
 	elif ev is InputEventScreenDrag:
@@ -1356,12 +1375,14 @@ func _andar_a_pantalla(p: Vector2) -> void:
 		var q := Vector3(g)
 		_ir_a_punto(Vector2(q.x, q.z))
 
-func _tap(p: Vector2, solo_elegir := false) -> void:
+# probar=true no hace nada: solo dice si bajo el punto hay algo que se elige (persona, objeto, edificio)
+func _tap(p: Vector2, solo_elegir := false, probar := false) -> bool:
 	if panel_ficha.visible and not dentro:
-		_cerrar_ficha()
-		return
+		if not probar:
+			_cerrar_ficha()
+		return false
 	if dentro or velo.visible:
-		return
+		return false
 	var mejor := 44.0
 	var quien: Dictionary = {}
 	for x in vecinos:
@@ -1376,13 +1397,15 @@ func _tap(p: Vector2, solo_elegir := false) -> void:
 	var o := camara.project_ray_origin(p)
 	var n := camara.project_ray_normal(p)
 	if not quien.is_empty():
+		if probar:
+			return true
 		if bar != null and bar.tiene(quien):
 			for c in bar.clientes:
 				if c["x"] == quien:
 					_menu_objeto(c["obj"], quien)
-					return
+					return true
 		_ficha_vecino(quien)
-		return
+		return true
 	if interior != null and en_interior:
 		var mejor_o: Objeto = null
 		var mejor_v := 1e18
@@ -1400,8 +1423,9 @@ func _tap(p: Vector2, solo_elegir := false) -> void:
 					mejor_v = vol
 					mejor_d = minf(d, mejor_d)
 		if mejor_o != null:
-			_menu_objeto(mejor_o, {})
-			return
+			if not probar:
+				_menu_objeto(mejor_o, {})
+			return true
 	var mejor_t := 1e18
 	var hit := ""
 	for id in edificios:
@@ -1415,14 +1439,50 @@ func _tap(p: Vector2, solo_elegir := false) -> void:
 				mejor_t = t
 				hit = id
 	if hit != "":
-		_ir_a_edificio(hit)
-		return
-	if solo_elegir:
-		return
+		if not probar:
+			_ir_a_edificio(hit)
+		return true
+	if solo_elegir or probar:
+		return false
 	var g = Plane(Vector3.UP, 0.0).intersects_ray(o, n)
 	if g != null:
 		var q := Vector3(g)
 		_ir_a_punto(Vector2(q.x, q.z))
+	return false
+
+# Dedo. Un toque: suelo → andar ya; algo (persona, objeto, edificio) → su menú, tras un instante por si llega el segundo toque.
+# Dos toques seguidos, o el dedo quieto: andar a ese punto aunque haya algo debajo (pasar detrás de la barra, entre mesas…).
+func _tap_dedo(p: Vector2) -> void:
+	var ahora := dedo_t
+	if ahora - ult_tap_t <= DOBLE_S and p.distance_to(ult_tap_p) <= DOBLE_PX:
+		tap_pend = false
+		ult_tap_t = -100.0
+		_andar_a_pantalla(p)
+		return
+	ult_tap_t = ahora
+	ult_tap_p = p
+	if _tap(p, false, true):
+		tap_pend = true
+		tap_pend_p = p
+	else:
+		_tap(p)
+
+func _dedo_tick(dt: float) -> void:
+	dedo_t += minf(dt, 0.1)
+	var ahora := dedo_t
+	if tap_pend and ahora - ult_tap_t > DOBLE_S:
+		tap_pend = false
+		var habia: bool = panel_ficha.visible
+		_tap(tap_pend_p)
+		if panel_ficha.visible and not habia and pista_dedo < 2:
+			pista_dedo += 1
+			_aviso("Para andar hasta ahí: dos toques seguidos, o deja el dedo quieto.")
+	if toque_real and not largo_hecho and toques.size() == 1 and gesto_max == 1 and mov_total < 14.0 and ahora - dedo_ini >= LARGO_S:
+		largo_hecho = true
+		tap_pend = false
+		ult_tap_t = -100.0
+		Input.vibrate_handheld(18)
+		_andar_a_pantalla(toques.values()[0])
 
 func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 	var botones: Array = []
@@ -1460,6 +1520,7 @@ func _ficha_vecino(x: Dictionary) -> void:
 
 # =============== bucle ===============
 func _process(dt: float) -> void:
+	_dedo_tick(dt)
 	var rapido := salto_rest > 0.0
 	if rapido:
 		var paso := minf(salto_rest, VEL_SALTO * dt)
@@ -1662,6 +1723,15 @@ func _cmd_js(args: Array) -> void:
 				print("clientes: %d %s | camarero=%s %s | personal=%d" % [bar.clientes.size(), str(t), str(bar.camarero.get("x", {}).get("v", {}).get("n", "-")), bar.cam_est, bar.personal.size()])
 		"estado":
 			print("estado: min=%d dinero=%s nec=%s jug=%s ruta=%d m_andados=%d min_andados=%.2f mano=%s coct=%.1f cola=%d dentro=%s trabaja=%s post=%s" % [minutos, str(dinero), str(nec), str(jugador.nodo.position), jugador.ruta.size(), m_andados, min_andados, jugador.mano, hab["cocteleria"], cola.total(), str(en_interior), str(trabaja_bar), jugador.postura])
+		"pant":
+			# dónde cae en pantalla un mueble del interior y si hay panel abierto (pruebas del gesto de dedo)
+			var sp := Vector2(-1, -1)
+			if interior != null:
+				for ob in interior.objetos:
+					if str(ob.id) == str(a):
+						var ab: AABB = ob.aabb()
+						sp = camara.unproject_position(ab.position + ab.size * Vector3(0.5, 1.0, 0.5))
+			print("pant: %d,%d ficha=%s" % [int(sp.x), int(sp.y), str(panel_ficha.visible)])
 		"donde":
 			var t2 := []
 			for x in vecinos:
