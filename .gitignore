@@ -1,3 +1,7 @@
 t/_run_*.html
 casita.html
 __pycache__/
+
+# Godot (prueba 3D)
+godot/.godot/
+godot/data/

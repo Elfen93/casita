@@ -1,5 +1,8 @@
 # Changelog
 
+## 2026-11-13
+- Prueba GD-1 (Godot): proyecto en `godot/` y exportación web sin hilos en `play3d/` (`scripts/godot_export.sh`, datos con `scripts/godot_datos.py`). La Ribera en 3D desde `data/`, personaje que anda por las calles, reloj, necesidades, bar, súper, dormir y 24 vecinos con ficha. El service worker del juego web deja pasar `/play3d/` sin cachearlo.
+
 ## 2026-11-12
 - Nada flota: la casa y cada sitio están en su barrio. Dentro de un sitio se ve su interior abierto sobre su planta, con acera, calles con nombre, edificios vecinos con rótulo y gente por la calle; en casa, la calle y los vecinos alrededor. «Mirar dentro» desde el mapa pinta lo mismo (el mapa es la misma vista alejada).
 - Caminar (`mods/caminar.js`): ir al trabajo, salir, visitar y hacer recados son un viaje de verdad, de la puerta de casa a la del sitio, con cámara continua, sin cortes y a la ida y a la vuelta. Dura lo que dice `cdTrayecto` (también a 5× y 12×). Entre barrios espera en la parada, viaja («Metro L1 · 6 min»), paga el billete (Banco → «Transporte») y sigue andando. La salida automática al trabajo sale con el margen del trayecto más una hora.
