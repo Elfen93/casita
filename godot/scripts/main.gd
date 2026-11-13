@@ -807,8 +807,6 @@ func _camara() -> void:
 
 func _poner_camara() -> void:
 	dist = clampf(dist, 7.0, 520.0)
-	if en_interior:
-		dist = minf(dist, 14.5)   # más lejos el suelo del interior se confunde con la hierba (precisión de profundidad)
 	# lejos, la cámara baja para ver el horizonte
 	inclin = lerpf(deg_to_rad(52.0), deg_to_rad(24.0), clampf((dist - 40.0) / 300.0, 0.0, 1.0))
 	camara.position = Vector3(0, sin(inclin) * dist, cos(inclin) * dist)

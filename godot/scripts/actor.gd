@@ -68,7 +68,12 @@ func anim_tick() -> void:
 	var hablando := estado_etq != null and estado_etq.visible and estado_etq.text.begins_with("💬")
 	var espera := estado_etq != null and estado_etq.visible and estado_etq.text.begins_with("Esperando")
 	var usando := barra_n != null and barra_n.visible
-	if postura == "sentado":
+	# tumbado: la persona se acuesta centrada en la cama (el actor está en los pies, cabeza hacia -Z), sobre el colchón
+	if holder != null:
+		holder.position = Vector3(0, alt_asiento, -0.8) if postura == "tumbado" else Vector3.ZERO
+	if postura == "tumbado":
+		n = "dormir"
+	elif postura == "sentado":
 		n = "sentado"
 		if mano != "":
 			br = "beber"

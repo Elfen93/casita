@@ -1,9 +1,9 @@
 import sys,re,time,subprocess,socket
-sys.path.insert(0,'/home/claude/casita/t')
+sys.path.insert(0,__import__('os').path.dirname(__import__('os').path.abspath(__file__)))
 from g2a_cdp import Pag
 OUT=sys.argv[1] if len(sys.argv)>1 else '/tmp/g2a/dedo'
 so=socket.socket();so.bind(('127.0.0.1',0));port=so.getsockname()[1];so.close()
-srv=subprocess.Popen(['python3','-m','http.server',str(port),'--bind','127.0.0.1'],cwd='/home/claude/casita',stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+srv=subprocess.Popen(['python3','-m','http.server',str(port),'--bind','127.0.0.1'],cwd=__import__('os').path.dirname(__import__('os').path.dirname(__import__('os').path.abspath(__file__))),stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 time.sleep(1)
 p=Pag('http://127.0.0.1:%d/play3d/index.html'%port,espera=30)
 res=[]
