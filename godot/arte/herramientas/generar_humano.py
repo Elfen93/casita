@@ -184,6 +184,7 @@ class Malla:
         self.uv = None if uv is None else np.asarray(uv, np.float32)
         self.col = col
         self.formas = {}      # nombre -> delta (N,3) float32
+        self.sk = None        # pesos densos (N, n_huesos)
         self.nrm = None
 
     def calcular_normales(self, soldar=None):
@@ -295,6 +296,7 @@ class GLB:
     def __init__(self):
         self.bin = bytearray()
         self.views, self.accs, self.meshes, self.nodes, self.mats, self.imgs, self.texs = [], [], [], [], [], [], []
+        self.skins, self.anims, self.malla_nodos = [], [], []
 
     def _view(self, data, target=None):
         while len(self.bin) % 4:
@@ -347,6 +349,10 @@ class GLB:
         at["TEXCOORD_0"] = self._acc(uv, "VEC2", 5126, 34962)
         if malla.col is not None:
             at["COLOR_0"] = self._acc(np.asarray(malla.col, np.float32), "VEC4", 5126, 34962)
+        if malla.sk is not None and self.skins:
+            jn, wt = reducir_pesos(malla.sk)
+            at["JOINTS_0"] = self._acc(jn, "VEC4", 5123, 34962)
+            at["WEIGHTS_0"] = self._acc(wt, "VEC4", 5126, 34962)
         prim["indices"] = self._acc(malla.idx.reshape(-1), "SCALAR", 5125, 34963)
         nombres = list(malla.formas.keys())
         prim["targets"] = [{"POSITION": self._sparse(malla.formas[n])} for n in nombres]
@@ -355,14 +361,50 @@ class GLB:
             me["extras"] = {"targetNames": nombres}
             me["weights"] = [0.0] * len(nombres)
         self.meshes.append(me)
-        self.nodes.append({"name": malla.nombre, "mesh": len(self.meshes) - 1})
+        nd = {"name": malla.nombre, "mesh": len(self.meshes) - 1}
+        if self.skins and malla.sk is not None:
+            nd["skin"] = 0
+        self.nodes.append(nd)
+        self.malla_nodos.append(len(self.nodes) - 1)
+
+    def esqueleto(self, nombres, padres, pos):
+        ix = {n: i for i, n in enumerate(nombres)}
+        for i, (n, p) in enumerate(zip(nombres, padres)):
+            loc = pos[i] - (pos[ix[p]] if p is not None else 0)
+            self.nodes.append({"name": n, "translation": [float(x) for x in loc]})
+        for i, p in enumerate(padres):
+            if p is not None:
+                self.nodes[ix[p]].setdefault("children", []).append(i)
+        ibm = np.zeros((len(nombres), 16), np.float32)
+        for i in range(len(nombres)):
+            m = np.eye(4); m[:3, 3] = -pos[i]
+            ibm[i] = m.T.reshape(-1)
+        a = self._acc(ibm, "MAT4", 5126)
+        self.skins.append({"name": "Esqueleto", "joints": list(range(len(nombres))), "inverseBindMatrices": a, "skeleton": 0})
+        self.joint_ix = ix
+
+    def animacion(self, nombre, tiempos, rots, tras):
+        samplers, canales = [], []
+        ti = self._acc(np.asarray(tiempos, np.float32).reshape(-1, 1), "SCALAR", 5126, None, True)
+        for hueso, q in rots.items():
+            o = self._acc(np.asarray(q, np.float32), "VEC4", 5126)
+            samplers.append({"input": ti, "output": o, "interpolation": "LINEAR"})
+            canales.append({"sampler": len(samplers) - 1, "target": {"node": self.joint_ix[hueso], "path": "rotation"}})
+        o = self._acc(np.asarray(tras, np.float32), "VEC3", 5126)
+        samplers.append({"input": ti, "output": o, "interpolation": "LINEAR"})
+        canales.append({"sampler": len(samplers) - 1, "target": {"node": self.joint_ix["root"], "path": "translation"}})
+        self.anims.append({"name": nombre, "samplers": samplers, "channels": canales})
 
     def guardar(self, ruta):
         j = {"asset": {"version": "2.0", "generator": "generar_humano.py (Casita GD-10a)"},
-             "scene": 0, "scenes": [{"nodes": list(range(len(self.nodes)))}],
+             "scene": 0, "scenes": [{"nodes": ([0] if self.skins else []) + self.malla_nodos}],
              "nodes": self.nodes, "meshes": self.meshes, "materials": self.mats,
              "accessors": self.accs, "bufferViews": self.views,
              "buffers": [{"byteLength": len(self.bin)}]}
+        if self.skins:
+            j["skins"] = self.skins
+        if self.anims:
+            j["animations"] = self.anims
         js = json.dumps(j, separators=(",", ":")).encode()
         while len(js) % 4:
             js += b" "
@@ -515,18 +557,21 @@ def main():
     ropas, base = crear_ropas(cuerpo, W, P, Z)
     m_ropa = glb.material("ropa", (0.7, 0.7, 0.7, 1), 0.9, True)
     solo_cuerpo(base)
+    podar(base, 0.008)
     glb.anadir(base, m_ropa)
     resumen["ropa_base"] = (len(base.pos), base.tris)
     for i, n, capa, m in ropas:
         if m.nrm is None:
             m.calcular_normales()
         solo_cuerpo(m)
+        podar(m, 0.008)
         glb.anadir(m, m_ropa)
         resumen[m.nombre] = (len(m.pos), m.tris)
     pelos = crear_pelos(cuerpo, W, P, Z)
     m_pelo = glb.material("pelo", (1, 1, 1, 1), 0.5, True)
     for i, n, m, _ in pelos:
         solo_cuerpo(m, True)
+        podar(m, 0.005)
         glb.anadir(m, m_pelo)
         resumen[m.nombre] = (len(m.pos), m.tris)
     glb.guardar(os.path.join(salida, "humano.glb"))
@@ -578,7 +623,7 @@ def clasificar(D, W, P0):
     return z
 
 
-def prenda(nombre, cuerpo, W, campo, offset, col=None, recortar_suelo=False, suavizar=0):
+def prenda(nombre, cuerpo, W, campo, offset, col=None, recortar_suelo=False, suavizar=0, alisar=False):
     """Carcasa del cuerpo: parte de la malla donde campo > 0 (se recorta por el cero, borde limpio),
     desplazada 'offset' metros por la normal. 'campo' puede ser bool o float por vértice del cuerpo."""
     f = np.asarray(campo)
@@ -631,12 +676,30 @@ def prenda(nombre, cuerpo, W, campo, offset, col=None, recortar_suelo=False, sua
             np.add.at(acc, tt[:, a_], pos[tt[:, b_]]); np.add.at(cnt, tt[:, a_], 1)
             np.add.at(acc, tt[:, b_], pos[tt[:, a_]]); np.add.at(cnt, tt[:, b_], 1)
         pos = 0.5 * pos + 0.5 * acc / np.maximum(cnt, 1)[:, None]
+    if alisar:   # tela lisa sobre el pecho: no copia pezones
+        w = ((pos[:, 2] < -0.04) & (pos[:, 1] > 1.14) & (pos[:, 1] < 1.40) & (np.abs(pos[:, 0]) < 0.19)).astype(float)
+        w = w * 0.8 * (np.abs(pos[:, 0]) < 0.115)
+        tt = mapa[tris]
+        for _ in range(10):
+            acc, cnt = np.zeros_like(pos), np.zeros(len(pos))
+            for a_, b_ in ((0, 1), (1, 2), (2, 0)):
+                np.add.at(acc, tt[:, a_], pos[tt[:, b_]]); np.add.at(cnt, tt[:, a_], 1)
+                np.add.at(acc, tt[:, b_], pos[tt[:, a_]]); np.add.at(cnt, tt[:, b_], 1)
+            d_ = acc / np.maximum(cnt, 1)[:, None] - pos
+            nn = n2[usados]
+            d_ -= nn * np.minimum((d_ * nn).sum(axis=1), 0)[:, None]      # solo hacia fuera: no hunde la tela
+            pos = pos + w[:, None] * d_
+        pos = pos + n2[usados] * (0.006 * w)[:, None]      # holgura extra donde el pecho crece con la forma
     if recortar_suelo:
         pos[:, 1] = np.maximum(pos[:, 1], 0.0)
     m = Malla(nombre, pos, mapa[tris])
     m.nrm = n2[usados].astype(np.float32)
+    if cuerpo.sk is not None:
+        m.sk = lerp(cuerpo.sk.astype(np.float64))[usados].astype(np.float32)
     if colv is not None:
         m.col = lerp(colv)[usados]
+    if alisar:
+        m.calcular_normales()
     for n, d in forms.items():
         m.formas[n] = lerp(d)[usados].astype(np.float32)
     return m
@@ -652,6 +715,14 @@ def ligar_idw(cuerpo, pos, k=6):
     for n, dl in cuerpo.formas.items():
         out[n] = np.einsum("nk,nkc->nc", w, dl[i]).astype(np.float32)
     return out
+
+
+def ligar_sk(cuerpo, pos, k=6):
+    from scipy.spatial import cKDTree
+    d, i = cKDTree(cuerpo.pos).query(pos, k=k)
+    w = 1.0 / (d + 0.01)
+    w /= w.sum(axis=1, keepdims=True)
+    return np.einsum("nk,nkj->nj", w, cuerpo.sk[i]).astype(np.float32)
 
 
 def falda(nombre, cuerpo, P, y_cintura, y_bajo, vuelo=0.0, anillos=9, seg=36, valido=None):
@@ -676,6 +747,7 @@ def falda(nombre, cuerpo, P, y_cintura, y_bajo, vuelo=0.0, anillos=9, seg=36, va
     m = Malla(nombre, pos, np.array(tri))
     m.calcular_normales()
     m.formas = ligar_idw(cuerpo, pos.astype(np.float32))
+    m.sk = ligar_sk(cuerpo, pos.astype(np.float32))
     return m
 
 
@@ -686,6 +758,12 @@ def solo_cuerpo(m, con_cara=False):
     """Las prendas no necesitan expresiones ni (salvo el pelo) formas de cara: ahorra peso."""
     m.formas = {n: d for n, d in m.formas.items()
                 if not n.startswith("x_") and (con_cara or not n.startswith(FORMAS_CARA))}
+    return m
+
+
+def podar(m, umbral=0.0015):
+    """Quita las blend shapes cuyo desplazamiento máximo en esta pieza es invisible (< 1,5 mm): Godot las guarda densas."""
+    m.formas = {n: d for n, d in m.formas.items() if np.abs(d).max() >= umbral or (n.startswith("pecho") and np.abs(d).max() > 0.0015)}
     return m
 
 
@@ -743,19 +821,20 @@ def crear_ropas(cuerpo, W, P, Z):
     cuello = np.where(cabeza & (y > 1.5), -1, cuello)
     ropas = []
     def add(i, n, capa, campo, off, rs=False, su=0):
-        ropas.append((i, n, capa, prenda("ropa_" + i, cuerpo, W, campo, off, recortar_suelo=rs, suavizar=su)))
+        ropas.append((i, n, capa, prenda("ropa_" + i, cuerpo, W, campo, off, recortar_suelo=rs, suavizar=su, alisar=(capa in ("arriba", "entero")))))
     def torso(hem, manga, c_extra=0.0):
         return np.where(brazo, manga - sd, np.minimum(y - hem, cuello + c_extra))
     pantalon = lambda cin: np.where(brazo | cabeza, -1.0, np.minimum(cin - y, y - 0.115))
-    top = np.where(brazo | cabeza, -1.0, np.minimum(np.minimum(y - 1.05, 1.40 - y), cuello + 0.0))
+    # top de tirantes: sisa vertical, escote redondo (más bajo por delante), borde inferior recto
+    escote = (1.405 - 0.085 * np.clip(1 - (ax / 0.085) ** 2, 0, 1) * (1 - suave(z, -0.06, -0.01))) - y
+    top = np.where(brazo | cabeza, -1.0, np.minimum(np.minimum(y - 1.05, 0.142 - ax), escote))
     briefs = np.where(brazo | cabeza, -1.0, np.minimum(0.95 - y, y - 0.64))
-    base = prenda("ropa_base", cuerpo, W, np.maximum(top, briefs), 0.0035)
+    base = prenda("ropa_base", cuerpo, W, np.maximum(top, briefs), 0.0035, alisar=True)
     add("camiseta", "Camiseta", "arriba", torso(0.86, 0.17), 0.008)
     add("sudadera", "Sudadera", "arriba", torso(0.84, 0.46, 0.03), 0.012)
     add("vaqueros", "Vaqueros", "abajo", pantalon(1.02), 0.009)
-    add("chandal", "Pantalón de chándal", "abajo", pantalon(1.04), 0.010)
-    add("zapatillas", "Zapatillas", "pies", np.where(pie, 0.105 - y, -1.0), 0.013, rs=True, su=8)
-    cuerpo_v = prenda("ropa_vestido", cuerpo, W, np.where(brazo, 0.17 - sd, np.minimum(y - 0.99, cuello)), 0.008)
+    ropas.append(("zapatillas", "Zapatillas", "pies", unir("ropa_zapatillas", zapato("zi", cuerpo, P, pie, -1), zapato("zd", cuerpo, P, pie, 1))))
+    cuerpo_v = prenda("ropa_vestido", cuerpo, W, np.where(brazo, 0.17 - sd, np.minimum(y - 0.99, cuello)), 0.008, alisar=True)
     f = falda("falda_v", cuerpo, P, 1.0, 0.50, vuelo=0.10, valido=~(brazo | cabeza))
     ropas.append(("vestido", "Vestido", "entero", unir("ropa_vestido", cuerpo_v, f)))
     ropas.append(("falda", "Falda", "abajo", falda("ropa_falda", cuerpo, P, 1.02, 0.50, vuelo=0.08, valido=~(brazo | cabeza))))
@@ -765,10 +844,474 @@ def crear_ropas(cuerpo, W, P, Z):
 def unir(nombre, a, b):
     m = Malla(nombre, np.concatenate([a.pos, b.pos]), np.concatenate([a.idx, b.idx + len(a.pos)]))
     m.nrm = np.concatenate([a.nrm, b.nrm])
+    if a.sk is not None:
+        m.sk = np.concatenate([a.sk, b.sk])
     for n in a.formas:
         m.formas[n] = np.concatenate([a.formas[n], b.formas[n]])
     return m
 
 
+
+# ------------------------------------------------------------------ esqueleto simplificado (nombres de la Universal Animation Library)
+# (nombre, padre, hueso MakeHuman del que sale la cabeza, huesos MakeHuman cuyos pesos se acumulan)
+def _lr(n, p, mh, grupos):
+    return [(n + "_l", p + ("_l" if p.endswith(("clavicle", "upperarm", "lowerarm", "thigh", "calf", "foot")) else ""), mh + ".L", [g + ".L" for g in grupos]),
+            (n + "_r", p + ("_r" if p.endswith(("clavicle", "upperarm", "lowerarm", "thigh", "calf", "foot")) else ""), mh + ".R", [g + ".R" for g in grupos])]
+
+CARA = ["jaw", "levator05", "levator06", "oculi01", "orbicularis03", "orbicularis04", "oris03", "oris07", "risorius03", "special05"]
+def definir_esqueleto():
+    h = []
+    h.append(("root", None, None, []))
+    h.append(("pelvis", "root", "spine05", ["root", "pelvis.L", "pelvis.R", "spine05"]))
+    h.append(("spine_01", "pelvis", "spine04", ["spine04"]))
+    h.append(("spine_02", "spine_01", "spine02", ["spine03", "spine02", "breast.L", "breast.R"]))
+    h.append(("spine_03", "spine_02", "spine01", ["spine01"]))
+    h.append(("neck_01", "spine_03", "neck01", ["neck01", "neck02", "neck03"]))
+    h.append(("Head", "neck_01", "head", ["head", "jaw", "eye.L", "eye.R", "special04", "oris01", "oris05", "tongue00", "tongue01", "tongue02", "tongue03", "tongue04"]
+              + [c + s for c in ("levator05", "levator06", "oculi01", "orbicularis03", "orbicularis04", "oris03", "oris07", "risorius03", "special05", "tongue05", "tongue06", "tongue07") for s in (".L", ".R")]))
+    for lado in ("L", "R"):
+        sf = "_" + lado.lower()
+        h.append(("clavicle" + sf, "spine_03", "clavicle." + lado, ["clavicle." + lado, "shoulder01." + lado]))
+        h.append(("upperarm" + sf, "clavicle" + sf, "upperarm01." + lado, ["upperarm01." + lado, "upperarm02." + lado]))
+        h.append(("lowerarm" + sf, "upperarm" + sf, "lowerarm01." + lado, ["lowerarm01." + lado, "lowerarm02." + lado]))
+        h.append(("hand" + sf, "lowerarm" + sf, "wrist." + lado, ["wrist." + lado] + ["metacarpal%d.%s" % (i, lado) for i in range(1, 5)]
+                  + ["finger%d-%d.%s" % (a, b, lado) for a in range(1, 6) for b in range(1, 4)]))
+        h.append(("thigh" + sf, "pelvis", "upperleg01." + lado, ["upperleg01." + lado, "upperleg02." + lado]))
+        h.append(("calf" + sf, "thigh" + sf, "lowerleg01." + lado, ["lowerleg01." + lado, "lowerleg02." + lado]))
+        h.append(("foot" + sf, "calf" + sf, "foot." + lado, ["foot." + lado]))
+        h.append(("ball" + sf, "foot" + sf, "toe1-1." + lado, ["toe%d-%d.%s" % (a, b, lado) for a in range(1, 6) for b in range(1, 4)]))
+    # orden en profundidad (el mismo que usa Godot al importar el esqueleto: los índices de hueso de la malla deben coincidir)
+    hijos = {}
+    for e in h:
+        hijos.setdefault(e[1], []).append(e)
+    orden = []
+    def rec(e):
+        orden.append(e)
+        for c in hijos.get(e[0], []):
+            rec(c)
+    rec(h[0])
+    return orden
+
+
+def calcular_esqueleto(D, W, nombres_h):
+    """Posiciones de huesos (m, neutro) y pesos densos por vértice base (N_base, n_huesos)."""
+    sk = json.load(open(os.path.join(D.d, "rigs", "default.mhskel")))
+    Pn = W.a_metros(W.neutro_dm)
+    pos = []
+    jpos = {}
+    for n, par, mh, grupos in nombres_h:
+        if mh is None:
+            pos.append(np.zeros(3)); continue
+        jn = sk["bones"][mh]["head"]
+        ids = sk["joints"][jn]
+        pos.append(Pn[ids].mean(axis=0))
+        jpos[n] = ids
+    pos = np.array(pos)
+    pos[0] = [0, 0, 0]
+    # pesos
+    wmh = D.pesos()
+    idx = {n: i for i, (n, _, _, _) in enumerate(nombres_h)}
+    mapa = {}
+    for n, par, mh, grupos in nombres_h:
+        for g in grupos:
+            mapa[g] = idx[n]
+    dense = np.zeros((len(D.v), len(nombres_h)))
+    for b, l in wmh.items():
+        if b not in mapa:
+            raise SystemExit("hueso sin asignar: " + b)
+        for v, w in l:
+            dense[v, mapa[b]] += w
+    tot = dense.sum(axis=1)
+    return pos, dense, tot, jpos
+
+
+def reducir_pesos(dense):
+    """Top-4 por vértice, normalizado -> (joints uint16 (N,4), weights float32 (N,4))."""
+    o = np.argsort(-dense, axis=1)[:, :4]
+    w = np.take_along_axis(dense, o, axis=1)
+    sm = w.sum(axis=1, keepdims=True)
+    sm[sm == 0] = 1
+    return o.astype(np.uint16), (w / sm).astype(np.float32)
+
+
+# ------------------------------------------------------------------ zapato (puntera lisa, suela con grosor)
+def zapato(nombre, cuerpo, P, pie, lado):
+    sel = pie & (P[:, 1] < 0.115) & (np.sign(P[:, 0]) == lado)
+    q = P[sel]
+    z0, z1 = q[:, 2].min(), q[:, 2].max()
+    zs = np.linspace(z0, z1, 15)
+    xc, wx, yt = [], [], []
+    for z in zs:
+        b = q[np.abs(q[:, 2] - z) < 0.014]
+        if len(b) == 0:
+            b = q[np.argsort(np.abs(q[:, 2] - z))[:6]]
+        xc.append((b[:, 0].min() + b[:, 0].max()) / 2)
+        wx.append((b[:, 0].max() - b[:, 0].min()) / 2 + 0.010)
+        yt.append(min(b[:, 1].max() + 0.012, 0.100))
+    xc, wx, yt = map(np.array, (xc, wx, yt))
+    rings = []
+    # puntera (z negativa) y talón: anillos de cierre
+    extra_f = [(-0.030, 0.55), (-0.018, 0.82), (-0.008, 0.95)]
+    extra_b = [(0.008, 0.9), (0.017, 0.6), (0.022, 0.0)]
+    # cierre de puntera: z menor del pie, escala decreciente
+    seq = [(zs[0] + dz, sc, 0) for dz, sc in [(-0.034, 0.0), (-0.030, 0.5), (-0.018, 0.82), (-0.007, 0.96)]]
+    seq += [(z, 1.0, i) for i, z in enumerate(zs)]
+    seq += [(zs[-1] + dz, sc, len(zs) - 1) for dz, sc in [(0.007, 0.94), (0.015, 0.7), (0.020, 0.0)]]
+    n_arc = 11
+    pos = []
+    for z, sc, i in seq:
+        th = np.linspace(0, math.pi, n_arc)
+        h = yt[i] * (1.0 if sc > 0 else 0.5)
+        for t in th:
+            yy = h * (math.sin(t) ** 0.55) * (sc ** 0.5 if sc < 1 else 1)
+            bx = xc[i] + wx[i] * math.cos(t) * sc
+            if yy < 0.022:
+                bx = xc[i] + (bx - xc[i]) * 1.07      # reborde de la suela
+            pos.append([bx, yy, z])
+    pos = np.array(pos)
+    tri = []
+    for r in range(len(seq) - 1):
+        for k in range(n_arc):
+            a, b = r * n_arc + k, r * n_arc + (k + 1) % n_arc
+            c, d = (r + 1) * n_arc + k, (r + 1) * n_arc + (k + 1) % n_arc
+            tri += [(a, b, c), (b, d, c)]
+    m = Malla(nombre, pos, np.array(tri))
+    m.calcular_normales()
+    # normales hacia fuera
+    cen = pos.mean(axis=0)
+    # (se orientan por centro de cada sección)
+    m.formas = ligar_idw(cuerpo, pos.astype(np.float32))
+    m.sk = ligar_sk(cuerpo, pos.astype(np.float32))
+    return m
+
+
+
+# ------------------------------------------------------------------ animaciones: Universal Animation Library -> esqueleto propio
+def leer_glb(ruta):
+    f = open(ruta, "rb").read()
+    lj = struct.unpack("<I", f[12:16])[0]
+    j = json.loads(f[20:20 + lj])
+    off = 20 + lj + 8
+    return j, f[off:]
+
+
+def _acc(j, b, i):
+    a = j["accessors"][i]
+    v = j["bufferViews"][a["bufferView"]]
+    nc = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4}[a["type"]]
+    dt = {5126: np.float32, 5123: np.uint16, 5121: np.uint8}[a["componentType"]]
+    o = v.get("byteOffset", 0) + a.get("byteOffset", 0)
+    return np.frombuffer(b, dt, a["count"] * nc, o).reshape(a["count"], nc).astype(np.float64)
+
+
+def qmul(a, b):
+    x1, y1, z1, w1 = a; x2, y2, z2, w2 = b
+    return np.array([w1*x2 + x1*w2 + y1*z2 - z1*y2, w1*y2 - x1*z2 + y1*w2 + z1*x2,
+                     w1*z2 + x1*y2 - y1*x2 + z1*w2, w1*w2 - x1*x2 - y1*y2 - z1*z2])
+
+def qinv(a):
+    return np.array([-a[0], -a[1], -a[2], a[3]])
+
+def qrot(q, v):
+    return qmul(qmul(q, np.array([v[0], v[1], v[2], 0.0])), qinv(q))[:3]
+
+def qarco(a, b):
+    """Rotación mínima que lleva a en b (vectores)."""
+    a = a / np.linalg.norm(a); b = b / np.linalg.norm(b)
+    c = np.cross(a, b); d = float(np.dot(a, b))
+    if d < -0.999999:
+        ax = np.cross(a, [1, 0, 0])
+        if np.linalg.norm(ax) < 1e-6:
+            ax = np.cross(a, [0, 1, 0])
+        ax /= np.linalg.norm(ax)
+        return np.array([ax[0], ax[1], ax[2], 0.0])
+    q = np.array([c[0], c[1], c[2], 1 + d])
+    return q / np.linalg.norm(q)
+
+def qslerp(a, b, t):
+    d = float(np.dot(a, b))
+    if d < 0:
+        b = -b; d = -d
+    if d > 0.9995:
+        r = a + t * (b - a)
+        return r / np.linalg.norm(r)
+    th = math.acos(d)
+    return (math.sin((1 - t) * th) * a + math.sin(t * th) * b) / math.sin(th)
+
+def qmat(q):
+    x, y, z, w = q
+    return np.array([[1-2*(y*y+z*z), 2*(x*y-z*w), 2*(x*z+y*w)],
+                     [2*(x*y+z*w), 1-2*(x*x+z*z), 2*(y*z-x*w)],
+                     [2*(x*z-y*w), 2*(y*z+x*w), 1-2*(x*x+y*y)]])
+
+
+class Fuente:
+    """Esqueleto de la UAL con FK."""
+    def __init__(self, ruta):
+        self.j, self.b = leer_glb(ruta)
+        j = self.j
+        self.nodos = j["nodes"]
+        self.padre = {}
+        for i, n in enumerate(self.nodos):
+            for c in n.get("children", []):
+                self.padre[c] = i
+        self.idx = {n["name"]: i for i, n in enumerate(self.nodos)}
+        self.rest = [(np.array(n.get("translation", [0, 0, 0]), float), np.array(n.get("rotation", [0, 0, 0, 1]), float)) for n in self.nodos]
+
+    def mundo(self, locales, nombres):
+        cache = {}
+        def g(i):
+            if i in cache:
+                return cache[i]
+            t, q = locales[i]
+            if i in self.padre:
+                pt, pq = g(self.padre[i])
+                r = (pt + qrot(pq, t), qmul(pq, q))
+            else:
+                r = (t, q)
+            cache[i] = r
+            return r
+        return {n: g(self.idx[n]) for n in nombres}
+
+    def animacion(self, nombre):
+        a = [x for x in self.j["animations"] if x["name"] == nombre][0]
+        canales = {}
+        dur = 0
+        for c in a["channels"]:
+            sm = a["samplers"][c["sampler"]]
+            t = _acc(self.j, self.b, sm["input"])[:, 0]
+            v = _acc(self.j, self.b, sm["output"])
+            canales[(c["target"]["node"], c["target"]["path"])] = (t, v)
+            dur = max(dur, t[-1])
+        return canales, dur
+
+    def muestrear(self, canales, t):
+        loc = [list(r) for r in self.rest]
+        for (ni, path), (ts, vs) in canales.items():
+            if path == "scale":
+                continue
+            k = np.searchsorted(ts, t, side="right") - 1
+            if k >= len(ts) - 1:
+                v = vs[-1]
+            elif k < 0:
+                v = vs[0]
+            else:
+                u = (t - ts[k]) / (ts[k + 1] - ts[k])
+                v = qslerp(vs[k], vs[k + 1], u) if path == "rotation" else vs[k] * (1 - u) + vs[k + 1] * u
+            loc[ni][0 if path == "translation" else 1] = v
+        return loc
+
+
+def retargetear(fuente, anim, nombres, padres, pos_mias, fps=30):
+    """Devuelve (tiempos, {hueso: (N,4) rot locales}, traslación del root (N,3)) en mi esqueleto."""
+    Ry = np.array([0.0, 1.0, 0.0, 0.0])          # 180° sobre Y (la UAL mira a +Z, el humano a -Z)
+    huesos = [n for n in nombres if n != "root"]
+    rest_w = fuente.mundo(fuente.rest, huesos)
+    # hijo principal de cada hueso (para la dirección de reposo)
+    hijo = {}
+    for n, p in zip(nombres, padres):
+        if p is not None and p != "root" and p not in hijo:
+            hijo[p] = n
+    # preferir la cadena principal: spine_xx->siguiente, clavicle->upperarm, etc.
+    pref = {"pelvis": "spine_01", "spine_03": "neck_01", "neck_01": "Head"}
+    hijo.update(pref)
+    ix = {n: i for i, n in enumerate(nombres)}
+    A = {}
+    for n in huesos:
+        h = hijo.get(n)
+        if h is None:
+            continue
+        dt = pos_mias[ix[h]] - pos_mias[ix[n]]
+        ds_pos = rest_w[h][0] - rest_w[n][0]
+        ds = qrot(Ry, ds_pos)
+        A[n] = qarco(dt, ds)
+    for n in huesos:                       # hojas: usan la A del padre
+        if n not in A:
+            p = padres[ix[n]]
+            A[n] = A.get(p, np.array([0, 0, 0, 1.0]))
+    canales, dur = fuente.animacion(anim)
+    N = int(math.ceil(dur * fps)) + 1
+    tiempos = np.arange(N) / fps
+    rots = {n: np.zeros((N, 4)) for n in huesos}
+    tras = np.zeros((N, 3))
+    for k, t in enumerate(tiempos):
+        loc = fuente.muestrear(canales, min(t, dur))
+        w = fuente.mundo(loc, huesos)
+        Pt = {}
+        for n in huesos:                    # padres antes que hijos (orden de definición)
+            R = qmul(w[n][1], qinv(rest_w[n][1]))
+            Rp = qmul(qmul(Ry, R), qinv(Ry))
+            Pt[n] = qmul(Rp, A[n])
+            p = padres[ix[n]]
+            pq = Pt.get(p, np.array([0, 0, 0, 1.0]))
+            q = qmul(qinv(pq), Pt[n])
+            if k > 0 and np.dot(q, rots[n][k - 1]) < 0:
+                q = -q
+            rots[n][k] = q / np.linalg.norm(q)
+        d = w["pelvis"][0] - rest_w["pelvis"][0]
+        tras[k] = qrot(Ry, d)
+    return tiempos, rots, tras
+
+
+
+def dividir_cuerpo(cuerpo, W, P, Z):
+    """Reparte los triángulos del cuerpo en partes que se pueden ocultar cuando la ropa las tapa entera."""
+    x, y, z = P[:, 0], P[:, 1], P[:, 2]
+    ax = np.abs(x)
+    brazo = Z["brazo1"] | Z["brazo2"] | Z["antebrazo"]
+    mano, cabeza, pie = Z["mano"], Z["cabeza"], Z["pie"]
+    noarm = ~(brazo | mano | cabeza)
+    sd = (ax - 0.12) * 0.55 + (1.42 - y) * 0.83
+    cc = 1.425 - 0.04 * (1 - suave(z, -0.08, -0.01))
+    cuello = cc + ax - y
+    preds = {
+        "torso": noarm & (y >= 0.99) & (cuello > 0.015) & (ax < 0.2),
+        "cadera": noarm & (y >= 0.87) & (y < 0.99),
+        "muslo": noarm & (y >= 0.57) & (y < 0.87),
+        "pierna": noarm & (y >= 0.13) & (y < 0.57),
+        "brazo": (Z["brazo1"] | Z["brazo2"]) & (sd < 0.15),
+        "pie": pie & (y < 0.10),
+        "extrem": ~(cabeza | (y > 1.43)),      # manos, antebrazos y lo que sobre: sin formas de cara
+    }
+    restante = np.ones(len(W.tri), bool)
+    partes = {}
+    for nom, m in preds.items():
+        ok = restante & m[W.tri].all(axis=1)
+        restante &= ~ok
+        partes[nom] = ok
+    partes["resto"] = restante
+    out = {}
+    for nom, ok in partes.items():
+        t = W.tri[ok]
+        us = np.unique(t)
+        mapa = -np.ones(len(P), np.int64)
+        mapa[us] = np.arange(len(us))
+        m = Malla("Cuerpo" if nom == "resto" else "Cuerpo_" + nom, cuerpo.pos[us], mapa[t], cuerpo.uv[us] if cuerpo.uv is not None else None)
+        m.nrm = cuerpo.nrm[us]
+        m.col = cuerpo.col[us]
+        m.sk = cuerpo.sk[us]
+        m.formas = {n: d[us] for n, d in cuerpo.formas.items()}
+        out[nom] = m
+    return out
+
+
+ANIMS = [("parado", "Idle_Loop"), ("andar", "Walk_Loop"), ("sentado", "Sitting_Idle_Loop"),
+         ("correr", "Jog_Fwd_Loop"), ("hablar", "Idle_Talking_Loop")]
+
+
+def main2():
+    if len(sys.argv) < 2:
+        print(__doc__); sys.exit(1)
+    raiz = sys.argv[1]
+    salida = "godot/arte/humano"
+    if "--salida" in sys.argv:
+        salida = sys.argv[sys.argv.index("--salida") + 1]
+    ual = "/tmp/gd10a/ual/Universal Animation Library[Standard]/Unreal-Godot/UAL1_Standard.glb"
+    if "--ual" in sys.argv:
+        ual = sys.argv[sys.argv.index("--ual") + 1]
+    os.makedirs(salida, exist_ok=True)
+    D = Datos(raiz)
+    W = Mundo(D)
+    formas, exprs, sal = calcular_formas(D, W)
+    cuerpo, P0 = ensamblar(D, W, formas, exprs, sal, None)
+    # esqueleto
+    H = definir_esqueleto()
+    nombres = [h[0] for h in H]
+    padres = [h[1] for h in H]
+    pos_h, dense, tot, jids = calcular_esqueleto(D, W, H)
+    dn = dense / np.maximum(tot, 1e-9)[:, None]
+    cuerpo.sk = dn[W.vi].astype(np.float32)
+    glb = GLB()
+    glb.esqueleto(nombres, padres, pos_h)
+    m_piel = glb.material("piel", (1, 1, 1, 1), 0.7)
+    Z = clasificar(D, W, P0)
+    P = cuerpo.pos
+    partes = dividir_cuerpo(cuerpo, W, P, Z)
+    resumen = {}
+    for k, m in partes.items():
+        if k != "resto":
+            solo_cuerpo(m)
+        podar(m, 0.005)
+        glb.anadir(m, m_piel)
+        resumen[m.nombre] = (len(m.pos), m.tris)
+    m_ojo = glb.material("ojo", (1, 1, 1, 1), 0.25)
+    ih = nombres.index("Head")
+    for lado, jn in (("izq", "joint-l-eye"), ("der", "joint-r-eye")):
+        ids = centro_joint(D, W, jn)
+        c = P0[ids].mean(axis=0)
+        p, uv, idx = esfera(c, 0.0118)
+        o = Malla("Ojo_" + lado, p, idx, uv)
+        o.calcular_normales()
+        for n, d in sal.items():
+            if n.startswith("x_"):
+                continue
+            o.formas[n] = np.repeat(d[ids].mean(axis=0, keepdims=True), len(p), axis=0).astype(np.float32)
+        o.sk = np.zeros((len(p), len(nombres)), np.float32); o.sk[:, ih] = 1
+        podar(o)
+        glb.anadir(o, m_ojo)
+        resumen["Ojo_" + lado] = (len(p), o.tris)
+    ropas, base = crear_ropas(cuerpo, W, P, Z)
+    m_ropa = glb.material("ropa", (0.7, 0.7, 0.7, 1), 0.9, True)
+    solo_cuerpo(base)
+    podar(base, 0.008)
+    glb.anadir(base, m_ropa)
+    resumen["ropa_base"] = (len(base.pos), base.tris)
+    for i, n, capa, m in ropas:
+        if m.nrm is None:
+            m.calcular_normales()
+        solo_cuerpo(m)
+        podar(m, 0.008)
+        glb.anadir(m, m_ropa)
+        resumen[m.nombre] = (len(m.pos), m.tris)
+    pelos = crear_pelos(cuerpo, W, P, Z)
+    m_pelo = glb.material("pelo", (1, 1, 1, 1), 0.5, True)
+    for i, n, m, _ in pelos:
+        solo_cuerpo(m, True)
+        podar(m, 0.005)
+        glb.anadir(m, m_pelo)
+        resumen[m.nombre] = (len(m.pos), m.tris)
+    # animaciones
+    anims_ok = []
+    if os.path.exists(ual):
+        F = Fuente(ual)
+        sc = pos_h[nombres.index("pelvis")][1] / F.mundo(F.rest, ["pelvis"])["pelvis"][0][1]
+        for ident, nom in ANIMS:
+            t, r, tr = retargetear(F, nom, nombres, padres, pos_h)
+            glb.animacion(ident, t, {k: v for k, v in r.items()}, tr * sc)
+            anims_ok.append(ident)
+    glb.guardar(os.path.join(salida, "humano.glb"))
+    textura_ojo(os.path.join(salida, "ojo.png"))
+    generar_pieles(os.path.join(salida, "pieles"))
+    # variación de cada hueso (cabeza del hueso) con cada forma, para que el esqueleto siga al cuerpo
+    dj = {}
+    for n, d in sal.items():
+        if n.startswith("x_"):
+            continue
+        v = {}
+        for i, (hn, par, mh, gr) in enumerate(H):
+            if mh is None:
+                continue
+            ids = jids[hn]
+            v[hn] = [round(float(x), 5) for x in d[ids].mean(axis=0)]
+        dj[n] = v
+    cat = {"formas": [{"id": f["id"], "n": f["n"], "grupo": f["grupo"], "min": f["min"], "max": f["max"], "def": 0.0} for f in formas],
+           "pieles": [{"id": a, "n": b} for a, b, _ in PIELES],
+           "expresiones": [{"id": e["id"], "n": e["n"]} for e in exprs],
+           "dh": {n: round(float(d[W.vi][np.argmax(P0[W.vi][:, 1]), 1]), 4) for n, d in sal.items() if not n.startswith("x_")},
+           "pelos": [{"id": "", "n": "Sin pelo"}] + [{"id": i, "n": n} for i, n, _, _ in pelos],
+           "ropas": [{"id": i, "n": n, "capa": c} for i, n, c, _ in ropas]
+           + [{"id": "chandal", "n": "Pantalón de chándal", "capa": "abajo", "malla": "vaqueros"}],
+           "animaciones": anims_ok,
+           "huesos": nombres, "huesos_pos": [[round(float(x), 5) for x in p] for p in pos_h], "huesos_padre": padres,
+           "dj": dj}
+    json.dump(cat, open(os.path.join(salida, "catalogo.json"), "w"), ensure_ascii=False)
+    print("pieza  vértices  triángulos")
+    tot_t = 0
+    for k, (a, b) in resumen.items():
+        print(k, a, b)
+    print("cuerpo tris", sum(b for k, (a, b) in resumen.items() if k.startswith("Cuerpo")))
+    print("esc", W.esc, "formas", len(sal), "glb KB", os.path.getsize(os.path.join(salida, "humano.glb")) // 1024)
+
+
 if __name__ == "__main__":
-    main()
+    main2()
