@@ -101,5 +101,18 @@ setTimeout(()=>{try{DATA.barrios_vida.alquiler_por_barrio=true;/* la prueba ejer
  // ---- 7. el censo en los 12 sitios ----
  base();const vistos={};for(const k of NUEVOS){for(const wd of [0,1,2,5,6])for(let h=6;h<24;h+=.5){dia(wd,h);const o=crowd({tt:0,night:0,npc:NPCS(),w:W_()},k,{W:10,D:8});for(const q of o)if(q.v)(vistos[q.v.id]=vistos[q.v.id]||new Set()).add(k);}}
  info.vecinos=Object.fromEntries(Object.entries(vistos).map(([a,b])=>[a,[...b].join('+')]));chk(Object.keys(vistos).length>=9,'pocos vecinos en los sitios nuevos: '+Object.keys(vistos).length);
+ // ---- T-143: abandono y control del barrio: averías sin arreglar y avisos de la comunidad ----
+ {const corre=(home,dias)=>{base(home);S.jobless=true;let sin=0,boil=0,av=0,t0=S.toasts;const B0=BV();B0.sinArreglo=0;B0.avisos=0;const log=[];
+   for(let i=0;i<dias;i++){S.day++;S.money=9000;S.sick=0;dailyEvents();}
+   return {sin:BV().sinArreglo||0,avisos:BV().avisos||0};};
+  const R=(home)=>{let a=0,v=0;for(let k=0;k<6;k++){const r=corre(home,200);a+=r.sin;v+=r.avisos;}return {sin:Math.round(a/6),avisos:Math.round(v/6*10)/10};};
+  const eras=R('infra'),pin=R('chalet'),ens=R('bueno'),rib=R('viejo');info.averias_200d={eras_infra:eras,pinares_chalet:pin,casco_bueno:ens,ribera_viejo:rib};
+  chk(eras.sin>=pin.sin*2.5&&eras.sin>pin.sin+15,'abandono: eras no tiene claramente más días con avería ('+eras.sin+' vs '+pin.sin+')');
+  chk(pin.avisos>eras.avisos+2,'control: pinares no recibe más avisos que eras ('+pin.avisos+' vs '+eras.avisos+')');
+  base('infra');const l=bvAveriasLinea('eras'),l2=bvAveriasLinea('pinares');chk(/veces al mes/.test(l)&&l!==l2&&/casero/.test(l)&&/reclaman/.test(l2),'ficha de averías: '+l+' | '+l2);info.ficha_averias={eras:l,pinares:l2};
+  chk(/Averías y papeles/.test(bvVivirAqui('eras')),'la ficha Vivir aquí no trae la línea de averías');
+  // el casero tarda más: calentador roto de alquiler, días hasta el arreglo
+  const caro=(ab)=>{let tot=0,n=0;const o=BVB.ribera.abandono;BVB.ribera.abandono=ab;for(let k=0;k<100;k++){base("viejo");S.jobless=true;const g=HG();g.boiler=1;g.boilerSince=S.day;g.fixBy=0;for(let i=0;i<150&&g.boiler;i++){S.day++;S.money=9000;const m=S.money;dailyEvents();S.money=9000;if(g.boiler&&i===0)g.boiler=1;}tot+=S.day-g.boilerSince;n++;}BVB.ribera.abandono=o;return Math.round(tot/n);};
+  const c0=caro(0),c6=caro(6);info.calentador_dias={ab0:c0,ab6:c6};chk(c6>c0*1.2,'el casero no tarda más con abandono: '+c0+' vs '+c6);}
  document.title=(fails.length||errs.length||__errs.length?'ERR ':'OK ')+JSON.stringify({fails:fails.slice(0,12),nfails:fails.length,errs:errs.slice(0,4),werrs:__errs.slice(0,3),info});
 }catch(err){document.title='ERR '+err.message+' '+err.stack.slice(0,500)}},300);

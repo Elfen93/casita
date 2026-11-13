@@ -560,6 +560,27 @@
 
   "pesos": {"animo_seguridad": 0.5, "animo_servicios": 0.5, "animo_ruido": 0.4, "animo_red": 1.0, "energia_ruido": 1.2, "corte_energia": 1, "corte_higiene": 2},
 
+  "averias": {
+    "_": "Averías de suministros y de finca según `abandono` del barrio (0–6). Probabilidad diaria = p × (1 + k_frec × abandono); días hasta el arreglo = dias + k_dias × abandono. `casas`: tipos de vivienda donde pasa. `fx`: lo que resta cada día sin arreglar. `retraso_casero`: por punto de abandono, probabilidad diaria de que el casero ni mire el calentador roto (tope `retraso_max`). `boiler_extra`: probabilidad diaria extra de calentador por punto de abandono.",
+    "k_frec": 0.4, "k_dias": 0.6, "retraso_casero": 0.08, "retraso_max": 0.5, "boiler_extra": 0.0012,
+    "tipos": {
+      "agua": {"p": 0.003, "dias": 1, "casas": ["infra", "viejo", "habitacion", "bueno", "casita", "chalet", "padres"], "fx": {"higiene": -2, "energia": -1}, "e": "🚰"},
+      "luz": {"p": 0.0025, "dias": 1, "casas": ["infra", "viejo", "habitacion", "bueno", "casita", "chalet", "padres"], "fx": {"diversion": -3, "energia": -1}, "e": "💡"},
+      "ascensor": {"p": 0.004, "dias": 3, "casas": ["infra", "viejo", "habitacion", "bueno"], "fx": {"energia": -2}, "e": "🛗"},
+      "portal": {"p": 0.0025, "dias": 2, "casas": ["infra", "viejo", "habitacion", "bueno"], "fx": {"social": -1}, "animo": -0.5, "e": "🚪"}
+    }
+  },
+  "reclamos": {
+    "_": "La comunidad y la administración reclaman según `control` del barrio (0–1): probabilidad diaria = p × control. Un aviso de cada tipo, con multa pequeña (`multa_h`, horas de trabajo) o solo carta.",
+    "p": 0.04, "casas": ["infra", "viejo", "habitacion", "bueno", "chalet"],
+    "tipos": {
+      "ruido": {"peso": 3, "multa_h": 0, "e": "📨", "t": ["Carta de la comunidad: se han quejado del ruido. Piden que {n} baje el volumen pasadas las diez.", "El presidente de la comunidad deja una nota en el felpudo: ruido. Sin firma, pero es su letra."]},
+      "obras": {"peso": 1, "multa_h": 0.6, "e": "🏗️", "t": ["Aviso del ayuntamiento: {n} movió algo en casa sin pedir permiso de obra. Multa de {c}.", "Carta de urbanismo: una vecina ha visto el taladro. Piden papeles y cobran {c}."]},
+      "basura": {"peso": 3, "multa_h": 0.4, "e": "🗑️", "t": ["La comunidad multa a {n} con {c}: la bolsa fuera de hora, a la puerta del portal.", "Cartel nuevo en el portal sobre la basura, y un recibo de {c} a nombre de {n}."]},
+      "tender": {"peso": 2, "multa_h": 0, "e": "👕", "t": ["Nota de la comunidad: la ropa no se tiende a la calle. {n} la recoge.", "Aviso de la comunidad por el tendedero de fachada. Por ahora, solo una carta."]}
+    }
+  },
+
   "sucesos": {
     "casco": {
       "anuales": [
@@ -664,6 +685,19 @@
     "ficha_pie_t": "A pie",
     "ficha_gana_t": "Lo que ganas",
     "ficha_cuesta_t": "Lo que cuesta",
-    "ficha_cuesta_cifras": "Compra ×{compra}, bar ×{bar}, ruido {ruido}/3."
+    "ficha_cuesta_cifras": "Compra ×{compra}, bar ×{bar}, ruido {ruido}/3.",
+    "ficha_averias_t": "Averías y papeles",
+    "ficha_averias": "Se rompe agua, luz, ascensor o portal unas {m} veces al mes; el arreglo tarda de media {d} días.",
+    "ficha_casero": " El casero ni mira un calentador roto el {q} % de los días.",
+    "ficha_control": " La comunidad y el ayuntamiento reclaman pronto: unos {r} avisos al mes (ruido, obras, basura, tendedero).",
+    "av_inicio_agua": "Se corta el agua en el edificio. La compañía dice que mandan a alguien.",
+    "av_inicio_luz": "Se va la luz en la finca. Sin nevera, sin cargador, sin nada.",
+    "av_inicio_ascensor": "El ascensor otra vez parado. Con una cartela y el teléfono de la empresa.",
+    "av_inicio_portal": "El portal no cierra. Cualquiera entra y la comunidad no se pone de acuerdo.",
+    "av_fin_agua": "Vuelve el agua.",
+    "av_fin_luz": "Vuelve la luz.",
+    "av_fin_ascensor": "Arreglan el ascensor.",
+    "av_fin_portal": "Arreglan la cerradura del portal.",
+    "av_vida": "Sin arreglar: {l}."
   }
 }

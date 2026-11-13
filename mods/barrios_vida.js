@@ -99,7 +99,7 @@ function bvAplica(s){const n=bvN(),f=s.fx||{};let c=0;
   if(f.energia)bvNeed('energia',f.energia);if(f.social)bvNeed('social',f.social);if(f.diversion)bvNeed('diversion',f.diversion);
   if(f.animo)bvAnimo(f.animo);if(f.mov)W_().mov=Math.min(100,(W_().mov||0)+f.mov);if(f.rep)S.rep=Math.max(0,Math.min(100,(S.rep??70)+f.rep));
   if(f.renta_pct&&!S.owned)S.rentMul=(S.rentMul||1)*(1+f.renta_pct);
-  if(f.corte){const B=BV();B.corte=S.day+Math.max(1,Math.round(f.corte));tell(bvT('corte_inicio',{d:Math.round(f.corte)}),'🚰');}
+  if(f.corte){const B=BV(),dc=Math.max(1,Math.round(f.corte+bvAv().k_dias*bvAb(cdHome())));B.corte=S.day+dc;tell(bvT('corte_inicio',{d:dc}),'🚰');}
   tell(huecos(s.t,{n,c:fmt(c)}),s.e);}
 const bvReq=(r)=>!r||(r==='pobre'?bvPobre():r==='laboral'?(!S.jobless&&!!S.track&&dayType(S.day)==='work'):true);
 function bvDia(rm0){const b=cdHome(),t=bvTab(b),B=BV(),H=S.home;if(!H||H.type==='calle')return;const d=dateOf(S.day);
@@ -120,7 +120,31 @@ function bvDia(rm0){const b=cdHome(),t=bvTab(b),B=BV(),H=S.home;if(!H||H.type===
   for(const s of SU.anuales||[]){const k=s.id+'|'+d.year;if(d.m===s.m&&d.dm===s.dm&&!B.ano[k]){B.ano[k]=1;bvAplica(s);}}
   // la ITV caducada del reparto
   if(S.track==='reparto'&&dayType(S.day)==='work'&&!S.jobless){if(!B.itv)B.itv=S.day+120;if(B.itv<S.day&&Math.random()<.04){bkAdd('Multa',-hrs(BVS.itv_pasar.multa_h));tell(huecos(BVX.itv_multa,{c:fmt(hrs(BVS.itv_pasar.multa_h))}),'🚔');}}}
-{const _dl=dailyEvents;dailyEvents=function(){const rm0=S.rentMul||1;const r=_dl.apply(this,arguments);try{bvDia(rm0);}catch(e){console.error('barrios_vida',e);}return r;};}
+// ---- abandono y control del barrio (T-143): averías de finca y suministros más frecuentes y más lentas de arreglar donde hay abandono; avisos de la comunidad donde hay control ----
+const bvAv=()=>BVD.averias,bvAb=b=>(bvTab(b).abandono||0),bvCtl=b=>(bvTab(b).control||0);
+const bvAvP=(k,b)=>bvAv().tipos[k].p*(1+bvAv().k_frec*bvAb(b));
+const bvAvDias=(k,b)=>Math.max(1,Math.round(bvAv().tipos[k].dias+bvAv().k_dias*bvAb(b)));
+const bvRetraso=b=>Math.min(bvAv().retraso_max,bvAv().retraso_casero*bvAb(b));
+function bvAveriaDia(){const b=cdHome(),H=S.home,B=BV(),A=bvAv(),T=H.type;B.av=B.av||{};let activa=false;
+  for(const k in A.tipos){const x=A.tipos[k];if(!x.casas.includes(T))continue;const a=B.av[k];
+    if(a&&a.hasta>S.day){activa=true;for(const n in x.fx)bvNeed(n,x.fx[n]);if(x.animo)bvAnimo(x.animo);}
+    else if(a){delete B.av[k];tell(bvT('av_fin_'+k),x.e);}
+    else if(Math.random()<bvAvP(k,b)){const d=bvAvDias(k,b);B.av[k]={desde:S.day,hasta:S.day+d};activa=true;tell(bvT('av_inicio_'+k),x.e);}}
+  const g=HG();if(activa||g.boiler||g.fridge||g.wash)B.sinArreglo=(B.sinArreglo||0)+1;}
+// el aviso de la comunidad o del ayuntamiento
+function bvReclamoDia(){const b=cdHome(),R=BVD.reclamos,c=bvCtl(b);if(!(c>0)||!R.casas.includes(S.home.type)||Math.random()>=R.p*c)return;
+  const ks=Object.keys(R.tipos);let w=0;for(const k of ks)w+=R.tipos[k].peso;let r=Math.random()*w,k=ks[0];for(const q of ks){r-=R.tipos[q].peso;if(r<0){k=q;break;}}
+  const x=R.tipos[k],cc=x.multa_h?hrs(x.multa_h):0;if(cc>0)bkAdd('Multa',-Math.round(cc));BV().avisos=(BV().avisos||0)+1;bvAnimo(-1);tell(huecos(pickR(x.t),{n:bvN(),c:fmt(Math.round(cc))}),x.e);}
+{const _dl=dailyEvents;dailyEvents=function(){const rm0=S.rentMul||1;
+  // el casero de un barrio abandonado tarda más: si hoy iba a arreglar el calentador, a veces no lo hace (se deshace el arreglo y su aviso)
+  let snap=null,buf=null;const hubo=!!(S.hg&&S.hg.boiler);const _tell=tell,_toast=toast;
+  try{const g=HG();if(S.home&&S.home.type!=='calle'&&renting()&&g.boiler&&!g.fixBy&&bvRetraso(cdHome())>0){snap=Object.assign({},g);buf=[];tell=function(){buf.push(['tell',arguments]);};toast=function(){buf.push(['toast',arguments]);};}}catch(e){snap=null;}
+  let r;try{r=_dl.apply(this,arguments);}finally{if(buf){tell=_tell;toast=_toast;try{const g=HG();const frena=snap&&!g.boiler&&Math.random()>=1-bvRetraso(cdHome());
+    if(frena){Object.assign(g,snap);buf=buf.filter(x=>false);}
+    for(const [k,a] of buf)(k==='tell'?_tell:_toast).apply(null,a);}catch(e){console.error(e);}}}
+  try{bvDia(rm0);const H=S.home;if(H&&H.type!=='calle'){bvAveriaDia();bvReclamoDia();
+    // más calentadores rotos donde hay abandono
+    const g=HG(),T=H.type;if(!hubo&&!g.boiler&&T!=='padres'&&Math.random()<bvAv().boiler_extra*bvAb(cdHome())*(isWinter()?3:1)){g.boiler=1;g.boilerSince=S.day;g.req=0;g.reqDay=0;g.plazoAsk=0;g.fixBy=0;tell(huecos(TXHZ.hogar.calentador_muerto,{enero:isWinter()?TXHZ.hogar.en_enero:'',quien:renting()?TXHZ.hogar.casero_mira:''}),'🚿');}}}catch(e){console.error('barrios_vida',e);}return r;};}
 // cada lunes: el barrio pesa en el ánimo (seguridad, servicios, ruido, vida de calle)
 {const _pr=payRent;payRent=function(){const r=_pr.apply(this,arguments);try{const t=bvTab(cdHome()),P=BVD.pesos,H=S.home;if(H&&H.type!=='calle'){const dl=(t.seguridad-3)*P.animo_seguridad+(t.servicios-3)*P.animo_servicios-t.ruido*P.animo_ruido+(t.red-1)*P.animo_red;bvAnimo(Math.round(dl*10)/10);}}catch(e){}return r;};}
 // la compra: el precio del barrio (el súper cobra lo que cobra la zona)
@@ -135,6 +159,9 @@ function bvDia(rm0){const b=cdHome(),t=bvTab(b),B=BV(),H=S.home;if(!H||H.type===
 function bvPuertaProxy(b){if(b===cdHome())return 'casa';const E=DATA.personas.edificios||{},P=CDX().barrios[b].puertas;
   for(const k in E)if(cdBarrioDe(k)===b&&P[k])return k;for(const k in P)if(k!=='casaV'&&k!=='casa2'&&k!=='casa')return k;return null;}
 function bvMinTrabajo(b){try{if(S.jobless||!S.track)return null;const w=destOf('work');if(!w||w==='_ride')return null;const a=bvPuertaProxy(b);if(!a||!cdPuerta(w))return null;const r=cdTrayecto(a,w);return r?Math.round(r.min):null;}catch(e){return null;}}
+function bvAveriasLinea(b){const A=bvAv();let m=0,d=0,w=0;for(const k in A.tipos){const p=bvAvP(k,b);m+=p*30;d+=p*bvAvDias(k,b);w+=p;}
+  const sg=x=>String(x).replace('.',','),q=Math.round(bvRetraso(b)*100),r=bvCtl(b)*BVD.reclamos.p*30;
+  return bvT('ficha_averias',{m:sg(Math.round(m*10)/10),d:sg(Math.round(d/w*10)/10)})+(q>=20?bvT('ficha_casero',{q}):'')+(r>=.3?bvT('ficha_control',{r:sg(Math.round(r*10)/10)}):'');}
 function bvVivirAqui(b){const t=bvTab(b),f=bvFBarrio(b),fs=String(f).replace('.',','),tipos=Object.keys(CDX().vivienda).filter(k=>CDX().vivienda[k]===b&&k!=='calle'&&k!=='padres');
   let ej=Infinity;for(const k of tipos)if(HOMES[k]&&HOMES[k].rent>0)ej=Math.min(ej,Math.round(HOMES[k].rent*Dm().rent*(bvRentaOn()?f:1)));
   const w=S.jobless||!S.track?null:destOf('work'),m=bvMinTrabajo(b),aqui=cdHome()===b,sg=x=>String(x).replace('.',',');
@@ -143,6 +170,7 @@ function bvVivirAqui(b){const t=bvTab(b),f=bvFBarrio(b),fs=String(f).replace('.'
   h+=bmRow('🚶',m!=null?bvT('ficha_trayecto',{sitio:placeName(w),m}):BVX.ficha_trayecto_sin,'');
   h+=bmRow('👣',BVX.ficha_pie_t,bvT('ficha_pie',{parada:t.pie.parada,cole:t.pie.cole,amb:t.pie.ambulatorio}));
   h+=bmRow('👍',BVX.ficha_gana_t,t.ficha.gana);
+  h+=bmRow('🔧',BVX.ficha_averias_t,bvAveriasLinea(b));
   h+=bmRow('😮‍💨',BVX.ficha_cuesta_t,t.ficha.pierde+' '+bvT('ficha_cuesta_cifras',{compra:sg(t.compra),bar:sg(t.bar),ruido:t.ruido}));return h;}
 bmVivirAqui=bvVivirAqui;
 

@@ -271,6 +271,9 @@
  "piquete_pancarta_gs": "HUELGA GENERAL",
  "piquete_pancarta_de": "Plantilla de {lugar}",
  "piquete_bandera": "HUELGA",
+ "piquete_anda_h": 0.55,
+ "piquete_anda_max_h": 0.33,
+ "piquete_llegada_h": [0.02, 0.2],
  "piquete_horas": [
   6.75,
   14
