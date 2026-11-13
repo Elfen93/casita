@@ -72,3 +72,7 @@ De `data/`: calles, puertas, huellas (`rb`), colores, nombres, descripciones y h
 - **Registrar una sección nueva** (muebles comprados, relaciones…): `guardado.registrar("muebles", 1, fn_guardar, fn_aplicar)`. `fn_guardar() -> Dictionary` (Guardado añade `v`); `fn_aplicar(d)` debe leer con `d.get(campo, valor_actual)`. Hay que registrarla antes de `cargar_inicio()`.
 - **Cuándo**: cada 2 min reales, al terminar un salto de tiempo (dormir, comer…), al ocultarse o cerrarse la página (`visibilitychange`/`pagehide`) y con «Guardar ahora» del botón «Menú». Nunca en mitad de un salto con velo.
 - **Puente**: `casita_cmd('guardar')`, `('cargar')`, `('borrar_partida')`. Prueba: `python3 t/g2a_guardar.py /tmp/gd6`.
+
+## Qué no entra en la exportación
+
+`export_presets.cfg` excluye lo que aún no usa el juego para no engordar la descarga: `arte/ciudad/edificios|calle|vehiculos|modelos` (catálogo GD-9), las escenas de muestra, las herramientas y `arte/entrada`. Cuando la ciudad use esas piezas, hay que quitar su carpeta de `exclude_filter`.
