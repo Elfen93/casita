@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://arte/muebles/modelos/ciudad/bench.gltf" id="1_4wjoc"]
+
+[node name="BancoParque" type="Node3D"]
+
+[node name="Modelo" type="Node3D" parent="." instance=ExtResource("1_4wjoc")]
+transform = Transform3D(-4.6, 0, -4.02145e-07, 0, 4.6, 0, 4.02145e-07, 0, -4.6, 0, 0, 0)

@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tayhv"]
+albedo_color = Color(0.247059, 0.372549, 0.290196, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7rekk"]
+top_radius = 0.17
+bottom_radius = 0.2
+height = 0.8
+radial_segments = 10
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oeboi"]
+albedo_color = Color(0.168627, 0.227451, 0.188235, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_lky4k"]
+top_radius = 0.205
+bottom_radius = 0.205
+height = 0.05
+radial_segments = 10
+rings = 1
+
+[node name="Papelera" type="Node3D"]
+
+[node name="Cuerpo" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+material_override = SubResource("StandardMaterial3D_tayhv")
+mesh = SubResource("CylinderMesh_7rekk")
+
+[node name="Aro" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.825, 0)
+material_override = SubResource("StandardMaterial3D_oeboi")
+mesh = SubResource("CylinderMesh_lky4k")

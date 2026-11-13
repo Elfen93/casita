@@ -1,0 +1,72 @@
+[gd_scene load_steps=9 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i58gv"]
+albedo_color = Color(0.14902, 0.156863, 0.168627, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_i01qn"]
+top_radius = 0.07
+bottom_radius = 0.07
+height = 0.03
+radial_segments = 10
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a8xqn"]
+albedo_color = Color(0.721569, 0.737255, 0.760784, 1)
+metallic = 0.9
+roughness = 0.3
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tj0cb"]
+top_radius = 0.025
+bottom_radius = 0.025
+height = 0.3
+radial_segments = 8
+rings = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_hbxe2"]
+size = Vector3(0.05, 0.05, 0.1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_q26sn"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.07
+radial_segments = 6
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sqw8r"]
+albedo_color = Color(0.788235, 0.635294, 0.152941, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_b2ft3"]
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.12
+radial_segments = 6
+rings = 1
+
+[node name="GrifoCerveza" type="Node3D"]
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.015, 0)
+material_override = SubResource("StandardMaterial3D_i58gv")
+mesh = SubResource("CylinderMesh_i01qn")
+
+[node name="Columna" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0)
+material_override = SubResource("StandardMaterial3D_a8xqn")
+mesh = SubResource("CylinderMesh_tj0cb")
+
+[node name="Cabeza" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -0.04)
+material_override = SubResource("StandardMaterial3D_a8xqn")
+mesh = SubResource("BoxMesh_hbxe2")
+
+[node name="Pico" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.265, -0.08)
+material_override = SubResource("StandardMaterial3D_a8xqn")
+mesh = SubResource("CylinderMesh_q26sn")
+
+[node name="Palanca" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.955337, 0.29552, 0, -0.29552, 0.955337, 0, 0.39, 0.01)
+material_override = SubResource("StandardMaterial3D_sqw8r")
+mesh = SubResource("CylinderMesh_b2ft3")

@@ -1,0 +1,84 @@
+[gd_scene load_steps=9 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3twj"]
+albedo_color = Color(0.627451, 0.227451, 0.188235, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_y3ta7"]
+top_radius = 0.19
+bottom_radius = 0.19
+height = 0.06
+radial_segments = 14
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gs0qc"]
+albedo_color = Color(0.721569, 0.737255, 0.760784, 1)
+metallic = 0.8
+roughness = 0.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_w445k"]
+top_radius = 0.016
+bottom_radius = 0.016
+height = 0.72
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pjy8w"]
+top_radius = 0.016
+bottom_radius = 0.016
+height = 0.72
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_8g7yb"]
+top_radius = 0.016
+bottom_radius = 0.016
+height = 0.72
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bx1ax"]
+top_radius = 0.016
+bottom_radius = 0.016
+height = 0.72
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_v12kw"]
+top_radius = 0.17
+bottom_radius = 0.17
+height = 0.02
+radial_segments = 14
+rings = 1
+
+[node name="Taburete" type="Node3D"]
+
+[node name="Asiento" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+material_override = SubResource("StandardMaterial3D_r3twj")
+mesh = SubResource("CylinderMesh_y3ta7")
+
+[node name="Pata0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997976, -0.0635967, 0, 0.0634679, 0.995956, 0.0635967, -0.00404454, -0.0634679, 0.997976, 0.106066, 0.36, 0.106066)
+material_override = SubResource("StandardMaterial3D_gs0qc")
+mesh = SubResource("CylinderMesh_w445k")
+
+[node name="Pata1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997976, 0.0635967, 0, -0.0634679, 0.995956, 0.0635967, 0.00404454, -0.0634679, 0.997976, -0.106066, 0.36, 0.106066)
+material_override = SubResource("StandardMaterial3D_gs0qc")
+mesh = SubResource("CylinderMesh_pjy8w")
+
+[node name="Pata2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997976, 0.0635967, 0, -0.0634679, 0.995956, -0.0635967, -0.00404454, 0.0634679, 0.997976, -0.106066, 0.36, -0.106066)
+material_override = SubResource("StandardMaterial3D_gs0qc")
+mesh = SubResource("CylinderMesh_8g7yb")
+
+[node name="Pata3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997976, -0.0635967, 0, 0.0634679, 0.995956, -0.0635967, 0.00404454, 0.0634679, 0.997976, 0.106066, 0.36, -0.106066)
+material_override = SubResource("StandardMaterial3D_gs0qc")
+mesh = SubResource("CylinderMesh_bx1ax")
+
+[node name="Aro" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29, 0)
+material_override = SubResource("StandardMaterial3D_gs0qc")
+mesh = SubResource("CylinderMesh_v12kw")

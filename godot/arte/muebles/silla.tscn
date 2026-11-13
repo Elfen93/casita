@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://arte/muebles/modelos/hogar/chair_A_wood.gltf" id="1_67p2x"]
+
+[node name="Silla" type="Node3D"]
+
+[node name="Modelo" type="Node3D" parent="." instance=ExtResource("1_67p2x")]
+transform = Transform3D(-0.82, 0, -7.16867e-08, 0, 0.82, 0, 7.16867e-08, 0, -0.82, 0, 6.10948e-09, -0.0390028)
