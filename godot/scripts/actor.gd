@@ -68,6 +68,7 @@ func anim_tick() -> void:
 	var hablando := estado_etq != null and estado_etq.visible and estado_etq.text.begins_with("💬")
 	var espera := estado_etq != null and estado_etq.visible and estado_etq.text.begins_with("Esperando")
 	var usando := barra_n != null and barra_n.visible
+	var bebe := mano != "" and Acciones.producto(mano).has("beber")   # el plato no se lleva como una copa
 	# tumbado: la persona se acuesta centrada en la cama (el actor está en los pies, cabeza hacia -Z), sobre el colchón
 	if holder != null:
 		holder.position = Vector3(0, alt_asiento, -0.8) if postura == "tumbado" else Vector3.ZERO
@@ -75,7 +76,7 @@ func anim_tick() -> void:
 		n = "dormir"
 	elif postura == "sentado":
 		n = "sentado"
-		if mano != "":
+		if bebe:
 			br = "beber"
 		elif hablando:
 			br = "hablar"
@@ -89,8 +90,8 @@ func anim_tick() -> void:
 	elif espera or hablando:
 		n = "hablar"
 	elif usando:
-		n = "beber" if mano != "" else "usar"
-	elif mano != "":
+		n = "beber" if bebe else "usar"
+	elif bebe:
 		n = "beber"
 	var k := "%s/%s" % [n, br]
 	if k == _anim_k:
@@ -170,6 +171,9 @@ func poner_postura(p: String, alt := 0.5) -> void:
 			cuerpo.scale = Vector3.ONE
 	cuerpo.rotation.x = -PI * 0.5 if p == "tumbado" else 0.0
 	nodo.visible = p != "oculto"
+	var aro := nodo.get_node_or_null("Aro")   # el aro amarillo del jugador no se queda a los pies de la cama
+	if aro != null:
+		aro.visible = p != "tumbado"
 
 # bebida en la mano (icono sobre el hombro)
 func poner_mano(v: String, jg) -> void:

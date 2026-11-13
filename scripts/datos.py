@@ -895,6 +895,16 @@ def _g2a_interiores(d,E):
                 if q not in C:E.append('interiores.tipos.%s.%s: condición «%s» sin texto'%(k,a.get('id'),q))
             if a.get('tipo')=='pedir' and a.get('producto') not in P:E.append('interiores.tipos.%s.%s: producto desconocido'%(k,a.get('id')))
             if not a.get('por_receta') and a.get('tipo')!='servir' and not a.get('min'):E.append('interiores.tipos.%s.%s: sin duración'%(k,a.get('id')))
+    N=I.get('necesidades',{})
+    for k in N.get('avisos',{}):
+        if k not in ('hambre','energia','diversion','social','vejiga','higiene'):E.append('interiores.necesidades.avisos: necesidad desconocida «%s»'%k)
+    for k,t in T.items():
+        for a in t.get('acciones',[]):
+            if a.get('tipo')=='comer' and 'plato' not in P:E.append('interiores.tipos.%s.%s: comer sin producto plato'%(k,a.get('id')))
+            for q in ('efectos','efectos_min'):
+                for n_ in a.get(q,{}):
+                    if n_ not in ('hambre','energia','diversion','social','vejiga','higiene'):E.append('interiores.tipos.%s.%s.%s: necesidad desconocida «%s»'%(k,a.get('id'),q,n_))
+        if 'asientos' in t and len(t['asientos'])!=len(t.get('uso',[])):E.append('interiores.tipos.%s: asientos y uso deben tener la misma longitud'%k)
     for k,r in R.items():
         if not r.get('pasos'):E.append('interiores.recetas.%s: sin pasos'%k)
     for k,i in I.get('interiores',{}).items():

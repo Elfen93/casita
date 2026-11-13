@@ -52,6 +52,8 @@ static func lista(obj: Objeto, jg) -> Array:
 				mot = motivo(str(rq), obj, v, jg)
 				if mot != "":
 					break
+			if mot == "":
+				mot = motivo_agotado(v, jg)
 			res.append({"ac": v, "ok": mot == "", "motivo": mot})
 	return res
 
@@ -63,7 +65,17 @@ static func motivo(rq: String, obj: Objeto, ac: Dictionary, jg) -> String:
 		"camarero":
 			ok = jg.bar != null and jg.bar.camarero_listo() != null
 		"bebida_mano":
-			ok = jg.jugador.mano != ""
+			ok = jg.jugador.mano != "" and producto(jg.jugador.mano).has("beber")
+		"plato_mano":
+			ok = jg.jugador.mano.split(":")[0] == "plato"
+		"platos_sucios":
+			ok = bool(jg.estado_casa.get("platos_sucios", false))
+		"sin_platos_sucios":
+			ok = not bool(jg.estado_casa.get("platos_sucios", false))
+		"hay_tele":
+			ok = jg.interior != null and not jg.interior.de_tipo("tele").is_empty()
+		"sin_sitio":
+			ok = not hay_sitio(obj, jg)
 		"mano_libre":
 			ok = jg.jugador.mano == ""
 		"trabaja_aqui":
@@ -78,6 +90,24 @@ static func motivo(rq: String, obj: Objeto, ac: Dictionary, jg) -> String:
 			ok = obj.uso_libre() != -1
 	return "" if ok else str(D["condiciones"].get(rq, rq))
 
+# ¿queda algún sitio libre donde sentarse a comer (mesa de comedor, silla o sofá) en el interior del mueble?
+static func hay_sitio(obj: Objeto, jg) -> bool:
+	for it in jg.interiores_v:
+		if it.id != obj.interior:
+			continue
+		for o in it.objetos:
+			if o.tipo in ["mesa_comedor", "silla", "sofa"] and o.uso_libre() != -1:
+				return true
+	return false
+
+# con la energía a 0 solo se puede dormir, sentarse o comer (reglas de data/interiores.json -> necesidades.agotado)
+static func motivo_agotado(ac: Dictionary, jg) -> String:
+	if float(jg.nec.get("energia", 100.0)) > 0.0:
+		return ""
+	if ac.get("tipo", "") in ["dormir", "comer"] or ac.get("postura", "") == "sentado":
+		return ""
+	return str(D["condiciones"].get("agotado", "Estás agotado"))
+
 static func etiqueta(ac: Dictionary) -> String:
 	var t := "%s %s" % [ac.get("e", ""), ac["n"]]
 	var c := coste(ac)
@@ -89,6 +119,10 @@ static func jg_eur(c: float) -> String:
 	return ("%.2f" % c).replace(".", ",").replace(",00", "") + " €"
 
 # efectos de necesidades sobre el estado del juego
+static func aplicar_estado(est: Dictionary, jg) -> void:
+	for k in est:
+		jg.estado_casa[k] = est[k]
+
 static func aplicar_efectos(ef: Dictionary, jg) -> void:
 	for k in ef:
 		if jg.nec.has(k):

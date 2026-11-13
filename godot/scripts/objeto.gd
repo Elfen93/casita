@@ -38,10 +38,18 @@ func uso_libre() -> int:
 			return i
 	return -1
 
-func asiento_mundo() -> Vector3:
+# i = índice de uso: si el tipo declara `asientos` (sofá, mesa de comedor), cada uso tiene su sitio [x, y, z, giro extra]
+func asiento_mundo(i := 0) -> Vector3:
 	var a: Array = def.get("asiento", [0, 0.5, 0])
+	if def.has("asientos") and i >= 0 and i < (def["asientos"] as Array).size():
+		a = def["asientos"][i]
 	var v := Basis(Vector3.UP, deg_to_rad(giro)) * Vector3(float(a[0]), 0, float(a[2]))
 	return Vector3(pos.x + v.x, float(a[1]), pos.y + v.z)
+
+func giro_asiento(i := 0) -> float:
+	if def.has("asientos") and i >= 0 and i < (def["asientos"] as Array).size() and (def["asientos"][i] as Array).size() > 3:
+		return giro + float(def["asientos"][i][3])
+	return giro
 
 func aabb() -> AABB:
 	var c := pos if actor == null else actor.pos2()
