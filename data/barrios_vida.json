@@ -562,7 +562,11 @@
 
   "averias": {
     "_": "Averías de suministros y de finca según `abandono` del barrio (0–6). Probabilidad diaria = p × (1 + k_frec × abandono); días hasta el arreglo = dias + k_dias × abandono. `casas`: tipos de vivienda donde pasa. `fx`: lo que resta cada día sin arreglar. `retraso_casero`: por punto de abandono, probabilidad diaria de que el casero ni mire el calentador roto (tope `retraso_max`). `boiler_extra`: probabilidad diaria extra de calentador por punto de abandono.",
-    "k_frec": 0.4, "k_dias": 0.6, "retraso_casero": 0.08, "retraso_max": 0.5, "boiler_extra": 0.0012,
+    "k_frec": 0.25,
+    "k_dias": 0.4,
+    "retraso_casero": 0.05,
+    "retraso_max": 0.3,
+    "boiler_extra": 0.0012,
     "tipos": {
       "agua": {"p": 0.003, "dias": 1, "casas": ["infra", "viejo", "habitacion", "bueno", "casita", "chalet", "padres"], "fx": {"higiene": -2, "energia": -1}, "e": "🚰"},
       "luz": {"p": 0.0025, "dias": 1, "casas": ["infra", "viejo", "habitacion", "bueno", "casita", "chalet", "padres"], "fx": {"diversion": -3, "energia": -1}, "e": "💡"},
@@ -570,9 +574,11 @@
       "portal": {"p": 0.0025, "dias": 2, "casas": ["infra", "viejo", "habitacion", "bueno"], "fx": {"social": -1}, "animo": -0.5, "e": "🚪"}
     }
   },
+
   "reclamos": {
     "_": "La comunidad y la administración reclaman según `control` del barrio (0–1): probabilidad diaria = p × control. Un aviso de cada tipo, con multa pequeña (`multa_h`, horas de trabajo) o solo carta.",
-    "p": 0.04, "casas": ["infra", "viejo", "habitacion", "bueno", "chalet"],
+    "p": 0.04,
+    "casas": ["infra", "viejo", "habitacion", "bueno", "chalet"],
     "tipos": {
       "ruido": {"peso": 3, "multa_h": 0, "e": "📨", "t": ["Carta de la comunidad: se han quejado del ruido. Piden que {n} baje el volumen pasadas las diez.", "El presidente de la comunidad deja una nota en el felpudo: ruido. Sin firma, pero es su letra."]},
       "obras": {"peso": 1, "multa_h": 0.6, "e": "🏗️", "t": ["Aviso del ayuntamiento: {n} movió algo en casa sin pedir permiso de obra. Multa de {c}.", "Carta de urbanismo: una vecina ha visto el taladro. Piden papeles y cobran {c}."]},

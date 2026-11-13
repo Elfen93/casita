@@ -24,8 +24,8 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 
 ### ✅ (hecho) T-140 censo ampliado · T-141 piquetes, colas y rider · T-142 romance en Gente, ficha de barrio y equilibrio
 
-### T-143 · Flecos de la ciudad habitada
-Rol: motor + datos. (1) `abandono` y `control` de `barrios_vida.json` no los lee el código: que las averías y su arreglo dependan del barrio (`hogar.js`). (2) Convivir con vecinos del censo (hoy cerrado: tienen hogar propio). (3) Manifestación: sin prueba ni captura, y el personaje no se une a la marcha. (4) Los nombrados del piquete aparecen y desaparecen de golpe a las 6:45 y 14:00. (5) Pancarta pequeña a escala de calle. (6) Pagar al rider por entrega. (7) Menores de 12 del censo solo salen al parque; 49 vecinos no aparecen en ninguna escena (trabajan «fuera»). (8) Plantilla de una sola persona en gimnasio, parroquia, comedor, ateneo y asociación. (9) Capturas pendientes: piquete del súper, rider entregando, aula por dentro con el censo nuevo.
+### T-144 · Lo que quedó de la ciudad habitada
+Rol: motor + datos. Hecho en T-143: averías por barrio, piquete que llega y se va, pancarta, manifestación con el personaje. Queda: (1) el rider cobra por entrega con la misma paga media (`profesiones.json` → `reparto`, `gig`); (2) menores de 12 yendo al colegio con su adulta y los 49 que trabajan «fuera» saliendo del portal a la parada (hoy 214 de 263 vistos en una semana); (3) convivir con vecinos que viven solos o en piso compartido; (4) con la manifestación, la barra de arriba sigue diciendo el destino anterior en el visor: comprobar jugando; (5) capturas pendientes: piquete del súper, rider entregando, aula con el censo nuevo.
 
 ### ✅ (hecho, `mods/caminar.js`) T-131 · Caminar por la ciudad
 Rol: motor. El personaje va andando por las calles de `ciudad.json` de puerta a puerta (`cdCamino`, `cdTrayecto`), y en transporte entre barrios. Sustituir los usos del `r` antiguo en `src/core/047` y borrarlo. Dibujo mínimo.
