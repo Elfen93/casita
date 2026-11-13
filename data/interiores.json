@@ -1,1596 +1,347 @@
 {
- "_": "Interiores y sistema de objetos y acciones de la versión Godot (godot/scripts/). Medidas en metros. Ver data/README.md, sección interiores.json. Interior del bar: 14 x 10 m junto a la puerta; el resto de la parcela es patio.",
- "condiciones": {
-  "abierto": "Está cerrado",
-  "camarero": "No hay nadie tras la barra",
-  "bebida_mano": "No llevas ninguna bebida en la mano",
-  "mano_libre": "Ya llevas una bebida en la mano",
-  "trabaja_aqui": "Aquí solo sirve quien trabaja en el bar",
-  "cliente_sentado": "Solo con alguien sentado",
-  "pedido_servible": "Lo que llevas en la mano no es lo que ha pedido",
-  "dinero": "No te llega el dinero",
-  "libre": "Está ocupado"
- },
- "productos": {
-  "cana": {
-   "n": "caña",
-   "e": "🍺",
-   "precio": 2.5,
-   "min_prep": 1.5,
-   "sitio": "grifo",
-   "beber": {
-    "diversion": 8,
-    "social": 5
-   },
-   "min_beber": 25
+  "_": "Interiores y sistema de objetos y acciones de la versión Godot (godot/scripts/). Medidas en metros. Ver data/README.md, sección interiores.json. Interior del bar: 14 x 10 m junto a la puerta; el resto de la parcela es patio.",
+
+  "condiciones": {
+    "abierto": "Está cerrado",
+    "camarero": "No hay nadie tras la barra",
+    "bebida_mano": "No llevas ninguna bebida en la mano",
+    "mano_libre": "Ya llevas algo en la mano",
+    "trabaja_aqui": "Aquí solo sirve quien trabaja en el bar",
+    "cliente_sentado": "Solo con alguien sentado",
+    "pedido_servible": "Lo que llevas en la mano no es lo que ha pedido",
+    "dinero": "No te llega el dinero",
+    "libre": "Está ocupado",
+    "plato_mano": "No llevas ningún plato",
+    "sin_platos_sucios": "Hay platos sin fregar",
+    "platos_sucios": "No hay platos que fregar",
+    "sin_sitio": "Hay sitio para sentarse",
+    "hay_tele": "No hay tele",
+    "agotado": "Estás agotado: necesitas descansar"
   },
-  "cafe": {
-   "n": "café",
-   "e": "☕",
-   "precio": 1.4,
-   "min_prep": 1.5,
-   "sitio": "cafetera",
-   "beber": {
-    "diversion": 3,
-    "energia": 6,
-    "social": 3
-   },
-   "min_beber": 15
+
+  "productos": {
+    "cana": {"n": "caña", "e": "🍺", "precio": 2.5, "min_prep": 1.5, "sitio": "grifo", "beber": {"diversion": 8, "social": 5}, "min_beber": 25},
+    "cafe": {"n": "café", "e": "☕", "precio": 1.4, "min_prep": 1.5, "sitio": "cafetera", "beber": {"diversion": 3, "energia": 6, "social": 3}, "min_beber": 15},
+    "coctel": {"n": "cóctel", "e": "🍹", "precio": 7.0, "min_prep": 3, "sitio": "coctelera", "beber": {"diversion": 12, "social": 7}, "min_beber": 30},
+    "plato": {"n": "plato de comida", "e": "🍲", "precio": 0, "comer": {"hambre": 60}, "comer_de_pie": {"hambre": 40}, "min_comer": 20}
   },
-  "coctel": {
-   "n": "cóctel",
-   "e": "🍹",
-   "precio": 7.0,
-   "min_prep": 3,
-   "sitio": "coctelera",
-   "beber": {
-    "diversion": 12,
-    "social": 7
-   },
-   "min_beber": 30
-  }
- },
- "recetas": {
-  "mojito": {
-   "n": "Mojito",
-   "precio": 7.0,
-   "pasos": [
-    [
-     "Poner hielo picado",
-     1
-    ],
-    [
-     "Machacar la menta",
-     1
-    ],
-    [
-     "Medir el ron",
-     0.5
-    ],
-    [
-     "Agitar",
-     1
-    ],
-    [
-     "Servir y decorar",
-     0.5
-    ]
-   ]
+
+  "recetas": {
+    "mojito": {"n": "Mojito", "precio": 7.0, "pasos": [["Poner hielo picado", 1], ["Machacar la menta", 1], ["Medir el ron", 0.5], ["Agitar", 1], ["Servir y decorar", 0.5]]},
+    "cuba_libre": {"n": "Cuba libre", "precio": 6.5, "pasos": [["Poner hielo", 0.5], ["Medir el ron", 0.5], ["Añadir la cola y el limón", 1], ["Servir", 0.5]]},
+    "gintonic": {"n": "Gin-tonic", "precio": 8.0, "pasos": [["Enfriar la copa", 1], ["Medir la ginebra", 0.5], ["Añadir tónica y enebro", 1], ["Servir", 0.5]]},
+    "margarita": {"n": "Margarita", "precio": 8.5, "pasos": [["Escarchar el borde", 1], ["Poner hielo", 0.5], ["Medir tequila y lima", 1], ["Agitar con ganas", 1.5], ["Servir", 0.5]]},
+    "sangria": {"n": "Sangría de la casa", "precio": 5.5, "pasos": [["Cortar la fruta", 1], ["Añadir el vino", 0.5], ["Remover", 1], ["Servir", 0.5]]}
   },
-  "cuba_libre": {
-   "n": "Cuba libre",
-   "precio": 6.5,
-   "pasos": [
-    [
-     "Poner hielo",
-     0.5
-    ],
-    [
-     "Medir el ron",
-     0.5
-    ],
-    [
-     "Añadir la cola y el limón",
-     1
-    ],
-    [
-     "Servir",
-     0.5
-    ]
-   ]
-  },
-  "gintonic": {
-   "n": "Gin-tonic",
-   "precio": 8.0,
-   "pasos": [
-    [
-     "Enfriar la copa",
-     1
-    ],
-    [
-     "Medir la ginebra",
-     0.5
-    ],
-    [
-     "Añadir tónica y enebro",
-     1
-    ],
-    [
-     "Servir",
-     0.5
-    ]
-   ]
-  },
-  "margarita": {
-   "n": "Margarita",
-   "precio": 8.5,
-   "pasos": [
-    [
-     "Escarchar el borde",
-     1
-    ],
-    [
-     "Poner hielo",
-     0.5
-    ],
-    [
-     "Medir tequila y lima",
-     1
-    ],
-    [
-     "Agitar con ganas",
-     1.5
-    ],
-    [
-     "Servir",
-     0.5
-    ]
-   ]
-  },
-  "sangria": {
-   "n": "Sangría de la casa",
-   "precio": 5.5,
-   "pasos": [
-    [
-     "Cortar la fruta",
-     1
-    ],
-    [
-     "Añadir el vino",
-     0.5
-    ],
-    [
-     "Remover",
-     1
-    ],
-    [
-     "Servir",
-     0.5
-    ]
-   ]
-  }
- },
- "tipos": {
-  "barra": {
-   "n": "Barra",
-   "e": "🍺",
-   "huella": [
-    7,
-    0.7
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.55,
-      0
-     ],
-     "s": [
-      7,
-      1.1,
-      0.7
-     ],
-     "c": "#6b4528"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.12,
-      0.05
-     ],
-     "s": [
-      7.2,
-      0.07,
-      0.95
-     ],
-     "c": "#a9794a"
-    }
-   ],
-   "uso": [
-    [
-     -3,
-     1.9
-    ],
-    [
-     -1.8,
-     1.9
-    ],
-    [
-     -0.6,
-     1.9
-    ],
-    [
-     0.6,
-     1.9
-    ],
-    [
-     1.8,
-     1.9
-    ],
-    [
-     3.0,
-     1.9
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "pedir_cana",
-     "n": "Pedir una caña",
-     "e": "🍺",
-     "tipo": "pedir",
-     "producto": "cana",
-     "min": 3,
-     "postura": "de_pie",
-     "req": [
-      "abierto",
-      "camarero",
-      "mano_libre",
-      "dinero"
-     ]
-    },
-    {
-     "id": "pedir_cafe",
-     "n": "Pedir un café",
-     "e": "☕",
-     "tipo": "pedir",
-     "producto": "cafe",
-     "min": 3,
-     "postura": "de_pie",
-     "req": [
-      "abierto",
-      "camarero",
-      "mano_libre",
-      "dinero"
-     ]
-    },
-    {
-     "id": "pedir_coctel",
-     "n": "Pedir un cóctel",
-     "e": "🍹",
-     "tipo": "pedir",
-     "producto": "coctel",
-     "min": 5,
-     "postura": "de_pie",
-     "req": [
-      "abierto",
-      "camarero",
-      "mano_libre",
-      "dinero"
-     ]
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/barra.tscn",
-    "modulos": 7,
-    "alto": 1.1
-   }
-  },
-  "taburete": {
-   "n": "Taburete",
-   "e": "🪑",
-   "huella": [
-    0.45,
-    0.45
-   ],
-   "solido": false,
-   "partes": [
-    {
-     "t": "cil",
-     "p": [
-      0,
-      0.62,
-      0
-     ],
-     "s": [
-      0.42,
-      0.08,
-      0.42
-     ],
-     "c": "#b4432f"
-    },
-    {
-     "t": "cil",
-     "p": [
-      0,
-      0.3,
-      0
-     ],
-     "s": [
-      0.09,
-      0.6,
-      0.09
-     ],
-     "c": "#3a3a3e"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     -0.9
-    ]
-   ],
-   "asiento": [
-    0,
-    0.62,
-    0
-   ],
-   "acciones": [
-    {
-     "id": "sentarse",
-     "n": "Sentarse",
-     "e": "🪑",
-     "tipo": "normal",
-     "min": 10,
-     "postura": "sentado",
-     "req": [
-      "libre"
-     ],
-     "efectos": {
-      "energia": 2
-     }
-    },
-    {
-     "id": "beber",
-     "n": "Beber",
-     "e": "🥤",
-     "tipo": "beber",
-     "min": 25,
-     "postura": "sentado",
-     "req": [
-      "libre",
-      "bebida_mano"
-     ]
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/taburete.tscn",
-    "asiento": 0.75,
-    "alto": 0.78
-   }
-  },
-  "silla": {
-   "n": "Silla",
-   "e": "🪑",
-   "huella": [
-    0.5,
-    0.5
-   ],
-   "solido": false,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.45,
-      0
-     ],
-     "s": [
-      0.5,
-      0.07,
-      0.5
-     ],
-     "c": "#8a5a36"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.8,
-      -0.22
-     ],
-     "s": [
-      0.5,
-      0.7,
-      0.06
-     ],
-     "c": "#8a5a36"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.22,
-      0
-     ],
-     "s": [
-      0.44,
-      0.44,
-      0.44
-     ],
-     "c": "#5e3d24"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     -0.9
-    ]
-   ],
-   "asiento": [
-    0,
-    0.45,
-    0
-   ],
-   "acciones": [
-    {
-     "id": "sentarse",
-     "n": "Sentarse",
-     "e": "🪑",
-     "tipo": "normal",
-     "min": 10,
-     "postura": "sentado",
-     "req": [
-      "libre"
-     ],
-     "efectos": {
-      "energia": 2
-     }
-    },
-    {
-     "id": "beber",
-     "n": "Beber",
-     "e": "🥤",
-     "tipo": "beber",
-     "min": 25,
-     "postura": "sentado",
-     "req": [
-      "libre",
-      "bebida_mano"
-     ]
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/silla.tscn",
-    "asiento": 0.43,
-    "alto": 1.03
-   }
-  },
-  "mesa": {
-   "n": "Mesa",
-   "e": "🍽️",
-   "huella": [
-    1.1,
-    1.1
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.74,
-      0
-     ],
-     "s": [
-      1.1,
-      0.06,
-      1.1
-     ],
-     "c": "#c18e57"
-    },
-    {
-     "t": "cil",
-     "p": [
-      0,
-      0.37,
-      0
-     ],
-     "s": [
-      0.12,
-      0.74,
-      0.12
-     ],
-     "c": "#3a3a3e"
-    }
-   ],
-   "uso": [],
-   "acciones": [],
-   "modelo": {
-    "escena": "res://arte/muebles/mesa_bar.tscn",
-    "escala": [
-     1.35,
-     1,
-     1.35
-    ],
-    "alto": 0.76
-   }
-  },
-  "grifo": {
-   "n": "Grifo de cerveza",
-   "e": "🍺",
-   "huella": [
-    0.5,
-    0.4
-   ],
-   "solido": false,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.3,
-      0
-     ],
-     "s": [
-      0.3,
-      0.35,
-      0.3
-     ],
-     "c": "#c9ccd0"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.15,
-      0.18
-     ],
-     "s": [
-      0.06,
-      0.14,
-      0.06
-     ],
-     "c": "#d9a21b"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     -1.1
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "tirar_cana",
-     "n": "Tirar una caña",
-     "e": "🍺",
-     "tipo": "tirar",
-     "producto": "cana",
-     "min": 1.5,
-     "postura": "tras_barra",
-     "req": [
-      "trabaja_aqui",
-      "mano_libre"
-     ]
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/grifo_cerveza.tscn",
-    "sobre": 1.1,
-    "alto": 1.55
-   }
-  },
-  "cafetera": {
-   "n": "Cafetera",
-   "e": "☕",
-   "huella": [
-    0.6,
-    0.5
-   ],
-   "solido": false,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.4,
-      0
-     ],
-     "s": [
-      0.6,
-      0.5,
-      0.45
-     ],
-     "c": "#2c2d33"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.2,
-      0.2
-     ],
-     "s": [
-      0.2,
-      0.06,
-      0.12
-     ],
-     "c": "#c9ccd0"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     -1.1
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "hacer_cafe",
-     "n": "Hacer un café",
-     "e": "☕",
-     "tipo": "tirar",
-     "producto": "cafe",
-     "min": 1.5,
-     "postura": "tras_barra",
-     "req": [
-      "trabaja_aqui",
-      "mano_libre"
-     ]
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/cafetera.tscn",
-    "sobre": 1.1,
-    "alto": 1.54
-   }
-  },
-  "coctelera": {
-   "n": "Coctelera",
-   "e": "🍸",
-   "huella": [
-    0.5,
-    0.4
-   ],
-   "solido": false,
-   "partes": [
-    {
-     "t": "cil",
-     "p": [
-      0,
-      1.3,
-      0
-     ],
-     "s": [
-      0.16,
-      0.34,
-      0.16
-     ],
-     "c": "#d4d8dc"
-    },
-    {
-     "t": "cil",
-     "p": [
-      0,
-      1.52,
-      0
-     ],
-     "s": [
-      0.1,
-      0.1,
-      0.1
-     ],
-     "c": "#b0b4b8"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     -1.1
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "preparar",
-     "n": "Preparar",
-     "e": "🍸",
-     "tipo": "preparar",
-     "por_receta": true,
-     "postura": "tras_barra",
-     "req": [
-      "trabaja_aqui",
-      "mano_libre"
-     ],
-     "habilidad": {
-      "cocteleria": 1.0
-     }
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/coctelera.tscn",
-    "sobre": 1.1,
-    "alto": 1.33
-   }
-  },
-  "estante": {
-   "n": "Estante de botellas",
-   "e": "🍾",
-   "huella": [
-    5,
-    0.4
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.0,
-      0
-     ],
-     "s": [
-      5,
-      0.05,
-      0.4
-     ],
-     "c": "#5a3b22"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.6,
-      0
-     ],
-     "s": [
-      5,
-      0.05,
-      0.4
-     ],
-     "c": "#5a3b22"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.35,
-      0
-     ],
-     "s": [
-      4.6,
-      0.3,
-      0.14
-     ],
-     "c": "#3f8a5a"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.95,
-      0
-     ],
-     "s": [
-      4.6,
-      0.3,
-      0.14
-     ],
-     "c": "#b8863b"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.5,
-      0
-     ],
-     "s": [
-      5,
-      1.0,
-      0.4
-     ],
-     "c": "#4a3320"
-    }
-   ],
-   "uso": [],
-   "acciones": [],
-   "modelo": {
-    "escena": "res://arte/muebles/estante_botellas.tscn",
-    "modulos": 5,
-    "alto": 2.41
-   }
-  },
-  "tragaperras": {
-   "n": "Tragaperras",
-   "e": "🎰",
-   "huella": [
-    0.8,
-    0.7
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.9,
-      0
-     ],
-     "s": [
-      0.8,
-      1.8,
-      0.7
-     ],
-     "c": "#b0262e"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.3,
-      0.36
-     ],
-     "s": [
-      0.6,
-      0.4,
-      0.04
-     ],
-     "c": "#f2d45c"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.9,
-      0
-     ],
-     "s": [
-      0.7,
-      0.2,
-      0.6
-     ],
-     "c": "#2c2d33"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     1.0
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "moneda",
-     "n": "Echar una moneda",
-     "e": "🎰",
-     "tipo": "normal",
-     "min": 1,
-     "coste": 1,
-     "postura": "de_pie",
-     "req": [
-      "dinero",
-      "libre"
-     ],
-     "efectos": {
-      "diversion": 1.5
-     },
-     "azar": {
-      "prob": 0.07,
-      "premio": 10
-     }
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/tragaperras.tscn",
-    "alto": 1.78
-   }
-  },
-  "puerta_bano": {
-   "n": "Baño",
-   "e": "🚻",
-   "huella": [
-    1.0,
-    0.1
-   ],
-   "solido": false,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.05,
-      0
-     ],
-     "s": [
-      1.0,
-      2.1,
-      0.08
-     ],
-     "c": "#4d7fa6"
-    },
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.6,
-      0.06
-     ],
-     "s": [
-      0.3,
-      0.3,
-      0.02
-     ],
-     "c": "#f4f1e8"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     1.2
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "usar_bano",
-     "n": "Usar el baño",
-     "e": "🚻",
-     "tipo": "normal",
-     "min": 4,
-     "postura": "oculto",
-     "req": [
-      "libre"
-     ],
-     "efectos": {
-      "vejiga": 60,
-      "higiene": 10
-     }
-    }
-   ]
-  },
-  "cliente": {
-   "n": "Cliente",
-   "e": "🧍",
-   "huella": [
-    0.5,
-    0.5
-   ],
-   "solido": false,
-   "partes": [],
-   "uso": [
-    [
-     0,
-     1.1
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "servir",
-     "n": "Servir el pedido",
-     "e": "🍻",
-     "tipo": "servir",
-     "min": 0.5,
-     "postura": "de_pie",
-     "req": [
-      "trabaja_aqui",
-      "pedido_servible"
-     ]
-    },
-    {
-     "id": "charlar",
-     "n": "Charlar",
-     "e": "💬",
-     "tipo": "normal",
-     "min": 12,
-     "postura": "de_pie",
-     "req": [
-      "cliente_sentado"
-     ],
-     "efectos": {
-      "social": 14,
-      "diversion": 3
-     }
-    }
-   ]
-  },
-  "cama": {
-   "n": "Cama",
-   "e": "🛏️",
-   "huella": [
-    1.02,
-    1.92
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.3,
-      0
-     ],
-     "s": [
-      1.02,
-      0.6,
-      1.92
-     ],
-     "c": "#e8e0d0"
-    }
-   ],
-   "uso": [
-    [
-     -0.9,
-     0
-    ]
-   ],
-   "acciones": [
-    {
-     "id": "dormir_8",
-     "n": "Dormir 8 horas",
-     "e": "🛏️",
-     "tipo": "dormir",
-     "min": 480,
-     "postura": "tumbado",
-     "req": [
-      "libre"
-     ],
-     "energia_min": 0.21
-    },
-    {
-     "id": "siesta",
-     "n": "Echar una siesta (1 h)",
-     "e": "😴",
-     "tipo": "dormir",
-     "min": 60,
-     "postura": "tumbado",
-     "req": [
-      "libre"
-     ],
-     "energia_min": 0.21
-    }
-   ],
-   "modelo": {
-    "escena": "res://arte/muebles/cama.tscn",
-    "alto": 0.64,
-    "asiento": 0.38
-   }
-  },
-  "nevera": {
-   "n": "Nevera",
-   "e": "🧊",
-   "huella": [
-    0.62,
-    0.69
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.92,
-      0
-     ],
-     "s": [
-      0.62,
-      1.85,
-      0.69
-     ],
-     "c": "#dddddd"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     0.95
-    ]
-   ],
-   "acciones": [],
-   "modelo": {
-    "escena": "res://arte/muebles/nevera.tscn",
-    "alto": 1.85
-   }
-  },
-  "cocina": {
-   "n": "Cocina",
-   "e": "🍳",
-   "huella": [
-    0.6,
-    0.63
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.46,
-      0
-     ],
-     "s": [
-      0.6,
-      0.92,
-      0.63
-     ],
-     "c": "#cfcfcf"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     0.95
-    ]
-   ],
-   "acciones": [],
-   "modelo": {
-    "escena": "res://arte/muebles/cocina.tscn",
-    "alto": 0.92
-   }
-  },
-  "sofa": {
-   "n": "Sofá",
-   "e": "🛋️",
-   "huella": [
-    2.25,
-    1.2
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      0.46,
-      0
-     ],
-     "s": [
-      2.25,
-      0.92,
-      1.2
-     ],
-     "c": "#6b7f9a"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     1.3
-    ]
-   ],
-   "acciones": [],
-   "modelo": {
-    "escena": "res://arte/muebles/sofa.tscn",
-    "alto": 0.92,
-    "asiento": 0.4
-   }
-  },
-  "ducha": {
-   "n": "Ducha",
-   "e": "🚿",
-   "huella": [
-    0.9,
-    0.9
-   ],
-   "solido": true,
-   "partes": [
-    {
-     "t": "caja",
-     "p": [
-      0,
-      1.0,
-      0
-     ],
-     "s": [
-      0.9,
-      2.0,
-      0.9
-     ],
-     "c": "#bcd4dc"
-    }
-   ],
-   "uso": [
-    [
-     0,
-     0.95
-    ]
-   ],
-   "acciones": [],
-   "modelo": {
-    "escena": "res://arte/muebles/ducha.tscn",
-    "alto": 2.07
-   }
-  }
- },
- "interiores": {
-  "bar": {
-   "lugar": "bar",
-   "tam": [
-    14,
-    10
-   ],
-   "puerta_x": 0,
-   "suelo": "#b58a5a",
-   "pared": "#d9a066",
-   "alto": 3.0,
-   "puntos": {
-    "sitio_camarero": [
-     -2.5,
-     7.9
-    ],
-    "exterior": [
-     0,
-     -2.2
-    ],
-    "bano": [
-     4.5,
-     9.0
-    ],
-    "personal": [
-     [
-      3.0,
-      8.0
-     ],
-     [
-      4.5,
-      8.4
-     ]
-    ]
-   },
-   "muebles": [
-    {
-     "id": "estante",
-     "tipo": "estante",
-     "pos": [
-      -2.5,
-      9.7
-     ],
-     "giro": 0
-    },
-    {
-     "id": "barra",
-     "tipo": "barra",
-     "pos": [
-      -2.5,
-      6.5
-     ],
-     "giro": 0
-    },
-    {
-     "id": "grifo",
-     "tipo": "grifo",
-     "pos": [
-      -5.0,
-      6.5
-     ],
-     "giro": 0
-    },
-    {
-     "id": "cafetera",
-     "tipo": "cafetera",
-     "pos": [
-      -2.5,
-      6.5
-     ],
-     "giro": 0
-    },
-    {
-     "id": "coctelera",
-     "tipo": "coctelera",
-     "pos": [
-      0.0,
-      6.5
-     ],
-     "giro": 0
-    },
-    {
-     "id": "tab1",
-     "tipo": "taburete",
-     "pos": [
-      -5.0,
-      5.5
-     ],
-     "giro": 180
-    },
-    {
-     "id": "tab2",
-     "tipo": "taburete",
-     "pos": [
-      -3.75,
-      5.5
-     ],
-     "giro": 180
-    },
-    {
-     "id": "tab3",
-     "tipo": "taburete",
-     "pos": [
-      -2.5,
-      5.5
-     ],
-     "giro": 180
-    },
-    {
-     "id": "tab4",
-     "tipo": "taburete",
-     "pos": [
-      -1.25,
-      5.5
-     ],
-     "giro": 180
-    },
-    {
-     "id": "tab5",
-     "tipo": "taburete",
-     "pos": [
-      0.0,
-      5.5
-     ],
-     "giro": 180
-    },
-    {
-     "id": "mesa1",
-     "tipo": "mesa",
-     "pos": [
-      -5.2,
-      2.3
-     ],
-     "giro": 0
-    },
-    {
-     "id": "mesa2",
-     "tipo": "mesa",
-     "pos": [
-      -2.6,
-      2.3
-     ],
-     "giro": 0
-    },
-    {
-     "id": "mesa3",
-     "tipo": "mesa",
-     "pos": [
-      2.6,
-      2.3
-     ],
-     "giro": 0
-    },
-    {
-     "id": "mesa4",
-     "tipo": "mesa",
-     "pos": [
-      5.6,
-      2.3
-     ],
-     "giro": 0
-    },
-    {
-     "id": "s1a",
-     "tipo": "silla",
-     "pos": [
-      -6.2,
-      2.3
-     ],
-     "giro": 90
-    },
-    {
-     "id": "s1b",
-     "tipo": "silla",
-     "pos": [
-      -4.2,
-      2.3
-     ],
-     "giro": 270
-    },
-    {
-     "id": "s2a",
-     "tipo": "silla",
-     "pos": [
-      -3.6,
-      2.3
-     ],
-     "giro": 90
-    },
-    {
-     "id": "s2b",
-     "tipo": "silla",
-     "pos": [
-      -1.6,
-      2.3
-     ],
-     "giro": 270
-    },
-    {
-     "id": "s3a",
-     "tipo": "silla",
-     "pos": [
-      1.6,
-      2.3
-     ],
-     "giro": 90
-    },
-    {
-     "id": "s3b",
-     "tipo": "silla",
-     "pos": [
-      3.6,
-      2.3
-     ],
-     "giro": 270
-    },
-    {
-     "id": "s4a",
-     "tipo": "silla",
-     "pos": [
-      4.6,
-      2.3
-     ],
-     "giro": 90
-    },
-    {
-     "id": "s4b",
-     "tipo": "silla",
-     "pos": [
-      6.6,
-      2.3
-     ],
-     "giro": 270
-    },
-    {
-     "id": "tragaperras",
-     "tipo": "tragaperras",
-     "pos": [
-      6.5,
-      6.0
-     ],
-     "giro": 270
-    },
-    {
-     "id": "bano",
-     "tipo": "puerta_bano",
-     "pos": [
-      4.5,
-      9.9
-     ],
-     "giro": 0
-    }
-   ],
-   "zocalo": "#5a3622",
-   "suelo2": "#9c7448",
-   "luz": {
-    "color": "#ffc98a",
-    "energia": 1.3,
-    "rango": 14
-   }
-  },
-  "casa": {
-   "lugar": "casa",
-   "tam": [
-    9,
-    7
-   ],
-   "izq": 2,
-   "puerta_x": 0,
-   "suelo": "#c9a878",
-   "suelo2": "#bd9c6c",
-   "pared": "#efe3cf",
-   "zocalo": "#8a6d4e",
-   "alto": 3.0,
-   "paredes_bajas": true,
-   "luz": {
-    "color": "#ffd9a8",
-    "energia": 1.1,
-    "rango": 8
-   },
-   "puntos": {
-    "exterior": [
-     0,
-     -2.2
-    ]
-   },
-   "tabiques": [
-    {
-     "id": "salon_este",
-     "a": [
-      2.5,
-      0
-     ],
-     "b": [
-      2.5,
-      7
-     ],
-     "huecos": [
-      [
-       1,
-       2
+
+  "tipos": {
+    "barra": {
+      "n": "Barra",
+      "e": "🍺",
+      "huella": [7, 0.7],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.55, 0], "s": [7, 1.1, 0.7], "c": "#6b4528"}, {"t": "caja", "p": [0, 1.12, 0.05], "s": [7.2, 0.07, 0.95], "c": "#a9794a"}],
+      "uso": [[-3, 1.9], [-1.8, 1.9], [-0.6, 1.9], [0.6, 1.9], [1.8, 1.9], [3.0, 1.9]],
+      "acciones": [
+        {"id": "pedir_cana", "n": "Pedir una caña", "e": "🍺", "tipo": "pedir", "producto": "cana", "min": 3, "postura": "de_pie", "req": ["abierto", "camarero", "mano_libre", "dinero"]},
+        {"id": "pedir_cafe", "n": "Pedir un café", "e": "☕", "tipo": "pedir", "producto": "cafe", "min": 3, "postura": "de_pie", "req": ["abierto", "camarero", "mano_libre", "dinero"]},
+        {"id": "pedir_coctel", "n": "Pedir un cóctel", "e": "🍹", "tipo": "pedir", "producto": "coctel", "min": 5, "postura": "de_pie", "req": ["abierto", "camarero", "mano_libre", "dinero"]}
       ],
-      [
-       5,
-       6
+      "modelo": {"escena": "res://arte/muebles/barra.tscn", "modulos": 7, "alto": 1.1}
+    },
+    "taburete": {
+      "n": "Taburete",
+      "e": "🪑",
+      "huella": [0.45, 0.45],
+      "solido": false,
+      "partes": [{"t": "cil", "p": [0, 0.62, 0], "s": [0.42, 0.08, 0.42], "c": "#b4432f"}, {"t": "cil", "p": [0, 0.3, 0], "s": [0.09, 0.6, 0.09], "c": "#3a3a3e"}],
+      "uso": [[0, -0.9]],
+      "asiento": [0, 0.62, 0],
+      "acciones": [{"id": "sentarse", "n": "Sentarse", "e": "🪑", "tipo": "normal", "min": 10, "postura": "sentado", "req": ["libre"], "efectos": {"energia": 2}}, {"id": "beber", "n": "Beber", "e": "🥤", "tipo": "beber", "min": 25, "postura": "sentado", "req": ["libre", "bebida_mano"]}],
+      "modelo": {"escena": "res://arte/muebles/taburete.tscn", "asiento": 0.75, "alto": 0.78}
+    },
+    "silla": {
+      "n": "Silla",
+      "e": "🪑",
+      "huella": [0.5, 0.5],
+      "solido": false,
+      "partes": [{"t": "caja", "p": [0, 0.45, 0], "s": [0.5, 0.07, 0.5], "c": "#8a5a36"}, {"t": "caja", "p": [0, 0.8, -0.22], "s": [0.5, 0.7, 0.06], "c": "#8a5a36"}, {"t": "caja", "p": [0, 0.22, 0], "s": [0.44, 0.44, 0.44], "c": "#5e3d24"}],
+      "uso": [[0, -0.9]],
+      "asiento": [0, 0.45, 0],
+      "acciones": [{"id": "sentarse", "n": "Sentarse", "e": "🪑", "tipo": "normal", "min": 10, "postura": "sentado", "req": ["libre"], "efectos": {"energia": 2}}, {"id": "beber", "n": "Beber", "e": "🥤", "tipo": "beber", "min": 25, "postura": "sentado", "req": ["libre", "bebida_mano"]}],
+      "modelo": {"escena": "res://arte/muebles/silla.tscn", "asiento": 0.43, "alto": 1.03}
+    },
+    "mesa": {
+      "n": "Mesa",
+      "e": "🍽️",
+      "huella": [1.1, 1.1],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.74, 0], "s": [1.1, 0.06, 1.1], "c": "#c18e57"}, {"t": "cil", "p": [0, 0.37, 0], "s": [0.12, 0.74, 0.12], "c": "#3a3a3e"}],
+      "uso": [],
+      "acciones": [],
+      "modelo": {"escena": "res://arte/muebles/mesa_bar.tscn", "escala": [1.35, 1, 1.35], "alto": 0.76}
+    },
+    "grifo": {
+      "n": "Grifo de cerveza",
+      "e": "🍺",
+      "huella": [0.5, 0.4],
+      "solido": false,
+      "partes": [{"t": "caja", "p": [0, 1.3, 0], "s": [0.3, 0.35, 0.3], "c": "#c9ccd0"}, {"t": "caja", "p": [0, 1.15, 0.18], "s": [0.06, 0.14, 0.06], "c": "#d9a21b"}],
+      "uso": [[0, -1.1]],
+      "acciones": [{"id": "tirar_cana", "n": "Tirar una caña", "e": "🍺", "tipo": "tirar", "producto": "cana", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}],
+      "modelo": {"escena": "res://arte/muebles/grifo_cerveza.tscn", "sobre": 1.1, "alto": 1.55}
+    },
+    "cafetera": {
+      "n": "Cafetera",
+      "e": "☕",
+      "huella": [0.6, 0.5],
+      "solido": false,
+      "partes": [{"t": "caja", "p": [0, 1.4, 0], "s": [0.6, 0.5, 0.45], "c": "#2c2d33"}, {"t": "caja", "p": [0, 1.2, 0.2], "s": [0.2, 0.06, 0.12], "c": "#c9ccd0"}],
+      "uso": [[0, -1.1]],
+      "acciones": [{"id": "hacer_cafe", "n": "Hacer un café", "e": "☕", "tipo": "tirar", "producto": "cafe", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}],
+      "modelo": {"escena": "res://arte/muebles/cafetera.tscn", "sobre": 1.1, "alto": 1.54}
+    },
+    "coctelera": {
+      "n": "Coctelera",
+      "e": "🍸",
+      "huella": [0.5, 0.4],
+      "solido": false,
+      "partes": [{"t": "cil", "p": [0, 1.3, 0], "s": [0.16, 0.34, 0.16], "c": "#d4d8dc"}, {"t": "cil", "p": [0, 1.52, 0], "s": [0.1, 0.1, 0.1], "c": "#b0b4b8"}],
+      "uso": [[0, -1.1]],
+      "acciones": [{"id": "preparar", "n": "Preparar", "e": "🍸", "tipo": "preparar", "por_receta": true, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"], "habilidad": {"cocteleria": 1.0}}],
+      "modelo": {"escena": "res://arte/muebles/coctelera.tscn", "sobre": 1.1, "alto": 1.33}
+    },
+    "estante": {
+      "n": "Estante de botellas",
+      "e": "🍾",
+      "huella": [5, 0.4],
+      "solido": true,
+      "partes": [
+        {"t": "caja", "p": [0, 1.0, 0], "s": [5, 0.05, 0.4], "c": "#5a3b22"},
+        {"t": "caja", "p": [0, 1.6, 0], "s": [5, 0.05, 0.4], "c": "#5a3b22"},
+        {"t": "caja", "p": [0, 1.35, 0], "s": [4.6, 0.3, 0.14], "c": "#3f8a5a"},
+        {"t": "caja", "p": [0, 1.95, 0], "s": [4.6, 0.3, 0.14], "c": "#b8863b"},
+        {"t": "caja", "p": [0, 0.5, 0], "s": [5, 1.0, 0.4], "c": "#4a3320"}
+      ],
+      "uso": [],
+      "acciones": [],
+      "modelo": {"escena": "res://arte/muebles/estante_botellas.tscn", "modulos": 5, "alto": 2.41}
+    },
+    "tragaperras": {
+      "n": "Tragaperras",
+      "e": "🎰",
+      "huella": [0.8, 0.7],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.9, 0], "s": [0.8, 1.8, 0.7], "c": "#b0262e"}, {"t": "caja", "p": [0, 1.3, 0.36], "s": [0.6, 0.4, 0.04], "c": "#f2d45c"}, {"t": "caja", "p": [0, 1.9, 0], "s": [0.7, 0.2, 0.6], "c": "#2c2d33"}],
+      "uso": [[0, 1.0]],
+      "acciones": [{"id": "moneda", "n": "Echar una moneda", "e": "🎰", "tipo": "normal", "min": 1, "coste": 1, "postura": "de_pie", "req": ["dinero", "libre"], "efectos": {"diversion": 1.5}, "azar": {"prob": 0.07, "premio": 10}}],
+      "modelo": {"escena": "res://arte/muebles/tragaperras.tscn", "alto": 1.78}
+    },
+    "puerta_bano": {
+      "n": "Baño",
+      "e": "🚻",
+      "huella": [1.0, 0.1],
+      "solido": false,
+      "partes": [{"t": "caja", "p": [0, 1.05, 0], "s": [1.0, 2.1, 0.08], "c": "#4d7fa6"}, {"t": "caja", "p": [0, 1.6, 0.06], "s": [0.3, 0.3, 0.02], "c": "#f4f1e8"}],
+      "uso": [[0, 1.2]],
+      "acciones": [{"id": "usar_bano", "n": "Usar el baño", "e": "🚻", "tipo": "normal", "min": 4, "postura": "oculto", "req": ["libre"], "efectos": {"vejiga": 60, "higiene": 10}}]
+    },
+    "cliente": {
+      "n": "Cliente",
+      "e": "🧍",
+      "huella": [0.5, 0.5],
+      "solido": false,
+      "partes": [],
+      "uso": [[0, 1.1]],
+      "acciones": [
+        {"id": "servir", "n": "Servir el pedido", "e": "🍻", "tipo": "servir", "min": 0.5, "postura": "de_pie", "req": ["trabaja_aqui", "pedido_servible"]},
+        {"id": "charlar", "n": "Charlar", "e": "💬", "tipo": "normal", "min": 12, "postura": "de_pie", "req": ["cliente_sentado"], "efectos": {"social": 14, "diversion": 3}}
       ]
-     ]
     },
-    {
-     "id": "bano_dormitorio",
-     "a": [
-      3,
-      3.5
-     ],
-     "b": [
-      7,
-      3.5
-     ],
-     "huecos": []
+    "cama": {
+      "n": "Cama",
+      "e": "🛏️",
+      "huella": [0.98, 1.9],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.3, 0], "s": [1.02, 0.6, 1.92], "c": "#e8e0d0"}],
+      "uso": [[-0.9, 0]],
+      "acciones": [
+        {"id": "dormir_8", "n": "Dormir 8 horas", "e": "🛏️", "tipo": "dormir", "min": 480, "postura": "tumbado", "req": ["libre"], "energia_min": 0.21},
+        {"id": "siesta", "n": "Echar una siesta (1 h)", "e": "😴", "tipo": "dormir", "min": 60, "postura": "tumbado", "req": ["libre"], "energia_min": 0.21}
+      ],
+      "modelo": {"escena": "res://arte/muebles/cama.tscn", "alto": 0.64, "asiento": 0.38}
+    },
+    "nevera": {
+      "n": "Nevera",
+      "e": "🧊",
+      "huella": [0.62, 0.69],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.92, 0], "s": [0.62, 1.85, 0.69], "c": "#dddddd"}],
+      "uso": [[0, 0.95]],
+      "acciones": [{"id": "picar", "n": "Picar algo", "e": "🧀", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre"], "efectos": {"hambre": 25}}],
+      "modelo": {"escena": "res://arte/muebles/nevera.tscn", "alto": 1.85}
+    },
+    "cocina": {
+      "n": "Cocina",
+      "e": "🍳",
+      "huella": [0.6, 0.63],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [0.6, 0.92, 0.63], "c": "#cfcfcf"}],
+      "uso": [[0, 0.95]],
+      "acciones": [{"id": "cocinar", "n": "Cocinar", "e": "🍳", "tipo": "tirar", "producto": "plato", "min": 30, "postura": "de_pie", "req": ["libre", "mano_libre", "sin_platos_sucios"]}],
+      "modelo": {"escena": "res://arte/muebles/cocina.tscn", "alto": 0.92}
+    },
+    "sofa": {
+      "n": "Sofá",
+      "e": "🛋️",
+      "huella": [2.25, 1.2],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [2.25, 0.92, 1.2], "c": "#6b7f9a"}],
+      "uso": [[-0.5, 1.7], [0.5, 1.7]],
+      "acciones": [
+        {"id": "descansar", "n": "Sentarse a descansar", "e": "🛋️", "tipo": "normal", "min": 30, "postura": "sentado", "req": ["libre"], "efectos_min": {"energia": 0.25}},
+        {"id": "tele", "n": "Ver la tele", "e": "📺", "tipo": "normal", "min": 60, "postura": "sentado", "req": ["libre", "hay_tele"], "efectos_min": {"diversion": 0.3}},
+        {"id": "comer_sofa", "n": "Comer", "e": "🍲", "tipo": "comer", "min": 20, "postura": "sentado", "req": ["libre", "plato_mano"], "estado": {"platos_sucios": true}}
+      ],
+      "modelo": {"escena": "res://arte/muebles/sofa.tscn", "alto": 0.92, "asiento": 0.4},
+      "asientos": [[-0.5, 0.4, 0], [0.5, 0.4, 0]]
+    },
+    "ducha": {
+      "n": "Ducha",
+      "e": "🚿",
+      "huella": [0.9, 0.9],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 1.0, 0], "s": [0.9, 2.0, 0.9], "c": "#bcd4dc"}],
+      "uso": [[0, 0.95]],
+      "acciones": [{"id": "ducharse", "n": "Ducharse", "e": "🚿", "tipo": "normal", "min": 15, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 100}}],
+      "modelo": {"escena": "res://arte/muebles/ducha.tscn", "alto": 2.07}
+    },
+    "fregadero": {
+      "n": "Fregadero",
+      "e": "🚰",
+      "huella": [0.9, 0.63],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [0.9, 0.92, 0.63], "c": "#c9ccd0"}],
+      "uso": [[0, 0.95]],
+      "acciones": [{"id": "fregar", "n": "Fregar los platos", "e": "🧽", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre", "platos_sucios"], "estado": {"platos_sucios": false}}],
+      "modelo": {"escena": "res://arte/muebles/fregadero.tscn", "alto": 0.92}
+    },
+    "lavabo": {
+      "n": "Lavabo",
+      "e": "🚰",
+      "huella": [0.58, 0.47],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.5, 0], "s": [0.58, 0.99, 0.47], "c": "#e8eef0"}],
+      "uso": [[0, 0.9]],
+      "acciones": [{"id": "lavarse", "n": "Lavarse las manos y la cara", "e": "🧼", "tipo": "normal", "min": 3, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 15}}],
+      "modelo": {"escena": "res://arte/muebles/lavabo.tscn", "alto": 0.99}
+    },
+    "vater": {
+      "n": "Váter",
+      "e": "🚽",
+      "huella": [0.4, 0.59],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.4, 0], "s": [0.4, 0.8, 0.59], "c": "#f2f2ee"}],
+      "uso": [[0, 0.9]],
+      "asiento": [0, 0.42, 0],
+      "acciones": [{"id": "usar_vater", "n": "Usar el váter", "e": "🚽", "tipo": "normal", "min": 5, "postura": "sentado", "req": ["libre"], "efectos": {"vejiga": 100}}],
+      "modelo": {"escena": "res://arte/muebles/vater.tscn", "alto": 0.8, "asiento": 0.42}
+    },
+    "mesa_comedor": {
+      "n": "Mesa de comedor",
+      "e": "🍽️",
+      "huella": [1.4, 0.8],
+      "solido": true,
+      "partes": [{"t": "caja", "p": [0, 0.37, 0], "s": [1.4, 0.75, 0.8], "c": "#b88a5a"}],
+      "uso": [[-0.35, 1.6], [0.35, -1.6]],
+      "asientos": [[-0.35, 0.42, 0.78, 180], [0.35, 0.42, -0.78, 0]],
+      "acciones": [
+        {"id": "comer_mesa", "n": "Comer", "e": "🍲", "tipo": "comer", "min": 20, "postura": "sentado", "req": ["libre", "plato_mano"], "estado": {"platos_sucios": true}},
+        {"id": "comer_pie", "n": "Comer de pie", "e": "🍲", "tipo": "comer", "min": 10, "postura": "de_pie", "req": ["plato_mano", "sin_sitio"], "estado": {"platos_sucios": true}}
+      ],
+      "modelo": {"escena": "res://arte/muebles/mesa_comedor.tscn", "alto": 0.75, "asiento": 0.43}
+    },
+    "tele": {"n": "Tele", "e": "📺", "huella": [1.4, 0.41], "solido": true, "partes": [{"t": "caja", "p": [0, 0.58, 0], "s": [1.4, 1.16, 0.41], "c": "#2c2d33"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/tele.tscn", "alto": 1.16}},
+    "armario": {"n": "Armario", "e": "🚪", "huella": [1.24, 0.63], "solido": true, "partes": [{"t": "caja", "p": [0, 1.0, 0], "s": [1.24, 2.0, 0.63], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/armario.tscn", "alto": 2.0}},
+    "mesilla": {"n": "Mesilla", "e": "🛏️", "huella": [0.48, 0.45], "solido": true, "partes": [{"t": "caja", "p": [0, 0.25, 0], "s": [0.48, 0.5, 0.45], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/mesilla.tscn", "alto": 0.5}}
+  },
+
+  "interiores": {
+    "bar": {
+      "lugar": "bar",
+      "tam": [14, 10],
+      "puerta_x": 0,
+      "suelo": "#b58a5a",
+      "pared": "#d9a066",
+      "alto": 3.0,
+      "puntos": {"sitio_camarero": [-2.5, 7.9], "exterior": [0, -2.2], "bano": [4.5, 9.0], "personal": [[3.0, 8.0], [4.5, 8.4]]},
+      "muebles": [
+        {"id": "estante", "tipo": "estante", "pos": [-2.5, 9.7], "giro": 0},
+        {"id": "barra", "tipo": "barra", "pos": [-2.5, 6.5], "giro": 0},
+        {"id": "grifo", "tipo": "grifo", "pos": [-5.0, 6.5], "giro": 0},
+        {"id": "cafetera", "tipo": "cafetera", "pos": [-2.5, 6.5], "giro": 0},
+        {"id": "coctelera", "tipo": "coctelera", "pos": [0.0, 6.5], "giro": 0},
+        {"id": "tab1", "tipo": "taburete", "pos": [-5.0, 5.5], "giro": 180},
+        {"id": "tab2", "tipo": "taburete", "pos": [-3.75, 5.5], "giro": 180},
+        {"id": "tab3", "tipo": "taburete", "pos": [-2.5, 5.5], "giro": 180},
+        {"id": "tab4", "tipo": "taburete", "pos": [-1.25, 5.5], "giro": 180},
+        {"id": "tab5", "tipo": "taburete", "pos": [0.0, 5.5], "giro": 180},
+        {"id": "mesa1", "tipo": "mesa", "pos": [-5.2, 2.3], "giro": 0},
+        {"id": "mesa2", "tipo": "mesa", "pos": [-2.6, 2.3], "giro": 0},
+        {"id": "mesa3", "tipo": "mesa", "pos": [2.6, 2.3], "giro": 0},
+        {"id": "mesa4", "tipo": "mesa", "pos": [5.6, 2.3], "giro": 0},
+        {"id": "s1a", "tipo": "silla", "pos": [-6.2, 2.3], "giro": 90},
+        {"id": "s1b", "tipo": "silla", "pos": [-4.2, 2.3], "giro": 270},
+        {"id": "s2a", "tipo": "silla", "pos": [-3.6, 2.3], "giro": 90},
+        {"id": "s2b", "tipo": "silla", "pos": [-1.6, 2.3], "giro": 270},
+        {"id": "s3a", "tipo": "silla", "pos": [1.6, 2.3], "giro": 90},
+        {"id": "s3b", "tipo": "silla", "pos": [3.6, 2.3], "giro": 270},
+        {"id": "s4a", "tipo": "silla", "pos": [4.6, 2.3], "giro": 90},
+        {"id": "s4b", "tipo": "silla", "pos": [6.6, 2.3], "giro": 270},
+        {"id": "tragaperras", "tipo": "tragaperras", "pos": [6.5, 6.0], "giro": 270},
+        {"id": "bano", "tipo": "puerta_bano", "pos": [4.5, 9.9], "giro": 0}
+      ],
+      "zocalo": "#5a3622",
+      "suelo2": "#9c7448",
+      "luz": {"color": "#ffc98a", "energia": 1.3, "rango": 14}
+    },
+    "casa": {
+      "lugar": "casa",
+      "tam": [9, 7],
+      "izq": 2,
+      "puerta_x": 0,
+      "suelo": "#c9a878",
+      "suelo2": "#bd9c6c",
+      "pared": "#efe3cf",
+      "zocalo": "#8a6d4e",
+      "alto": 3.0,
+      "paredes_bajas": true,
+      "luz": {"color": "#ffd9a8", "energia": 1.1, "rango": 8},
+      "puntos": {"exterior": [0, -2.2]},
+      "tabiques": [{"id": "salon_este", "a": [3.5, 0], "b": [3.5, 7], "huecos": [[1, 2], [5, 6]]}, {"id": "bano_dormitorio", "a": [4, 3.5], "b": [7, 3.5], "huecos": []}],
+      "estancias": {"salon": [-2, 0, 3, 7], "bano": [4, 0, 7, 3], "dormitorio": [4, 4, 7, 7]},
+      "muebles": [
+        {"id": "nevera", "tipo": "nevera", "pos": [-1.5, 6.5], "giro": 0},
+        {"id": "cocina", "tipo": "cocina", "pos": [-0.5, 6.5], "giro": 0},
+        {"id": "fregadero", "tipo": "fregadero", "pos": [0.55, 6.5], "giro": 0},
+        {"id": "tele", "tipo": "tele", "pos": [2.2, 6.75], "giro": 0},
+        {"id": "sofa", "tipo": "sofa", "pos": [1.85, 3.6], "giro": 180},
+        {"id": "mesa_comedor", "tipo": "mesa_comedor", "pos": [-1.3, 1.5], "giro": 0},
+        {"id": "silla_1", "tipo": "silla", "pos": [-1.65, 0.72], "giro": 180},
+        {"id": "silla_2", "tipo": "silla", "pos": [-0.95, 2.28], "giro": 0},
+        {"id": "ducha", "tipo": "ducha", "pos": [6.5, 2.5], "giro": 0},
+        {"id": "vater", "tipo": "vater", "pos": [4.5, 2.65], "giro": 0},
+        {"id": "lavabo", "tipo": "lavabo", "pos": [5.5, 0.3], "giro": 180},
+        {"id": "cama", "tipo": "cama", "pos": [6.5, 6.0], "giro": 0},
+        {"id": "mesilla", "tipo": "mesilla", "pos": [5.7, 6.75], "giro": 0},
+        {"id": "armario", "tipo": "armario", "pos": [4.67, 6.68], "giro": 0}
+      ]
     }
-   ],
-   "estancias": {
-    "salon": [
-     -2,
-     0,
-     5,
-     7
-    ],
-    "bano": [
-     3,
-     0,
-     7,
-     3
-    ],
-    "dormitorio": [
-     3,
-     4,
-     7,
-     7
-    ]
-   },
-   "muebles": [
-    {
-     "id": "nevera",
-     "tipo": "nevera",
-     "pos": [
-      -1.5,
-      6.5
-     ],
-     "giro": 0
-    },
-    {
-     "id": "cocina",
-     "tipo": "cocina",
-     "pos": [
-      -0.5,
-      6.5
-     ],
-     "giro": 0
-    },
-    {
-     "id": "sofa",
-     "tipo": "sofa",
-     "pos": [
-      -1.35,
-      3.5
-     ],
-     "giro": 90
-    },
-    {
-     "id": "cama",
-     "tipo": "cama",
-     "pos": [
-      5.5,
-      6.0
-     ],
-     "giro": 0
-    },
-    {
-     "id": "ducha",
-     "tipo": "ducha",
-     "pos": [
-      6.5,
-      2.5
-     ],
-     "giro": 0
-    }
-   ]
+  },
+
+  "necesidades": {
+    "umbral": 15,
+    "avisos": {"hambre": "Tienes hambre", "energia": "Estás muy cansado", "diversion": "Te aburres mucho", "social": "Te sientes solo", "vejiga": "Necesitas ir al baño", "higiene": "Necesitas lavarte"},
+    "percance": {"aviso": "No has llegado al baño a tiempo… Necesitas lavarte", "higiene": -40, "vejiga": 40}
   }
- }
 }

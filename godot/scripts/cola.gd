@@ -89,6 +89,10 @@ func _empezar() -> void:
 		if mot != "":
 			jg._aviso("%s: %s." % [ac["n"], mot])
 			return
+	var mot_ag := Acciones.motivo_agotado(ac, jg)
+	if mot_ag != "":
+		jg._aviso("%s: %s." % [ac["n"], mot_ag])
+		return
 	var i := o.uso_libre()
 	if i < 0:
 		jg._aviso("Está ocupado.")
@@ -127,9 +131,9 @@ func _llegar() -> void:
 			a.poner(o.pos + Vector2(0, 0.8).rotated(-deg_to_rad(o.giro)))
 			a.nodo.rotation.y = deg_to_rad(o.giro)
 		elif ac.get("postura", "") == "sentado":
-			var s := o.asiento_mundo()
+			var s := o.asiento_mundo(uso)
 			a.poner(Vector2(s.x, s.z))
-			a.nodo.rotation.y = deg_to_rad(o.giro)
+			a.nodo.rotation.y = deg_to_rad(o.giro_asiento(uso))
 		else:
 			a.mirar(cara)
 	a.poner_postura(str(ac.get("postura", "de_pie")), o.alt_asiento())
@@ -155,6 +159,13 @@ func _hacer(dm: float) -> void:
 	act["resto"] -= dm
 	var f: float = 1.0 - float(act["resto"]) / float(act["total"])
 	a.progreso(f, jg)
+	if ac.has("efectos_min"):
+		# efecto poco a poco mientras dura (sofá, tele…): se queda lo acumulado si se cancela
+		var dmk := minf(dm, maxf(0.0, float(act["resto"]) + dm))
+		var ef: Dictionary = {}
+		for k in ac["efectos_min"]:
+			ef[k] = float(ac["efectos_min"][k]) * dmk
+		Acciones.aplicar_efectos(ef, jg)
 	if ac.has("receta"):
 		var r: Dictionary = Acciones.D["recetas"][ac["receta"]]
 		var acum := 0.0
@@ -206,6 +217,12 @@ func _terminar() -> void:
 			Acciones.aplicar_efectos(pr.get("beber", {}), jg)
 			msg = "Te bebes %s." % Acciones.nombre_mano(a.mano)
 			a.poner_mano("", jg)
+		"comer":
+			var pc := Acciones.producto(a.mano)
+			var de_pie := str(ac.get("postura", "de_pie")) != "sentado"
+			Acciones.aplicar_efectos(pc.get("comer_de_pie" if de_pie else "comer", {}), jg)
+			msg = "Te comes el %s%s." % [Acciones.nombre_mano(a.mano), " de pie" if de_pie else ""]
+			a.poner_mano("", jg)
 		"servir":
 			var cl: Dictionary = o.cli
 			var precio := Acciones.precio_de(a.mano)
@@ -219,6 +236,7 @@ func _terminar() -> void:
 	for k in ac.get("habilidad", {}):
 		jg.hab[k] = jg.hab.get(k, 0.0) + float(ac["habilidad"][k])
 	Acciones.aplicar_efectos(ac.get("efectos", {}), jg)
+	Acciones.aplicar_estado(ac.get("estado", {}), jg)
 	if ac.has("azar") and randf() < float(ac["azar"]["prob"]):
 		jg.dinero += float(ac["azar"]["premio"])
 		msg = "¡Premio! +%s." % Acciones.jg_eur(float(ac["azar"]["premio"]))

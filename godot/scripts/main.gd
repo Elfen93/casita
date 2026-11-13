@@ -71,6 +71,8 @@ var cola_txt := ""
 var nombre_pj := "Ana"
 var dentro := false
 var destino := ""
+var estado_casa := {}              # banderas de la vida en casa (platos_sucios…); no se guarda aún
+var nec_avisada := {}              # necesidad -> true si ya se avisó de que está en rojo
 var salto_rest := 0.0
 var salto_efecto := Callable()
 var vec_acum := 0.0
@@ -775,6 +777,7 @@ func _jugador() -> void:
 	cm.bottom_radius = 0.55
 	cm.height = 0.03
 	aro.mesh = cm
+	aro.name = "Aro"
 	var m := _mat(Color(1.0, 0.85, 0.2))
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	aro.material_override = m
@@ -898,9 +901,9 @@ func _ui() -> void:
 	ui.add_child(abajo)
 	panel_abajo = abajo
 	var hb := HBoxContainer.new()
-	hb.add_theme_constant_override("separation", 10)
+	hb.add_theme_constant_override("separation", 6)
 	abajo.add_child(hb)
-	for par in [["hambre", "🍔"], ["energia", "⚡"], ["diversion", "🎉"], ["social", "💬"], ["vejiga", "🚽"]]:
+	for par in [["hambre", "🍔"], ["energia", "⚡"], ["diversion", "🎉"], ["social", "💬"], ["vejiga", "🚽"], ["higiene", "🧼"]]:
 		var col := VBoxContainer.new()
 		col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		hb.add_child(col)
@@ -1088,10 +1091,31 @@ func _avanzar(dm: float) -> void:
 	minutos += dm
 	for k in nec:
 		nec[k] = clampf(nec[k] - nec_tasa[k] * dm, 0.0, 100.0)
+	_vigilar_nec()
 	vec_acum += dm
 	if vec_acum >= 5.0:
 		vec_acum = 0.0
 		_actualizar_vecinos(salto_rest > 0.0)
+
+# consecuencias suaves de las necesidades en rojo (data/interiores.json -> necesidades): aviso una vez y, con la vejiga a 0, un percance
+func _vigilar_nec() -> void:
+	var R: Dictionary = Acciones.D.get("necesidades", {})
+	if R.is_empty():
+		return
+	var umbral := float(R.get("umbral", 15.0))
+	for k in R.get("avisos", {}):
+		var v: float = nec[k]
+		if v >= umbral + 10.0:
+			nec_avisada.erase(k)
+		elif v < umbral and not nec_avisada.has(k):
+			nec_avisada[k] = true
+			_aviso(str(R["avisos"][k]))
+	var p: Dictionary = R.get("percance", {})
+	if not p.is_empty() and nec["vejiga"] <= 0.0:
+		nec["vejiga"] = float(p.get("vejiga", 40.0))
+		nec["higiene"] = maxf(0.0, nec["higiene"] + float(p.get("higiene", -40.0)))
+		nec_avisada.erase("vejiga")
+		_aviso(str(p.get("aviso", "Has tenido un percance.")))
 
 func _tiene(arr: Array, d: int) -> bool:
 	for x in arr:
@@ -1750,6 +1774,12 @@ func _cmd_js(args: Array) -> void:
 			_actualizar_vecinos(true)
 		"vel":
 			vel_juego = int(a)
+		"vaciar":
+			cola.vaciar()
+		"nec":
+			nec[str(a)] = float(args[2])
+			_vigilar_nec()
+			_hud()
 		"camara":
 			_alternar_camara()
 			print("camara: libre=%s pivote=%s" % [str(cam_libre), str(pivote.position)])
