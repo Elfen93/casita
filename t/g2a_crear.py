@@ -31,6 +31,14 @@ def estado():
     l=salida('estado:','estado')
     try:return json.loads(l[len('estado: '):])
     except Exception:return {}
+def recargar():
+    # el creador pesa: en vez de esperar un tiempo fijo, se espera a que vuelva a decir «Creador listo»
+    n=len(p.log)
+    p.send('Page.navigate',{'url':URL+'?crear'})
+    for _ in range(45):
+        p.dormir(2)
+        if any('Creador listo' in l for l in p.log[n:]):break
+    p.dormir(3)
 def rect(k):
     l=salida('rect:','rect',k);m=re.match(r'rect: \S+ (-?\d+),(-?\d+),(-?\d+),(-?\d+)',l)
     return tuple(int(x) for x in m.groups()) if m else None
@@ -130,7 +138,7 @@ try:
     toque(*centro(rect('guardar')));p.dormir(0.8);p.shot(OUT+'/crear_9_guardado.png')
     g=estado();c1=claves()
     chk('guardar no toca las otras claves',c1==c0,c1)
-    p.send('Page.navigate',{'url':URL+'?crear'});p.dormir(25)
+    recargar()
     h=estado()
     chk('recargar: el personaje vuelve igual',h.get('aspecto')==g['aspecto'] and h.get('nombre')==g['nombre'],'')
     p.shot(OUT+'/crear_10_recargado.png')
@@ -141,7 +149,7 @@ try:
     d['aspecto']['ropa']['entero']={'id':'vestido','color':'ff0000'}
     d['ui']['ropa']['arriba']={'id':'vestido','color':'ff0000'}
     p.send('Runtime.evaluate',{'expression':'localStorage.setItem("casita3d_personaje",%s)'%json.dumps(json.dumps(d))})
-    p.send('Page.navigate',{'url':URL+'?crear'});p.dormir(25)
+    recargar()
     h=estado();ro=h['aspecto'].get('ropa',{})
     chk('id de ropa inexistente: se sustituye y sigue vestido',('vestido' not in json.dumps(h['aspecto'])) and ro.get('arriba',{}).get('id') and ro.get('abajo',{}).get('id'),ro)
     # 7c) diez «Al azar» seguidos

@@ -238,21 +238,21 @@ func _escena() -> void:
 	env.background_color = Color(0.77, 0.81, 0.88)
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.82, 0.85, 0.95)
-	env.ambient_light_energy = 0.7
+	env.ambient_light_energy = 0.38   # con pieles y ropa de textura, más luz quema los claros
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 	var key := DirectionalLight3D.new()
 	key.rotation_degrees = Vector3(-42, 155, 0)   # llega desde delante-derecha, por encima
 	key.light_color = Color(1.0, 0.96, 0.9)
-	key.light_energy = 0.95
+	key.light_energy = 0.58
 	key.shadow_enabled = true
 	key.shadow_blur = 2.0
 	add_child(key)
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees = Vector3(-15, 25, 0)   # relleno suave desde el otro lado
 	fill.light_color = Color(0.75, 0.84, 1.0)
-	fill.light_energy = 0.38
+	fill.light_energy = 0.2
 	add_child(fill)
 	var suelo := MeshInstance3D.new()
 	var pm := PlaneMesh.new()

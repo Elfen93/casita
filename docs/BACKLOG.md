@@ -24,11 +24,13 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 
 ### ✅ (hecho) T-140 censo ampliado · T-141 piquetes, colas y rider · T-142 romance en Gente, ficha de barrio y equilibrio
 
-### GD-11 · Personajes (tras el prototipo del creador)
-- Recursos de MakeHuman que debe bajar el autor (programa para Windows en zip y asset packs CC0: system assets, skins, hair, clothes): con ellos, ropa y pelo de verdad, pieles con textura, pestañas y dientes.
-- Sustituir a la gente del juego por el humano (jugador con detalle, vecinos con malla ligera `humano_ligero`), armario para cambiarse y espejo para retocarse.
+### GD-12 · Personajes (tras GD-11)
+- Vecinos ligeros de verdad: `proxymeshes/female_generic` y `male_generic` de MakeHuman con las mismas formas (una persona vestida son hoy 36-48 mil triángulos: demasiado para 25 vecinos en móvil). Después, sustituir a la gente del juego; armario para cambiarse y espejo para retocarse.
+- Ropa: el bajo de la camiseta sale irregular y asoma la franja azul de la cintura del vaquero; parche de piel en la «V» de la sudadera en cuerpos muy gruesos; manchas en los tobillos con chándal; motas de piel en el pecho de las camisetas. Recuperar traje, ropa de trabajo, polo y bailarinas (se quitaron por peso). Faltan por bajar `pants01`, `skirts01`, `suits01`, `glasses01`, `hats01`.
+- Pelo: flequillo dentado por el recorte de alfa. Cara: la piel clara queda pálida con luz frontal; con género masculino alto algunas caras siguen pareciendo femeninas.
 - Animaciones que faltan: tumbado/dormir, beber, usar; dedos; brazos que no atraviesen a una persona gorda.
-- En el pecho de la ropa base aún se marca relieve; el creador ya no deja ir en ropa interior.
+- Peso: el `.pck` del creador son 19,6 MB (blend shapes densas); el del juego subió 0,1 MB sin motivo claro (mirar qué de `arte/humano` se cuela).
+- Los recursos originales de MakeHuman (691 MB) están en `/home/claude/mh_assets/` del servidor y en `Documentos\Casita` del PC «msi» del autor; no están en el repositorio.
 - Comprobar en el catálogo del modo muebles que arrastrar empezando sobre un botón desplaza la lista (en el creador hubo que poner `mouse_filter = PASS`).
 
 ### GD-10 · Godot, lo que queda de la fase 2 y arte
