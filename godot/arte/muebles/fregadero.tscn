@@ -1,8 +1,53 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=9 format=3]
 
-[ext_resource type="PackedScene" path="res://arte/muebles/modelos/restaurante/kitchencounter_sink.gltf" id="1_jh1vg"]
+[ext_resource type="ArrayMesh" path="res://arte/muebles/modelos/kenney_hogar/kitchenSink_0.res" id="1_geeft"]
+[ext_resource type="ArrayMesh" path="res://arte/muebles/modelos/kenney_hogar/kitchenSink_1.res" id="2_kipg2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k37x6"]
+albedo_color = Color(0.909804, 0.898039, 0.870588, 1)
+roughness = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_inha5"]
+albedo_color = Color(0.419608, 0.439216, 0.458824, 1)
+metallic = 0.1
+roughness = 0.45
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aihdo"]
+albedo_color = Color(0.717647, 0.737255, 0.752941, 1)
+metallic = 0.6
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kdnl8"]
+albedo_color = Color(0.886275, 0.87451, 0.847059, 1)
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_37nca"]
+albedo_color = Color(0.717647, 0.737255, 0.752941, 1)
+metallic = 0.5
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jd4ke"]
+albedo_color = Color(0.419608, 0.439216, 0.458824, 1)
+roughness = 0.5
 
 [node name="Fregadero" type="Node3D"]
 
-[node name="Modelo" type="Node3D" parent="." instance=ExtResource("1_jh1vg")]
-transform = Transform3D(-0.45, 0, -2.6973e-08, 0, 0.51065, 0, 3.93403e-08, 0, -0.308536, 0, 0, 0.00646429)
+[node name="Modelo" type="Node3D" parent="."]
+transform = Transform3D(-1.39535, 0, -1.16564e-07, 0, 1.83673, 0, 1.21985e-07, 0, -1.33333, 0.3, 0, -0.3)
+
+[node name="kitchenSink(Clone)" type="MeshInstance3D" parent="Modelo"]
+mesh = ExtResource("1_geeft")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_k37x6")
+surface_material_override/1 = SubResource("StandardMaterial3D_inha5")
+surface_material_override/2 = SubResource("StandardMaterial3D_aihdo")
+surface_material_override/3 = SubResource("StandardMaterial3D_kdnl8")
+surface_material_override/4 = SubResource("StandardMaterial3D_37nca")
+
+[node name="door" type="MeshInstance3D" parent="Modelo/kitchenSink(Clone)"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0268442, 0.085086, -0.03)
+mesh = ExtResource("2_kipg2")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_k37x6")
+surface_material_override/1 = SubResource("StandardMaterial3D_jd4ke")
+surface_material_override/2 = SubResource("StandardMaterial3D_inha5")

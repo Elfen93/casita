@@ -1,64 +1,24 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=4 format=3]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hkydo"]
-albedo_color = Color(0.788235, 0.807843, 0.823529, 1)
+[ext_resource type="ArrayMesh" path="res://arte/muebles/modelos/kenney_hogar/trashcan_0.res" id="1_y81y4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8qfu1"]
+albedo_color = Color(0.717647, 0.737255, 0.752941, 1)
 metallic = 0.5
 roughness = 0.35
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_pi7u8"]
-top_radius = 0.13
-bottom_radius = 0.15
-height = 0.4
-radial_segments = 14
-rings = 1
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g70il"]
-albedo_color = Color(0.333333, 0.345098, 0.364706, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0g7u0"]
+albedo_color = Color(0.231373, 0.247059, 0.266667, 1)
 roughness = 0.4
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_sfmit"]
-top_radius = 0.14
-bottom_radius = 0.14
-height = 0.03
-radial_segments = 14
-rings = 1
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_si6wv"]
-albedo_color = Color(0.14902, 0.156863, 0.168627, 1)
-roughness = 0.8
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_0nggd"]
-top_radius = 0.025
-bottom_radius = 0.025
-height = 0.03
-radial_segments = 6
-rings = 1
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jhfyy"]
-albedo_color = Color(0.14902, 0.156863, 0.168627, 1)
-roughness = 0.85
-
-[sub_resource type="BoxMesh" id="BoxMesh_le4yj"]
-size = Vector3(0.1, 0.02, 0.06)
 
 [node name="CuboBasura" type="Node3D"]
 
-[node name="Cuerpo" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
-material_override = SubResource("StandardMaterial3D_hkydo")
-mesh = SubResource("CylinderMesh_pi7u8")
+[node name="Modelo" type="Node3D" parent="."]
+transform = Transform3D(-1.16859, 0, -1.02161e-07, 0, 1.16859, 0, 1.02161e-07, 0, -1.16859, 5.54292e-10, 2.92876e-18, 0.00634036)
 
-[node name="Tapa" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.415, 0)
-material_override = SubResource("StandardMaterial3D_g70il")
-mesh = SubResource("CylinderMesh_sfmit")
-
-[node name="Asa" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.445, 0)
-material_override = SubResource("StandardMaterial3D_si6wv")
-mesh = SubResource("CylinderMesh_0nggd")
-
-[node name="Pedal" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, -0.16)
-material_override = SubResource("StandardMaterial3D_jhfyy")
-mesh = SubResource("BoxMesh_le4yj")
+[node name="trashcan(Clone)" type="MeshInstance3D" parent="Modelo"]
+transform = Transform3D(2.81352e-08, 0, 0.472031, 0, 0.472031, 0, -0.472031, 0, 2.81352e-08, 0, 0, 0)
+mesh = ExtResource("1_y81y4")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_8qfu1")
+surface_material_override/1 = SubResource("StandardMaterial3D_0g7u0")

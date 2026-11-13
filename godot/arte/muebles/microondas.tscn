@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="ArrayMesh" path="res://arte/muebles/modelos/kenney_hogar/kitchenMicrowave_0.res" id="1_jlvg8"]
+[ext_resource type="ArrayMesh" path="res://arte/muebles/modelos/kenney_hogar/kitchenMicrowave_1.res" id="2_m1ht2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aihdo"]
+albedo_color = Color(0.717647, 0.737255, 0.752941, 1)
+metallic = 0.6
+roughness = 0.35
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kdnl8"]
+albedo_color = Color(0.886275, 0.87451, 0.847059, 1)
+roughness = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pg0ds"]
+albedo_color = Color(0.109804, 0.141176, 0.188235, 1)
+roughness = 0.15
+
+[node name="Microondas" type="Node3D"]
+
+[node name="Modelo" type="Node3D" parent="."]
+transform = Transform3D(-1.65517, 0, -1.3683e-07, 0, 1.55556, 0, 1.447e-07, 0, -1.56515, 0.24, 0, -0.164333)
+
+[node name="kitchenMicrowave(Clone)" type="MeshInstance3D" parent="Modelo"]
+mesh = ExtResource("1_jlvg8")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_aihdo")
+surface_material_override/1 = SubResource("StandardMaterial3D_kdnl8")
+surface_material_override/2 = SubResource("StandardMaterial3D_aihdo")
+
+[node name="Group" type="MeshInstance3D" parent="Modelo/kitchenMicrowave(Clone)"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0199725, 0.0199725, -9.02389e-17)
+mesh = ExtResource("2_m1ht2")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_kdnl8")
+surface_material_override/1 = SubResource("StandardMaterial3D_pg0ds")
+surface_material_override/2 = SubResource("StandardMaterial3D_aihdo")

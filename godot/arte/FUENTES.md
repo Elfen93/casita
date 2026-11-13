@@ -35,3 +35,9 @@ Origen: los `.zip` que el autor dejó en `arte/entrada/` (kenney.nl). Licencia d
 | Kenney «Car Kit» | 7 vehículos (berlina, SUV, SUV de lujo, taxi, furgoneta, furgoneta de reparto, camión) | karts, coches de carreras, tractores, policía, bomberos, ambulancia, basura (peso), ruedas y restos |
 | Kenney «3D Road Tiles» | nada: 80+ piezas con nombres numéricos (`roadTile_001`…), repite lo del City Kit Roads |  |
 | Kenney «Train Kit», «Factory Kit» | no dio tiempo (prioridad 4) | |
+## GD-8c (muebles de casa con modelos de verdad): Kenney Furniture Kit 2.0
+| Paquete | URL | Licencia | Cogido |
+|---|---|---|---|
+| Kenney «Furniture Kit» 2.0 (`entrada/kenney_furniture-kit.zip`) | https://kenney.nl/assets/furniture-kit | CC0 1.0 (`licencias/Kenney-FurnitureKit-License.txt`, copia del `License.txt` del zip) | glTF `Models/GLTF format/`: toilet, bathroomSink, bathtub, washer, cabinetTelevisionDoors, televisionModern, kitchenStove, kitchenSink, kitchenFridge, kitchenMicrowave, table, bookcaseClosedDoors, bookcaseOpen, cabinetBedDrawer, desk, computerScreen, computerKeyboard, pottedPlant, trashcan |
+
+Los `.glb` NO se versionan: `herramientas/generar_muebles_kenney.gd` los lee del zip descomprimido (`glb=/ruta/Models/GLTF format/`, por defecto `/tmp/gd8c/k/...`), guarda cada malla como `muebles/modelos/kenney_hogar/<modelo>_<n>.res` (~130 KB en total) y reescribe los `.tscn` con escala real y materiales propios (blanco roto, gris, madera). Muebles cambiados (mismo nombre de tipo y de archivo): vater, lavabo, lavadora, tele, cocina, fregadero, nevera, mesa_comedor, armario, mesilla, estanteria, escritorio, planta, cubo_basura; nuevos: banera, microondas (`sobre: encimera`). Sin cambiar: espejo (el de Kenney es de pared). Escala: los modelos de Kenney son ~la mitad de grandes y se escalan por eje a medidas reales.
