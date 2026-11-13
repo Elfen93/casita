@@ -22,3 +22,10 @@ Lo propio (muebles de bar procedurales, árbol, papelera, sombreador de fachada,
 
 ## GD-7 (muebles de casa): sin descargas nuevas
 Todo lo añadido sale de los glTF KayKit ya incluidos (Furniture Bits / Restaurant Bits, CC0) o está construido con primitivas propias. Del pack: sillón (`armchair`), mesa baja (`table_low`), alfombra (`rug_rectangle_A`), lámpara de pie y de mesa (`lamp_standing`, `lamp_table`), fregadero (`kitchencounter_sink`). Con primitivas: váter, lavabo, mesa de comedor, tele con mueble, armario, mesilla, estantería (con libros), lavadora, escritorio con ordenador, planta, espejo de pie, cubo de basura. Los packs KayKit/Quaternius/Kenney consultados por GitHub no traen váter, lavabo, lavadora ni tele CC0 utilizables. Generador: `herramientas/generar_muebles_casa.gd`.
+
+## GD-8c (muebles de casa con modelos de verdad): Kenney Furniture Kit 2.0
+| Paquete | URL | Licencia | Cogido |
+|---|---|---|---|
+| Kenney «Furniture Kit» 2.0 (`entrada/kenney_furniture-kit.zip`) | https://kenney.nl/assets/furniture-kit | CC0 1.0 (`licencias/Kenney-FurnitureKit-License.txt`, copia del `License.txt` del zip) | glTF `Models/GLTF format/`: toilet, bathroomSink, bathtub, washer, cabinetTelevisionDoors, televisionModern, kitchenStove, kitchenSink, kitchenFridge, kitchenMicrowave, table, bookcaseClosedDoors, bookcaseOpen, cabinetBedDrawer, desk, computerScreen, computerKeyboard, pottedPlant, trashcan |
+
+Los `.glb` NO se versionan: `herramientas/generar_muebles_kenney.gd` los lee del zip descomprimido (`glb=/ruta/Models/GLTF format/`, por defecto `/tmp/gd8c/k/...`), guarda cada malla como `muebles/modelos/kenney_hogar/<modelo>_<n>.res` (~130 KB en total) y reescribe los `.tscn` con escala real y materiales propios (blanco roto, gris, madera). Muebles cambiados (mismo nombre de tipo y de archivo): vater, lavabo, lavadora, tele, cocina, fregadero, nevera, mesa_comedor, armario, mesilla, estanteria, escritorio, planta, cubo_basura; nuevos: banera, microondas (`sobre: encimera`). Sin cambiar: espejo (el de Kenney es de pared). Escala: los modelos de Kenney son ~la mitad de grandes y se escalan por eje a medidas reales.

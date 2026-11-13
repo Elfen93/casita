@@ -85,10 +85,12 @@ func _ready() -> void:
 	poner("lavadora", Vector3(1.6, 0, 6.65))
 	poner("cubo_basura", Vector3(-0.5, 0, 5.2))
 	poner("ducha", Vector3(-0.4, 0, 3.6), 0.0)
+	poner("banera", Vector3(1.65, 0, 4.5), 90.0)
 	# ---- cocina
-	poner("nevera", Vector3(2.45, 0, 6.65))
-	poner("fregadero", Vector3(3.3, 0, 6.7))
-	poner("cocina", Vector3(4.05, 0, 6.7))
+	poner("nevera", Vector3(2.4, 0, 6.72))
+	poner("cocina", Vector3(3.0, 0, 6.75))
+	poner("fregadero", Vector3(3.6, 0, 6.75))
+	poner("microondas", Vector3(3.7, 0.9, 6.75))
 	poner("estanteria", Vector3(5.4, 0, 6.8))
 	poner("estanteria", Vector3(-5.2, 0, 3.6), -90.0)
 	# ---- comedor
@@ -112,7 +114,7 @@ func _ready() -> void:
 	persona({"genero": "h", "edad": 40, "piel": 1, "pelo": "negro", "semilla": 3}, Vector3(-4.7, 0, 1.5), -90.0, "parado", 0.40)
 	persona({"genero": "f", "edad": 30, "piel": 3, "pelo": "rubio", "semilla": 11}, Vector3(3.65, 0, 1.6), 0.0, "parado", 0.43)
 	persona({"genero": "h", "edad": 28, "piel": 2, "pelo": "negro", "semilla": 5}, Vector3(0.8, 0, 6.2), 180.0)
-	persona({"genero": "f", "edad": 45, "piel": 1, "pelo": "canoso", "semilla": 9}, Vector3(-0.2, 0, 6.5), 0.0, "parado", 0.42)
+	persona({"genero": "f", "edad": 45, "piel": 1, "pelo": "canoso", "semilla": 9}, Vector3(-0.2, 0, 6.42), 0.0, "parado", 0.42)
 	if "sin" in OS.get_cmdline_user_args():
 		for h in get_children():
 			if h is Persona: h.visible = false
@@ -145,6 +147,20 @@ func _vista(v: String) -> void:
 		"planta": _mira(Vector3(0, 17, 0.5), Vector3(0, 0, 2.99))
 		"salon": _mira(Vector3(-2.2, 3.4, -4.6), Vector3(-3.0, 0.6, 1.0))
 		"bano": _mira(Vector3(0.9, 2.3, 2.6), Vector3(0.6, 0.8, 6.4))
+		"cocinaf":
+			for h in get_children():
+				if h is Persona: h.visible = false
+			persona({"genero": "f", "edad": 38, "piel": 2, "pelo": "castano", "semilla": 21}, Vector3(4.5, 0, 6.2), 180.0)
+			camara.keep_aspect = Camera3D.KEEP_WIDTH
+			camara.fov = 70
+			_mira(Vector3(3.5, 1.2, 4.4), Vector3(3.5, 0.9, 6.7))
+		"banof":
+			for h in get_children():
+				if h is Persona: h.visible = false
+			persona({"genero": "h", "edad": 35, "piel": 2, "pelo": "negro", "semilla": 4}, Vector3(1.2, 0, 5.6), 180.0)
+			camara.keep_aspect = Camera3D.KEEP_WIDTH
+			camara.fov = 70
+			_mira(Vector3(0.4, 1.3, 3.4), Vector3(0.4, 0.8, 6.6))
 		"cocina": _mira(Vector3(3.8, 2.6, 2.2), Vector3(3.8, 0.9, 6.5))
 		"dorm": _mira(Vector3(-3.0, 3.2, 1.6), Vector3(-3.4, 0.7, 6.2))
 		"comedor": _mira(Vector3(4.0, 3.2, -3.4), Vector3(4.0, 0.6, 1.0))
