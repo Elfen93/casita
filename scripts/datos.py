@@ -923,6 +923,22 @@ def comprobar(d):
     E=_g2a_comprobar(d);_g2a_interiores(d,E);return E
 # --- g2a end ---
 
+# --- gd8b catalogo de muebles: validación de data/catalogo_muebles.json ---
+def _gd8b_catalogo(d,E):
+    K=d.get('catalogo_muebles')
+    if not K:return
+    cats={c[0] for c in K.get('categorias',[]) if len(c)==2}
+    if not cats:E.append('catalogo_muebles.categorias: vacío')
+    for k,m in K.get('muebles',{}).items():
+        q='catalogo_muebles.muebles.%s'%k
+        if not(isinstance(m.get('p'),(int,float)) and m['p']>0):E.append(q+'.p: precio en euros, mayor que 0')
+        if m.get('cat') not in cats:E.append(q+'.cat: categoría desconocida')
+        if not m.get('d'):E.append(q+'.d: falta la descripción')
+_gd8b_comprobar=comprobar
+def comprobar(d):
+    E=_gd8b_comprobar(d);_gd8b_catalogo(d,E);return E
+# --- gd8b end ---
+
 if __name__=='__main__':
     d=cargar()
     if '--fmt' in sys.argv:print('formateados:',formatear(d))

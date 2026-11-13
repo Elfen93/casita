@@ -5,7 +5,7 @@ Uso: python3 scripts/godot_datos.py"""
 import json, os, shutil, sys
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORIGEN, DESTINO = os.path.join(RAIZ, 'data'), os.path.join(RAIZ, 'godot', 'data')
-USADOS = ['ciudad', 'lugares', 'barrio', 'personas', 'reglas', 'interiores']
+USADOS = ['ciudad', 'lugares', 'barrio', 'personas', 'reglas', 'interiores', 'catalogo_muebles']
 def main():
     os.makedirs(DESTINO, exist_ok=True)
     for f in os.listdir(DESTINO):

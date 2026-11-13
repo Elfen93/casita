@@ -118,6 +118,13 @@ Interiores y sistema de objetos y acciones de la versión Godot (`godot/scripts/
 | `tipos.*.acciones[].tipo` `dormir` | Acción de cama: `min` (minutos de juego que salta con velo), `energia_min` (energía por minuto), `postura` `tumbado`. |
 Ejemplo (grifo de cerveza): `"grifo": {"huella": [0.5, 0.4], "solido": false, "partes": [...], "uso": [[0, -1.1]], "acciones": [{"id": "tirar_cana", "n": "Tirar una caña", "e": "🍺", "tipo": "tirar", "producto": "cana", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}]}`.
 
+### catalogo_muebles.json
+Muebles que se pueden comprar para tu piso en Godot (`godot/scripts/muebles.gd`). El nombre y el modelo salen de `interiores.json` → `tipos`; **un tipo del catálogo que no exista en `tipos` se ignora sin error** (y aparece solo cuando exista).
+| Sección | Qué es |
+|---|---|
+| `categorias` | Lista ordenada de `[id, nombre]` (dormitorio, bano, cocina, salon, decoracion). |
+| `muebles` | Por tipo: `p` precio en euros (donde hay equivalente en `objetos.json` se usa el mismo), `cat` id de categoría y `d` una línea de descripción. Vender devuelve la mitad de `p`. |
+
 ### libros.json
 | Sección | En el código | Qué es |
 |---|---|---|
