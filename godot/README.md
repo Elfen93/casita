@@ -58,3 +58,11 @@ De `data/`: calles, puertas, huellas (`rb`), colores, nombres, descripciones y h
 - **Tu casa**: bloque de 4 plantas de 14 × 10 m con su portal; el resto de la parcela, patio.
 - **Cámara**: `DIST_CALLE = 18`, `DIST_INTERIOR = 13`; los rótulos de las personas crecen con la distancia.
 - **Puente de pruebas**: `casita_cmd('rend')` (fps, personas, con esqueleto, objetos y dibujos), `('donde')` (posición de los vecinos visibles), `('dbg','fachadas'|'multi'|'sombra'|'luces'|'personas')` (alterna grupos para medir).
+
+## GD-6: guardar la partida
+- Todo en `scripts/guardado.gd` (`Guardado`); en `main.gd` solo hay ganchos marcados `# --- guardado ---` (declaración, 4 líneas al final de `_ready`, `tick` en `_process`, `cmd` al inicio de `_cmd_js`, `en_ui` en `_en_ui`).
+- **Dónde**: en web, `localStorage` clave `casita3d_partida` (la clave del juego antiguo, `casita-save-v1`, no se lee ni se toca); fuera de web, `user://partida.json`. Si el texto está corrupto: partida nueva y el texto roto queda en `casita3d_partida_rota` (o `user://partida_rota.json`).
+- **Formato**: `{"v":1,"t":<unix>,"secciones":{"reloj":{"v":1,"minutos":..,"vel":..}, "cartera":{..}, "necesidades":{..}, "habilidades":{..}, "trabajo":{..}, "jugador":{"x","z"}, "camara":{"libre","dist"}}}`. Sección desconocida: se ignora. Sección o campo ausente: queda el valor por defecto. La posición se respeta solo si es transitable (si no, o dentro de un edificio, puerta de casa). La cola de acciones no se guarda.
+- **Registrar una sección nueva** (muebles comprados, relaciones…): `guardado.registrar("muebles", 1, fn_guardar, fn_aplicar)`. `fn_guardar() -> Dictionary` (Guardado añade `v`); `fn_aplicar(d)` debe leer con `d.get(campo, valor_actual)`. Hay que registrarla antes de `cargar_inicio()`.
+- **Cuándo**: cada 2 min reales, al terminar un salto de tiempo (dormir, comer…), al ocultarse o cerrarse la página (`visibilitychange`/`pagehide`) y con «Guardar ahora» del botón «Menú». Nunca en mitad de un salto con velo.
+- **Puente**: `casita_cmd('guardar')`, `('cargar')`, `('borrar_partida')`. Prueba: `python3 t/g2a_guardar.py /tmp/gd6`.

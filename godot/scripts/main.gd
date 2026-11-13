@@ -121,6 +121,8 @@ var tap_pend_p := Vector2.ZERO
 var pista_dedo := 0              # veces que se ha enseñado la pista del gesto
 var d_pinza := 0.0
 
+var guardado: Guardado  # --- guardado ---
+
 func _ready() -> void:
 	ciudad = Datos.cargar("ciudad")
 	lugares = Datos.cargar("lugares")
@@ -147,6 +149,10 @@ func _ready() -> void:
 	_actualizar_vecinos(true)
 	_hud()
 	_sol()
+	guardado = Guardado.new(self)  # --- guardado ---
+	guardado.crear_ui(ui)  # --- guardado ---
+	guardado.escuchas_web()  # --- guardado ---
+	guardado.cargar_inicio()  # --- guardado ---
 	if OS.has_feature("web"):
 		_puente_js()
 	print("Casita 3D listo: %d edificios, %d vecinos" % [edificios.size(), vecinos.size()])
@@ -1290,6 +1296,8 @@ func _en_ui(p: Vector2) -> bool:
 	for c in [panel_arriba, panel_abajo, panel_ficha, btn_trabajo, cola_hb]:
 		if c.visible and c.get_global_rect().has_point(p):
 			return true
+	if guardado.en_ui(p):  # --- guardado ---
+		return true  # --- guardado ---
 	return velo.visible
 
 func _input(ev: InputEvent) -> void:
@@ -1520,6 +1528,7 @@ func _ficha_vecino(x: Dictionary) -> void:
 
 # =============== bucle ===============
 func _process(dt: float) -> void:
+	guardado.tick(dt)  # --- guardado ---
 	_dedo_tick(dt)
 	var rapido := salto_rest > 0.0
 	if rapido:
@@ -1652,6 +1661,8 @@ func _puente_js() -> void:
 func _cmd_js(args: Array) -> void:
 	var c := str(args[0])
 	var a = args[1] if args.size() > 1 else null
+	if guardado.cmd(c, a):  # --- guardado ---
+		return  # --- guardado ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))
