@@ -27,7 +27,6 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 ### GD-10 · Godot, lo que queda de la fase 2 y arte
 - Pintar paredes y cambiar suelos por estancia; recolorear muebles; levantar y tirar tabiques, puertas y ventanas.
 - Prueba de aspecto: la misma habitación con el arte de ahora y «vestida» (texturas en suelos y paredes, luz suave, sombras de contacto), con peso y fluidez en móvil, para decidir el estilo.
-- `t/g2a_muebles.py` está escrita contra el piso de cinco muebles: hay que pasarla al piso amueblado (encargado).
 - Solo tienen acciones los muebles del piso inicial; lavadora, sillón, escritorio, bañera, espejo, estantería y demás se compran y colocan pero no hacen nada todavía.
 - La comida no cuesta dinero (nevera sin despensa). Las sillas no son sólidas. La cama no se puede girar 180° en el modo muebles (acceso por celdas de 1 m).
 - Las personas no se estorban (el jugador puede quedar encima de la camarera).

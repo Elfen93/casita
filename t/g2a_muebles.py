@@ -37,12 +37,18 @@ def toque(x,y,ms=0):
     for t,pts in (('touchStart',[{'x':x,'y':y,'id':1}]),('touchEnd',[])):
         p.n+=1;p.ws.send(json.dumps({'id':p.n,'method':'Input.dispatchTouchEvent','params':{'type':t,'touchPoints':pts}}))
     p.dormir(2.5)
-def arrastre(x,y0,y1,pasos=8):
-    p.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':x,'y':y0,'id':1}]})
-    for i in range(1,pasos+1):
-        p.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':x,'y':y0+(y1-y0)*i/pasos,'id':1}]});p.dormir(0.05)
-    p.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]});p.dormir(0.5)
 def estado_m():return salida('muebles_estado:','muebles_estado')
+INI={m['id'] for m in json.load(open(RAIZ+'/data/interiores.json'))['interiores']['casa']['muebles']}
+def vaciar(excepto=('cama','ducha')):
+    # vende todo lo que estorba (deja la cama y la ducha para girar muebles iniciales)
+    for k in list(lista()):
+        if k not in excepto:salida('vender:','vender',k,espera=0.3)
+def arrastre(x,y0,y1,pasos=8):
+    # el dedo arrastra: todos los eventos juntos (fotogramas lentos)
+    ev=[('touchStart',[{'x':x,'y':y0,'id':1}])]+[('touchMove',[{'x':x,'y':y0+(y1-y0)*i/pasos,'id':1}]) for i in range(1,pasos+1)]+[('touchEnd',[])]
+    for t,pts in ev:
+        p.n+=1;p.ws.send(json.dumps({'id':p.n,'method':'Input.dispatchTouchEvent','params':{'type':t,'touchPoints':pts}}))
+    p.dormir(4)
 def comprar(t,x,z,g=0):return salida('comprar:','comprar',t,x,z,g)
 try:
     p.send('Emulation.setTouchEmulationEnabled',{'enabled':True,'maxTouchPoints':5})
@@ -55,7 +61,12 @@ try:
     chk('dentro del piso aparece el botón',centro(ui().get('boton')) is not None,ui().get('boton'))
     p.shot(OUT+'/1_hud_piso.png')
     inicial=lista()
-    chk('muebles iniciales: nevera, cocina, sofá, cama y ducha',set(inicial)=={'nevera','cocina','sofa','cama','ducha'},str(sorted(inicial)))
+    chk('muebles iniciales: los del dato',set(inicial)==INI,str(sorted(inicial)))
+    # sin estorbos: se venden los iniciales menos cama y ducha (la venta de un inicial se comprueba con el sofá)
+    d=dinero();r=salida('vender:','vender','sofa')
+    chk('un mueble inicial también se vende',r.startswith('vender: ok') and 'sofa' not in lista() and abs(dinero()-(d+175))<0.01,r)
+    vaciar();chk('piso vacío salvo cama y ducha',set(lista())=={'cama','ducha'},str(sorted(lista())))
+    inicial=lista()
     # --- comprar ---
     d0=dinero()
     rt0=salida('ruta:','ruta',0.5,2.5,0.5,4.5)
@@ -63,6 +74,7 @@ try:
     d1=dinero()
     chk('comprar una cocina: ok, baja el dinero',r=='comprar: ok' and abs((d0-d1)-300)<0.01,'%s %s->%s'%(r,d0,d1))
     ids=[k for k in lista() if k not in inicial]
+    comprar('nevera',-1.5,5.5)
     chk('la cocina nueva existe',len(ids)==1 and lista()[ids[0]].startswith(ids[0]+':cocina@0.5,3.5'),str(ids))
     # es sólido: la ruta de (0.5,2.5) a (0.5,4.5) lo rodea
     rt=salida('ruta:','ruta',0.5,2.5,0.5,4.5)
@@ -70,11 +82,11 @@ try:
     chk('el mueble sólido nuevo se rodea andando',largo>2.2 and 'n=0' not in rt,rt0+' -> '+rt)
     # --- rechazos ---
     d=dinero()
-    casos=[('silla',2.5,3.0,'tabique'),('silla',2.5,1.5,'hueco'),('silla',-1.35,3.5,'mueble'),('silla',0.0,0.5,'puerta'),('silla',-3.0,3.0,'sale'),('nevera',0.5,3.5,'mueble')]
+    casos=[('silla',3.5,3.0,'tabique'),('silla',3.5,1.5,'hueco'),('silla',-1.5,5.5,'mueble'),('silla',0.0,0.5,'puerta'),('silla',-3.0,3.0,'sale'),('nevera',0.5,3.5,'mueble')]
     for t,x,z,clave in casos:
         r=comprar(t,x,z)
         chk('no deja colocar: '+clave,r.startswith('comprar: no ') and clave in r.lower().replace('á','a'),r)
-    r=comprar('nevera',3.5,1.5)
+    r=comprar('nevera',4.5,1.5)
     chk('no deja encerrar el baño',r.startswith('comprar: no ') and ('aislada' in r or 'sin acceso' in r or 'paso' in r),r)
     chk('los rechazos no cobran',abs(dinero()-d)<0.01)
     p.cmd('dinero',10)
@@ -84,24 +96,25 @@ try:
     # --- mover ---
     r=salida('mover:','mover',ids[0],1.5,3.5,0)
     chk('mover la cocina nueva',r=='mover: ok' and ':cocina@1.5,3.5/0' in lista()[ids[0]],r+' '+lista().get(ids[0],''))
-    r=salida('mover:','mover',ids[0],-1.35,3.5,90)
+    r=salida('mover:','mover',ids[0],-1.5,5.5,0)
     chk('mover sobre otro mueble se rechaza',r.startswith('mover: no'),r)
     r=salida('mover:','mover','ducha',6.5,2.5,270)
     chk('girar un mueble inicial',r=='mover: ok',r)
-    r=salida('mover:','mover','cama',5.5,6.0,180)
+    r=salida('mover:','mover','cama',6.5,6.0,180)
     chk('girar si se queda sin acceso se rechaza',r.startswith('mover: no'),r)
     salida('mover:','mover','ducha',6.5,2.5,0)
+    chk('cama y ducha siguen en su sitio',':cama@6.5,6/0' in lista()['cama'])
     # --- vender ---
     d=dinero()
     r=salida('vender:','vender',ids[0])
     chk('vender devuelve la mitad (150 de 300)',r.startswith('vender: ok') and abs(dinero()-(d+150))<0.01 and ids[0] not in lista(),'%s %s->%s'%(r,d,dinero()))
-    d=dinero()
-    r=salida('vender:','vender','sofa')
-    chk('un mueble inicial también se vende',r.startswith('vender: ok') and 'sofa' not in lista() and abs(dinero()-(d+175))<0.01,r)
     r=salida('vender:','vender','nada')
     chk('vender algo que no existe lo explica',r.startswith('vender: no'),r)
-    # la nevera se puede mover y se libera su hueco
-    salida('mover:','mover','nevera',3.5,5.5,0)
+    # tipos nuevos sin acciones: planta (sólida) y alfombra (no sólida)
+    d=dinero();r1=comprar('planta',1.5,4.5);r2=comprar('alfombra',0.0,4.2)
+    chk('planta y alfombra (sin acciones) se compran y colocan',r1=='comprar: ok' and r2=='comprar: ok' and abs((d-dinero())-150)<0.01 and any(':planta@' in v for v in lista().values()) and any(':alfombra@' in v for v in lista().values()),'%s %s %s->%s'%(r1,r2,d,dinero()))
+    rt=salida('ruta:','ruta',1.5,3.0,1.5,6.0)
+    chk('la planta es sólida y la alfombra no estorba el paso',rt!='' and 'n=0' not in rt,rt)
     # --- guardar y recargar ---
     r=comprar('silla',1.0,5.5)
     p.cmd('guardar');p.dormir(1)
@@ -124,7 +137,8 @@ try:
     # --- partida sin la sección: muebles iniciales ---
     js=r"""(function(){var k='casita3d_partida';var j=JSON.parse(localStorage.getItem(k));delete j.secciones.casa;localStorage.setItem(k,JSON.stringify(j));Storage.prototype.setItem=function(){};return 1})()"""
     p.send('Runtime.evaluate',{'expression':js});p.send('Page.reload');p.dormir(30)
-    chk('partida sin sección «casa»: muebles iniciales',set(lista())==set(inicial),str(sorted(lista())))
+    chk('partida sin sección «casa»: muebles iniciales',set(lista())==INI,str(sorted(lista())))
+    vaciar()
     p.send('Emulation.setTouchEmulationEnabled',{'enabled':True,'maxTouchPoints':5})
     # --- toques reales ---
     p.cmd('vel',1);p.dormir(1)
@@ -140,6 +154,11 @@ try:
     cat=[k for k in u if k.startswith('cat_') and k!='cat_']
     chk('hay categorías',len(cat)>=1,str(cat))
     toque(*centro(u['cat_salon']));u=ui()
+    items=[k for k in u if k.startswith('item_')]
+    sc=centro(u['scroll']);v0=int(u['scroll_v']) if 'scroll_v' in u else 0
+    arrastre(sc[0],sc[1]+55,sc[1]-25);u2=ui()
+    chk('la lista larga se recorre con el dedo (%d muebles)'%len(items),len(items)>=5 and int(u2['scroll_v'])>0,'scroll_v %s -> %s'%(u['scroll_v'],u2['scroll_v']))
+    arrastre(sc[0],sc[1]-40,sc[1]+90);u=ui()
     chk('la lista de la categoría tiene la silla',centro(u.get('item_silla')) is not None,str([k for k in u if k.startswith('item_')]))
     d0=dinero()
     toque(*centro(u['item_silla']));p.dormir(0.5)
@@ -152,7 +171,7 @@ try:
     chk('un toque en el suelo lleva el fantasma ahí',re.search(r'fpos=1(\.0)?,5\.5',st) is not None and 'valido=true' in st,st)
     p.shot(OUT+'/4_fantasma_verde.png')
     # rojo: sobre un tabique
-    sp=salida('suelo_pant:','suelo_pant',2.5,3.0);x,y=[int(v) for v in sp.split(': ')[1].split(',')]
+    sp=salida('suelo_pant:','suelo_pant',3.5,3.0);x,y=[int(v) for v in sp.split(': ')[1].split(',')]
     toque(x,y);st=estado_m()
     chk('sobre un tabique el fantasma es inválido con motivo',"valido=false" in st and 'tabique' in st.lower(),st)
     p.shot(OUT+'/5_fantasma_rojo.png')
@@ -169,7 +188,6 @@ try:
     chk('«Colocar» con el dedo: existe y baja el dinero',len(n_sillas)==1 and abs((d0-dinero())-60)<0.01,'%s %s->%s'%(n_sillas,d0,dinero()))
     p.shot(OUT+'/6_silla_colocada.png')
     # comprar otro mueble para la captura de dos
-    r=comprar('nevera',5.0,5.0 if False else 1.0)
     # tocar un mueble colocado: menú mover / girar / vender
     sid=n_sillas[0].split(':')[0]
     mp=salida('mueble_pant:','mueble_pant',sid);x,y=[int(v) for v in mp.split(': ')[1].split(',')]
