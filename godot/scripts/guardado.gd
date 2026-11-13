@@ -61,6 +61,12 @@ func _registrar_basicas() -> void:
 				main.hab[k] = _num(d, k, main.hab[k]))
 	registrar("trabajo", 1, func(): return {"bar": main.trabaja_bar},
 		func(d: Dictionary): main.trabaja_bar = bool(d.get("bar", main.trabaja_bar)))
+	# banderas de la vida en casa (platos sin fregar…): solo valores sí/no
+	registrar("vida_casa", 1, func(): return main.estado_casa.duplicate(),
+		func(d: Dictionary):
+			for k in d:
+				if d[k] is bool:
+					main.estado_casa[str(k)] = d[k])
 	registrar("jugador", 1, _guardar_jugador, _aplicar_jugador)
 	registrar("camara", 1, _guardar_camara, _aplicar_camara)
 

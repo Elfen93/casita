@@ -195,21 +195,9 @@ func _rect_tab(vertical: bool, c0: float, d0: float, d1: float) -> Rect2:
 		return Rect2(puerta.x + c0, puerta.y - d1, 1.0, d1 - d0)
 	return Rect2(puerta.x + d0, puerta.y - c0 - 1.0, d1 - d0, 1.0)
 
-func añadir_mueble(jg, m: Dictionary, tipos: Dictionary) -> void:
-	var td: Dictionary = tipos[m["tipo"]]
-	var o := Objeto.new()
-	o.id = m["id"]
-	o.tipo = m["tipo"]
-	o.def = td
-	o.interior = id
-	o.giro = float(m.get("giro", 0))
-	o.pos = Vector2(puerta.x + float(m["pos"][0]), puerta.y - float(m["pos"][1]))
-	o.huella = Vector2(float(td["huella"][0]), float(td["huella"][1]))
-	var n3 := Node3D.new()
-	n3.position = Vector3(o.pos.x, 0, o.pos.y)
-	n3.rotation.y = deg_to_rad(o.giro)
-	muebles_raiz.add_child(n3)
-	o.nodo = n3
+# Construye dentro de n3 el dibujo de un tipo de mueble (modelo libre o cajas); devuelve la altura máxima. Lo usan los muebles
+# de verdad y el fantasma del modo muebles.
+static func dibujar_tipo(td: Dictionary, n3: Node3D) -> float:
 	var ymax := 0.5
 	var mdl = td.get("modelo", null)
 	var esc_m = load(mdl["escena"]) if mdl != null else null
@@ -250,14 +238,88 @@ func añadir_mueble(jg, m: Dictionary, tipos: Dictionary) -> void:
 		ymax = maxf(ymax, float(c[1]) + float(s[1]) * 0.5)
 	for mi_ in n3.find_children("*", "MeshInstance3D", true, false):
 		(mi_ as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	o.alto = ymax
-	if td.get("solido", false):
-		var g := absi(int(round(o.giro))) % 180 == 90
-		var hx := o.huella.y if g else o.huella.x
-		var hz := o.huella.x if g else o.huella.y
-		jg.nav.solido_rect(Rect2(o.pos.x - hx * 0.5, o.pos.y - hz * 0.5, hx, hz), true)
+	return ymax
+
+# rectángulo del mundo que ocupa una huella en p (mundo) con ese giro (grados)
+static func rect_huella(p: Vector2, huella: Vector2, giro: float) -> Rect2:
+	var g := absi(int(round(giro))) % 180 == 90
+	var hx := huella.y if g else huella.x
+	var hz := huella.x if g else huella.y
+	return Rect2(p.x - hx * 0.5, p.y - hz * 0.5, hx, hz)
+
+# coordenadas del piso (dx a la derecha de la puerta, dz hacia el fondo) <-> mundo
+func local_a_mundo(l: Vector2) -> Vector2:
+	return Vector2(puerta.x + l.x, puerta.y - l.y)
+
+func mundo_a_local(p: Vector2) -> Vector2:
+	return Vector2(p.x - puerta.x, puerta.y - p.y)
+
+func rect_de(o: Objeto) -> Rect2:
+	return rect_huella(o.pos, o.huella, o.giro)
+
+# --- API de muebles en caliente ---
+# Añade un mueble: m = {id, tipo, pos [dx, dz], giro}. Crea el nodo, lo registra en objetos/por_id y marca sus sólidos.
+func añadir_mueble(jg, m: Dictionary, tipos: Dictionary) -> Objeto:
+	var td: Dictionary = tipos[m["tipo"]]
+	var o := Objeto.new()
+	o.id = m["id"]
+	o.tipo = m["tipo"]
+	o.def = td
+	o.interior = id
+	o.giro = float(m.get("giro", 0))
+	o.pos = Vector2(puerta.x + float(m["pos"][0]), puerta.y - float(m["pos"][1]))
+	o.huella = Vector2(float(td["huella"][0]), float(td["huella"][1]))
+	var n3 := Node3D.new()
+	n3.position = Vector3(o.pos.x, 0, o.pos.y)
+	n3.rotation.y = deg_to_rad(o.giro)
+	muebles_raiz.add_child(n3)
+	o.nodo = n3
+	o.alto = dibujar_tipo(td, n3)
 	objetos.append(o)
 	por_id[o.id] = o
+	if td.get("solido", false):
+		jg.nav.solido_rect(rect_de(o), true)
+	return o
+
+# Quita un mueble: libera el nodo y recalcula los sólidos de su huella (sin pisar tabiques ni vecinos).
+func quitar_mueble(jg, mid: String) -> bool:
+	if not por_id.has(mid):
+		return false
+	var o: Objeto = por_id[mid]
+	var r := rect_de(o)
+	objetos.erase(o)
+	por_id.erase(mid)
+	if o.nodo != null:
+		o.nodo.queue_free()
+	_rehacer_solidos(jg, r)
+	return true
+
+# Mueve y/o gira un mueble existente a pos [dx, dz] del piso.
+func mover_mueble(jg, mid: String, pos_l: Vector2, giro_: float) -> bool:
+	if not por_id.has(mid):
+		return false
+	var o: Objeto = por_id[mid]
+	var r0 := rect_de(o)
+	o.pos = local_a_mundo(pos_l)
+	o.giro = giro_
+	o.nodo.position = Vector3(o.pos.x, 0, o.pos.y)
+	o.nodo.rotation.y = deg_to_rad(o.giro)
+	_rehacer_solidos(jg, r0)
+	if o.def.get("solido", false):
+		jg.nav.solido_rect(rect_de(o), true)
+	return true
+
+# vuelve a marcar los sólidos de una zona a partir de sus fuentes: tabiques y muebles sólidos
+func _rehacer_solidos(jg, r: Rect2) -> void:
+	jg.nav.solido_rect(r, false)
+	var q: Rect2i = jg.nav._rango(r)   # las celdas limpiadas enteras: cualquier sólido que toque alguna se vuelve a marcar
+	var rr := Rect2(jg.nav.org + Vector2(q.position), Vector2(q.size))
+	for tb in tabiques:
+		if not tb["hueco"] and (tb["rect"] as Rect2).intersects(rr):
+			jg.nav.solido_rect(tb["rect"], true)
+	for o in objetos:
+		if o.def.get("solido", false) and rect_de(o).intersects(rr):
+			jg.nav.solido_rect(rect_de(o), true)
 
 func dentro(p: Vector2) -> bool:
 	return rect.grow(0.2).has_point(p)

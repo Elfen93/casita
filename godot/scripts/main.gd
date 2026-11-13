@@ -71,7 +71,7 @@ var cola_txt := ""
 var nombre_pj := "Ana"
 var dentro := false
 var destino := ""
-var estado_casa := {}              # banderas de la vida en casa (platos_sucios…); no se guarda aún
+var estado_casa := {}              # banderas de la vida en casa (platos_sucios…); se guarda en la sección vida_casa
 var nec_avisada := {}              # necesidad -> true si ya se avisó de que está en rojo
 var salto_rest := 0.0
 var salto_efecto := Callable()
@@ -125,6 +125,7 @@ var pista_dedo := 0              # veces que se ha enseñado la pista del gesto
 var d_pinza := 0.0
 
 var guardado: Guardado  # --- guardado ---
+var muebles: Muebles  # --- muebles ---
 
 func _ready() -> void:
 	ciudad = Datos.cargar("ciudad")
@@ -155,6 +156,8 @@ func _ready() -> void:
 	guardado = Guardado.new(self)  # --- guardado ---
 	guardado.crear_ui(ui)  # --- guardado ---
 	guardado.escuchas_web()  # --- guardado ---
+	muebles = Muebles.new(self)  # --- muebles ---
+	muebles.crear_ui(ui)  # --- muebles ---
 	guardado.cargar_inicio()  # --- guardado ---
 	if OS.has_feature("web"):
 		_puente_js()
@@ -1365,6 +1368,8 @@ func _en_ui(p: Vector2) -> bool:
 	for c in [panel_arriba, panel_abajo, panel_ficha, btn_trabajo, cola_hb]:
 		if c.visible and c.get_global_rect().has_point(p):
 			return true
+	if muebles.en_ui(p):  # --- muebles ---
+		return true  # --- muebles ---
 	if guardado.en_ui(p):  # --- guardado ---
 		return true  # --- guardado ---
 	return velo.visible
@@ -1403,6 +1408,9 @@ func _input(ev: InputEvent) -> void:
 			var era_tap := gesto_max == 1 and mov_total < 14.0 and Time.get_ticks_msec() - t_ini < 1500 and not largo_hecho
 			toques.erase(ev.index)
 			d_pinza = 0.0
+			if era_tap and toques.is_empty() and muebles.activo:  # --- muebles ---
+				muebles.tap(ev.position)  # --- muebles ---
+				era_tap = false  # --- muebles ---
 			if toques.is_empty() and era_tap:
 				if ev.device == InputEvent.DEVICE_ID_EMULATION:
 					# un toque que viene del ratón (ordenador) solo elige: personas, objetos, edificios
@@ -1443,6 +1451,8 @@ func _alternar_camara() -> void:
 	_aviso("Cámara libre: arrastra para mirar; no vuelve al personaje." if cam_libre else "Cámara fija: sigue al personaje.")
 
 func _andar_a_pantalla(p: Vector2) -> void:
+	if muebles.activo:  # --- muebles ---
+		return  # --- muebles ---
 	if dentro or velo.visible:
 		return
 	if panel_ficha.visible:
@@ -1600,6 +1610,9 @@ func _ficha_vecino(x: Dictionary) -> void:
 # =============== bucle ===============
 func _process(dt: float) -> void:
 	guardado.tick(dt)  # --- guardado ---
+	muebles.tick(dt)  # --- muebles ---
+	if muebles.activo:  # --- muebles --- el tiempo y el personaje se paran
+		dt = 0.0  # --- muebles ---
 	_dedo_tick(dt)
 	var rapido := salto_rest > 0.0
 	if rapido:
@@ -1757,6 +1770,8 @@ func _cmd_js(args: Array) -> void:
 	var a = args[1] if args.size() > 1 else null
 	if guardado.cmd(c, a):  # --- guardado ---
 		return  # --- guardado ---
+	if muebles.cmd(c, args):  # --- muebles ---
+		return  # --- muebles ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))
