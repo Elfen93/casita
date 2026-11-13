@@ -163,7 +163,9 @@ def definir_formas():
     # expresiones (solo "+", rango 0..1). Combinan unidades de expresión de MakeHuman (raza caucásica).
     u = lambda n, w=1.0: ("expression/units/caucasian/" + n, w)
     ex = []
-    ex.append(dict(id="sonrisa", n="Sonrisa", pos=L(u("mouth-elevation", 0.6), u("mouth-corner-puller", 0.8), u("mouth-part-later", 0.3))))
+    # sonrisa con la boca cerrada: comisuras hacia arriba y los ojos que la acompañan. La anterior (elevación del labio
+    # + separación) enseñaba los dientes apretados y parecía una mueca.
+    ex.append(dict(id="sonrisa", n="Sonrisa", pos=L(u("mouth-corner-puller", 0.62), u("mouth-retraction", 0.12), u("eye-left-slit", 0.25), u("eye-right-slit", 0.25))))
     ex.append(dict(id="enfado", n="Enfado", pos=L(u("eyebrows-left-down"), u("eyebrows-right-down"), u("mouth-compression", 0.7), u("nose-compression", 0.5), u("eye-left-slit", 0.4), u("eye-right-slit", 0.4))))
     ex.append(dict(id="tristeza", n="Tristeza", pos=L(u("eyebrows-left-inner-up"), u("eyebrows-right-inner-up"), u("mouth-depression", 0.8), u("mouth-depression-retraction", 0.4), u("eye-left-closure", 0.25), u("eye-right-closure", 0.25))))
     ex.append(dict(id="sorpresa", n="Sorpresa", pos=L(u("eyebrows-left-up"), u("eyebrows-right-up"), u("eye-left-opened-up", 0.8), u("eye-right-opened-up", 0.8), u("mouth-open", 0.8))))
@@ -1327,8 +1329,8 @@ ROPAS3 = [
     ("camiseta", "Camiseta", "arriba", "shirts01_cc0/clothes/elvs_crude_t-shirt_male", None, 0, None),
     ("sudadera", "Jersey de punto", "arriba", "shirts01_cc0/clothes/toigo_fisherman_sweater", None, 0, None),
     ("blusa", "Blusa", "arriba", "shirts01_cc0/clothes/toigo_basic_tucked_t-shirt", None, 0, None),
-    ("vaqueros", "Vaqueros", "abajo", SYS + "/clothes/male_casualsuit02", "abajo", 1.0, None),
-    ("chandal", "Pantalón de chándal", "abajo", SYS + "/clothes/female_sportsuit01", "abajo", 1.0, None),
+    ("vaqueros", "Vaqueros", "abajo", SYS + "/clothes/male_casualsuit02", "abajo", 1.25, None),
+    ("chandal", "Pantalón de chándal", "abajo", SYS + "/clothes/female_sportsuit01", "abajo", 1.25, None),
     ("falda", "Falda", "abajo", "dress01_cc0/clothes/toigo_halter_dress_knee_length", "abajo", 1.0, None),
     ("vestido", "Vestido", "entero", "dress01_cc0/clothes/toigo_halter_dress_knee_length", None, 0, None),
     ("zapatillas", "Zapatillas", "pies", SYS + "/clothes/shoes05", None, 0, None),
@@ -1368,6 +1370,11 @@ def textura_piel(carpeta_rel, destino, tam=1024, q=74):
     fs = _png(d)
     fs.sort(key=lambda f: -os.path.getsize(f))
     im = Image.open(fs[0]).convert("RGB").resize((tam, tam), Image.LANCZOS)
+    # Estilo (GD-12): se quita el grano de foto (poros, manchas) y queda la forma grande (labios, ojeras, rubor).
+    # Una piel fotográfica sobre una malla sencilla da cara de maniquí; una piel limpia se lee como personaje.
+    from PIL import ImageFilter, ImageEnhance
+    suave = im.filter(ImageFilter.GaussianBlur(tam / 205.0))
+    im = ImageEnhance.Color(Image.blend(im, suave, 0.72)).enhance(1.06)
     im.save(destino, quality=q)
     return fs[0]
 
@@ -1391,13 +1398,35 @@ def tex_a(ruta, destino, tam=512, gris=False, alfa=False, q=80):
         im.convert("RGB").save(destino, quality=q)
 
 
-def pieza_desde(nombre, A, sal, dn, formas_ok, y_filtro=None, extra_off=0.0):
+def pieza_desde(nombre, A, sal, dn, formas_ok, y_filtro=None, extra_off=0.0, solo_uv_de_abajo=None):
     """Malla desde un Ajuste. y_filtro: función(tris centroides y)->bool para cortar. Devuelve (Malla, vid_base_usados)."""
     vid, uv, tri = A.triangulos()
     pos = A.pos_m[vid]
     if y_filtro is not None:
         cy = pos[:, 1][tri].mean(axis=1)
-        tri = tri[y_filtro(cy)]
+        ok = y_filtro(cy)
+        if solo_uv_de_abajo is not None:
+            # Un «suit» lleva camiseta y pantalón en mallas sueltas dentro del mismo objeto. Cortar solo por altura deja
+            # un trozo de camiseta pegado a la cintura (la franja azul sobre los vaqueros). Se quedan las piezas
+            # conexas (soldando vértices por posición) que tienen alguna cara por debajo de solo_uv_de_abajo metros.
+            clave = {}
+            rep_v = np.empty(len(pos), np.int64)
+            for i, p in enumerate(np.round(pos * 5000).astype(np.int64)):
+                rep_v[i] = clave.setdefault((p[0], p[1], p[2]), i)
+            padre = np.arange(len(pos))
+            def raiz(x):
+                while padre[x] != x:
+                    padre[x] = padre[padre[x]]
+                    x = padre[x]
+                return x
+            for a_, b_, c_ in rep_v[tri]:
+                ra, rb, rc = raiz(a_), raiz(b_), raiz(c_)
+                padre[rb] = ra
+                padre[rc] = ra
+            comp = np.array([raiz(v) for v in rep_v[tri[:, 0]]])
+            buenas = set(comp[cy < solo_uv_de_abajo].tolist())
+            ok = np.isin(comp, list(buenas))
+        tri = tri[ok]
         usados = np.unique(tri)
         mapa = -np.ones(len(vid), np.int64)
         mapa[usados] = np.arange(len(usados))
@@ -1509,7 +1538,11 @@ def main3():
             flt = lambda cy, yc=yc: cy >= yc
         elif corte == "abajo":
             flt = lambda cy, yc=yc: cy < yc
-        m, vid = pieza_desde("ropa_" + rid, A, sal, dn, cuerpo_f, flt, {"sudadera": 0.009, "blusa": 0.004}.get(rid, 0.0))
+        m, vid = pieza_desde("ropa_" + rid, A, sal, dn, cuerpo_f, flt, {"sudadera": 0.009, "blusa": 0.004}.get(rid, 0.0),
+                             solo_uv_de_abajo=0.8 if rid in ("vaqueros", "chandal") else None)
+        if rid in ("vaqueros", "chandal"):
+            yc = float(m.pos[:, 1].max())   # la cintura de verdad de la prenda
+            print("cintura", rid, round(yc, 3))
         if corte == "abajo":
             # la cintura se mete 2 cm hacia dentro: queda debajo del bajo de la camiseta y no asoma en dientes de sierra
             w = suave(m.pos[:, 1], yc - 0.09, yc - 0.01)[:, None]

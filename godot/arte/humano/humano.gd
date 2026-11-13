@@ -95,12 +95,156 @@ func _montar() -> void:
 	for k in _piezas:
 		if k.begins_with("cejas_"):
 			_piezas[k].visible = false
+	_estilo()
 	set_piel(_piel)
 	set_ojos(_ojos)
 	set_cejas(_cejas)
+	set_expresion("sonrisa", 0.0)
 	_marcar()
 	if _reproductor != null:
+		# la animación se avanza a mano para poder corregir la postura después (ver _process)
+		_reproductor.callback_mode_process = AnimationMixer.ANIMATION_CALLBACK_MODE_PROCESS_MANUAL
 		anim("parado")
+
+# --- Aspecto (GD-12): cómo responde cada material a la luz. Todo con StandardMaterial3D, que es lo que mueve el móvil.
+func _estilo() -> void:
+	for k in _piezas:
+		var m := (_piezas[k] as MeshInstance3D).material_override as StandardMaterial3D
+		if m == null:
+			continue
+		if k.begins_with("Cuerpo"):
+			# piel: luz envolvente (sin corte duro de sombra), calor en el paso a sombra y un borde de luz suave
+			m.diffuse_mode = BaseMaterial3D.DIFFUSE_LAMBERT_WRAP
+			m.roughness = 0.58
+			m.metallic_specular = 0.28
+			m.rim_enabled = true
+			m.rim = 0.14
+			m.rim_tint = 0.4
+			m.backlight_enabled = true
+			m.backlight = Color(0.2, 0.07, 0.05)
+		elif k == "Ojos":
+			# ojo húmedo: el brillo de la luz principal le da vida a la mirada
+			m.roughness = 0.06
+			m.metallic_specular = 0.85
+			m.clearcoat_enabled = true
+			m.clearcoat = 1.0
+			m.clearcoat_roughness = 0.04
+		elif k.begins_with("pelo_"):
+			m.diffuse_mode = BaseMaterial3D.DIFFUSE_LAMBERT_WRAP
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+			m.roughness = 0.5
+			m.metallic_specular = 0.22
+			m.rim_enabled = true
+			m.rim = 0.25
+			m.rim_tint = 0.6
+		elif k.begins_with("cejas_") or k == "pestanas":
+			m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_DEPTH_PRE_PASS
+		elif k.begins_with("ropa_"):
+			# tela: luz envolvente y un pelín de borde, como la pelusa de un tejido
+			m.diffuse_mode = BaseMaterial3D.DIFFUSE_LAMBERT_WRAP
+			m.rim_enabled = true
+			m.rim = 0.16
+			m.rim_tint = 0.85
+
+## Luces de retrato para enseñar a una persona (creador, muestras): principal cálida, relleno frío y contraluz.
+static func luces_retrato(padre: Node3D) -> void:
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.74, 0.78, 0.84)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.8, 0.84, 0.95)
+	env.ambient_light_energy = 0.42
+	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	env.tonemap_white = 1.6
+	var we := WorldEnvironment.new()
+	we.environment = env
+	padre.add_child(we)
+	var datos := [
+		[Vector3(-30, 24, 0), Color(1.0, 0.96, 0.9), 0.6, false],    # principal: delante, a un lado y por encima
+		[Vector3(-8, -55, 0), Color(0.72, 0.82, 1.0), 0.2, false],    # relleno: del otro lado, baja y fría
+		[Vector3(-30, 200, 0), Color(0.95, 0.97, 1.0), 0.5, false],  # contraluz: detrás, recorta la silueta y el pelo
+	]
+	for d in datos:
+		var l := DirectionalLight3D.new()
+		l.rotation_degrees = d[0]
+		l.light_color = d[1]
+		l.light_energy = d[2]
+		l.shadow_enabled = d[3]
+		l.shadow_blur = 2.5
+		padre.add_child(l)
+
+# Postura: las animaciones vienen de otro esqueleto y dejan las piernas muy abiertas y los brazos separados al estar
+# de pie. Tras avanzar la animación se cierran un poco (giro alrededor del eje de avance, en espacio del esqueleto).
+const POSTURA := {"parado": 1.0, "hablar": 1.0, "andar": 0.35, "correr": 0.0, "sentado": 0.0}
+var cierre_piernas := 6.0   # grados
+var cierre_brazos := 5.0
+
+# «parado» no usa la animación capturada (sacaba pecho y echaba los hombros atrás): es una pose propia,
+# construida desde la pose de reposo, con respiración y un leve balanceo.
+var pose := {"brazo_abajo": 37.0, "brazo_delante": 3.0, "codo": -14.0, "pierna": 3.0, "cabeza": 2.0, "hombro": 2.0}   # grados; el codo en negativo estira (la pose de reposo ya lo trae doblado)
+var _t := 0.0
+
+func _process(dt: float) -> void:
+	if _reproductor == null or _esq == null:
+		return
+	_t += dt
+	if _anim_actual == "parado":
+		_pose_parado()
+		return
+	_reproductor.advance(dt)
+	var k: float = POSTURA.get(_anim_actual, 0.0)
+	if k <= 0.0:
+		return
+	_girar_z("thigh_l", deg_to_rad(cierre_piernas) * k)
+	_girar_z("thigh_r", -deg_to_rad(cierre_piernas) * k)
+	_girar_z("foot_l", -deg_to_rad(cierre_piernas) * k)
+	_girar_z("foot_r", deg_to_rad(cierre_piernas) * k)
+	_girar_z("upperarm_l", deg_to_rad(cierre_brazos) * k)
+	_girar_z("upperarm_r", -deg_to_rad(cierre_brazos) * k)
+
+func _pose_parado() -> void:
+	_esq.reset_bone_poses()
+	var resp := sin(_t * TAU / 4.2)          # respiración
+	var bal := sin(_t * TAU / 9.0)           # peso de un pie a otro, muy poco
+	var X := Vector3(1, 0, 0)
+	var Z := Vector3(0, 0, 1)
+	_girar("pelvis", Z, deg_to_rad(0.6 * bal))
+	_girar("spine_02", X, deg_to_rad(0.5 * resp))
+	_girar("spine_03", X, deg_to_rad(0.6 * resp))
+	_girar("Head", X, deg_to_rad(pose["cabeza"] - 0.4 * resp))
+	for lado in [["_l", 1.0], ["_r", -1.0]]:
+		var s: String = lado[0]
+		var sg: float = lado[1]
+		_girar("clavicle" + s, X, deg_to_rad(pose["hombro"]))                      # hombros sueltos, algo hacia delante
+		_girar("clavicle" + s, Z, sg * deg_to_rad(0.5 * resp))
+		_girar("upperarm" + s, Z, sg * deg_to_rad(pose["brazo_abajo"]))            # brazos caídos junto al cuerpo
+		_girar("upperarm" + s, X, deg_to_rad(pose["brazo_delante"]))
+		_girar("lowerarm" + s, X, deg_to_rad(pose["codo"]))                        # codo apenas doblado
+		_girar("thigh" + s, Z, sg * deg_to_rad(pose["pierna"]))
+		_girar("foot" + s, Z, -sg * deg_to_rad(pose["pierna"]))
+
+# gira un hueso alrededor de un eje del esqueleto (no del hueso), sobre la pose que tenga en ese momento
+func _girar(hueso: String, eje: Vector3, ang: float) -> void:
+	var i := _esq.find_bone(hueso)
+	if i < 0:
+		return
+	var g := _esq.get_bone_global_pose(i)
+	var p := _esq.get_bone_parent(i)
+	var gp := _esq.get_bone_global_pose(p).basis if p >= 0 else Basis()
+	# el eje llega en el espacio de la persona (X a su lado, Y arriba, Z delante-detrás) y se pasa al del esqueleto
+	var e := ((_esq.global_transform.basis.inverse() * global_transform.basis).orthonormalized() * eje).normalized()
+	_esq.set_bone_pose_rotation(i, (gp.inverse() * (Basis(e, ang) * g.basis)).get_rotation_quaternion())
+	_esq.force_update_bone_child_transform(i)   # que los hijos vean ya el giro (si no, leen su pose global antigua)
+
+func _girar_z(hueso: String, ang: float) -> void:
+	var i := _esq.find_bone(hueso)
+	if i < 0:
+		return
+	var g := _esq.get_bone_global_pose(i)
+	var p := _esq.get_bone_parent(i)
+	var gp := _esq.get_bone_global_pose(p).basis if p >= 0 else Basis()
+	var nb := Basis(Vector3(0, 0, 1), ang) * g.basis
+	_esq.set_bone_pose_rotation(i, (gp.inverse() * nb).get_rotation_quaternion())
 
 func _nodo_tipo(n: Node, tipo: String) -> Node:
 	for c in n.get_children():
@@ -285,7 +429,10 @@ func _fin_ropa() -> void:
 func set_expresion(id: String, v: float) -> void:
 	_montar()
 	_expr[id] = v
-	_blend("x_" + id, clampf(v, 0.0, 1.0))
+	var w := clampf(v, 0.0, 1.0)
+	if id == "sonrisa":
+		w = 0.2 + 0.8 * w   # una cara neutra de MakeHuman sale seria: algo de sonrisa de reposo (es de boca cerrada)
+	_blend("x_" + id, w)
 
 func altura() -> float:
 	var h := ALTURA_NEUTRA

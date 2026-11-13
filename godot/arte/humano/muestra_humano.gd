@@ -55,23 +55,7 @@ func _ready() -> void:
 		if s.begins_with("near="): cnear = float(s.substr(5))
 	get_window().size = Vector2i(ancho, alto)
 	get_viewport().size = Vector2i(ancho, alto)
-	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.62, 0.68, 0.72)
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.75, 0.78, 0.85)
-	env.ambient_light_energy = 0.7
-	var we := WorldEnvironment.new()
-	we.environment = env
-	add_child(we)
-	var sol := DirectionalLight3D.new()
-	sol.rotation_degrees = Vector3(-35, 25, 0)
-	sol.light_energy = 1.1
-	add_child(sol)
-	var luz2 := DirectionalLight3D.new()
-	luz2.rotation_degrees = Vector3(-20, 160, 0)
-	luz2.light_energy = 0.35
-	add_child(luz2)
+	Humano.luces_retrato(self)
 	var lista: Array = []
 	if hoja != "":
 		lista = JSON.parse_string(FileAccess.get_file_as_string(hoja))
