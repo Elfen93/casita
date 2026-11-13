@@ -13,7 +13,7 @@ URL='http://127.0.0.1:%d/play3d/index.html'%port
 ARR='sudadera' if os.path.exists(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'godot/arte/humano/catalogo.json')) else 'jersey'
 res=[]
 def chk(n,ok,x=''):
-    res.append(ok);print(('OK  ' if ok else 'FALLA ')+n,x)
+    res.append(bool(ok));print(('OK  ' if ok else 'FALLA ')+n,x)
 p=None
 def abrir(q,espera=25):
     global p
@@ -64,6 +64,8 @@ try:
     c0=claves()
     # 3) deslizador con el dedo
     e0=estado()
+    rp=e0['aspecto'].get('ropa',{})
+    chk('estado inicial: ropa en su color original',all(rp.get(c,{}).get('color')=='ffffff' for c in ('arriba','abajo','pies')) if os.path.exists(os.path.join(RAIZ,'godot/arte/humano/catalogo.json')) else True,rp)
     r=rect('forma:peso');print('peso',r)
     chk('el deslizador está a pantalla y es alto',bool(r) and r[3]>=44 and r[1]>430,r)
     x,y=centro(r)
@@ -88,6 +90,15 @@ try:
     e3=estado();arrastre(r[0]+r[2]*0.5,y,r[0]+r[2]*0.85,y);e4=estado()
     chk('un deslizador de cara cambia la forma y encuadra el busto',e4['aspecto']!=e3['aspecto'] and e4['vista']=='cara',(e4['vista']))
     p.dormir(1.5);p.shot(OUT+'/crear_3_cara.png')
+    if rect('ojos:verde'):
+        pulsa('ojos:verde');pulsa('cejas:cejas3')
+        b=estado()['aspecto'];chk('elegir color de ojos y cejas',b.get('ojos')=='verde' and b.get('cejas')=='cejas3',(b.get('ojos'),b.get('cejas')))
+        p.dormir(1.5);p.shot(OUT+'/crear_3b_ojos_cejas.png')
+        toque(*centro(rect('deshacer')));p.dormir(0.8);b=estado()['aspecto']
+        chk('Deshacer también vuelve las cejas',b.get('cejas')!='cejas3',b.get('cejas'))
+        pulsa('cejas:cejas3')
+    else:
+        print('(maniquí de pega: sin ojos ni cejas)')
     pulsa('pestana:piel');p.shot(OUT+'/crear_4_piel.png')
     a=estado()['aspecto'];pulsa('piel:oscura');b=estado()['aspecto']
     chk('elegir piel',a!=b and 'oscura' in json.dumps(b),b.get('piel'))
@@ -123,6 +134,29 @@ try:
     h=estado()
     chk('recargar: el personaje vuelve igual',h.get('aspecto')==g['aspecto'] and h.get('nombre')==g['nombre'],'')
     p.shot(OUT+'/crear_10_recargado.png')
+    # 7b) guardado con una prenda que ya no existe
+    raw=p.send('Runtime.evaluate',{'expression':'localStorage.getItem("casita3d_personaje")'})['result']['result']['value']
+    d=json.loads(raw)
+    d['aspecto'].setdefault('ropa',{})['arriba']={'id':'vestido','color':'ff0000'}
+    d['aspecto']['ropa']['entero']={'id':'vestido','color':'ff0000'}
+    d['ui']['ropa']['arriba']={'id':'vestido','color':'ff0000'}
+    p.send('Runtime.evaluate',{'expression':'localStorage.setItem("casita3d_personaje",%s)'%json.dumps(json.dumps(d))})
+    p.send('Page.navigate',{'url':URL+'?crear'});p.dormir(25)
+    h=estado();ro=h['aspecto'].get('ropa',{})
+    chk('id de ropa inexistente: se sustituye y sigue vestido',('vestido' not in json.dumps(h['aspecto'])) and ro.get('arriba',{}).get('id') and ro.get('abajo',{}).get('id'),ro)
+    # 7c) diez «Al azar» seguidos
+    cr('pestana','cuerpo');cr('vista','cuerpo')
+    ok=True;lista=[]
+    for i in range(10):
+        if i==6:cr('vista','cara')
+        cr('azar',espera=0.4);e=estado();ro=e['aspecto'].get('ropa',{});lista.append(e['aspecto'])
+        vestido=bool(ro.get('entero')) or bool(ro.get('arriba') and ro.get('abajo'))
+        ok=ok and vestido
+        if i<9:
+            p.dormir(1.2);p.shot(OUT+'/crear_azar_%d_%s.png'%(i+1,'cuerpo' if i<6 else 'cara'))
+        print('azar',i+1,json.dumps(e['aspecto'])[:400])
+    chk('diez «Al azar» seguidos: siempre vestido',ok,'')
+    cr('vista','cuerpo')
     # 8) órdenes y fps
     cr('forma','peso',0.7);cr('piel','clara');cr('pelo','corto');cr('ropa','abajo','falda');cr('gesto','sorpresa');cr('vista','cara');cr('pestana','ropa')
     e=estado();chk('órdenes casita_crear',e['vista']=='cara' and e['pestana']=='ropa' and 'falda' in json.dumps(e['aspecto']),'')

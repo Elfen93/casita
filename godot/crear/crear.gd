@@ -12,7 +12,7 @@ const COL_PELO := [
 	["Castaño claro", Color(0.52, 0.36, 0.2)], ["Rubio", Color(0.8, 0.65, 0.34)], ["Pelirrojo", Color(0.62, 0.27, 0.12)],
 	["Gris", Color(0.58, 0.58, 0.6)], ["Blanco", Color(0.9, 0.9, 0.9)]]
 const COL_ROPA := [
-	["Blanco", Color(0.93, 0.93, 0.92)], ["Negro", Color(0.1, 0.1, 0.12)], ["Gris", Color(0.5, 0.52, 0.56)],
+	["Original", Color(1, 1, 1)], ["Negro", Color(0.1, 0.1, 0.12)], ["Gris", Color(0.5, 0.52, 0.56)],
 	["Rojo", Color(0.78, 0.2, 0.2)], ["Mostaza", Color(0.86, 0.65, 0.18)], ["Verde", Color(0.24, 0.55, 0.34)],
 	["Azul marino", Color(0.14, 0.2, 0.42)], ["Azul claro", Color(0.45, 0.68, 0.88)], ["Morado", Color(0.5, 0.3, 0.64)],
 	["Rosa", Color(0.9, 0.55, 0.68)]]
@@ -129,10 +129,10 @@ class Desliz extends Control:
 # ====================================================== arranque
 func _ready() -> void:
 	cat = Maniqui.catalogo()
-	_estado_inicial()
 	_escena()
 	cuerpo = Maniqui.crear()
 	giro_nodo.add_child(cuerpo)
+	_estado_inicial()
 	_interfaz()
 	_cargar()
 	_aplicar_est()
@@ -143,7 +143,12 @@ func _ready() -> void:
 	print("Creador listo (%s): %d formas" % ["maniquí de pega" if Maniqui.es_de_pega() else "humano", cat.get("formas", []).size()])
 
 func _estado_inicial() -> void:
-	est = {"formas": {}, "piel": "", "pelo": {"id": "", "color": COL_PELO[2][1]}, "ropa": {}, "gesto": ""}
+	est = {"formas": {}, "piel": "", "pelo": {"id": "", "color": COL_PELO[2][1]}, "ropa": {}, "gesto": "", "ojos": "", "cejas": ""}
+	if _hay_ojos():
+		est["ojos"] = str(cat["ojos"][0]["id"])
+	if _hay_cejas():
+		var cj: Array = cat["cejas"]
+		est["cejas"] = str(cj[1 if cj.size() > 1 else 0]["id"])
 	for f in cat.get("formas", []):
 		est["formas"][str(f["id"])] = float(f.get("def", 0.0))
 	var pieles: Array = cat.get("pieles", [])
@@ -163,7 +168,7 @@ func _estado_inicial() -> void:
 			capas.append(c)
 	var k := 0
 	for c in capas:
-		var col: Color = COL_ROPA[{"arriba": 0, "abajo": 6, "pies": 2, "entero": 3}.get(c, (k * 3 + 1) % COL_ROPA.size())][1]
+		var col: Color = COL_ROPA[0][1]    # «Original»: la textura de la prenda tal cual
 		var primera := ""
 		for r in cat["ropas"]:
 			if str(r.get("capa", "")) == c:
@@ -173,6 +178,41 @@ func _estado_inicial() -> void:
 		est["ropa"][c] = {"id": primera if ["arriba", "abajo", "pies"].has(c) else "", "color": col}
 		k += 1
 
+func _hay_ojos() -> bool:
+	return cat.get("ojos", []) is Array and not cat.get("ojos", []).is_empty() and cuerpo != null and cuerpo.has_method("set_ojos")
+
+func _hay_cejas() -> bool:
+	return cat.get("cejas", []) is Array and not cat.get("cejas", []).is_empty() and cuerpo != null and cuerpo.has_method("set_cejas")
+
+func _ids(clave: String) -> Array:
+	var r: Array = []
+	for x in cat.get(clave, []):
+		r.append(str(x["id"]))
+	return r
+
+# lo que venga de un guardado: ids que ya no existen se sustituyen por algo válido
+func _sanear() -> void:
+	var pieles := _ids("pieles")
+	if not pieles.is_empty() and not pieles.has(str(est["piel"])):
+		est["piel"] = "media" if pieles.has("media") else pieles[0]
+	if not _ids("pelos").has(str(est["pelo"]["id"])):
+		est["pelo"]["id"] = ""
+	for c in capas:
+		var ids: Array = []
+		for r in cat["ropas"]:
+			if str(r.get("capa", "")) == c:
+				ids.append(str(r["id"]))
+		var id := str(est["ropa"][c]["id"])
+		if id != "" and not ids.has(id):
+			est["ropa"][c]["id"] = ids[0] if ["arriba", "abajo", "pies"].has(c) else ""
+	if _hay_ojos() and not _ids("ojos").has(str(est["ojos"])):
+		est["ojos"] = _ids("ojos")[0]
+	if _hay_cejas() and not _ids("cejas").has(str(est["cejas"])):
+		est["cejas"] = _ids("cejas")[0]
+	if str(est["gesto"]) != "" and not _ids("expresiones").has(str(est["gesto"])):
+		est["gesto"] = ""
+	_vestir_bien()
+
 func _aplicar_est() -> void:
 	_vestir_bien()
 	for id in est["formas"]:
@@ -181,6 +221,13 @@ func _aplicar_est() -> void:
 	cuerpo.set_pelo(str(est["pelo"]["id"]), est["pelo"]["color"])
 	for c in est["ropa"]:
 		cuerpo.set_ropa(c, str(est["ropa"][c]["id"]), est["ropa"][c]["color"])
+	for c in ["arriba", "abajo", "pies", "entero"]:
+		if not est["ropa"].has(c):
+			cuerpo.set_ropa(c, "", Color.WHITE)    # una capa que el catálogo no trae no se pinta
+	if _hay_ojos():
+		cuerpo.set_ojos(str(est["ojos"]))
+	if _hay_cejas():
+		cuerpo.set_cejas(str(est["cejas"]))
 	for e in cat.get("expresiones", []):
 		cuerpo.set_expresion(str(e["id"]), 1.0 if str(e["id"]) == str(est["gesto"]) else 0.0)
 
@@ -254,7 +301,7 @@ func _objetivo() -> Vector2:
 	var r := _region()
 	var rh := maxf(80.0, r.y - r.x)
 	if vista == "cara":
-		return Vector2(alt - 0.2, 0.62 * h / rh)
+		return Vector2(alt - 0.135, 0.56 * h / rh)    # de la barbilla a la coronilla (con afro o melena) y algo de hombros
 	return Vector2(alt * 0.5 + 0.05, (alt + 0.3) * h / rh)
 
 func _camara(dt: float, instante := false) -> void:
@@ -361,8 +408,12 @@ func _boton_marcable(txt: String, accion: Callable, f: Callable, alto := 48.0) -
 	marcables.append({"b": b, "f": f})
 	return b
 
-func _chip_color(col: Color, nombre_c: String, accion: Callable, f: Callable) -> Button:
+func _chip_color(col: Color, nombre_c: String, accion: Callable, f: Callable, txt := "") -> Button:
 	var b := Button.new()
+	b.text = txt
+	b.add_theme_font_size_override("font_size", 13)
+	for k in ["font_color", "font_pressed_color", "font_hover_color", "font_focus_color"]:
+		b.add_theme_color_override(k, Color(0.1, 0.1, 0.12))
 	b.custom_minimum_size = Vector2(0, 46)
 	b.focus_mode = Control.FOCUS_NONE
 	b.tooltip_text = nombre_c
@@ -572,13 +623,15 @@ func _rejilla(cols: int) -> GridContainer:
 func _pagina_formas(grupo: String) -> ScrollContainer:
 	var s := _scroll()
 	var hay := false
+	if grupo == "cara":
+		hay = _extras_cara(s)
 	for f in cat.get("formas", []):
 		if str(f.get("grupo", "cuerpo")) != grupo:
 			continue
 		hay = true
 		var id := str(f["id"])
 		var d := Desliz.new()
-		d.nombre = str(f.get("n", id)).replace("↔", "–")
+		d.nombre = str(f.get("n", id)).replace(" ↔ ", " / ").replace("↔", "–")
 		d.vmin = float(f.get("min", -1.0))
 		d.vmax = float(f.get("max", 1.0))
 		d.vdef = float(f.get("def", 0.0))
@@ -596,18 +649,53 @@ func _pagina_formas(grupo: String) -> ScrollContainer:
 		_vacio(s, "No hay ajustes en este grupo.")
 	return s
 
+# color de ojos y forma de cejas, encima de los deslizadores (solo si el catálogo y el cuerpo los tienen)
+func _extras_cara(s: ScrollContainer) -> bool:
+	var v := _vb(s)
+	var hay := false
+	for par in [["ojos", "Color de ojos", _hay_ojos()], ["cejas", "Cejas", _hay_cejas()]]:
+		if not par[2]:
+			continue
+		hay = true
+		var clave: String = par[0]
+		v.add_child(_etiqueta(par[1]))
+		var g := _rejilla(3)
+		v.add_child(g)
+		for o in cat[clave]:
+			var id := str(o["id"])
+			var b := _boton_marcable(str(o.get("n", id)).replace("Cejas ", "").capitalize() if clave == "cejas" else str(o.get("n", id)), func(): _hacer(func(): est[clave] = id), func(): return str(est[clave]) == id, 44.0)
+			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			g.add_child(b)
+			ctl["%s:%s" % [clave, id]] = b
+	if hay:
+		v.add_child(_etiqueta("Rasgos"))
+	return hay
+
 func _pagina_piel() -> ScrollContainer:
 	var s := _scroll()
-	var g := _rejilla(2)
-	_vb(s).add_child(g)
+	var v := _vb(s)
+	var base: Array = []
+	var mayor: Array = []
 	for p in cat.get("pieles", []):
-		var id := str(p["id"])
-		var b := _boton_marcable(str(p.get("n", id)), func(): _hacer(func(): est["piel"] = id), func(): return str(est["piel"]) == id)
-		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		g.add_child(b)
-		ctl["piel:" + id] = b
-	if cat.get("pieles", []).is_empty():
+		(mayor if str(p["id"]).ends_with("_mayor") else base).append(p)
+	if base.is_empty() and mayor.is_empty():
 		_vacio(s, "No hay pieles disponibles.")
+		return s
+	for grupo in [base, mayor]:
+		if grupo.is_empty():
+			continue
+		if grupo == mayor and not base.is_empty():
+			v.add_child(_etiqueta("Piel de persona mayor"))
+		var g := _rejilla(4)
+		v.add_child(g)
+		for p in grupo:
+			var id := str(p["id"])
+			var txt := str(p.get("n", id)).replace(" (mayor)", "").replace("(mayor)", "")
+			var b := _boton_marcable(txt, func(): _hacer(func(): est["piel"] = id), func(): return str(est["piel"]) == id)
+			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			b.add_theme_font_size_override("font_size", 14)
+			g.add_child(b)
+			ctl["piel:" + id] = b
 	return s
 
 func _pagina_pelo() -> ScrollContainer:
@@ -661,7 +749,7 @@ func _pagina_ropa() -> ScrollContainer:
 		v.add_child(gc)
 		for i in COL_ROPA.size():
 			var col: Color = COL_ROPA[i][1]
-			var ch := _chip_color(col, str(COL_ROPA[i][0]), func(): _hacer(func(): est["ropa"][capa]["color"] = col), func(): return (est["ropa"][capa]["color"] as Color).is_equal_approx(col))
+			var ch := _chip_color(col, str(COL_ROPA[i][0]), func(): _hacer(func(): est["ropa"][capa]["color"] = col), func(): return (est["ropa"][capa]["color"] as Color).is_equal_approx(col), "Original" if i == 0 else "")
 			ch.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			gc.add_child(ch)
 			ctl["ropa_color:%s:%d" % [capa, i]] = ch
@@ -762,28 +850,67 @@ func _azar_f() -> float:
 
 func azar() -> void:
 	_hacer(func():
+		var F: Dictionary = est["formas"]
 		for f in cat.get("formas", []):
 			var mn := float(f.get("min", -1.0))
 			var mx := float(f.get("max", 1.0))
 			var d := float(f.get("def", 0.0))
-			est["formas"][str(f["id"])] = clampf(d + _azar_f() * 0.45 * (mx - mn) * 0.5, mn, mx)
-		var pieles: Array = cat.get("pieles", [])
+			F[str(f["id"])] = clampf(d + _azar_f() * 0.35 * (mx - mn) * 0.5, mn, mx)
+		# género claramente a un lado u otro (nunca andrógino) y pecho acorde
+		var g := 0.0
+		if F.has("genero"):
+			g = (1.0 if randf() < 0.5 else -1.0) * randf_range(0.65, 0.95)
+			F["genero"] = g
+		if F.has("pecho"):
+			F["pecho"] = clampf((-g if F.has("genero") else _azar_f()) * 0.5 + _azar_f() * 0.25, -0.8, 0.8) if g < 0.0 else clampf(-0.2 + _azar_f() * 0.3, -0.8, 0.3)
+		if F.has("edad"):
+			F["edad"] = clampf(_azar_f() * 1.1 - 0.05 + (0.35 if randf() < 0.25 else 0.0), -0.8, 1.0)
+		if F.has("peso"):
+			F["peso"] = clampf(_azar_f() * 0.8, -0.8, 0.8)
+		var edad: float = float(F.get("edad", 0.0))
+		var mayor_es := edad > 0.45
+		var pieles := _ids("pieles")
 		if not pieles.is_empty():
-			est["piel"] = str(pieles[randi() % pieles.size()]["id"])
-		var pelos: Array = cat.get("pelos", [])
-		if not pelos.is_empty():
-			est["pelo"]["id"] = str(pelos[randi() % pelos.size()]["id"])
-		est["pelo"]["color"] = COL_PELO[randi() % COL_PELO.size()][1]
+			var base: Array = []
+			for p in pieles:
+				if not p.ends_with("_mayor"):
+					base.append(p)
+			var pid: String = base[randi() % base.size()] if not base.is_empty() else pieles[randi() % pieles.size()]
+			if mayor_es and pieles.has(pid + "_mayor"):
+				pid += "_mayor"
+			est["piel"] = pid
+		var pelos: Array = []
+		for p in _ids("pelos"):
+			if p != "":
+				pelos.append(p)
+		est["pelo"]["id"] = pelos[randi() % pelos.size()] if (not pelos.is_empty() and randf() > 0.06) else ""
+		var ci := randi() % 6
+		if mayor_es and randf() < 0.55:
+			ci = 6 + randi() % 2          # gris o blanco
+		est["pelo"]["color"] = COL_PELO[ci][1]
+		var hombre := g > 0.0
 		for c in capas:
 			var opc: Array = []
-			for r in cat["ropas"]:
-				if str(r.get("capa", "")) == c:
-					opc.append(str(r["id"]))
+			for id in _ids_capa(c):
+				if hombre and (id == "falda" or id == "blusa") and _ids_capa(c).size() > 1:
+					continue
+				opc.append(id)
 			var vestir: bool = ["arriba", "abajo", "pies"].has(c) or randf() < 0.25
 			est["ropa"][c]["id"] = opc[randi() % opc.size()] if (vestir and not opc.is_empty()) else ""
-			est["ropa"][c]["color"] = COL_ROPA[randi() % COL_ROPA.size()][1]
+			est["ropa"][c]["color"] = COL_ROPA[0][1] if randf() < 0.7 else COL_ROPA[1 + randi() % (COL_ROPA.size() - 1)][1]
 		var exp: Array = cat.get("expresiones", [])
-		est["gesto"] = str(exp[randi() % exp.size()]["id"]) if (not exp.is_empty() and randf() < 0.35) else "")
+		est["gesto"] = str(exp[randi() % exp.size()]["id"]) if (not exp.is_empty() and randf() < 0.2) else ""
+		if _hay_ojos():
+			est["ojos"] = _ids("ojos")[randi() % _ids("ojos").size()]
+		if _hay_cejas():
+			est["cejas"] = _ids("cejas")[randi() % _ids("cejas").size()])
+
+func _ids_capa(capa: String) -> Array:
+	var r: Array = []
+	for x in cat.get("ropas", []):
+		if str(x.get("capa", "")) == capa:
+			r.append(str(x["id"]))
+	return r
 
 func _aviso(txt: String) -> void:
 	lbl_aviso.text = txt
@@ -817,7 +944,7 @@ func _est_json() -> Dictionary:
 	for c in est["ropa"]:
 		r[c] = {"id": est["ropa"][c]["id"], "color": (est["ropa"][c]["color"] as Color).to_html(false)}
 	return {"formas": est["formas"].duplicate(), "piel": est["piel"],
-		"pelo": {"id": est["pelo"]["id"], "color": (est["pelo"]["color"] as Color).to_html(false)}, "ropa": r, "gesto": est["gesto"]}
+		"pelo": {"id": est["pelo"]["id"], "color": (est["pelo"]["color"] as Color).to_html(false)}, "ropa": r, "gesto": est["gesto"], "ojos": est["ojos"], "cejas": est["cejas"]}
 
 func _est_de_json(d: Dictionary) -> void:
 	var f = d.get("formas", {})
@@ -838,6 +965,9 @@ func _est_de_json(d: Dictionary) -> void:
 				est["ropa"][c]["id"] = str(r[c].get("id", ""))
 				est["ropa"][c]["color"] = Color.html(str(r[c].get("color", est["ropa"][c]["color"].to_html(false))))
 	est["gesto"] = str(d.get("gesto", ""))
+	est["ojos"] = str(d.get("ojos", est["ojos"]))
+	est["cejas"] = str(d.get("cejas", est["cejas"]))
+	_sanear()
 
 func _texto_guardado() -> String:
 	return JSON.stringify({"v": 1, "nombre": nombre, "aspecto": cuerpo.aspecto(), "ui": _est_json()})
@@ -868,9 +998,10 @@ func _cargar() -> void:
 	ed_nombre.text = nombre
 	if d.get("ui", null) is Dictionary:
 		_est_de_json(d["ui"])
-	_aplicar_est()
 	if d.get("aspecto", null) is Dictionary:
 		cuerpo.aplicar(d["aspecto"])
+	_sanear()
+	_aplicar_est()    # lo último que manda es el estado ya saneado
 
 # ====================================================== órdenes de prueba
 func _rect_txt(c: Control) -> String:
@@ -900,6 +1031,10 @@ func _cmd_js(args: Array) -> void:
 					est["ropa"][capa]["id"] = str(a2) if a2 != null else ""
 					if args.size() > 3:
 						est["ropa"][capa]["color"] = COL_ROPA[clampi(int(args[3]), 0, COL_ROPA.size() - 1)][1])
+		"ojos":
+			_hacer(func(): est["ojos"] = str(a1))
+		"cejas":
+			_hacer(func(): est["cejas"] = str(a1))
 		"gesto":
 			_hacer(func(): est["gesto"] = "" if str(est["gesto"]) == str(a1) else str(a1))
 		"azar":
