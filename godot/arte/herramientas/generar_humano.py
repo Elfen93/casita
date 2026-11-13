@@ -1327,9 +1327,10 @@ ROPAS3 = [
     ("camiseta", "Camiseta", "arriba", "shirts01_cc0/clothes/elvs_crude_t-shirt_male", None, 0, None),
     ("sudadera", "Jersey de punto", "arriba", "shirts01_cc0/clothes/toigo_fisherman_sweater", None, 0, None),
     ("blusa", "Blusa", "arriba", "shirts01_cc0/clothes/toigo_basic_tucked_t-shirt", None, 0, None),
-    ("vaqueros", "Vaqueros", "abajo", SYS + "/clothes/male_casualsuit02", "abajo", 0.94, None),
-    ("chandal", "Pantalón de chándal", "abajo", SYS + "/clothes/female_sportsuit01", "abajo", 0.94, None),
-    ("falda", "Falda", "abajo", "dress01_cc0/clothes/toigo_camisole_dress_with_full_skirt", "abajo", 0.94, None),
+    ("vaqueros", "Vaqueros", "abajo", SYS + "/clothes/male_casualsuit02", "abajo", 1.0, None),
+    ("chandal", "Pantalón de chándal", "abajo", SYS + "/clothes/female_sportsuit01", "abajo", 1.0, None),
+    ("falda", "Falda", "abajo", "dress01_cc0/clothes/toigo_halter_dress_knee_length", "abajo", 1.0, None),
+    ("vestido", "Vestido", "entero", "dress01_cc0/clothes/toigo_halter_dress_knee_length", None, 0, None),
     ("zapatillas", "Zapatillas", "pies", SYS + "/clothes/shoes05", None, 0, None),
     ("zapatos", "Zapatos", "pies", SYS + "/clothes/shoes01", None, 0, None),
     ("botines", "Botines", "pies", "shoes01_cc0/clothes/toigo_ankle_boots_female", None, 0, None),
@@ -1509,6 +1510,16 @@ def main3():
         elif corte == "abajo":
             flt = lambda cy, yc=yc: cy < yc
         m, vid = pieza_desde("ropa_" + rid, A, sal, dn, cuerpo_f, flt, {"sudadera": 0.009, "blusa": 0.004}.get(rid, 0.0))
+        if corte == "abajo":
+            # la cintura se mete 2 cm hacia dentro: queda debajo del bajo de la camiseta y no asoma en dientes de sierra
+            w = suave(m.pos[:, 1], yc - 0.09, yc - 0.01)[:, None]
+            m.pos = (m.pos - m.nrm * {"vaqueros": 0.05, "chandal": 0.02}.get(rid, 0.022) * w).astype(np.float32)
+        if rid in ("falda", "vestido"):
+            # una falda no se parte en dos piernas al sentarse: el 65 % del peso de las piernas pasa a la pelvis
+            piernas = [nombres.index(b) for b in ("thigh_l", "calf_l", "foot_l", "ball_l", "thigh_r", "calf_r", "foot_r", "ball_r")]
+            L = m.sk[:, piernas].sum(axis=1)
+            m.sk[:, piernas] *= 0.35
+            m.sk[:, nombres.index("pelvis")] += 0.65 * L
         # recorte de la lista de borrado por altura cuando la prenda se parte
         bor = set(A.c["borrar"])
         if corte == "arriba":
@@ -1516,7 +1527,7 @@ def main3():
         elif corte == "abajo":
             bor = {v for v in bor if Pbase[v, 1] < yc + 0.02}
         borrados["ropa_" + rid] = bor
-        podar(m, {"vestido": 0.03, "falda": 0.025, "sudadera": 0.012}.get(rid, 0.015))
+        podar(m, {"vestido": 0.02, "falda": 0.02, "sudadera": 0.012}.get(rid, 0.015))
         items.append(("ropa_" + rid, m, m_ropa))
         cat_ropas.append({"id": rid, "n": nom, "capa": capa})
         dt = A.mat.get("diffuseTexture")
@@ -1540,7 +1551,7 @@ def main3():
         cat_pelos.append({"id": pid, "n": nom})
         dt = A.mat.get("diffuseTexture")
         dst = "tex/pelo_%s.webp" % pid
-        tex_a(os.path.join(A.carpeta, dt), os.path.join(salida, dst), 512, gris=True, alfa=True)
+        tex_a(os.path.join(A.carpeta, dt), os.path.join(salida, dst), 1024, gris=True, alfa=True, q=85)
         tex["pelo_" + pid] = {"t": dst, "alfa": True, "doble": True}
         resumen["pelo_" + pid] = (len(m.pos), m.tris)
     # ---- cara: ojos, cejas, pestañas, dientes
@@ -1549,11 +1560,29 @@ def main3():
         m, vid = pieza_desde("Ojos", A, sal, dn, todas)
         podar(m, 0.002)
         items.append(("Ojos", m, m_ojo))
+        if os.environ.get("DBGE"):
+            for gg in (0, 0.5, 1.0):
+                pe = m.pos + gg * m.formas.get("genero+", 0)
+                ps = cuerpo.pos + gg * cuerpo.formas.get("genero+", 0)
+                c = pe[pe[:, 0] > 0].mean(axis=0)
+                sel = (np.abs(ps[:, 1] - c[1]) < 0.012) & (np.abs(np.abs(ps[:, 0]) - abs(c[0])) < 0.012)
+                print("DBGE g", gg, "ojo c", c, "zmin ojo", pe[:, 2].min(), "zmax ojo", pe[:, 2].max(), "piel z min", ps[sel, 2].min(), "n", sel.sum(), "esfera r", np.abs(pe - c).max(axis=0))
         resumen["Ojos"] = (len(m.pos), m.tris)
         cat_ojos = []
         for oid, nom, col in OJOS3:
             dst = "tex/ojo_%s.jpg" % oid
-            tex_a(os.path.join(ASSETS, SYS, "eyes/materials/%s_eye.png" % col), os.path.join(salida, dst), 256)
+            tex_a(os.path.join(ASSETS, SYS, "eyes/materials/%s_eye.png" % col), os.path.join(salida, dst), 256, q=90)
+            if oid == "marron":
+                # el iris «brown» de MakeHuman es rojo oscuro: se lleva a marrón (tono +18°, menos saturación)
+                from PIL import Image
+                im = Image.open(os.path.join(salida, dst)).convert("HSV")
+                h_, s_, v_ = [np.asarray(c).astype(np.float32) for c in im.split()]
+                iris = s_ > 90
+                h_[iris] = np.clip(h_[iris] + 13, 0, 255)
+                s_[iris] = s_[iris] * 0.78
+                v_[iris] = np.clip(v_[iris] * 1.12, 0, 255)
+                im2 = Image.merge("HSV", [Image.fromarray(c.astype(np.uint8)) for c in (h_, s_, v_)]).convert("RGB")
+                im2.save(os.path.join(salida, dst), quality=90)
             cat_ojos.append({"id": oid, "n": nom, "t": dst})
         cat_cejas = []
         for cid, nom, carp in CEJAS3:

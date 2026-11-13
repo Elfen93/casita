@@ -42,6 +42,8 @@ func _ready() -> void:
 	var ancho := 700
 	var alto := 1000
 	var ligero := false
+	var zc := 0.0
+	var cnear := 0.0
 	for s in ua:
 		if s.begins_with("foto="): ruta = s.substr(5)
 		if s.begins_with("vista="): vista = s.substr(6)
@@ -49,6 +51,8 @@ func _ready() -> void:
 		if s.begins_with("ancho="): ancho = int(s.substr(6))
 		if s.begins_with("alto="): alto = int(s.substr(5))
 		if s == "ligero=1": ligero = true
+		if s.begins_with("zc="): zc = float(s.substr(3))
+		if s.begins_with("near="): cnear = float(s.substr(5))
 	get_window().size = Vector2i(ancho, alto)
 	get_viewport().size = Vector2i(ancho, alto)
 	var env := Environment.new()
@@ -80,7 +84,7 @@ func _ready() -> void:
 		add_child(h)
 		h.aplicar(lista[i])
 		if vista == "frente": h.rotation_degrees.y = 0
-		h.position.x = (i - (n - 1) / 2.0) * (0.45 if vista == "cara" else 1.15)
+		h.position.x = (i - (n - 1) / 2.0) * (0.45 if vista == "cara" else (0.7 if vista.begins_with("cintura") else 1.15))
 		if vista == "perfil": h.rotation_degrees.y = 90
 		if vista == "espalda": h.rotation_degrees.y = 180
 		hs.append(h)
@@ -92,9 +96,18 @@ func _ready() -> void:
 		var zz := 0.42 * (1.0 + n * 0.5)
 		camara.fov = 30
 		camara.look_at_from_position(Vector3(0, hh2 - 0.12, -zz), Vector3(0, hh2 - 0.12, 0))
+	elif vista == "cintura" or vista == "cinturalado":
+		var ang := 0.0 if vista == "cintura" else 90.0
+		var dd := 0.55 * (1.0 + n * 0.62) if zc <= 0.0 else zc
+		camara.fov = 30
+		var cy: float = hs[0].altura() * 0.56
+		camara.look_at_from_position(Vector3(0, cy, -dd), Vector3(0, cy, 0))
+		for hh_ in hs:
+			(hh_ as Node3D).rotation_degrees.y += ang
 	elif vista == "busto" or vista == "cara":
 		var hh: float = hs[0].altura()
 		var z := 0.85 if vista == "busto" else 0.5
+		if zc > 0.0: z = zc
 		var y := hh - (0.27 if vista == "busto" else 0.12)
 		camara.position = Vector3(0, y, -z)
 		camara.fov = 32
@@ -107,6 +120,7 @@ func _ready() -> void:
 		dist = maxf(dist, 1.9 / (2.0 * tan(deg_to_rad(15.0))))
 		camara.fov = 30
 		camara.look_at_from_position(Vector3(0, 0.88, -dist), Vector3(0, 0.88, 0))
+	if cnear > 0.0: camara.near = cnear
 	camara.current = true
 	for _i in 3:
 		await get_tree().process_frame

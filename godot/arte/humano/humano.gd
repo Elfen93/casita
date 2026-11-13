@@ -43,6 +43,9 @@ func _montar() -> void:
 	add_child(_modelo)
 	for n in _buscar(_modelo):
 		_piezas[n.name] = n
+		# Las blend shapes mueven piezas pequeñas (ojos, cejas, pestañas, dientes) hasta 7 cm y Godot recorta con el AABB
+		# de la malla en reposo: de cerca desaparecían ojos y cejas. Caja fija generosa para que nunca se recorten.
+		(n as MeshInstance3D).custom_aabb = AABB(Vector3(-1.0, -0.2, -1.0), Vector3(2.0, 2.6, 2.0))
 	_cat = catalogo()
 	_dh = _cat.get("dh", {})
 	_esq = _nodo_tipo(_modelo, "Skeleton3D") as Skeleton3D
@@ -80,7 +83,8 @@ func _montar() -> void:
 			m.roughness = 0.85 if k.begins_with("ropa_") else 0.95
 			if tx[k]["alfa"]:
 				m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
-				m.alpha_scissor_threshold = 0.5
+				m.alpha_scissor_threshold = 0.3
+				m.metallic_specular = 0.0
 			if tx[k]["doble"]:
 				m.cull_mode = BaseMaterial3D.CULL_DISABLED
 			p.material_override = m
