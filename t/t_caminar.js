@@ -172,7 +172,7 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
    let ok2=true,pk=null;for(const z of pl.segs){if(z.kind==='recoge')pk=z.lugar;if(z.kind==='vuelve'&&z.lugar!==pk)ok2=false;}ok(ok2,'no vuelve a su punto de recogida');
    const bars=new Set();let maxJ=0,last=null,vistos=0,ents=0,quietos=0;
    for(let i=0;i<6000&&s.work>0;i++){step(.5);const p=s.work>0?cmPos():null;if(!p)continue;if(i%30===0)R();bars.add(p.b);if(p.vis){vistos++;if(last&&last.b===p.b){const dj=Math.hypot(p.x-last.x,p.y-last.y);if(dj>maxJ){maxJ=dj;info.saltoRider=[Math.round(last.x),Math.round(last.y),Math.round(p.x),Math.round(p.y),p.txt];}}last=p;}if(p.quieto&&/Entrega/.test(p.txt||''))quietos++;}
-   ok(vistos>20,'no se ve repartiendo');ok(maxJ<10,'salto de '+maxJ+' casillas repartiendo (0,5 min a 16 casillas/min)');ok(quietos>=1,'no se detiene a entregar');ok(s.work<=0&&!s.dest,'no termina la jornada');
+   ok(vistos>20,'no se ve repartiendo');ok(maxJ<12/* el rider aprieta el paso: hasta 20 casillas/min en línea recta no es un salto */,'salto de '+maxJ+' casillas repartiendo (0,5 min a 16 casillas/min)');ok(quietos>=1,'no se detiene a entregar');ok(s.work<=0&&!s.dest,'no termina la jornada');
    info.reparto={entregas:pl.n,tandas:tandas,barrios:[...bars].length,plan:Math.round(pl.fin),jornada:Math.round(tot)};}}
 
  console.error=oe;

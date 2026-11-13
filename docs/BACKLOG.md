@@ -22,8 +22,10 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 
 ### ✅ (hecho) T-133 · Lugares nuevos con interior y vida de barrio (`mods/barrios_vida.js`, `data/barrios_vida.json`)
 
-### T-134 · Lo que quedó de caminar
-Rol: motor. (1) Hecho a medias (`mods/calle.js`): los vecinos del censo andan por sus rutas, pero con 50 personas en seis barrios se ve de media medio vecino con nombre en pantalla; para calles con gente conocida hace falta AMPLIAR EL CENSO (200–300 personas) o barrios más pequeños. (2) Piquetes y colas delante de la puerta correcta. (3) El rider repartiendo por las calles (`_ride`). (4) Botones de romance con vecinos adultos en la lista de Gente. (5) Equilibrar los pesos de `barrios_vida` en partidas largas y quitar la repetición «Lo bueno / Lo que cuesta» ↔ «Vivir aquí» en la ficha de barrio.
+### ✅ (hecho) T-140 censo ampliado · T-141 piquetes, colas y rider · T-142 romance en Gente, ficha de barrio y equilibrio
+
+### T-143 · Flecos de la ciudad habitada
+Rol: motor + datos. (1) `abandono` y `control` de `barrios_vida.json` no los lee el código: que las averías y su arreglo dependan del barrio (`hogar.js`). (2) Convivir con vecinos del censo (hoy cerrado: tienen hogar propio). (3) Manifestación: sin prueba ni captura, y el personaje no se une a la marcha. (4) Los nombrados del piquete aparecen y desaparecen de golpe a las 6:45 y 14:00. (5) Pancarta pequeña a escala de calle. (6) Pagar al rider por entrega. (7) Menores de 12 del censo solo salen al parque; 49 vecinos no aparecen en ninguna escena (trabajan «fuera»). (8) Plantilla de una sola persona en gimnasio, parroquia, comedor, ateneo y asociación. (9) Capturas pendientes: piquete del súper, rider entregando, aula por dentro con el censo nuevo.
 
 ### ✅ (hecho, `mods/caminar.js`) T-131 · Caminar por la ciudad
 Rol: motor. El personaje va andando por las calles de `ciudad.json` de puerta a puerta (`cdCamino`, `cdTrayecto`), y en transporte entre barrios. Sustituir los usos del `r` antiguo en `src/core/047` y borrarlo. Dibujo mínimo.
