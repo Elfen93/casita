@@ -17,6 +17,12 @@ var luz: OmniLight3D
 var muebles_raiz: Node3D   # todos los muebles: se ocultan si la cámara está lejos (ahorro de dibujos); sin sombra propia
 var luz_e := 1.0
 var vent_mat: StandardMaterial3D   # ventanas de la fachada: se encienden de noche
+var etq: Label3D          # rótulo del local (se apaga al entrar)
+var altas: Node3D          # paredes de atrás y tabiques (solo si paredes_bajas): al entrar se bajan a medio muro
+var bajas := false
+var al_entrar: Array = []  # nodos que se ocultan al entrar (plantas de arriba y tejado del bloque de pisos)
+const ALTO_MEDIO_MURO := 0.3   # fracción de la altura que queda de las paredes bajadas
+var tabiques: Array = []   # [{rect (mundo), hueco: bool}] solo para pruebas
 
 static func _suelo_mat(c1: Color, c2: Color, w: float, d: float) -> StandardMaterial3D:
 	# baldosas de 1 m a cuadros (textura de 2x2 píxeles, sin filtrar)
@@ -54,7 +60,9 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	it.alto = float(def_.get("alto", 3.0))
 	var dx := roundf(parcela.get_center().x)
 	var fz := roundf(parcela.end.y)          # fachada: la parte de la parcela junto a la calle
-	it.rect = Rect2(dx - w * 0.5, fz - d, w, d)
+	# izq: metros de suelo a la izquierda de la puerta (por defecto, la mitad; con ancho impar se redondea a la rejilla de 1 m)
+	var izq_ := float(def_.get("izq", floorf(w * 0.5)))
+	it.rect = Rect2(dx - izq_, fz - d, w, d)
 	it.puerta = Vector2(dx, fz)
 	var r := it.rect
 	var h := it.alto
@@ -63,6 +71,12 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	var raiz_ := Node3D.new()
 	it.raiz = raiz_
 	jg.add_child(raiz_)
+	it.bajas = bool(def_.get("paredes_bajas", false))
+	var alt_: Node3D = raiz_
+	if it.bajas:
+		it.altas = Node3D.new()
+		raiz_.add_child(it.altas)
+		alt_ = it.altas
 	var sl := _caja(raiz_, Vector3(r.get_center().x, 0.05, r.get_center().y), Vector3(w, 0.1, d), suelo)
 	if def_.has("suelo2"):
 		sl.material_override = _suelo_mat(suelo, Datos.color(def_["suelo2"]), w, d)
@@ -71,8 +85,8 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	var nav: Nav = jg.nav
 	nav.tipo_rect(r, Nav.T_SUELO)
 	# norte y este (siempre altas)
-	_caja(raiz_, Vector3(r.get_center().x, h * 0.5, r.position.y - t * 0.5), Vector3(w + 2 * t, h, t), pared)
-	_caja(raiz_, Vector3(r.end.x + t * 0.5, h * 0.5, r.get_center().y), Vector3(t, h, d), pared)
+	_caja(alt_, Vector3(r.get_center().x, h * 0.5, r.position.y - t * 0.5), Vector3(w + 2 * t, h, t), pared)
+	_caja(alt_, Vector3(r.end.x + t * 0.5, h * 0.5, r.get_center().y), Vector3(t, h, d), pared)
 	nav.solido_rect(Rect2(r.position.x - t, r.position.y - t, w + 2 * t, t), true)
 	nav.solido_rect(Rect2(r.end.x, r.position.y, t, d), true)
 	# sur y oeste (las de delante: se aplastan al entrar)
@@ -91,8 +105,8 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	_caja(raiz_, Vector3(dx, 1.05, fz + t * 0.5), Vector3(1.8, 2.1, 0.06), Color(0.28, 0.2, 0.15)).visible = false
 	# zócalo (franja oscura de 1 m en el lado de dentro) y ventanas encendidas en la fachada
 	var zh := 1.0
-	_caja(raiz_, Vector3(r.get_center().x, zh * 0.5, r.position.y + 0.03), Vector3(w, zh, 0.06), zoc)
-	_caja(raiz_, Vector3(r.end.x - 0.03, zh * 0.5, r.get_center().y), Vector3(0.06, zh, d), zoc)
+	_caja(alt_, Vector3(r.get_center().x, zh * 0.5, r.position.y + 0.03), Vector3(w, zh, 0.06), zoc)
+	_caja(alt_, Vector3(r.end.x - 0.03, zh * 0.5, r.get_center().y), Vector3(0.06, zh, d), zoc)
 	_caja(fr, Vector3(r.position.x + 0.03, zh * 0.5, r.get_center().y), Vector3(0.06, zh, d), zoc)
 	_caja(fr, Vector3(r.position.x + izq * 0.5 - t, zh * 0.5, fz - 0.03), Vector3(izq - 0.1, zh, 0.06), zoc)
 	_caja(fr, Vector3(dx + 1.0 + der * 0.5 - t, zh * 0.5, fz - 0.03), Vector3(der - 0.1, zh, 0.06), zoc)
@@ -101,10 +115,20 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	it.vent_mat.emission_enabled = true
 	it.vent_mat.emission = Color(1.0, 0.72, 0.38)
 	it.vent_mat.emission_energy_multiplier = 0.0
-	for vx in [-3.2, 3.2]:
-		var vv := _caja(fr, Vector3(dx + vx, 1.55, fz + t + 0.02), Vector3(2.4, 1.1, 0.04), Color.WHITE)
+	var vents: Array = [[-3.2, 2.4], [3.2, 2.4]]
+	if w < 12.0:
+		# piso pequeño: una ventana en cada tramo de fachada que mida al menos 2,4 m
+		vents = []
+		if izq >= 2.4:
+			vents.append([(r.position.x - t + dx - 1.0) * 0.5 - dx, minf(2.4, izq - 0.8)])
+		if der >= 2.4:
+			vents.append([(dx + 1.0 + r.end.x + t) * 0.5 - dx, minf(2.4, der - 0.8)])
+	for vv_ in vents:
+		var vx: float = vv_[0]
+		var vw: float = vv_[1]
+		var vv := _caja(fr, Vector3(dx + vx, 1.55, fz + t + 0.02), Vector3(vw, 1.1, 0.04), Color.WHITE)
 		vv.material_override = it.vent_mat
-		_caja(fr, Vector3(dx + vx, 1.55, fz + t + 0.005), Vector3(2.6, 1.3, 0.04), pared.darkened(0.45))
+		_caja(fr, Vector3(dx + vx, 1.55, fz + t + 0.005), Vector3(vw + 0.2, 1.3, 0.04), pared.darkened(0.45))
 	var lz = def_.get("luz", null)
 	if lz != null:
 		it.luz = OmniLight3D.new()
@@ -115,6 +139,9 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 		it.luz.shadow_enabled = false
 		it.luz.position = Vector3(r.get_center().x, h - 0.5, r.get_center().y + 0.5)
 		raiz_.add_child(it.luz)
+	# tabiques (paredes interiores con huecos de paso, sin hoja de puerta)
+	for tb in def_.get("tabiques", []):
+		it._tabique(jg, alt_, tb, pared, zoc)
 	# techo
 	it.techo = Node3D.new()
 	raiz_.add_child(it.techo)
@@ -125,6 +152,48 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	for m in def_["muebles"]:
 		it.añadir_mueble(jg, m, tipos)
 	return it
+
+# Un tabique es un segmento a-b alineado con un eje, en metros desde el centro de la puerta (dx a la derecha, dz hacia el fondo).
+# En la rejilla de 1 m ocupa la hilera de celdas donde cae (queda centrado en ella); los huecos [desde, hasta] (misma coordenada
+# a lo largo del eje) quedan libres: miden >= 1 m, una persona cabe por la rejilla.
+func _tabique(jg, padre: Node3D, tb: Dictionary, col: Color, zoc: Color) -> void:
+	var a: Array = tb["a"]
+	var b: Array = tb["b"]
+	var vertical := is_equal_approx(float(a[0]), float(b[0]))   # a lo largo de dz
+	var fijo := float(a[0]) if vertical else float(a[1])
+	var c0 := floorf(fijo)
+	var ini := minf(float(a[1]), float(b[1])) if vertical else minf(float(a[0]), float(b[0]))
+	var fin := maxf(float(a[1]), float(b[1])) if vertical else maxf(float(a[0]), float(b[0]))
+	var hs: Array = tb.get("huecos", [])
+	var piezas: Array = []
+	var cur := ini
+	var ord := hs.duplicate()
+	ord.sort_custom(func(p, q): return float(p[0]) < float(q[0]))
+	for hq in ord:
+		if float(hq[0]) > cur:
+			piezas.append([cur, float(hq[0])])
+		cur = maxf(cur, float(hq[1]))
+		tabiques.append({"hueco": true, "rect": _rect_tab(vertical, c0, float(hq[0]), float(hq[1]))})
+	if cur < fin:
+		piezas.append([cur, fin])
+	for pz in piezas:
+		var rr := _rect_tab(vertical, c0, float(pz[0]), float(pz[1]))
+		tabiques.append({"hueco": false, "rect": rr})
+		jg.nav.solido_rect(rr, true)
+		# dibujo: tabique fino en el centro de la hilera de celdas
+		var largo := float(pz[1]) - float(pz[0])
+		var cx := rr.get_center().x
+		var cz := rr.get_center().y
+		var sz := Vector3(0.15, alto, largo) if vertical else Vector3(largo, alto, 0.15)
+		_caja(padre, Vector3(cx, alto * 0.5, cz), sz, col)
+		var sz2 := Vector3(0.19, 1.0, largo) if vertical else Vector3(largo, 1.0, 0.19)
+		_caja(padre, Vector3(cx, 0.5, cz), sz2, zoc)
+
+# rectángulo del mundo (1 m de grueso) de un trozo de tabique
+func _rect_tab(vertical: bool, c0: float, d0: float, d1: float) -> Rect2:
+	if vertical:
+		return Rect2(puerta.x + c0, puerta.y - d1, 1.0, d1 - d0)
+	return Rect2(puerta.x + d0, puerta.y - c0 - 1.0, d1 - d0, 1.0)
 
 func añadir_mueble(jg, m: Dictionary, tipos: Dictionary) -> void:
 	var td: Dictionary = tipos[m["tipo"]]
@@ -198,7 +267,11 @@ func cortar(on: bool) -> void:
 		return
 	cortado = on
 	techo.visible = not on
-	frente.scale.y = 0.1 if on else 1.0
+	frente.scale.y = (ALTO_MEDIO_MURO if bajas else 0.1) if on else 1.0
+	if altas != null:
+		altas.scale.y = ALTO_MEDIO_MURO if on else 1.0
+	for n in al_entrar:
+		(n as Node3D).visible = not on
 
 func de_tipo(t: String) -> Array:
 	var r: Array = []

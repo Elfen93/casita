@@ -156,9 +156,14 @@ func poner_postura(p: String, alt := 0.5) -> void:
 		"sentado":
 			cuerpo.position.y = -0.42
 			cuerpo.scale = Vector3(1, 0.78, 1)
+		"tumbado":
+			# boca arriba sobre el colchón (alt): los pies en el origen del actor y la cabeza hacia -Z
+			cuerpo.position.y = alt + 0.18
+			cuerpo.scale = Vector3.ONE
 		_:
 			cuerpo.position.y = 0.0
 			cuerpo.scale = Vector3.ONE
+	cuerpo.rotation.x = -PI * 0.5 if p == "tumbado" else 0.0
 	nodo.visible = p != "oculto"
 
 # bebida en la mano (icono sobre el hombro)

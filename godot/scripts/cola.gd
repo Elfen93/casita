@@ -122,7 +122,11 @@ func _llegar() -> void:
 	elif o.n_usos() > 0:
 		# se encara al mueble (o se sienta en él)
 		var cara := o.pos - a.pos2()
-		if ac.get("postura", "") == "sentado":
+		if ac.get("postura", "") == "tumbado":
+			# en la cama: cabeza al fondo (norte), pies hacia la puerta
+			a.poner(o.pos + Vector2(0, 0.8).rotated(-deg_to_rad(o.giro)))
+			a.nodo.rotation.y = deg_to_rad(o.giro)
+		elif ac.get("postura", "") == "sentado":
 			var s := o.asiento_mundo()
 			a.poner(Vector2(s.x, s.z))
 			a.nodo.rotation.y = deg_to_rad(o.giro)
@@ -134,6 +138,11 @@ func _llegar() -> void:
 
 func _preparar_hacer() -> void:
 	var ac: Dictionary = act["ac"]
+	if ac.get("tipo", "") == "dormir":
+		# salto de tiempo con velo (main.gd); al despertar se suelta la cama
+		act["est"] = "durmiendo"
+		jg.dormir_cama(float(ac["min"]), float(ac.get("energia_min", 0.21)), _fin_dormir)
+		return
 	act["total"] = maxf(0.2, float(ac.get("min", 1.0)))
 	act["resto"] = act["total"]
 	if ac.get("tipo", "") == "pedir":
@@ -164,6 +173,14 @@ func _hacer(dm: float) -> void:
 		act["resto"] = 0.0
 		return
 	_terminar()
+
+func _fin_dormir() -> void:
+	if act.is_empty():
+		return
+	act["est"] = "hacer"
+	_soltar()
+	act = {}
+	uso = -1
 
 func _terminar() -> void:
 	var o: Objeto = act["obj"]

@@ -58,3 +58,10 @@ De `data/`: calles, puertas, huellas (`rb`), colores, nombres, descripciones y h
 - **Tu casa**: bloque de 4 plantas de 14 × 10 m con su portal; el resto de la parcela, patio.
 - **Cámara**: `DIST_CALLE = 18`, `DIST_INTERIOR = 13`; los rótulos de las personas crecen con la distancia.
 - **Puente de pruebas**: `casita_cmd('rend')` (fps, personas, con esqueleto, objetos y dibujos), `('donde')` (posición de los vecinos visibles), `('dbg','fachadas'|'multi'|'sombra'|'luces'|'personas')` (alterna grupos para medir).
+
+## GD-5: tu casa por dentro (el motor)
+- **Varios interiores a la vez**: `main.gd` guarda `interiores_v` (todos) e `interior` (aquel en el que está el jugador, `null` fuera). Corte de paredes, rótulos, LOD, toques sobre muebles, `accion`/`pant` funcionan con el actual (`_objeto_por_id` busca en todos). `BarCtl` es solo del bar.
+- **El piso** (`data/interiores.json` → `interiores.casa`, `lugar: "casa"`): 9 × 7 m, el bajo del bloque, junto a la puerta de siempre. Salón con cocina, baño y dormitorio. El bloque de 4 plantas (cáscara de fuera) se oculta entero al entrar (plantas y tejado); desde fuera se ve como antes, algo más estrecho.
+- **Tabiques** (`tabiques` en el interior, documentados en `data/README.md`, validados en `scripts/datos.py`): paredes interiores con huecos de ≥ 1 m. En la rejilla ocupan una hilera de celdas de 1 m (sólidas salvo el hueco). Con `paredes_bajas`, al entrar TODAS las paredes y tabiques bajan a medio muro.
+- **Cama**: acciones `dormir` (`Dormir 8 horas`, `Echar una siesta (1 h)`) → salto de tiempo con velo (`main.dormir_cama`); el personaje se tumba (`postura` `tumbado`). El panel antiguo de «Tu casa» ya no existe: tocar el bloque lleva a la puerta y se entra andando. Nevera, cocina, sofá y ducha están colocados pero aún sin acciones.
+- **Prueba**: `python3 t/g2a_casa.py [carpeta]`.
