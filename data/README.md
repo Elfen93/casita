@@ -105,6 +105,17 @@ Vida de barrio (`mods/barrios_vida.js`): interiores genéricos de los doce lugar
 | `suelos`, `suelos_orden`, `paredes` | `FLOORS`, `FLOOR_ORDER`, `WALLCOLS` | Suelos (`p` precio por casilla, `pat` dibujo) y colores o papeles de pared `[color, nombre, dibujo, color del dibujo]`. |
 | `cultivos` | `CROPS` | Huerto. `d` días que tarda en crecer · `s` estaciones buenas para sembrarlo · `y` cosecha. |
 
+### interiores.json
+Interiores y sistema de objetos y acciones de la versión Godot (`godot/scripts/`; el juego web no lo lee). Medidas en metros.
+| Sección | Qué es |
+|---|---|
+| `condiciones` | `{id: motivo}`: texto que sale atenuado en el menú cuando una acción no está disponible (`abierto`, `camarero`, `bebida_mano`, `mano_libre`, `trabaja_aqui`, `cliente_sentado`, `pedido_servible`, `dinero`, `libre`). La lógica de cada una vive en `godot/scripts/acciones.gd`. |
+| `productos` | Lo que se pide en la barra: `n`, `e`, `precio` (€), `min_prep`, `sitio` (mueble donde lo prepara el camarero), `beber` (efecto en necesidades) y `min_beber`. |
+| `recetas` | Cócteles: `n`, `precio`, `pasos` `[[texto, minutos],…]`. Suben la habilidad `cocteleria`. |
+| `tipos` | Un tipo de mueble: `n`, `e`, `huella` `[ancho, fondo]`, `solido`, `partes` (cajas y cilindros `{t, p, s, c}` en su marco local; +Z es el frente), `uso` (puntos de uso `[x, z]` en su marco, el actor se coloca ahí), `asiento` (si se puede sentar) y `acciones`: `{id, n, e, tipo (normal·pedir·tirar·preparar·beber·servir), min, coste, postura (de_pie·sentado·tras_barra·oculto), req [condiciones], efectos {necesidad: cambio}, habilidad {nombre: subida}, azar {prob, premio}, producto, por_receta}`. |
+| `interiores` | Por id: `lugar` (id de `lugares.json`), `tam` `[ancho, fondo]` útil junto a la puerta, `puerta_x`, `suelo`, `pared`, `alto`, `puntos` (sitio del camarero, exterior, baño, personal) y `muebles`: `{id, tipo, pos [dx, dz], giro}`. `pos` en metros desde el centro de la puerta (dx a la derecha, dz hacia el fondo); `giro` en grados, 0 = el frente mira a la puerta, 90 = al este, 180 = al fondo, 270 = al oeste. |
+Ejemplo (grifo de cerveza): `"grifo": {"huella": [0.5, 0.4], "solido": false, "partes": [...], "uso": [[0, -1.1]], "acciones": [{"id": "tirar_cana", "n": "Tirar una caña", "e": "🍺", "tipo": "tirar", "producto": "cana", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}]}`.
+
 ### libros.json
 | Sección | En el código | Qué es |
 |---|---|---|

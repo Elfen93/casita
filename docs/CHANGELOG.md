@@ -1,6 +1,7 @@
 # Changelog
 
 ## 2026-11-13
+- GD-2 (Godot, G2A): el barrio a escala humana (1 unidad = 1 m, La Ribera 360×300 m, reloj al andar con los minutos del dato), movimiento libre con rejilla `AStarGrid2D`, parque, solares y barrios vecinos en silueta con niebla, interior del Bar Manolo andando por la puerta y un sistema de objetos y acciones con cola (cervezas, cafés, cócteles con recetas y habilidad, tragaperras, baño, clientes y camarero del censo). Nuevo `data/interiores.json` (documentado y validado). Prueba automática en `t/g2a_prueba.py`.
 - Prueba GD-1 (Godot): proyecto en `godot/` y exportación web sin hilos en `play3d/` (`scripts/godot_export.sh`, datos con `scripts/godot_datos.py`). La Ribera en 3D desde `data/`, personaje que anda por las calles, reloj, necesidades, bar, súper, dormir y 24 vecinos con ficha. El service worker del juego web deja pasar `/play3d/` sin cachearlo.
 
 ## 2026-11-12

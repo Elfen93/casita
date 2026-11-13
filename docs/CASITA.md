@@ -167,6 +167,8 @@ Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git wo
 3. Publicarla en la web (`/godot/`) para compararla en el móvil con el juego actual.
    - **Estado (GD-1):** hechos 1 y 2 en `godot/` (Godot 4.3, Compatibility, web sin hilos): La Ribera en 3D leída de `data/` (calles con nombre, 20 edificios con luz y sombras, día y noche), personaje que anda por el grafo de calles, reloj y tres necesidades, bar, súper y dormir en casa, 24 vecinos del censo según la hora con su ficha. Se exporta con `scripts/godot_export.sh` a `play3d/` (`/play3d/`, no `/godot/`).
    - Límites: todo el juego vive aún en un solo script (`godot/scripts/main.gd`); los precios del bar y del súper son constantes provisionales (no están en `data/`); el cubo no se «abre» al entrar, el personaje desaparece; los vecinos ocultos fuera del barrio no se simulan.
+   - **Estado (GD-2, G2A):** escala humana (1 unidad = 1 m, casilla = 6 m, La Ribera 360×300 m; el reloj al andar cobra los minutos del dato), movimiento libre por cualquier suelo con `AStarGrid2D`, interior del Bar Manolo con corte de casa de muñecas y sistema de objetos y acciones con cola (`objeto.gd`, `acciones.gd`, `cola.gd`, `bar.gd`; datos en `data/interiores.json`).
+   - Límites GD-2: solo el bar tiene interior; «Trabajas en el bar» es un interruptor provisional; sin guardar/cargar; lo táctil no está comprobado en un móvil real.
    - Medidas y cómo probarlo: `godot/README.md`. El `sw.js` del juego web ya no intercepta `/play3d/`.
 4. Si convence, **migrar por bloques**: vida diaria → trabajo y dinero → política. El juego web sigue vivo mientras tanto.
 

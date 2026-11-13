@@ -1,12 +1,12 @@
-# Casita 3D · prueba de Godot (GD-1)
+# Casita 3D · prueba de Godot (GD-1 → GD-2)
 
 La Ribera en 3D, leída de `data/*.json`, para compararla en el móvil con el juego web. Godot 4.3, renderizador **Compatibility** (WebGL2), vertical, táctil, exportación web **sin hilos** (GitHub Pages no manda las cabeceras de aislamiento que piden los hilos).
 
 ## Qué hay
 - `project.godot`, `export_presets.cfg` (preset «Web», sin hilos, salida `../play3d/index.html`).
-- `scripts/main.gd` (mundo, personaje, cámara, reloj, necesidades, interacciones, vecinos, interfaz), `scripts/grafo.gd` (camino por calles, port de `cdGrafo`/`cdCamino` de `mods/barrio.js`), `scripts/datos.gd` (lector de JSON).
+- `scripts/main.gd` (mundo, personaje, cámara, reloj, necesidades, interacciones, vecinos, interfaz), `scripts/grafo.gd` (camino por calles, port de `cdGrafo`/`cdCamino` de `mods/barrio.js`), `scripts/datos.gd` (lector de JSON). (`grafo.gd` ya no existe: el movimiento es libre, ver GD-2.)
 - `fonts/emoji.ttf`: Noto Emoji (OFL) recortado a los emojis que usan los datos (~120 KB). El texto normal usa la fuente por defecto de Godot.
-- `data/` NO se versiona: lo genera `scripts/godot_datos.py` copiando `ciudad`, `lugares`, `barrio`, `personas` y `reglas` de `data/`.
+- `data/` NO se versiona: lo genera `scripts/godot_datos.py` copiando `ciudad`, `lugares`, `barrio`, `personas`, `reglas` e `interiores` de `data/`.
 
 ## Instalar (una vez)
 ```
@@ -38,3 +38,14 @@ Un dedo arrastra la cámara, dos dedos hacen zoom (rueda del ratón en el ordena
 
 ## Qué sale de los datos y qué no
 De `data/`: calles, puertas, huellas (`rb`), colores, nombres, descripciones y horarios de apertura, casa del jugador (vivienda «viejo» → La Ribera), censo del barrio y sus horarios, tasas de necesidades (`reglas.json`), efecto del bar (`salidas_necesidades.amigos`). Provisional en el código: precios (bar 6 €, súper 12 €), efecto del súper y del sueño, alturas de los cubos.
+
+
+## GD-2 (G2A): escala humana, movimiento libre, interior del bar y sistema de acciones
+- **Regla de escala** (un solo sitio: `scripts/escala.gd`): 1 unidad de Godot = 1 m; el personaje mide 1,7 m. Las coordenadas del dato se multiplican por `M_UNIDAD = 3` (1 casilla de 6 m = 2 unidades del dato): La Ribera (120×100 unidades) mide 360×300 m. Calzada 8 m, aceras 3 m; velocidad 3,5 m/s, 7 m/s si el destino está a más de 60 m.
+- **Reloj al andar**: el trayecto por la calle NO corre a ritmo normal: cobra `Escala.MIN_POR_UNIDAD = 0,119` min de juego por unidad del dato recorrida (10 m a 84 m/min), repartidos a lo largo de lo que dura verlo. Cruzar el barrio entero (≈120 unidades) cuesta ~14 min de juego.
+- **Movimiento libre** (`scripts/nav.gd`): rejilla de 1 m con `AStarGrid2D` (diagonales sin cortar esquinas, tirón de cuerda). Edificios, muebles, vallas y troncos son sólidos; la calzada cuesta 3× (se prefieren aceras y pasos de cebra). Los vecinos usan el mismo sistema (una ruta por fotograma).
+- **Interiores**: `data/interiores.json` define el plano y los muebles; `scripts/interior.gd` los construye (paredes con hueco de puerta, techo que se oculta y paredes de delante que se aplastan al entrar). Solo el bar tiene interior hoy; el resto de edificios son cubos macizos.
+- **Objetos y acciones**: `scripts/objeto.gd` (mueble con puntos de uso), `scripts/acciones.gd` (condiciones y efectos), `scripts/cola.gd` (cola de hasta 6 acciones del jugador), `scripts/bar.gd` (camarero y clientes del censo). Qué acciones tiene cada mueble, cuánto duran, cuestan y dan, está en los datos.
+- **Figuras**: se crean en un único punto, `scripts/figura.gd` (`Figura.crear`), para sustituir luego el dibujo.
+- **Provisional**: el botón «Trabajas en el bar (prueba)» hasta que exista el trabajo en Godot. El puente `casita_cmd` añade `ir_xy`, `poner`, `accion`, `accion_cliente`, `trabaja`, `clientes`.
+- **Prueba automática**: `python3 t/g2a_prueba.py [carpeta]` (usa `t/g2a_cdp.py`).

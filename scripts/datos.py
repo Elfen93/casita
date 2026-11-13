@@ -884,6 +884,33 @@ def comprobar(d):
     E=_t133_comprobar(d);_t133(d,E);return E
 # --- t133 end ---
 
+# --- g2a interiores: validación mínima de data/interiores.json ---
+def _g2a_interiores(d,E):
+    I=d.get('interiores')
+    if not I:return
+    T=I.get('tipos',{});C=I.get('condiciones',{});P=I.get('productos',{});R=I.get('recetas',{});lug=d.get('lugares',{}).get('lugares',{})
+    for k,t in T.items():
+        for a in t.get('acciones',[]):
+            for q in a.get('req',[]):
+                if q not in C:E.append('interiores.tipos.%s.%s: condición «%s» sin texto'%(k,a.get('id'),q))
+            if a.get('tipo')=='pedir' and a.get('producto') not in P:E.append('interiores.tipos.%s.%s: producto desconocido'%(k,a.get('id')))
+            if not a.get('por_receta') and a.get('tipo')!='servir' and not a.get('min'):E.append('interiores.tipos.%s.%s: sin duración'%(k,a.get('id')))
+    for k,r in R.items():
+        if not r.get('pasos'):E.append('interiores.recetas.%s: sin pasos'%k)
+    for k,i in I.get('interiores',{}).items():
+        if i.get('lugar') not in lug:E.append('interiores.interiores.%s: lugar desconocido'%k)
+        ids=set()
+        for m in i.get('muebles',[]):
+            if m.get('tipo') not in T:E.append('interiores.interiores.%s: mueble «%s» de tipo desconocido'%(k,m.get('id')))
+            if m.get('id') in ids:E.append('interiores.interiores.%s: id repetido «%s»'%(k,m.get('id')))
+            ids.add(m.get('id'))
+            w,h=i['tam']
+            if not (-w/2<=m['pos'][0]<=w/2 and 0<=m['pos'][1]<=h):E.append('interiores.interiores.%s: «%s» fuera del plano'%(k,m.get('id')))
+_g2a_comprobar=comprobar
+def comprobar(d):
+    E=_g2a_comprobar(d);_g2a_interiores(d,E);return E
+# --- g2a end ---
+
 if __name__=='__main__':
     d=cargar()
     if '--fmt' in sys.argv:print('formateados:',formatear(d))

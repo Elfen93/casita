@@ -1,0 +1,1206 @@
+{
+ "_": "Interiores y sistema de objetos y acciones de la versión Godot (godot/scripts/). Medidas en metros. Ver data/README.md, sección interiores.json. Interior del bar: 14 x 10 m junto a la puerta; el resto de la parcela es patio.",
+ "condiciones": {
+  "abierto": "Está cerrado",
+  "camarero": "No hay nadie tras la barra",
+  "bebida_mano": "No llevas ninguna bebida en la mano",
+  "mano_libre": "Ya llevas una bebida en la mano",
+  "trabaja_aqui": "Aquí solo sirve quien trabaja en el bar",
+  "cliente_sentado": "Solo con alguien sentado",
+  "pedido_servible": "Lo que llevas en la mano no es lo que ha pedido",
+  "dinero": "No te llega el dinero",
+  "libre": "Está ocupado"
+ },
+ "productos": {
+  "cana": {
+   "n": "caña",
+   "e": "🍺",
+   "precio": 2.5,
+   "min_prep": 1.5,
+   "sitio": "grifo",
+   "beber": {
+    "diversion": 8,
+    "social": 5
+   },
+   "min_beber": 25
+  },
+  "cafe": {
+   "n": "café",
+   "e": "☕",
+   "precio": 1.4,
+   "min_prep": 1.5,
+   "sitio": "cafetera",
+   "beber": {
+    "diversion": 3,
+    "energia": 6,
+    "social": 3
+   },
+   "min_beber": 15
+  },
+  "coctel": {
+   "n": "cóctel",
+   "e": "🍹",
+   "precio": 7.0,
+   "min_prep": 3,
+   "sitio": "coctelera",
+   "beber": {
+    "diversion": 12,
+    "social": 7
+   },
+   "min_beber": 30
+  }
+ },
+ "recetas": {
+  "mojito": {
+   "n": "Mojito",
+   "precio": 7.0,
+   "pasos": [
+    [
+     "Poner hielo picado",
+     1
+    ],
+    [
+     "Machacar la menta",
+     1
+    ],
+    [
+     "Medir el ron",
+     0.5
+    ],
+    [
+     "Agitar",
+     1
+    ],
+    [
+     "Servir y decorar",
+     0.5
+    ]
+   ]
+  },
+  "cuba_libre": {
+   "n": "Cuba libre",
+   "precio": 6.5,
+   "pasos": [
+    [
+     "Poner hielo",
+     0.5
+    ],
+    [
+     "Medir el ron",
+     0.5
+    ],
+    [
+     "Añadir la cola y el limón",
+     1
+    ],
+    [
+     "Servir",
+     0.5
+    ]
+   ]
+  },
+  "gintonic": {
+   "n": "Gin-tonic",
+   "precio": 8.0,
+   "pasos": [
+    [
+     "Enfriar la copa",
+     1
+    ],
+    [
+     "Medir la ginebra",
+     0.5
+    ],
+    [
+     "Añadir tónica y enebro",
+     1
+    ],
+    [
+     "Servir",
+     0.5
+    ]
+   ]
+  },
+  "margarita": {
+   "n": "Margarita",
+   "precio": 8.5,
+   "pasos": [
+    [
+     "Escarchar el borde",
+     1
+    ],
+    [
+     "Poner hielo",
+     0.5
+    ],
+    [
+     "Medir tequila y lima",
+     1
+    ],
+    [
+     "Agitar con ganas",
+     1.5
+    ],
+    [
+     "Servir",
+     0.5
+    ]
+   ]
+  },
+  "sangria": {
+   "n": "Sangría de la casa",
+   "precio": 5.5,
+   "pasos": [
+    [
+     "Cortar la fruta",
+     1
+    ],
+    [
+     "Añadir el vino",
+     0.5
+    ],
+    [
+     "Remover",
+     1
+    ],
+    [
+     "Servir",
+     0.5
+    ]
+   ]
+  }
+ },
+ "tipos": {
+  "barra": {
+   "n": "Barra",
+   "e": "🍺",
+   "huella": [
+    7,
+    0.7
+   ],
+   "solido": true,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      0.55,
+      0
+     ],
+     "s": [
+      7,
+      1.1,
+      0.7
+     ],
+     "c": "#6b4528"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.12,
+      0.05
+     ],
+     "s": [
+      7.2,
+      0.07,
+      0.95
+     ],
+     "c": "#a9794a"
+    }
+   ],
+   "uso": [
+    [
+     -3,
+     1.9
+    ],
+    [
+     -1.8,
+     1.9
+    ],
+    [
+     -0.6,
+     1.9
+    ],
+    [
+     0.6,
+     1.9
+    ],
+    [
+     1.8,
+     1.9
+    ],
+    [
+     3.0,
+     1.9
+    ]
+   ],
+   "acciones": [
+    {
+     "id": "pedir_cana",
+     "n": "Pedir una caña",
+     "e": "🍺",
+     "tipo": "pedir",
+     "producto": "cana",
+     "min": 3,
+     "postura": "de_pie",
+     "req": [
+      "abierto",
+      "camarero",
+      "mano_libre",
+      "dinero"
+     ]
+    },
+    {
+     "id": "pedir_cafe",
+     "n": "Pedir un café",
+     "e": "☕",
+     "tipo": "pedir",
+     "producto": "cafe",
+     "min": 3,
+     "postura": "de_pie",
+     "req": [
+      "abierto",
+      "camarero",
+      "mano_libre",
+      "dinero"
+     ]
+    },
+    {
+     "id": "pedir_coctel",
+     "n": "Pedir un cóctel",
+     "e": "🍹",
+     "tipo": "pedir",
+     "producto": "coctel",
+     "min": 5,
+     "postura": "de_pie",
+     "req": [
+      "abierto",
+      "camarero",
+      "mano_libre",
+      "dinero"
+     ]
+    }
+   ]
+  },
+  "taburete": {
+   "n": "Taburete",
+   "e": "🪑",
+   "huella": [
+    0.45,
+    0.45
+   ],
+   "solido": false,
+   "partes": [
+    {
+     "t": "cil",
+     "p": [
+      0,
+      0.62,
+      0
+     ],
+     "s": [
+      0.42,
+      0.08,
+      0.42
+     ],
+     "c": "#b4432f"
+    },
+    {
+     "t": "cil",
+     "p": [
+      0,
+      0.3,
+      0
+     ],
+     "s": [
+      0.09,
+      0.6,
+      0.09
+     ],
+     "c": "#3a3a3e"
+    }
+   ],
+   "uso": [
+    [
+     0,
+     -0.9
+    ]
+   ],
+   "asiento": [
+    0,
+    0.62,
+    0
+   ],
+   "acciones": [
+    {
+     "id": "sentarse",
+     "n": "Sentarse",
+     "e": "🪑",
+     "tipo": "normal",
+     "min": 10,
+     "postura": "sentado",
+     "req": [
+      "libre"
+     ],
+     "efectos": {
+      "energia": 2
+     }
+    },
+    {
+     "id": "beber",
+     "n": "Beber",
+     "e": "🥤",
+     "tipo": "beber",
+     "min": 25,
+     "postura": "sentado",
+     "req": [
+      "libre",
+      "bebida_mano"
+     ]
+    }
+   ]
+  },
+  "silla": {
+   "n": "Silla",
+   "e": "🪑",
+   "huella": [
+    0.5,
+    0.5
+   ],
+   "solido": false,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      0.45,
+      0
+     ],
+     "s": [
+      0.5,
+      0.07,
+      0.5
+     ],
+     "c": "#8a5a36"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      0.8,
+      -0.22
+     ],
+     "s": [
+      0.5,
+      0.7,
+      0.06
+     ],
+     "c": "#8a5a36"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      0.22,
+      0
+     ],
+     "s": [
+      0.44,
+      0.44,
+      0.44
+     ],
+     "c": "#5e3d24"
+    }
+   ],
+   "uso": [
+    [
+     0,
+     -0.9
+    ]
+   ],
+   "asiento": [
+    0,
+    0.45,
+    0
+   ],
+   "acciones": [
+    {
+     "id": "sentarse",
+     "n": "Sentarse",
+     "e": "🪑",
+     "tipo": "normal",
+     "min": 10,
+     "postura": "sentado",
+     "req": [
+      "libre"
+     ],
+     "efectos": {
+      "energia": 2
+     }
+    },
+    {
+     "id": "beber",
+     "n": "Beber",
+     "e": "🥤",
+     "tipo": "beber",
+     "min": 25,
+     "postura": "sentado",
+     "req": [
+      "libre",
+      "bebida_mano"
+     ]
+    }
+   ]
+  },
+  "mesa": {
+   "n": "Mesa",
+   "e": "🍽️",
+   "huella": [
+    1.1,
+    1.1
+   ],
+   "solido": true,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      0.74,
+      0
+     ],
+     "s": [
+      1.1,
+      0.06,
+      1.1
+     ],
+     "c": "#c18e57"
+    },
+    {
+     "t": "cil",
+     "p": [
+      0,
+      0.37,
+      0
+     ],
+     "s": [
+      0.12,
+      0.74,
+      0.12
+     ],
+     "c": "#3a3a3e"
+    }
+   ],
+   "uso": [],
+   "acciones": []
+  },
+  "grifo": {
+   "n": "Grifo de cerveza",
+   "e": "🍺",
+   "huella": [
+    0.5,
+    0.4
+   ],
+   "solido": false,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.3,
+      0
+     ],
+     "s": [
+      0.3,
+      0.35,
+      0.3
+     ],
+     "c": "#c9ccd0"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.15,
+      0.18
+     ],
+     "s": [
+      0.06,
+      0.14,
+      0.06
+     ],
+     "c": "#d9a21b"
+    }
+   ],
+   "uso": [
+    [
+     0,
+     -1.1
+    ]
+   ],
+   "acciones": [
+    {
+     "id": "tirar_cana",
+     "n": "Tirar una caña",
+     "e": "🍺",
+     "tipo": "tirar",
+     "producto": "cana",
+     "min": 1.5,
+     "postura": "tras_barra",
+     "req": [
+      "trabaja_aqui",
+      "mano_libre"
+     ]
+    }
+   ]
+  },
+  "cafetera": {
+   "n": "Cafetera",
+   "e": "☕",
+   "huella": [
+    0.6,
+    0.5
+   ],
+   "solido": false,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.4,
+      0
+     ],
+     "s": [
+      0.6,
+      0.5,
+      0.45
+     ],
+     "c": "#2c2d33"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.2,
+      0.2
+     ],
+     "s": [
+      0.2,
+      0.06,
+      0.12
+     ],
+     "c": "#c9ccd0"
+    }
+   ],
+   "uso": [
+    [
+     0,
+     -1.1
+    ]
+   ],
+   "acciones": [
+    {
+     "id": "hacer_cafe",
+     "n": "Hacer un café",
+     "e": "☕",
+     "tipo": "tirar",
+     "producto": "cafe",
+     "min": 1.5,
+     "postura": "tras_barra",
+     "req": [
+      "trabaja_aqui",
+      "mano_libre"
+     ]
+    }
+   ]
+  },
+  "coctelera": {
+   "n": "Coctelera",
+   "e": "🍸",
+   "huella": [
+    0.5,
+    0.4
+   ],
+   "solido": false,
+   "partes": [
+    {
+     "t": "cil",
+     "p": [
+      0,
+      1.3,
+      0
+     ],
+     "s": [
+      0.16,
+      0.34,
+      0.16
+     ],
+     "c": "#d4d8dc"
+    },
+    {
+     "t": "cil",
+     "p": [
+      0,
+      1.52,
+      0
+     ],
+     "s": [
+      0.1,
+      0.1,
+      0.1
+     ],
+     "c": "#b0b4b8"
+    }
+   ],
+   "uso": [
+    [
+     0,
+     -1.1
+    ]
+   ],
+   "acciones": [
+    {
+     "id": "preparar",
+     "n": "Preparar",
+     "e": "🍸",
+     "tipo": "preparar",
+     "por_receta": true,
+     "postura": "tras_barra",
+     "req": [
+      "trabaja_aqui",
+      "mano_libre"
+     ],
+     "habilidad": {
+      "cocteleria": 1.0
+     }
+    }
+   ]
+  },
+  "estante": {
+   "n": "Estante de botellas",
+   "e": "🍾",
+   "huella": [
+    5,
+    0.4
+   ],
+   "solido": true,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.0,
+      0
+     ],
+     "s": [
+      5,
+      0.05,
+      0.4
+     ],
+     "c": "#5a3b22"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.6,
+      0
+     ],
+     "s": [
+      5,
+      0.05,
+      0.4
+     ],
+     "c": "#5a3b22"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.35,
+      0
+     ],
+     "s": [
+      4.6,
+      0.3,
+      0.14
+     ],
+     "c": "#3f8a5a"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.95,
+      0
+     ],
+     "s": [
+      4.6,
+      0.3,
+      0.14
+     ],
+     "c": "#b8863b"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      0.5,
+      0
+     ],
+     "s": [
+      5,
+      1.0,
+      0.4
+     ],
+     "c": "#4a3320"
+    }
+   ],
+   "uso": [],
+   "acciones": []
+  },
+  "tragaperras": {
+   "n": "Tragaperras",
+   "e": "🎰",
+   "huella": [
+    0.8,
+    0.7
+   ],
+   "solido": true,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      0.9,
+      0
+     ],
+     "s": [
+      0.8,
+      1.8,
+      0.7
+     ],
+     "c": "#b0262e"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.3,
+      0.36
+     ],
+     "s": [
+      0.6,
+      0.4,
+      0.04
+     ],
+     "c": "#f2d45c"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.9,
+      0
+     ],
+     "s": [
+      0.7,
+      0.2,
+      0.6
+     ],
+     "c": "#2c2d33"
+    }
+   ],
+   "uso": [
+    [
+     0,
+     1.0
+    ]
+   ],
+   "acciones": [
+    {
+     "id": "moneda",
+     "n": "Echar una moneda",
+     "e": "🎰",
+     "tipo": "normal",
+     "min": 1,
+     "coste": 1,
+     "postura": "de_pie",
+     "req": [
+      "dinero",
+      "libre"
+     ],
+     "efectos": {
+      "diversion": 1.5
+     },
+     "azar": {
+      "prob": 0.07,
+      "premio": 10
+     }
+    }
+   ]
+  },
+  "puerta_bano": {
+   "n": "Baño",
+   "e": "🚻",
+   "huella": [
+    1.0,
+    0.1
+   ],
+   "solido": false,
+   "partes": [
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.05,
+      0
+     ],
+     "s": [
+      1.0,
+      2.1,
+      0.08
+     ],
+     "c": "#4d7fa6"
+    },
+    {
+     "t": "caja",
+     "p": [
+      0,
+      1.6,
+      0.06
+     ],
+     "s": [
+      0.3,
+      0.3,
+      0.02
+     ],
+     "c": "#f4f1e8"
+    }
+   ],
+   "uso": [
+    [
+     0,
+     1.2
+    ]
+   ],
+   "acciones": [
+    {
+     "id": "usar_bano",
+     "n": "Usar el baño",
+     "e": "🚻",
+     "tipo": "normal",
+     "min": 4,
+     "postura": "oculto",
+     "req": [
+      "libre"
+     ],
+     "efectos": {
+      "vejiga": 60,
+      "higiene": 10
+     }
+    }
+   ]
+  },
+  "cliente": {
+   "n": "Cliente",
+   "e": "🧍",
+   "huella": [
+    0.5,
+    0.5
+   ],
+   "solido": false,
+   "partes": [],
+   "uso": [
+    [
+     0,
+     1.1
+    ]
+   ],
+   "acciones": [
+    {
+     "id": "servir",
+     "n": "Servir el pedido",
+     "e": "🍻",
+     "tipo": "servir",
+     "min": 0.5,
+     "postura": "de_pie",
+     "req": [
+      "trabaja_aqui",
+      "pedido_servible"
+     ]
+    },
+    {
+     "id": "charlar",
+     "n": "Charlar",
+     "e": "💬",
+     "tipo": "normal",
+     "min": 12,
+     "postura": "de_pie",
+     "req": [
+      "cliente_sentado"
+     ],
+     "efectos": {
+      "social": 14,
+      "diversion": 3
+     }
+    }
+   ]
+  }
+ },
+ "interiores": {
+  "bar": {
+   "lugar": "bar",
+   "tam": [
+    14,
+    10
+   ],
+   "puerta_x": 0,
+   "suelo": "#b58a5a",
+   "pared": "#d9a066",
+   "alto": 3.0,
+   "puntos": {
+    "sitio_camarero": [
+     -2.5,
+     7.9
+    ],
+    "exterior": [
+     0,
+     -2.2
+    ],
+    "bano": [
+     4.5,
+     9.0
+    ],
+    "personal": [
+     [
+      3.0,
+      8.0
+     ],
+     [
+      4.5,
+      8.4
+     ]
+    ]
+   },
+   "muebles": [
+    {
+     "id": "estante",
+     "tipo": "estante",
+     "pos": [
+      -2.5,
+      9.7
+     ],
+     "giro": 0
+    },
+    {
+     "id": "barra",
+     "tipo": "barra",
+     "pos": [
+      -2.5,
+      6.5
+     ],
+     "giro": 0
+    },
+    {
+     "id": "grifo",
+     "tipo": "grifo",
+     "pos": [
+      -5.0,
+      6.5
+     ],
+     "giro": 0
+    },
+    {
+     "id": "cafetera",
+     "tipo": "cafetera",
+     "pos": [
+      -2.5,
+      6.5
+     ],
+     "giro": 0
+    },
+    {
+     "id": "coctelera",
+     "tipo": "coctelera",
+     "pos": [
+      0.0,
+      6.5
+     ],
+     "giro": 0
+    },
+    {
+     "id": "tab1",
+     "tipo": "taburete",
+     "pos": [
+      -5.0,
+      5.5
+     ],
+     "giro": 180
+    },
+    {
+     "id": "tab2",
+     "tipo": "taburete",
+     "pos": [
+      -3.75,
+      5.5
+     ],
+     "giro": 180
+    },
+    {
+     "id": "tab3",
+     "tipo": "taburete",
+     "pos": [
+      -2.5,
+      5.5
+     ],
+     "giro": 180
+    },
+    {
+     "id": "tab4",
+     "tipo": "taburete",
+     "pos": [
+      -1.25,
+      5.5
+     ],
+     "giro": 180
+    },
+    {
+     "id": "tab5",
+     "tipo": "taburete",
+     "pos": [
+      0.0,
+      5.5
+     ],
+     "giro": 180
+    },
+    {
+     "id": "mesa1",
+     "tipo": "mesa",
+     "pos": [
+      -5.2,
+      2.3
+     ],
+     "giro": 0
+    },
+    {
+     "id": "mesa2",
+     "tipo": "mesa",
+     "pos": [
+      -2.6,
+      2.3
+     ],
+     "giro": 0
+    },
+    {
+     "id": "mesa3",
+     "tipo": "mesa",
+     "pos": [
+      2.6,
+      2.3
+     ],
+     "giro": 0
+    },
+    {
+     "id": "mesa4",
+     "tipo": "mesa",
+     "pos": [
+      5.6,
+      2.3
+     ],
+     "giro": 0
+    },
+    {
+     "id": "s1a",
+     "tipo": "silla",
+     "pos": [
+      -6.2,
+      2.3
+     ],
+     "giro": 90
+    },
+    {
+     "id": "s1b",
+     "tipo": "silla",
+     "pos": [
+      -4.2,
+      2.3
+     ],
+     "giro": 270
+    },
+    {
+     "id": "s2a",
+     "tipo": "silla",
+     "pos": [
+      -3.6,
+      2.3
+     ],
+     "giro": 90
+    },
+    {
+     "id": "s2b",
+     "tipo": "silla",
+     "pos": [
+      -1.6,
+      2.3
+     ],
+     "giro": 270
+    },
+    {
+     "id": "s3a",
+     "tipo": "silla",
+     "pos": [
+      1.6,
+      2.3
+     ],
+     "giro": 90
+    },
+    {
+     "id": "s3b",
+     "tipo": "silla",
+     "pos": [
+      3.6,
+      2.3
+     ],
+     "giro": 270
+    },
+    {
+     "id": "s4a",
+     "tipo": "silla",
+     "pos": [
+      4.6,
+      2.3
+     ],
+     "giro": 90
+    },
+    {
+     "id": "s4b",
+     "tipo": "silla",
+     "pos": [
+      6.6,
+      2.3
+     ],
+     "giro": 270
+    },
+    {
+     "id": "tragaperras",
+     "tipo": "tragaperras",
+     "pos": [
+      6.5,
+      6.0
+     ],
+     "giro": 270
+    },
+    {
+     "id": "bano",
+     "tipo": "puerta_bano",
+     "pos": [
+      4.5,
+      9.9
+     ],
+     "giro": 0
+    }
+   ]
+  }
+ }
+}
