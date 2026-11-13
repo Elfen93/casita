@@ -24,6 +24,13 @@ Rol: escenas + guion. Edificios de lugar con dibujo propio por tipo (hoy son caj
 
 ### ✅ (hecho) T-140 censo ampliado · T-141 piquetes, colas y rider · T-142 romance en Gente, ficha de barrio y equilibrio
 
+### GD-11 · Personajes (tras el prototipo del creador)
+- Recursos de MakeHuman que debe bajar el autor (programa para Windows en zip y asset packs CC0: system assets, skins, hair, clothes): con ellos, ropa y pelo de verdad, pieles con textura, pestañas y dientes.
+- Sustituir a la gente del juego por el humano (jugador con detalle, vecinos con malla ligera `humano_ligero`), armario para cambiarse y espejo para retocarse.
+- Animaciones que faltan: tumbado/dormir, beber, usar; dedos; brazos que no atraviesen a una persona gorda.
+- En el pecho de la ropa base aún se marca relieve; el creador ya no deja ir en ropa interior.
+- Comprobar en el catálogo del modo muebles que arrastrar empezando sobre un botón desplaza la lista (en el creador hubo que poner `mouse_filter = PASS`).
+
 ### GD-10 · Godot, lo que queda de la fase 2 y arte
 - Pintar paredes y cambiar suelos por estancia; recolorear muebles; levantar y tirar tabiques, puertas y ventanas.
 - Prueba de aspecto: la misma habitación con el arte de ahora y «vestida» (texturas en suelos y paredes, luz suave, sombras de contacto), con peso y fluidez en móvil, para decidir el estilo.

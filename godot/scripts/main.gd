@@ -129,7 +129,11 @@ var muebles: Muebles  # --- muebles ---
 
 func _ready() -> void:
 	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
-		get_tree().change_scene_to_file.call_deferred("res://crear/crear.tscn")  # --- crear ---
+		# el creador va en su propia exportación (play3d/crear/): si su escena no viene en esta, se salta a esa página  # --- crear ---
+		if ResourceLoader.exists("res://crear/crear.tscn"):  # --- crear ---
+			get_tree().change_scene_to_file.call_deferred("res://crear/crear.tscn")  # --- crear ---
+		else:  # --- crear ---
+			JavaScriptBridge.eval("window.location.replace('crear/index.html')")  # --- crear ---
 		return  # --- crear ---
 	ciudad = Datos.cargar("ciudad")
 	lugares = Datos.cargar("lugares")

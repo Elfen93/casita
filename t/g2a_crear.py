@@ -9,6 +9,8 @@ so=socket.socket();so.bind(('127.0.0.1',0));port=so.getsockname()[1];so.close()
 srv=subprocess.Popen(['python3','-m','http.server',str(port),'--bind','127.0.0.1'],cwd=RAIZ,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 time.sleep(1)
 URL='http://127.0.0.1:%d/play3d/index.html'%port
+# con el cuerpo de verdad (arte/humano) las prendas son otras que las del maniquí de pega
+ARR='sudadera' if os.path.exists(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'godot/arte/humano/catalogo.json')) else 'jersey'
 res=[]
 def chk(n,ok,x=''):
     res.append(ok);print(('OK  ' if ok else 'FALLA ')+n,x)
@@ -99,8 +101,8 @@ try:
     chk('la lista larga (Ropa) se desplaza con el dedo',s1>s0+20,'%d -> %d'%(s0,s1))
     p.shot(OUT+'/crear_6b_ropa_abajo.png')
     arrastre(200,560,200,780,8)
-    a=estado()['aspecto'];pulsa('ropa:arriba:jersey');pulsa('ropa_color:arriba:3');b=estado()['aspecto']
-    chk('elegir ropa y color',a!=b and 'jersey' in json.dumps(b),b.get('ropa'))
+    a=estado()['aspecto'];pulsa('ropa:arriba:'+ARR);pulsa('ropa_color:arriba:3');b=estado()['aspecto']
+    chk('elegir ropa y color',a!=b and ARR in json.dumps(b),b.get('ropa'))
     pulsa('pestana:gesto');p.shot(OUT+'/crear_7_gesto.png')
     a=estado()['aspecto'];pulsa('gesto:sonrisa');b=estado()['aspecto'];pulsa('gesto:sonrisa');c=estado()['aspecto']
     chk('el gesto se pone y se quita al tocar otra vez',a!=b and b!=c and a==c,'')

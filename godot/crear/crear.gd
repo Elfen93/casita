@@ -163,7 +163,7 @@ func _estado_inicial() -> void:
 			capas.append(c)
 	var k := 0
 	for c in capas:
-		var col: Color = COL_ROPA[(k * 3 + 1) % COL_ROPA.size()][1]
+		var col: Color = COL_ROPA[{"arriba": 0, "abajo": 6, "pies": 2, "entero": 3}.get(c, (k * 3 + 1) % COL_ROPA.size())][1]
 		var primera := ""
 		for r in cat["ropas"]:
 			if str(r.get("capa", "")) == c:
@@ -174,6 +174,7 @@ func _estado_inicial() -> void:
 		k += 1
 
 func _aplicar_est() -> void:
+	_vestir_bien()
 	for id in est["formas"]:
 		cuerpo.set_forma(id, float(est["formas"][id]))
 	cuerpo.set_piel(str(est["piel"]))
@@ -333,6 +334,14 @@ func _estilo_boton(b: Button, col: Color, sel := false) -> void:
 	b.add_theme_color_override("font_pressed_color", Color(0.08, 0.08, 0.1) if sel else Color(1, 1, 1))
 	b.add_theme_color_override("font_hover_color", Color(0.08, 0.08, 0.1) if sel else Color(1, 1, 1))
 	b.add_theme_color_override("font_focus_color", Color(0.08, 0.08, 0.1) if sel else Color(1, 1, 1))
+
+# dentro de una lista que se desplaza, los botones dejan pasar el toque al contenedor: si no, arrastrar empezando
+# sobre un botón no mueve la lista (y en el móvil casi todo son botones). Al empezar a desplazar, el botón no se pulsa.
+func _dejar_pasar(n: Node) -> void:
+	for h in n.get_children():
+		if h is BaseButton:
+			(h as BaseButton).mouse_filter = Control.MOUSE_FILTER_PASS
+		_dejar_pasar(h)
 
 func _boton(txt: String, f: Callable, alto := 46.0, tam := 16) -> Button:
 	var b := Button.new()
@@ -531,6 +540,7 @@ func _pestana(id: String, txt: String, pag: ScrollContainer, fila: HBoxContainer
 	pag.set_anchors_preset(Control.PRESET_FULL_RECT)
 	pag.visible = false
 	cont.add_child(pag)
+	_dejar_pasar(pag)
 	pestanas.append({"id": id, "txt": txt, "btn": b, "pag": pag})
 	ctl["pestana:" + id] = b
 
@@ -568,7 +578,7 @@ func _pagina_formas(grupo: String) -> ScrollContainer:
 		hay = true
 		var id := str(f["id"])
 		var d := Desliz.new()
-		d.nombre = str(f.get("n", id))
+		d.nombre = str(f.get("n", id)).replace("↔", "–")
 		d.vmin = float(f.get("min", -1.0))
 		d.vmax = float(f.get("max", 1.0))
 		d.vdef = float(f.get("def", 0.0))
@@ -633,15 +643,17 @@ func _pagina_ropa() -> ScrollContainer:
 		v.add_child(_etiqueta(capa.capitalize(), 16, Color(0.95, 0.8, 0.5)))
 		var g := _rejilla(2)
 		v.add_child(g)
-		var bn := _boton_marcable("Ninguna", func(): _hacer(func(): est["ropa"][capa]["id"] = ""), func(): return str(est["ropa"][capa]["id"]) == "")
-		bn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		g.add_child(bn)
-		ctl["ropa:%s:" % capa] = bn
+		# arriba y abajo siempre llevan algo (o un «entero» que las sustituye): la ropa interior no es un conjunto
+		if not ["arriba", "abajo"].has(capa):
+			var bn := _boton_marcable("Ninguna", func(): _hacer(func(): _poner_ropa(capa, "")), func(): return str(est["ropa"][capa]["id"]) == "")
+			bn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			g.add_child(bn)
+			ctl["ropa:%s:" % capa] = bn
 		for r in cat["ropas"]:
 			if str(r.get("capa", "")) != capa:
 				continue
 			var id := str(r["id"])
-			var b := _boton_marcable(str(r.get("n", id)), func(): _hacer(func(): est["ropa"][capa]["id"] = id), func(): return str(est["ropa"][capa]["id"]) == id)
+			var b := _boton_marcable(str(r.get("n", id)), func(): _hacer(func(): _poner_ropa(capa, id)), func(): return str(est["ropa"][capa]["id"]) == id)
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			g.add_child(b)
 			ctl["ropa:%s:%s" % [capa, id]] = b
@@ -654,6 +666,31 @@ func _pagina_ropa() -> ScrollContainer:
 			gc.add_child(ch)
 			ctl["ropa_color:%s:%d" % [capa, i]] = ch
 	return s
+
+# una prenda de arriba o de abajo quita el «entero» (vestido), y al revés
+func _poner_ropa(capa: String, id: String) -> void:
+	est["ropa"][capa]["id"] = id
+	if id != "" and ["arriba", "abajo"].has(capa) and est["ropa"].has("entero"):
+		est["ropa"]["entero"]["id"] = ""
+	_vestir_bien()
+
+func _primera_ropa(capa: String) -> String:
+	for r in cat.get("ropas", []):
+		if str(r.get("capa", "")) == capa:
+			return str(r["id"])
+	return ""
+
+# nunca en ropa interior: con «entero» puesto no hay arriba ni abajo; sin él, las dos capas llevan algo
+func _vestir_bien() -> void:
+	var r: Dictionary = est["ropa"]
+	var entero := r.has("entero") and str(r["entero"]["id"]) != ""
+	for c in ["arriba", "abajo"]:
+		if not r.has(c):
+			continue
+		if entero:
+			r[c]["id"] = ""
+		elif str(r[c]["id"]) == "":
+			r[c]["id"] = _primera_ropa(c)
 
 func _pagina_gesto() -> ScrollContainer:
 	var s := _scroll()
@@ -690,6 +727,8 @@ func poner_pestana(id: String) -> void:
 func poner_vista(v: String) -> void:
 	vista = v if v == "cara" else "cuerpo"
 	zoom = 1.0
+	if vista == "cara" and absf(wrapf(giro_nodo.rotation.y, -PI, PI)) > 0.9:
+		giro_nodo.rotation.y = 0.0   # la cara se moldea de frente
 	_refrescar()
 
 # toda modificación discreta pasa por aquí: guarda para deshacer, cambia el estado, lo aplica al cuerpo
