@@ -128,7 +128,7 @@ func _llegar() -> void:
 			a.nodo.rotation.y = deg_to_rad(o.giro)
 		else:
 			a.mirar(cara)
-	a.poner_postura(str(ac.get("postura", "de_pie")))
+	a.poner_postura(str(ac.get("postura", "de_pie")), o.alt_asiento())
 	act["est"] = "hacer"
 	_preparar_hacer()
 

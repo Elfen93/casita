@@ -210,7 +210,7 @@ func _tick_cliente(c: Dictionary, dm: float) -> void:
 				var p := s.asiento_mundo()
 				a.poner(Vector2(p.x, p.z))
 				a.nodo.rotation.y = deg_to_rad(s.giro)
-				a.poner_postura("sentado")
+				a.poner_postura("sentado", s.alt_asiento())
 				c["est"] = "bebiendo"
 				c["t"] = 25.0 + float(hash(str(c["x"]["v"]["id"])) % 15)
 		"bebiendo":
@@ -300,4 +300,5 @@ func _tick_camarero(dm: float) -> void:
 				a.fijar_ruta(jg.nav.camino(a.pos2(), _pt("sitio_camarero")), false)
 		"volver":
 			if _llegado(a):
+				a.mirar(Vector2(0, 1))   # de cara a la sala
 				cam_est = "libre"

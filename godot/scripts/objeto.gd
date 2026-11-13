@@ -47,3 +47,9 @@ func aabb() -> AABB:
 	var c := pos if actor == null else actor.pos2()
 	var w := maxf(huella.x, huella.y) + 0.3
 	return AABB(Vector3(c.x - w * 0.5, 0.0, c.y - w * 0.5), Vector3(w, alto, w))
+
+func alt_asiento() -> float:
+	var m = def.get("modelo", null)
+	if m != null and m.has("asiento"):
+		return float(m["asiento"])
+	return float(def.get("asiento", [0, 0.5, 0])[1])

@@ -49,3 +49,12 @@ De `data/`: calles, puertas, huellas (`rb`), colores, nombres, descripciones y h
 - **Figuras**: se crean en un único punto, `scripts/figura.gd` (`Figura.crear`), para sustituir luego el dibujo.
 - **Provisional**: el botón «Trabajas en el bar (prueba)» hasta que exista el trabajo en Godot. El puente `casita_cmd` añade `ir_xy`, `poner`, `accion`, `accion_cliente`, `trabaja`, `clientes`.
 - **Prueba automática**: `python3 t/g2a_prueba.py [carpeta]` (usa `t/g2a_cdp.py`).
+
+## GD-3 (G3): el arte libre dentro del juego
+- **Personas** (`scripts/figura.gd`, `actor.gd`): cada vecino/jugador/camarero/cliente es una `Persona` de `arte/personaje` con aspecto estable (género, edad y semilla del id). La animación sale del estado real (`Actor.anim_tick`): andar, correr, sentado (con brazos al beber/hablar, a la altura del asiento del modelo), usar (con barra de progreso), beber, hablar. Los menores son más pequeños.
+- **LOD** (`main.gd::_lod`, cada 0,25 s): solo las personas a ≤ 70 m de la cámara y dentro de pantalla, como mucho 25 (las más cercanas), llevan esqueleto y AnimationPlayer; el resto es una cápsula de una malla, la persona se oculta y su proceso se desactiva (`PROCESS_MODE_DISABLED`). La persona se crea la primera vez que hace falta. Sombra propia solo a < 35 m. Los muebles del bar y su luz se ocultan a > 55 m de la cámara y no proyectan sombra.
+- **Bar**: `data/interiores.json` → `tipos[tipo].modelo` (`escena`, `modulos`, `sobre`, `escala`, `asiento`, `alto`); un tipo sin `modelo` sigue siendo caja. Suelo de baldosas (`suelo2`), zócalo, luz cálida (`luz`) y ventanas que se encienden de noche.
+- **Calle**: `scripts/calle.gd` (MultiMesh de árboles, bancos, farolas y papeleras; bombillas emisivas y 7 OmniLight como mucho en las farolas más cercanas), fachadas con `Fachada.material` y `Fachada.set_noche`.
+- **Tu casa**: bloque de 4 plantas de 14 × 10 m con su portal; el resto de la parcela, patio.
+- **Cámara**: `DIST_CALLE = 18`, `DIST_INTERIOR = 13`; los rótulos de las personas crecen con la distancia.
+- **Puente de pruebas**: `casita_cmd('rend')` (fps, personas, con esqueleto, objetos y dibujos), `('donde')` (posición de los vecinos visibles), `('dbg','fachadas'|'multi'|'sombra'|'luces'|'personas')` (alterna grupos para medir).

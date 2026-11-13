@@ -33,13 +33,17 @@ var cielo_mat: ProceduralSkyMaterial
 var jugador: Actor
 var jugador_etq: Label3D
 var marca: MeshInstance3D
-var dist := 15.0
+const DIST_CALLE := 18.0     # zoom por defecto en la calle: una persona mide ~30-35 px de alto en 420x860
+const DIST_INTERIOR := 13.0
+var rot_pers: Array = []     # rótulos de nombre de las personas (crecen con la distancia para leerse)
+var dist := DIST_CALLE
 var inclin := deg_to_rad(52.0)
 var guiada := 0.0
 var seguir := true
 var con_raton := false          # se ha usado ratón de verdad (ordenador)
 var cam_libre := false          # cámara libre: no vuelve al personaje al mandarle andar
 var btn_camara: Button
+var etq_interior: Label3D        # rótulo del local con interior: se apaga al entrar
 var etiquetas: Array = []   # Label3D de edificios (escala con el zoom)
 var ult_dist := -1.0
 var pend_rutas: Array = []  # rutas de vecinos por calcular (una por fotograma)
@@ -70,6 +74,9 @@ var salto_rest := 0.0
 var salto_efecto := Callable()
 var vec_acum := 0.0
 var fps_t := 0.0
+var calle: Calle
+var _noche_f := -1.0
+var noche := 0.0            # 0 de día .. 1 de noche cerrada
 var k_sol := 0.55
 var k_amb := 0.32
 
@@ -181,6 +188,13 @@ func _sol() -> void:
 	cielo_mat.ground_horizon_color = hor
 	cielo_mat.ground_bottom_color = hor.darkened(0.3)
 	entorno.fog_light_color = hor
+	noche = 1.0 - dia
+	calle.noche(noche, camara.global_position if camara != null else Vector3.ZERO)
+	if absf(noche - _noche_f) > 0.02:
+		_noche_f = noche
+		Fachada.set_noche(clampf(noche * 1.6 - 0.25, 0.0, 1.0))
+	if interior != null:
+		interior.set_noche(noche)
 
 # =============== el mundo ===============
 func _mat(c: Color, rug := 0.9) -> StandardMaterial3D:
@@ -258,6 +272,7 @@ func Grafo_hor(c: Dictionary) -> bool:
 func _mundo() -> void:
 	nav = Nav.new()
 	est = Lote.new()
+	calle = Calle.new(self)
 	# suelo que continúa más allá del barrio
 	var hz := _caja(Vector3(180, -0.5, 150), Vector3(8000, 1.0, 8000), _mat(Color(0.38, 0.52, 0.33)), false)
 	hz.name = "Hierba"
@@ -285,6 +300,7 @@ func _mundo() -> void:
 	_solares()
 	_arbolado(calles, cruces)
 	_edificios()
+	calle.construir()
 	_pintar_suelos()
 	_lejos()
 	var mi := MeshInstance3D.new()
@@ -345,11 +361,8 @@ func _marcas_calle(calles: Array) -> void:
 			l.rotation_degrees = Vector3(-90, 0 if hor else 90, 0)
 			add_child(l)
 
-func _arbol_lote(p: Vector2, e: float, ver: float) -> void:
-	est.caja(Vector3(p.x, 1.1 * e, p.y), Vector3(0.4, 2.2 * e, 0.4), Color(0.4, 0.29, 0.2))
-	var v := Color(0.28, 0.5, 0.27).lerp(Color(0.42, 0.56, 0.25), ver)
-	est.caja(Vector3(p.x, 3.0 * e, p.y), Vector3(2.4 * e, 2.0 * e, 2.4 * e), v)
-	est.caja(Vector3(p.x, 4.3 * e, p.y), Vector3(1.6 * e, 1.2 * e, 1.6 * e), v.lightened(0.08))
+func _arbol_lote(p: Vector2, e: float, _ver: float) -> void:
+	calle.poner("arbol", Vector3(p.x, 0, p.y), fposmod(p.x * 7.3 + p.y * 3.1, TAU), e)
 	nav.solido_rect(Rect2(p.x - 0.2, p.y - 0.2, 0.4, 0.4), true)
 
 func _arbolado(calles: Array, cruces: Array) -> void:
@@ -372,6 +385,31 @@ func _arbolado(calles: Array, cruces: Array) -> void:
 					continue
 				_arbol_lote(p, rr.randf_range(0.85, 1.15), rr.randf())
 			s += 14.0
+		# farolas, bancos y papeleras en la acera (junto a la calzada)
+		var s3 := 12.0
+		var k3 := 0
+		while s3 < largo - 8.0:
+			var lado3 := -1.0 if k3 % 2 == 0 else 1.0
+			var d3 := Escala.CALLE * 0.5 + 1.3
+			var pp := Vector2(r.position.x + (s3 if hor else 0.1) + (0.0 if hor else lado3 * d3), r.position.y + (0.1 if hor else s3) + (lado3 * d3 if hor else 0.0))
+			var cerca3 := false
+			for q in cruces:
+				if absf(pp.x - q[0].x) < 11.0 and absf(pp.y - q[0].y) < 11.0:
+					cerca3 = true
+			if not cerca3:
+				var giro3 := (0.0 if lado3 < 0.0 else PI) if hor else (PI * 0.5 if lado3 < 0.0 else -PI * 0.5)
+				calle.poner("farola", Vector3(pp.x, 0, pp.y), giro3)
+				nav.solido_rect(Rect2(pp.x - 0.25, pp.y - 0.25, 0.5, 0.5), true)
+				if k3 % 3 == 1:
+					var pb := pp + (Vector2(5.0, 0) if hor else Vector2(0, 5.0))
+					calle.poner("banco", Vector3(pb.x, 0, pb.y), giro3 + PI)
+					nav.solido_rect(Rect2(pb.x - (0.95 if hor else 0.4), pb.y - (0.4 if hor else 0.95), 1.9 if hor else 0.8, 0.8 if hor else 1.9), true)
+				elif k3 % 3 == 2:
+					var pq := pp + (Vector2(-4.0, 0) if hor else Vector2(0, -4.0))
+					calle.poner("papelera", Vector3(pq.x, 0, pq.y))
+					nav.solido_rect(Rect2(pq.x - 0.25, pq.y - 0.25, 0.5, 0.5), true)
+			s3 += 22.0
+			k3 += 1
 		# coches aparcados en línea, en el borde de la calzada
 		var s2 := 20.0
 		while s2 < largo - 14.0:
@@ -410,10 +448,7 @@ func _parque() -> void:
 		for lado in [-1.0, 1.0]:
 			var bx: float = c.x + dx
 			var bz: float = c.y + lado * 2.1
-			est.caja(Vector3(bx, 0.5, bz), Vector3(1.8, 0.1, 0.5), mad)
-			est.caja(Vector3(bx, 0.85, bz + lado * 0.22), Vector3(1.8, 0.45, 0.08), mad)
-			est.caja(Vector3(bx - 0.75, 0.25, bz), Vector3(0.1, 0.5, 0.45), fer)
-			est.caja(Vector3(bx + 0.75, 0.25, bz), Vector3(0.1, 0.5, 0.45), fer)
+			calle.poner("banco", Vector3(bx, 0, bz), PI if lado < 0.0 else 0.0)
 			nav.solido_rect(Rect2(bx - 0.9, bz - 0.3, 1.8, 0.6), true)
 	# columpios
 	var sx := c.x + 22.0
@@ -549,6 +584,8 @@ func _lejos() -> void:
 
 func _registrar(id: String, n: String, e: String, rb: Array, h: float, col: Color, techo: Variant, d: String, abre: Variant, propio: bool, tipo := "cubo") -> void:
 	var r := Escala.rect(rb)
+	if propio:
+		r = _patio_casa(r)
 	var altura := h
 	var cx := r.get_center().x
 	var cz := r.get_center().y
@@ -558,7 +595,15 @@ func _registrar(id: String, n: String, e: String, rb: Array, h: float, col: Colo
 		var px := clampf(Escala.m(float(q[0])), r.position.x + 1.5, r.end.x - 1.5)
 		pu = Vector2(px, r.end.y + 1.5)
 		est.caja(Vector3(px, 1.1, r.end.y), Vector3(1.8, 2.2, 0.25), Color(0.28, 0.2, 0.15))
-	est.caja(Vector3(cx, altura * 0.5, cz), Vector3(r.size.x, altura, r.size.y), col)
+	var cuerpo := MeshInstance3D.new()
+	var bm := BoxMesh.new()
+	bm.size = Vector3(r.size.x, altura, r.size.y)
+	cuerpo.mesh = bm
+	cuerpo.position = Vector3(cx, altura * 0.5, cz)
+	cuerpo.rotation.y = PI    # el portal del sombreador mira a -Z; las puertas del dato dan al sur
+	var col_f := col.lerp(Color(0.85, 0.78, 0.66), 0.35)
+	cuerpo.material_override = Fachada.material(bm.size, col_f, 3.0 if altura > 6.0 else 3.4, float(absi(hash(id)) % 97), false, techo if techo is Color else Color(0.42, 0.34, 0.3))
+	add_child(cuerpo)
 	nav.solido_rect(r, true)
 	if techo is Color:
 		if tipo == "casa":
@@ -581,6 +626,25 @@ func _registrar(id: String, n: String, e: String, rb: Array, h: float, col: Colo
 	edificios[id] = {"id": id, "n": n, "e": e, "rb": r, "h": altura, "puerta": pu, "d": d, "abre": abre,
 		"aabb": AABB(Vector3(r.position.x, 0, r.position.y), Vector3(r.size.x, altura, r.size.y)), "etq": etq}
 
+# Tu casa (vivienda «viejo»): un piso en un bloque de 4 plantas con su portal, 14 x 10 m, pegado a la calle donde está la puerta
+# del dato; el resto de la parcela (que a escala son 60 x 60 m) es patio: hierba con valla, árboles y un banco.
+func _patio_casa(r: Rect2) -> Rect2:
+	var px := clampf(Escala.m(float(B["puertas"]["casa"][0])), r.position.x + 7.0, r.end.x - 7.0)
+	var blq := Rect2(px - 7.0, r.end.y - 10.0, 14.0, 10.0)
+	nav.tipo_rect(r, Nav.T_SOLAR)
+	var val := Color(0.5, 0.42, 0.32)
+	est.caja(Vector3(r.get_center().x, 0.5, r.position.y), Vector3(r.size.x, 1.0, 0.15), val)
+	est.caja(Vector3(r.position.x, 0.5, r.get_center().y - 5.0), Vector3(0.15, 1.0, r.size.y - 10.0), val)
+	est.caja(Vector3(r.end.x, 0.5, r.get_center().y - 5.0), Vector3(0.15, 1.0, r.size.y - 10.0), val)
+	nav.solido_rect(Rect2(r.position.x, r.position.y - 0.15, r.size.x, 0.3), true)
+	nav.solido_rect(Rect2(r.position.x - 0.15, r.position.y, 0.3, r.size.y - 10.0), true)
+	nav.solido_rect(Rect2(r.end.x - 0.15, r.position.y, 0.3, r.size.y - 10.0), true)
+	for q in [Vector2(r.position.x + 5, r.position.y + 6), Vector2(r.end.x - 6, r.position.y + 9), Vector2(r.position.x + 7, r.get_center().y), Vector2(r.end.x - 8, r.get_center().y + 6), Vector2(r.get_center().x, r.position.y + 5)]:
+		_arbol_lote(q, 1.0, 0.5)
+	calle.poner("banco", Vector3(r.get_center().x + 6.0, 0, r.get_center().y), PI)
+	nav.solido_rect(Rect2(r.get_center().x + 5.1, r.get_center().y - 0.4, 1.9, 0.8), true)
+	return blq
+
 func _id_con_interior(lugar: String) -> String:
 	for k in interiores["interiores"]:
 		if interiores["interiores"][k]["lugar"] == lugar:
@@ -594,6 +658,7 @@ func _interior(id: String, v: Dictionary) -> void:
 	bar = BarCtl.new(self, interior)
 	var r := interior.rect
 	var etq := etiqueta("%s %s" % [v.get("e", "🏢"), v["n"]], Vector3(r.get_center().x, interior.alto + 2.5, r.position.y), 44, Color(1, 1, 0.96), 330.0)
+	etq_interior = etq
 	etiquetas.append(etq)
 	edificios[id] = {"id": id, "n": v["n"], "e": v.get("e", "🏢"), "rb": r, "h": 0.5, "puerta": Vector2(interior.puerta.x, interior.puerta.y + 1.5), "d": v.get("d", ""), "abre": v.get("abre", null),
 		"aabb": AABB(Vector3(r.position.x, 0, r.position.y), Vector3(r.size.x, 0.5, r.size.y)), "etq": etq}
@@ -628,14 +693,15 @@ func _edificios() -> void:
 		var alto := float(info["plantas"]) * 3.2 + (0.0 if casa else 0.5)
 		_registrar(id, str(v["rotulo"]), "🏠" if casa else "🏢", v["rb"], alto, Datos.color(v["c"]), techo, str(info["d"]), null, false, "casa" if casa else "cubo")
 	var C: Dictionary = B["casa"]
-	_registrar("casa", "Tu casa", "🏠", C["casa"], 5.5, Color(0.93, 0.78, 0.55), Color(0.66, 0.3, 0.22), "Tu piso en La Ribera. Aquí duermes.", null, true, "casa")
+	_registrar("casa", "Tu casa", "🏠", C["casa"], 4 * 3.2, Color(0.93, 0.78, 0.55), Color(0.55, 0.5, 0.46), "Tu piso en La Ribera. Aquí duermes.", null, true, "cubo")
 	for id in ["casaV", "casa2"]:
 		var v: Dictionary = L[id]
 		_registrar(id, v["n"], v.get("e", "🏠"), C[id], 5.0, Datos.color(v["c"]), Datos.color(v["roof"]), v.get("d", ""), null, false, "casa")
 
 # =============== personajes ===============
 func _jugador() -> void:
-	var f := Figura.crear(Color.html(personas["personaje_base"].get("shirt", "#ff8a5b")), Color.html(personas["personaje_base"].get("skin", "#efc39b")), 1.0)
+	var asp_j := Figura.aspecto_jugador(personas["personaje_base"])
+	var f := Figura.crear(asp_j["camisa"], Color.WHITE, Figura.factor_edad(int(asp_j["edad"])), asp_j)
 	jugador = Actor.new(f)
 	add_child(jugador.nodo)
 	jugador.poner(edificios["casa"]["puerta"])
@@ -643,6 +709,8 @@ func _jugador() -> void:
 	jugador_etq.reparent(jugador.nodo, false)
 	jugador_etq.position = Vector3(0, 2.3, 0)
 	jugador_etq.pixel_size = 0.006
+	rot_pers.append(jugador_etq)
+	jugador_etq.position = Vector3(0, 2.15, 0)
 	var aro := MeshInstance3D.new()
 	var cm := CylinderMesh.new()
 	cm.top_radius = 0.55
@@ -697,9 +765,12 @@ func _poner_camara() -> void:
 		var ps := clampf(dist * 0.0009, 0.012, 0.108)
 		if dist > 120.0:
 			ps = 0.108 * pow(dist / 120.0, 0.35)
+		var ps_p := clampf(dist * 0.0007, 0.005, 0.03)
+		for l in rot_pers:
+			l.pixel_size = ps_p
 		for l in etiquetas:
 			l.pixel_size = ps
-			l.visible = not (dist > 150.0 and l.has_meta("sec") and l.get_meta("sec"))
+			l.visible = not (dist > 150.0 and l.has_meta("sec") and l.get_meta("sec")) and not (l.has_meta("sec_dentro") and l.get_meta("sec_dentro"))
 
 # =============== UI ===============
 func _estilo(col: Color, radio := 10) -> StyleBoxFlat:
@@ -1122,18 +1193,17 @@ func _vecinos() -> void:
 		j += paso2
 	for x in elegidos:
 		var v: Dictionary = x["v"]
-		var hs := hash(v["id"])
-		var camisa := Color.from_hsv(float(hs % 360) / 360.0, 0.45, 0.82)
-		var tonos := [Color("#f1c9a5"), Color("#d9a577"), Color("#b07a52"), Color("#8a5a3b")]
-		var piel: Color = tonos[(hs >> 3) % 4]
-		var esc := 0.82 if int(v["edad"]) < 14 else (0.94 + float((hs >> 5) % 9) * 0.015)
-		var c := Actor.new(Figura.crear(camisa, piel, esc))
+		var asp_v := Figura.aspecto_de(v)
+		var c := Actor.new(Figura.crear(asp_v["camisa"], Color.WHITE, Figura.factor_edad(int(v["edad"])), asp_v))
 		add_child(c.nodo)
-		var et := etiqueta(str(v["n"]), Vector3(0, 2.1, 0), 34, Color(1, 1, 1))
+		var alt_v := 1.7 * Figura.factor_edad(int(v["edad"]))
+		var et := etiqueta(str(v["n"]), Vector3(0, alt_v + 0.4, 0), 34, Color(1, 1, 1))
 		et.reparent(c.nodo, false)
-		et.position = Vector3(0, 2.1, 0)
+		et.position = Vector3(0, alt_v + 0.4, 0)
 		et.pixel_size = 0.0055
-		c.alto_cab = 1.9
+		rot_pers.append(et)
+		et.pixel_size = clampf(dist * 0.0007, 0.005, 0.03)
+		c.alto_cab = alt_v + 0.25
 		vecinos.append({"v": v, "edif": x["edif"], "cam": c, "meta": "", "visible": false, "staff": false})
 
 func _lugar_de(x: Dictionary) -> String:
@@ -1268,7 +1338,7 @@ func _input(ev: InputEvent) -> void:
 			pivote.position.z = clampf(pivote.position.z, -60.0, 100.0 * Escala.M_UNIDAD + 60.0)
 
 func _texto_camara() -> void:
-	btn_camara.text = "🎥 Cámara libre" if cam_libre else "🔒 Cámara fija"
+	btn_camara.text = "Cámara: libre" if cam_libre else "Cámara: fija"
 
 func _alternar_camara() -> void:
 	cam_libre = not cam_libre
@@ -1430,6 +1500,13 @@ func _process(dt: float) -> void:
 			x["ocultar"] = false
 		if c.nodo.visible:
 			c.mover(Escala.VEL_ANDAR * 0.9 * mult * dt if c.vel < Escala.VEL_CORRER else Escala.VEL_CORRER * 0.9 * mult * dt)
+	_lod_t += dt
+	if _lod_t > 0.25:
+		_lod_t = 0.0
+		_lod()
+	jugador.anim_tick()
+	for x in vecinos:
+		x["cam"].anim_tick()
 	if seguir:
 		pivote.position = pivote.position.lerp(jugador.nodo.position, 1.0 - exp(-5.0 * dt))
 	guiada += dt
@@ -1450,6 +1527,40 @@ func _process(dt: float) -> void:
 		print("fps:%d" % Engine.get_frames_per_second())
 
 # =============== puente para pruebas (solo web) ===============
+# LOD de personas: solo las que están a menos de LOD_DIST m de la cámara y dentro de pantalla (como mucho LOD_MAX, las
+# más cercanas) llevan esqueleto y animación; el resto es una cápsula de una malla, o nada si no se ven.
+const LOD_DIST := 70.0
+const LOD_MAX := 25
+var LOD_ON := true
+var _lod_t := 0.0
+func _lod() -> void:
+	var cp := camara.global_position
+	if interior != null:
+		interior.lod(cp)
+	var cand: Array = []
+	if not LOD_ON:
+		for x in vecinos:
+			x["cam"].set_lod(false)
+		jugador.set_lod(false)
+		return
+	var todos: Array = [jugador]
+	for x in vecinos:
+		todos.append(x["cam"])
+	for a in todos:
+		if not a.nodo.visible:
+			a.set_lod(false)
+			continue
+		var g: Vector3 = a.nodo.global_position
+		var d: float = cp.distance_to(g)
+		var oculto_en_bar: bool = interior != null and not en_interior and a != jugador and interior.dentro(a.pos2())
+		if a == jugador or (d < LOD_DIST and not oculto_en_bar and camara.is_position_in_frustum(g + Vector3(0, 0.9, 0))):
+			cand.append([d if a != jugador else -1.0, a])
+		else:
+			a.set_lod(false)
+	cand.sort_custom(func(p, q): return p[0] < q[0])
+	for i in cand.size():
+		cand[i][1].set_lod(i < LOD_MAX, cand[i][0] < 35.0)
+
 func _interior_vista() -> void:
 	if interior == null:
 		return
@@ -1457,7 +1568,10 @@ func _interior_vista() -> void:
 	interior.cortar(d)
 	if d != en_interior:
 		en_interior = d
-		dist = 17.0 if d else 15.0
+		if etq_interior != null:
+			etq_interior.set_meta("sec_dentro", d)
+			etq_interior.visible = not d
+		dist = DIST_INTERIOR if d else DIST_CALLE
 		_poner_camara()
 
 func texto_estado(a: Actor, t: String) -> void:
@@ -1547,7 +1661,46 @@ func _cmd_js(args: Array) -> void:
 					t.append("%s:%s:%s" % [cc["x"]["v"]["n"], cc["est"], cc["pedido"]])
 				print("clientes: %d %s | camarero=%s %s | personal=%d" % [bar.clientes.size(), str(t), str(bar.camarero.get("x", {}).get("v", {}).get("n", "-")), bar.cam_est, bar.personal.size()])
 		"estado":
-			print("estado: min=%d dinero=%s nec=%s jug=%s ruta=%d m_andados=%d min_andados=%.2f mano=%s coct=%.1f cola=%d dentro=%s trabaja=%s" % [minutos, str(dinero), str(nec), str(jugador.nodo.position), jugador.ruta.size(), m_andados, min_andados, jugador.mano, hab["cocteleria"], cola.total(), str(en_interior), str(trabaja_bar)])
+			print("estado: min=%d dinero=%s nec=%s jug=%s ruta=%d m_andados=%d min_andados=%.2f mano=%s coct=%.1f cola=%d dentro=%s trabaja=%s post=%s" % [minutos, str(dinero), str(nec), str(jugador.nodo.position), jugador.ruta.size(), m_andados, min_andados, jugador.mano, hab["cocteleria"], cola.total(), str(en_interior), str(trabaja_bar), jugador.postura])
+		"donde":
+			var t2 := []
+			for x in vecinos:
+				if x["cam"].nodo.visible:
+					t2.append("%s@%d,%d" % [str(x["v"]["n"]).substr(0, 5), int(x["cam"].nodo.position.x), int(x["cam"].nodo.position.z)])
+			print("donde: ", t2)
+		"dbg":
+			match str(a):
+				"fachadas":
+					for n in get_children():
+						if n is MeshInstance3D and n.material_override is ShaderMaterial:
+							n.visible = not n.visible
+				"multi":
+					for n in get_children():
+						if n is MultiMeshInstance3D:
+							n.visible = not n.visible
+				"sombra":
+					sol.shadow_enabled = not sol.shadow_enabled
+				"luces":
+					for n in get_children():
+						if n is OmniLight3D:
+							n.visible = not n.visible
+				"personas":
+					LOD_ON = not LOD_ON
+		"rend":
+			var tot := 0
+			var esq := 0
+			var vis2 := 0
+			var todos: Array = [jugador]
+			for x in vecinos:
+				todos.append(x["cam"])
+			for ac_ in todos:
+				if ac_.nodo.visible:
+					vis2 += 1
+				if ac_.persona != null:
+					tot += 1
+					if ac_.esqueleto_activo():
+						esq += 1
+			print("rend: fps=%d personas=%d visibles=%d con_esqueleto=%d objetos=%d dibujos=%d" % [Engine.get_frames_per_second(), tot, vis2, esq, RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_OBJECTS_IN_FRAME), RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)])
 		"vecinos":
 			var vis := 0
 			for x in vecinos:

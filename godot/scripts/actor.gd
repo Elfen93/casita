@@ -16,10 +16,89 @@ var barra_fill: MeshInstance3D
 var pedido_etq: Label3D
 var estado_etq: Label3D
 var alto_cab := 1.9
+var persona = null   # Persona (arte libre, con esqueleto) o null si aún no se ha montado
+var holder: Node3D   # la persona cuelga de aquí, girada PI: la persona mira a -Z y el actor mira a +Z
+var asp := {}
+var esq_on := false  # persona montada, visible y animándose; si no, solo la cápsula barata (cuerpo)
+var alt_asiento := 0.5
+var sombra_on := false
+var _anim_k := ""
+
+func esqueleto_activo() -> bool:
+	return persona != null and esq_on
+
+# LOD: on = persona con esqueleto (cerca y a la vista); off = cápsula barata, la persona se oculta y su AnimationPlayer se para
+func set_lod(on: bool, sombra := false) -> void:
+	if on and asp.is_empty():
+		on = false
+	if on:
+		var nueva := persona == null
+		if persona == null:
+			persona = Figura.persona(asp)
+			holder = Node3D.new()
+			holder.rotation.y = PI
+			nodo.add_child(holder)
+			holder.add_child(persona)
+			alto_cab = persona.altura + 0.25
+			_anim_k = ""
+		if not esq_on:
+			esq_on = true
+			persona.visible = true
+			persona.process_mode = Node.PROCESS_MODE_INHERIT
+			cuerpo.visible = false
+			_anim_k = ""
+		if sombra != sombra_on or nueva:
+			sombra_on = sombra
+			for m in persona.cuerpo.find_children("*", "MeshInstance3D", true, false):
+				(m as MeshInstance3D).cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if sombra else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		anim_tick()
+	elif esq_on:
+		esq_on = false
+		persona.visible = false
+		persona.process_mode = Node.PROCESS_MODE_DISABLED
+		cuerpo.visible = true
+
+# la animación sale del estado real: andar/correr, sentado (con brazos al beber o hablar), usar (barra de progreso), beber, hablar
+func anim_tick() -> void:
+	if not esq_on:
+		return
+	var n := "parado"
+	var br := ""
+	var vel_a := 1.0
+	var hablando := estado_etq != null and estado_etq.visible and estado_etq.text.begins_with("💬")
+	var espera := estado_etq != null and estado_etq.visible and estado_etq.text.begins_with("Esperando")
+	var usando := barra_n != null and barra_n.visible
+	if postura == "sentado":
+		n = "sentado"
+		if mano != "":
+			br = "beber"
+		elif hablando:
+			br = "hablar"
+	elif anda:
+		if vel >= Escala.VEL_CORRER - 0.1:
+			n = "correr"
+			vel_a = 1.35
+		else:
+			n = "andar"
+			vel_a = 1.7
+	elif espera or hablando:
+		n = "hablar"
+	elif usando:
+		n = "beber" if mano != "" else "usar"
+	elif mano != "":
+		n = "beber"
+	var k := "%s/%s" % [n, br]
+	if k == _anim_k:
+		return
+	_anim_k = k
+	if n == "sentado":
+		persona.set_altura_asiento(alt_asiento)
+	persona.anim(n, vel_a, br)
 
 func _init(f: Dictionary) -> void:
 	nodo = f["nodo"]
 	cuerpo = f["cuerpo"]
+	asp = f.get("asp", {})
 
 func fijar_ruta(pts: Array, correr_ok := true) -> void:
 	ruta = []
@@ -69,8 +148,10 @@ func mover(paso: float) -> bool:
 	cuerpo.rotation.z = sin(fase) * 0.05
 	return false
 
-func poner_postura(p: String) -> void:
+func poner_postura(p: String, alt := 0.5) -> void:
 	postura = p
+	alt_asiento = alt
+	_anim_k = ""
 	match p:
 		"sentado":
 			cuerpo.position.y = -0.42
