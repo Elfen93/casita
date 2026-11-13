@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lufo7"]
+albedo_color = Color(0.690196, 0.478431, 0.282353, 1)
+roughness = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_v57ww"]
+top_radius = 0.4
+bottom_radius = 0.4
+height = 0.04
+radial_segments = 18
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i58gv"]
+albedo_color = Color(0.14902, 0.156863, 0.168627, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_rw8t7"]
+top_radius = 0.04
+bottom_radius = 0.04
+height = 0.72
+radial_segments = 8
+rings = 1
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mhixd"]
+top_radius = 0.26
+bottom_radius = 0.26
+height = 0.03
+radial_segments = 14
+rings = 1
+
+[node name="MesaBar" type="Node3D"]
+
+[node name="Tablero" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.74, 0)
+material_override = SubResource("StandardMaterial3D_lufo7")
+mesh = SubResource("CylinderMesh_v57ww")
+
+[node name="Columna" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.36, 0)
+material_override = SubResource("StandardMaterial3D_i58gv")
+mesh = SubResource("CylinderMesh_rw8t7")
+
+[node name="Base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.015, 0)
+material_override = SubResource("StandardMaterial3D_i58gv")
+mesh = SubResource("CylinderMesh_mhixd")
