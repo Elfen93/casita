@@ -178,7 +178,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.92, 0], "s": [0.62, 1.85, 0.69], "c": "#dddddd"}],
       "uso": [[0, 0.95]],
-      "acciones": [{"id": "picar", "n": "Picar algo", "e": "🧀", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre"], "efectos": {"hambre": 25}}],
+      "acciones": [{"id": "picar", "n": "Picar algo", "e": "🧀", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre"], "efectos": {"hambre": 25}, "fin": "Algo es algo."}],
       "modelo": {"escena": "res://arte/muebles/nevera.tscn", "alto": 1.85}
     },
     "cocina": {
@@ -213,7 +213,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 1.0, 0], "s": [0.9, 2.0, 0.9], "c": "#bcd4dc"}],
       "uso": [[0, 0.95]],
-      "acciones": [{"id": "ducharse", "n": "Ducharse", "e": "🚿", "tipo": "normal", "min": 15, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 100}}],
+      "acciones": [{"id": "ducharse", "n": "Ducharse", "e": "🚿", "tipo": "normal", "min": 15, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 100}, "fin": "Sales de la ducha."}],
       "modelo": {"escena": "res://arte/muebles/ducha.tscn", "alto": 2.07}
     },
     "fregadero": {
@@ -223,7 +223,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [0.9, 0.92, 0.63], "c": "#c9ccd0"}],
       "uso": [[0, 0.95]],
-      "acciones": [{"id": "fregar", "n": "Fregar los platos", "e": "🧽", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre", "platos_sucios"], "estado": {"platos_sucios": false}}],
+      "acciones": [{"id": "fregar", "n": "Fregar los platos", "e": "🧽", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre", "platos_sucios"], "estado": {"platos_sucios": false}, "fin": "Platos fregados."}],
       "modelo": {"escena": "res://arte/muebles/fregadero.tscn", "alto": 0.92}
     },
     "lavabo": {

@@ -198,7 +198,7 @@ func _terminar() -> void:
 	var ac: Dictionary = act["ac"]
 	var a: Actor = jg.jugador
 	var t: String = ac.get("tipo", "normal")
-	var msg := "%s hecho." % ac["n"]
+	var msg := str(ac.get("fin", ""))   # texto al terminar; sin él, las acciones corrientes no avisan (ya se ve la barra)
 	var c := Acciones.coste(ac)
 	if c > 0.0:
 		jg.dinero -= c
@@ -242,7 +242,8 @@ func _terminar() -> void:
 		msg = "¡Premio! +%s." % Acciones.jg_eur(float(ac["azar"]["premio"]))
 	elif ac.has("azar"):
 		msg = "Nada. Otra vez será."
-	jg._aviso(msg)
+	if msg != "":
+		jg._aviso(msg)
 	_soltar()
 	act = {}
 	uso = -1
