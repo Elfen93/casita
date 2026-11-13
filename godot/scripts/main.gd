@@ -37,6 +37,9 @@ var dist := 15.0
 var inclin := deg_to_rad(52.0)
 var guiada := 0.0
 var seguir := true
+var con_raton := false          # se ha usado ratón de verdad (ordenador)
+var cam_libre := false          # cámara libre: no vuelve al personaje al mandarle andar
+var btn_camara: Button
 var etiquetas: Array = []   # Label3D de edificios (escala con el zoom)
 var ult_dist := -1.0
 var pend_rutas: Array = []  # rutas de vecinos por calcular (una por fotograma)
@@ -824,6 +827,17 @@ func _ui() -> void:
 	btn_trabajo.add_theme_font_size_override("font_size", 13)
 	btn_trabajo.pressed.connect(func(): trabaja_bar = not trabaja_bar)
 	ui.add_child(btn_trabajo)
+	# cámara: bloqueada (sigue al personaje) o libre (se queda donde la dejes)
+	btn_camara = Button.new()
+	btn_camara.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	btn_camara.offset_right = -8
+	btn_camara.offset_left = -176
+	btn_camara.offset_top = 96
+	btn_camara.offset_bottom = 136
+	btn_camara.add_theme_font_size_override("font_size", 15)
+	btn_camara.pressed.connect(_alternar_camara)
+	ui.add_child(btn_camara)
+	_texto_camara()
 	# --- aviso y velo ---
 	toast = Label.new()
 	toast.set_anchors_preset(Control.PRESET_CENTER_TOP)
@@ -1003,7 +1017,8 @@ func _ir_a_punto(p: Vector2, id := "") -> void:
 		_aviso("No hay camino.")
 		return
 	jugador.fijar_ruta(ruta)
-	seguir = true
+	if not cam_libre:
+		seguir = true
 	marca.visible = true
 	marca.position = Vector3(p.x, 0.08, p.y)
 	if ruta.size() == 1 and (ruta[0] as Vector2).distance_to(jugador.pos2()) < 0.05:
@@ -1201,6 +1216,11 @@ func _input(ev: InputEvent) -> void:
 		elif ev.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			dist *= 1.1
 			_poner_camara()
+		elif ev.button_index == MOUSE_BUTTON_RIGHT and ev.device != InputEvent.DEVICE_ID_EMULATION:
+			# ordenador: el botón derecho es solo para andar adonde se señala
+			con_raton = true
+			if not _en_ui(ev.position):
+				_andar_a_pantalla(ev.position)
 	elif ev is InputEventScreenTouch:
 		if ev.pressed:
 			if _en_ui(ev.position) and toques.is_empty():
@@ -1220,7 +1240,10 @@ func _input(ev: InputEvent) -> void:
 			toques.erase(ev.index)
 			d_pinza = 0.0
 			if toques.is_empty() and era_tap:
-				_tap(ev.position)
+				# un toque que viene del ratón (ordenador) solo elige: personas, objetos, edificios. En el móvil el toque también manda andar.
+				if ev.device == InputEvent.DEVICE_ID_EMULATION:
+					con_raton = true
+				_tap(ev.position, ev.device == InputEvent.DEVICE_ID_EMULATION)
 			if toques.is_empty():
 				gesto_max = 0
 	elif ev is InputEventScreenDrag:
@@ -1235,17 +1258,35 @@ func _input(ev: InputEvent) -> void:
 				dist *= d_pinza / d
 				_poner_camara()
 			d_pinza = d
-			seguir = false
-		elif toques.size() == 1 and mov_total >= 10.0:
+		elif toques.size() == 1 and mov_total >= 10.0 and cam_libre:
 			seguir = false
 			var vp := get_viewport().get_visible_rect().size
 			var k := 2.0 * tan(deg_to_rad(camara.fov * 0.5)) * dist / vp.x
 			var b := pivote.global_transform.basis
 			pivote.position -= (b.x * ev.relative.x + b.z * ev.relative.y / sin(inclin)) * k
-			pivote.position.x = clampf(pivote.position.x, -10.0, 250.0)
-			pivote.position.z = clampf(pivote.position.z, -10.0, 210.0)
+			pivote.position.x = clampf(pivote.position.x, -60.0, 120.0 * Escala.M_UNIDAD + 60.0)
+			pivote.position.z = clampf(pivote.position.z, -60.0, 100.0 * Escala.M_UNIDAD + 60.0)
 
-func _tap(p: Vector2) -> void:
+func _texto_camara() -> void:
+	btn_camara.text = "🎥 Cámara libre" if cam_libre else "🔒 Cámara fija"
+
+func _alternar_camara() -> void:
+	cam_libre = not cam_libre
+	seguir = not cam_libre
+	_texto_camara()
+	_aviso("Cámara libre: arrastra para mirar; no vuelve al personaje." if cam_libre else "Cámara fija: sigue al personaje.")
+
+func _andar_a_pantalla(p: Vector2) -> void:
+	if dentro or velo.visible:
+		return
+	if panel_ficha.visible:
+		_cerrar_ficha()
+	var g = Plane(Vector3.UP, 0.0).intersects_ray(camara.project_ray_origin(p), camara.project_ray_normal(p))
+	if g != null:
+		var q := Vector3(g)
+		_ir_a_punto(Vector2(q.x, q.z))
+
+func _tap(p: Vector2, solo_elegir := false) -> void:
 	if panel_ficha.visible and not dentro:
 		_cerrar_ficha()
 		return
@@ -1305,6 +1346,8 @@ func _tap(p: Vector2) -> void:
 				hit = id
 	if hit != "":
 		_ir_a_edificio(hit)
+		return
+	if solo_elegir:
 		return
 	var g = Plane(Vector3.UP, 0.0).intersects_ray(o, n)
 	if g != null:
@@ -1451,6 +1494,11 @@ func _cmd_js(args: Array) -> void:
 			_actualizar_vecinos(true)
 		"vel":
 			vel_juego = int(a)
+		"camara":
+			_alternar_camara()
+			print("camara: libre=%s pivote=%s" % [str(cam_libre), str(pivote.position)])
+		"cam":
+			print("camara: libre=%s pivote=%s" % [str(cam_libre), str(pivote.position)])
 		"zoom":
 			dist = float(a)
 			_poner_camara()
