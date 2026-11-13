@@ -41,12 +41,14 @@ func _ready() -> void:
 	var hoja := ""
 	var ancho := 700
 	var alto := 1000
+	var ligero := false
 	for s in ua:
 		if s.begins_with("foto="): ruta = s.substr(5)
 		if s.begins_with("vista="): vista = s.substr(6)
 		if s.begins_with("hoja="): hoja = s.substr(5)
 		if s.begins_with("ancho="): ancho = int(s.substr(6))
 		if s.begins_with("alto="): alto = int(s.substr(5))
+		if s == "ligero=1": ligero = true
 	get_window().size = Vector2i(ancho, alto)
 	get_viewport().size = Vector2i(ancho, alto)
 	var env := Environment.new()
@@ -74,7 +76,7 @@ func _ready() -> void:
 	var n := lista.size()
 	var hs := []
 	for i in n:
-		var h: Humano = load("res://arte/humano/humano.tscn").instantiate()
+		var h: Humano = load("res://arte/humano/humano_ligero.tscn" if ligero else "res://arte/humano/humano.tscn").instantiate()
 		add_child(h)
 		h.aplicar(lista[i])
 		if vista == "frente": h.rotation_degrees.y = 0
@@ -92,8 +94,8 @@ func _ready() -> void:
 		camara.look_at_from_position(Vector3(0, hh2 - 0.12, -zz), Vector3(0, hh2 - 0.12, 0))
 	elif vista == "busto" or vista == "cara":
 		var hh: float = hs[0].altura()
-		var z := 0.85 if vista == "busto" else 0.55
-		var y := hh - (0.27 if vista == "busto" else 0.09)
+		var z := 0.85 if vista == "busto" else 0.5
+		var y := hh - (0.27 if vista == "busto" else 0.12)
 		camara.position = Vector3(0, y, -z)
 		camara.fov = 32
 		camara.look_at_from_position(Vector3(0, y, -z), Vector3(0, y, 0))

@@ -586,6 +586,7 @@ def main():
     json.dump(cat, open(os.path.join(salida, "catalogo.json"), "w"), ensure_ascii=False, indent=1)
     print("pieza  vértices  triángulos")
     for k, (a, b) in resumen.items():
+
         print(k, a, b)
     print("esc", W.esc, "formas", len(sal), "glb KB", os.path.getsize(os.path.join(salida, "humano.glb")) // 1024)
 
@@ -1313,5 +1314,347 @@ def main2():
     print("esc", W.esc, "formas", len(sal), "glb KB", os.path.getsize(os.path.join(salida, "humano.glb")) // 1024)
 
 
+
+# =================================================================== v3: recursos reales de MakeHuman
+import humano_assets as ha
+from PIL import Image
+
+ASSETS = "/home/claude/mh_assets"
+SYS = "makehuman_system_assets_cc0"
+
+# (id, nombre, capa, carpeta, corte, y_corte, textura)   corte: None | "arriba" | "abajo"
+ROPAS3 = [
+    ("camiseta", "Camiseta", "arriba", "shirts01_cc0/clothes/elvs_crude_t-shirt_male", None, 0, None),
+    ("sudadera", "Jersey de punto", "arriba", "shirts01_cc0/clothes/toigo_fisherman_sweater", None, 0, None),
+    ("blusa", "Blusa", "arriba", "shirts01_cc0/clothes/toigo_basic_tucked_t-shirt", None, 0, None),
+    ("vaqueros", "Vaqueros", "abajo", SYS + "/clothes/male_casualsuit02", "abajo", 0.94, None),
+    ("chandal", "Pantalón de chándal", "abajo", SYS + "/clothes/female_sportsuit01", "abajo", 0.94, None),
+    ("falda", "Falda", "abajo", "dress01_cc0/clothes/toigo_camisole_dress_with_full_skirt", "abajo", 0.94, None),
+    ("zapatillas", "Zapatillas", "pies", SYS + "/clothes/shoes05", None, 0, None),
+    ("zapatos", "Zapatos", "pies", SYS + "/clothes/shoes01", None, 0, None),
+    ("botines", "Botines", "pies", "shoes01_cc0/clothes/toigo_ankle_boots_female", None, 0, None),
+]
+PELOS3 = [("corto", "Corto", "short02"), ("corto2", "Corto con tupé", "short04"), ("media", "Media melena", "bob01"),
+          ("largo", "Largo", "long01"), ("coleta", "Coleta", "ponytail01"), ("afro", "Afro", "afro01")]
+OJOS3 = [("marron", "Marrón", "brown"), ("verde", "Verde", "green"), ("azul", "Azul", "blue")]
+CEJAS3 = [("cejas1", "Cejas finas", "eyebrow001"), ("cejas2", "Cejas medias", "eyebrow004"), ("cejas3", "Cejas pobladas", "eyebrow007")]
+# piel: id -> (carpeta jóvenes/mayores mujer, hombre)
+PIELES3 = [
+    ("clara", "Clara", "young_caucasian_female", "young_caucasian_male"),
+    ("media", "Media", "young_asian_female", "young_asian_male"),
+    ("morena", "Morena", "SK1/toigo_light_skin_female_bronze", "SK2/toigo_light_skin_male_bronze"),
+    ("oscura", "Oscura", "young_african_female", "young_african_male"),
+    ("clara_mayor", "Clara (mayor)", "old_caucasian_female", "old_caucasian_male"),
+    ("media_mayor", "Media (mayor)", "middleage_asian_female", "middleage_asian_male"),
+    ("morena_mayor", "Morena (mayor)", "old_asian_female", "old_asian_male"),
+    ("oscura_mayor", "Oscura (mayor)", "old_african_female", "old_african_male"),
+]
+
+
+def _png(carpeta):
+    import glob
+    fs = [f for f in glob.glob(carpeta + "/*") if f.lower().endswith((".png", ".jpg")) and not any(k in os.path.basename(f).lower() for k in ("normal", "_ao", "norm", "spec", "bump", "rough", "nor.", "_n."))]
+    return fs
+
+
+def textura_piel(carpeta_rel, destino, tam=1024, q=74):
+    if carpeta_rel.startswith("SK1/"):
+        d = os.path.join(ASSETS, "skins01_cc0/skins", carpeta_rel[4:])
+    elif carpeta_rel.startswith("SK2/"):
+        d = os.path.join(ASSETS, "skins02_cc0/skins", carpeta_rel[4:])
+    else:
+        d = os.path.join(ASSETS, SYS, "skins", carpeta_rel)
+    fs = _png(d)
+    fs.sort(key=lambda f: -os.path.getsize(f))
+    im = Image.open(fs[0]).convert("RGB").resize((tam, tam), Image.LANCZOS)
+    im.save(destino, quality=q)
+    return fs[0]
+
+
+def tex_a(ruta, destino, tam=512, gris=False, alfa=False, q=80):
+    im = Image.open(ruta)
+    im = im.convert("RGBA" if alfa else "RGB")
+    if im.size[0] > tam:
+        im = im.resize((tam, tam), Image.LANCZOS)
+    if gris:
+        a = np.array(im).astype(np.float32)
+        lum = (0.3 * a[..., 0] + 0.59 * a[..., 1] + 0.11 * a[..., 2])
+        msk = a[..., 3] > 128 if alfa else np.ones(lum.shape, bool)
+        m = lum[msk].mean() if msk.any() else 128
+        lum = np.clip(lum / max(m, 1) * 0.62 * 255 / 255 * 1.0, 0, 255) if False else np.clip(lum / max(m, 1) * 150, 0, 255)
+        out = np.stack([lum, lum, lum] + ([a[..., 3]] if alfa else []), axis=-1).astype(np.uint8)
+        im = Image.fromarray(out, "RGBA" if alfa else "RGB")
+    if destino.endswith(".webp"):
+        im.save(destino, quality=q, method=4)
+    else:
+        im.convert("RGB").save(destino, quality=q)
+
+
+def pieza_desde(nombre, A, sal, dn, formas_ok, y_filtro=None, extra_off=0.0):
+    """Malla desde un Ajuste. y_filtro: función(tris centroides y)->bool para cortar. Devuelve (Malla, vid_base_usados)."""
+    vid, uv, tri = A.triangulos()
+    pos = A.pos_m[vid]
+    if y_filtro is not None:
+        cy = pos[:, 1][tri].mean(axis=1)
+        tri = tri[y_filtro(cy)]
+        usados = np.unique(tri)
+        mapa = -np.ones(len(vid), np.int64)
+        mapa[usados] = np.arange(len(usados))
+        vid, uv, pos, tri = vid[usados], uv[usados], pos[usados], mapa[tri]
+    m = Malla(nombre, pos, tri, uv)
+    m.calcular_normales(soldar=vid)
+    if extra_off:
+        m.pos = (m.pos + m.nrm * extra_off).astype(np.float32)
+    m.sk = A.pesos(dn)[vid].astype(np.float32)
+    s = m.sk.sum(axis=1, keepdims=True); s[s == 0] = 1
+    m.sk = m.sk / s
+    for n, d in sal.items():
+        if n in formas_ok:
+            m.formas[n] = A.delta(d)[vid].astype(np.float32)
+    return m, vid
+
+
+
+def particionar_cuerpo(cuerpo, W, P, borrados):
+    """Reparte los triángulos del cuerpo por el conjunto de prendas que los borran (delete_verts del .mhclo)."""
+    vi = W.vi
+    claves = list(borrados.keys())
+    sig_v = np.zeros(len(vi), np.int64)
+    for k, nodo in enumerate(claves):
+        sig_v |= np.isin(vi, np.fromiter(borrados[nodo], int)).astype(np.int64) << k
+    t = W.tri
+    sig = np.bitwise_or.reduce(sig_v[t], axis=1)
+    cy = P[:, 1][t].mean(axis=1)
+    grupos = {}
+    for sg in np.unique(sig):
+        ok = sig == sg
+        if sg == 0:
+            grupos[("cabeza", 0)] = ok & (cy > 1.43)
+            grupos[("extrem", 0)] = ok & (cy <= 1.43)
+        else:
+            grupos[("g", int(sg))] = ok
+    partes, ocultas = {}, {}
+    for (tipo, sg), ok in grupos.items():
+        if not ok.any():
+            continue
+        tt = W.tri[ok]
+        us = np.unique(tt)
+        mapa = -np.ones(len(P), np.int64)
+        mapa[us] = np.arange(len(us))
+        nom = {"cabeza": "Cuerpo", "extrem": "Cuerpo_extrem"}.get(tipo, "Cuerpo_g%d" % sg)
+        m = Malla(nom, cuerpo.pos[us], mapa[tt], cuerpo.uv[us])
+        m.nrm = cuerpo.nrm[us]; m.col = cuerpo.col[us]; m.sk = cuerpo.sk[us]
+        m.formas = {n: d[us] for n, d in cuerpo.formas.items()}
+        partes[nom] = m
+        if tipo == "g":
+            ocultas[nom] = [claves[k] for k in range(len(claves)) if (sg >> k) & 1]
+    return partes, ocultas
+
+
+def main3():
+    if len(sys.argv) < 2:
+        print(__doc__); sys.exit(1)
+    raiz = sys.argv[1]
+    salida = "godot/arte/humano"
+    if "--salida" in sys.argv:
+        salida = sys.argv[sys.argv.index("--salida") + 1]
+    global ASSETS
+    if "--assets" in sys.argv:
+        ASSETS = sys.argv[sys.argv.index("--assets") + 1]
+    ual = "/tmp/gd10a/ual/Universal Animation Library[Standard]/Unreal-Godot/UAL1_Standard.glb"
+    if "--ual" in sys.argv:
+        ual = sys.argv[sys.argv.index("--ual") + 1]
+    solo = None
+    if "--solo" in sys.argv:
+        solo = sys.argv[sys.argv.index("--solo") + 1].split(",")
+    tex_dir = os.path.join(salida, "tex")
+    os.makedirs(tex_dir, exist_ok=True)
+    D = Datos(raiz)
+    W = Mundo(D)
+    formas, exprs, sal = calcular_formas(D, W)
+    cuerpo, P0 = ensamblar(D, W, formas, exprs, sal, None)
+    H = definir_esqueleto()
+    nombres = [h[0] for h in H]
+    padres = [h[1] for h in H]
+    pos_h, dense, tot, jids = calcular_esqueleto(D, W, H)
+    dn = dense / np.maximum(tot, 1e-9)[:, None]
+    cuerpo.sk = dn[W.vi].astype(np.float32)
+    glb = GLB()
+    glb.esqueleto(nombres, padres, pos_h)
+    m_piel = glb.material("piel", (1, 1, 1, 1), 0.7)
+    m_ropa = glb.material("ropa", (0.7, 0.7, 0.7, 1), 0.9, True)
+    m_ojo = glb.material("ojo", (1, 1, 1, 1), 0.25)
+    m_pelo = glb.material("pelo", (1, 1, 1, 1), 0.5, True)
+    Z = clasificar(D, W, P0)
+    P = cuerpo.pos
+    Pbase = W.a_metros(W.neutro_dm)
+    todas = [f["id"] + sg for f in formas for sg in ("+", "-")] + ["x_" + e["id"] for e in exprs]
+    cuerpo_f = [n for n in todas if not n.startswith("x_") and not n.startswith(FORMAS_CARA)]
+    resumen = {}
+    tex = {}
+    borrados = {}
+    items = []          # (nombre, malla, material)
+    cat_ropas = []
+    # ---- ropa real
+    srcs_tex = {}
+    for (rid, nom, capa, carpeta, corte, yc, _) in ROPAS3:
+        if solo and rid not in solo:
+            continue
+        import glob
+        f = glob.glob(os.path.join(ASSETS, carpeta, "*.mhclo"))[0]
+        A = ha.Ajuste(f, W.neutro_dm, W.a_metros)
+        flt = None
+        if corte == "arriba":
+            flt = lambda cy, yc=yc: cy >= yc
+        elif corte == "abajo":
+            flt = lambda cy, yc=yc: cy < yc
+        m, vid = pieza_desde("ropa_" + rid, A, sal, dn, cuerpo_f, flt, {"sudadera": 0.009, "blusa": 0.004}.get(rid, 0.0))
+        # recorte de la lista de borrado por altura cuando la prenda se parte
+        bor = set(A.c["borrar"])
+        if corte == "arriba":
+            bor = {v for v in bor if Pbase[v, 1] >= yc - 0.04}
+        elif corte == "abajo":
+            bor = {v for v in bor if Pbase[v, 1] < yc + 0.02}
+        borrados["ropa_" + rid] = bor
+        podar(m, {"vestido": 0.03, "falda": 0.025, "sudadera": 0.012}.get(rid, 0.015))
+        items.append(("ropa_" + rid, m, m_ropa))
+        cat_ropas.append({"id": rid, "n": nom, "capa": capa})
+        dt = A.mat.get("diffuseTexture")
+        if dt:
+            src = os.path.join(A.carpeta, dt)
+            dst = "tex/ropa_%s.jpg" % rid
+            tex_a(src, os.path.join(salida, dst), 512)
+            tex["ropa_" + rid] = {"t": dst, "alfa": False, "doble": A.mat.get("backfaceCull", "True") == "False"}
+        resumen["ropa_" + rid] = (len(m.pos), m.tris)
+        if os.environ.get("DBGY"): print(rid, "y", m.pos[:,1].min(), m.pos[:,1].max())
+    # ---- pelos
+    cat_pelos = [{"id": "", "n": "Sin pelo"}]
+    for (pid, nom, carp) in PELOS3:
+        if solo and "pelo" not in solo:
+            continue
+        f = os.path.join(ASSETS, SYS, "hair", carp, carp + ".mhclo")
+        A = ha.Ajuste(f, W.neutro_dm, W.a_metros)
+        m, vid = pieza_desde("pelo_" + pid, A, sal, dn, [n for n in todas if not n.startswith("x_")])
+        podar(m, 0.012)
+        items.append(("pelo_" + pid, m, m_pelo))
+        cat_pelos.append({"id": pid, "n": nom})
+        dt = A.mat.get("diffuseTexture")
+        dst = "tex/pelo_%s.webp" % pid
+        tex_a(os.path.join(A.carpeta, dt), os.path.join(salida, dst), 512, gris=True, alfa=True)
+        tex["pelo_" + pid] = {"t": dst, "alfa": True, "doble": True}
+        resumen["pelo_" + pid] = (len(m.pos), m.tris)
+    # ---- cara: ojos, cejas, pestañas, dientes
+    if not solo or "cara" in solo:
+        A = ha.Ajuste(os.path.join(ASSETS, SYS, "eyes/low-poly/low-poly.mhclo"), W.neutro_dm, W.a_metros)
+        m, vid = pieza_desde("Ojos", A, sal, dn, todas)
+        podar(m, 0.002)
+        items.append(("Ojos", m, m_ojo))
+        resumen["Ojos"] = (len(m.pos), m.tris)
+        cat_ojos = []
+        for oid, nom, col in OJOS3:
+            dst = "tex/ojo_%s.jpg" % oid
+            tex_a(os.path.join(ASSETS, SYS, "eyes/materials/%s_eye.png" % col), os.path.join(salida, dst), 256)
+            cat_ojos.append({"id": oid, "n": nom, "t": dst})
+        cat_cejas = []
+        for cid, nom, carp in CEJAS3:
+            A = ha.Ajuste(os.path.join(ASSETS, SYS, "eyebrows", carp, carp + ".mhclo"), W.neutro_dm, W.a_metros)
+            m, vid = pieza_desde("cejas_" + cid, A, sal, dn, todas)
+            podar(m, 0.002)
+            items.append(("cejas_" + cid, m, m_pelo))
+            dst = "tex/cejas_%s.webp" % cid
+            tex_a(os.path.join(A.carpeta, A.mat["diffuseTexture"]), os.path.join(salida, dst), 256, gris=True, alfa=True)
+            tex["cejas_" + cid] = {"t": dst, "alfa": True, "doble": True}
+            cat_cejas.append({"id": cid, "n": nom})
+            resumen["cejas_" + cid] = (len(m.pos), m.tris)
+        A = ha.Ajuste(os.path.join(ASSETS, SYS, "eyelashes/eyelashes02/eyelashes02.mhclo"), W.neutro_dm, W.a_metros)
+        m, vid = pieza_desde("pestanas", A, sal, dn, todas)
+        podar(m, 0.002)
+        items.append(("pestanas", m, m_pelo))
+        dst = "tex/pestanas.webp"
+        tex_a(os.path.join(A.carpeta, A.mat["diffuseTexture"]), os.path.join(salida, dst), 256, gris=True, alfa=True)
+        tex["pestanas"] = {"t": dst, "alfa": True, "doble": True}
+        resumen["pestanas"] = (len(m.pos), m.tris)
+        A = ha.Ajuste(os.path.join(ASSETS, SYS, "teeth/teeth_base/teeth_base.mhclo"), W.neutro_dm, W.a_metros)
+        m, vid = pieza_desde("dientes", A, sal, dn, todas)
+        podar(m, 0.004)
+        items.append(("dientes", m, m_ojo))
+        dst = "tex/dientes.jpg"
+        tex_a(os.path.join(A.carpeta, A.mat["diffuseTexture"]), os.path.join(salida, dst), 256)
+        tex["dientes"] = {"t": dst, "alfa": False, "doble": False}
+        resumen["dientes"] = (len(m.pos), m.tris)
+    else:
+        cat_ojos, cat_cejas = [], []
+    # ---- pieles
+    cat_pieles = []
+    for pid, nom, fh, fm in PIELES3:
+        textura_piel(fh, os.path.join(salida, "tex", "piel_%s_f.jpg" % pid))
+        textura_piel(fm, os.path.join(salida, "tex", "piel_%s_m.jpg" % pid))
+        cat_pieles.append({"id": pid, "n": nom})
+    # ---- cuerpo en partes ocultables
+    partes, ocultas = particionar_cuerpo(cuerpo, W, P, borrados)
+    for k, m in partes.items():
+        if k != "Cuerpo":
+            solo_cuerpo(m)
+        podar(m, 0.004)
+        glb.anadir(m, m_piel)
+        resumen[m.nombre] = (len(m.pos), m.tris)
+    # ---- ropa base (ropa interior propia, debajo de todo)
+    ropas_old, base = crear_ropas(cuerpo, W, P, Z)
+    x, y, z = P[:, 0], P[:, 1], P[:, 2]
+    ax = np.abs(x)
+    brazo = Z["brazo1"] | Z["brazo2"] | Z["antebrazo"] | Z["mano"]
+    cabeza = Z["cabeza"]
+    cc = 1.425 - 0.04 * (1 - suave(z, -0.08, -0.01))
+    escote = (1.405 - 0.085 * np.clip(1 - (ax / 0.085) ** 2, 0, 1) * (1 - suave(z, -0.06, -0.01))) - y
+    top = np.where(brazo | cabeza, -1.0, np.minimum(np.minimum(y - 1.05, 0.142 - ax), escote))
+    briefs = np.where(brazo | cabeza, -1.0, np.minimum(0.95 - y, y - 0.64))
+    b_top = prenda("ropa_base_top", cuerpo, W, top, 0.0035, alisar=True)
+    b_baj = prenda("ropa_base_baj", cuerpo, W, briefs, 0.0035)
+    for b in (b_top, b_baj):
+        solo_cuerpo(b); podar(b, 0.008)
+        glb.anadir(b, m_ropa)
+        resumen[b.nombre] = (len(b.pos), b.tris)
+    for nodo, m, mat in items:
+        glb.anadir(m, mat)
+    # ---- animaciones
+    anims_ok = []
+    if os.path.exists(ual):
+        F = Fuente(ual)
+        sc = pos_h[nombres.index("pelvis")][1] / F.mundo(F.rest, ["pelvis"])["pelvis"][0][1]
+        for ident, nom in ANIMS:
+            t, r, tr = retargetear(F, nom, nombres, padres, pos_h)
+            glb.animacion(ident, t, r, tr * sc)
+            anims_ok.append(ident)
+    glb.guardar(os.path.join(salida, "humano.glb"))
+    dj = {}
+    for n, d in sal.items():
+        if n.startswith("x_"):
+            continue
+        dj[n] = {hn: [round(float(x), 5) for x in d[jids[hn]].mean(axis=0)] for (hn, par, mh, gr) in H if mh is not None}
+    cat = {"formas": [{"id": f["id"], "n": f["n"], "grupo": f["grupo"], "min": f["min"], "max": f["max"], "def": 0.0} for f in formas],
+           "pieles": cat_pieles,
+           "expresiones": [{"id": e["id"], "n": e["n"]} for e in exprs],
+           "dh": {n: round(float(d[W.vi][np.argmax(P0[W.vi][:, 1]), 1]), 4) for n, d in sal.items() if not n.startswith("x_")},
+           "pelos": cat_pelos, "ropas": cat_ropas, "ojos": cat_ojos, "cejas": cat_cejas,
+           "tex": tex, "ocultas": ocultas,
+           "animaciones": anims_ok,
+           "huesos": nombres, "huesos_pos": [[round(float(x), 5) for x in p] for p in pos_h], "huesos_padre": padres,
+           "dj": dj}
+    json.dump(cat, open(os.path.join(salida, "catalogo.json"), "w"), ensure_ascii=False)
+    if os.environ.get("DBGF"):
+        tot = 0
+        for it in items + [(0, m, 0) for m in partes.values()] + [(0, b_top, 0), (0, b_baj, 0)]:
+            m = it[1]
+            c = len(m.pos) * len(m.formas)
+            tot += c
+            print("FORMAS", m.nombre, len(m.pos), len(m.formas), c, sorted(m.formas) if m.nombre in ("Ojos","pestanas","dientes") else "")
+        print("TOTAL vert*formas", tot)
+    print("pieza vértices triángulos")
+    for k, (a, b) in resumen.items():
+        print(k, a, b)
+    print("cuerpo tris", sum(b for k, (a, b) in resumen.items() if k.startswith("Cuerpo")))
+    print("glb KB", os.path.getsize(os.path.join(salida, "humano.glb")) // 1024, "partes", len(partes))
+
+
 if __name__ == "__main__":
-    main2()
+    main3()
