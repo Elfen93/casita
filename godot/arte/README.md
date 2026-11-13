@@ -37,3 +37,6 @@ Copia mínima del proyecto con `res://arte` enlazado, `--export-release` con pre
 
 ## Muebles de casa (GD-7)
 `muebles/`: vater, lavabo, mesa_comedor (4 sillas, usos silla_0..3), tele (sin uso; `es_pantalla`), armario, mesilla, lampara_pie, estanteria, fregadero, lavadora, sillon, mesa_baja, alfombra (`solido: false`), lampara_mesa (`sobre: mesilla`), escritorio (con ordenador), planta, espejo (de pie), cubo_basura; todos en `INDICE.json`. No hay `cama_individual` aparte: `cama` ya es de 1,02 m. Se generan con `herramientas/generar_muebles_casa.gd` (añade al INDICE existente). `muestra_casa.tscn`: pisito con personas; captura en escritorio con `xvfb-run godot --path godot res://arte/muestra_casa.tscn -- foto=/tmp/x.png vista=todo|planta|salon|dorm|bano|cocina|comedor [sin]`.
+
+## Catálogo de ciudad (GD-9)
+`ciudad/INDICE.json` + `ciudad/{edificios,calle,vehiculos}/*.tscn` (77 piezas, 177 escenas con variantes de color) convertidas de Kenney con `herramientas/generar_ciudad_kenney.gd` (se vuelve a ejecutar con los zips descomprimidos en `/tmp/gd9/x`). Sombreador propio `ciudad/kit.gdshader`. Propuesta de uso en `ciudad/PROPUESTA.md`. Muestra: `muestra_ciudad.tscn` (`vista=general|casco|pinares|poligono|pie|pie_pinares|pie_poligono|pie_vertical`).

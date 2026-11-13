@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://arte/ciudad/kit.gdshader" id="1_gqoxa"]
+[ext_resource type="ArrayMesh" path="res://arte/ciudad/modelos/bloque_h.res" id="2_y1rnm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_uj125"]
+render_priority = 0
+shader = ExtResource("1_gqoxa")
+shader_parameter/c_muro = Color(0.886275, 0.827451, 0.682353, 1)
+shader_parameter/c_tejado = Color(0.690196, 0.341176, 0.227451, 1)
+shader_parameter/c_persiana = Color(0.235294, 0.415686, 0.278431, 1)
+shader_parameter/c_toldo = Color(0.639216, 0.247059, 0.219608, 1)
+shader_parameter/c_cristal = Color(0.52549, 0.627451, 0.701961, 1)
+shader_parameter/c_zocalo = Color(0.555608, 0.525961, 0.453804, 1)
+shader_parameter/c_carroceria = null
+shader_parameter/apagado = null
+shader_parameter/luz_ventanas = null
+
+[node name="BloqueHA" type="Node3D"]
+
+[node name="Malla" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_uj125")
+mesh = ExtResource("2_y1rnm")

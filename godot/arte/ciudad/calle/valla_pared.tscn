@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://arte/ciudad/kit.gdshader" id="1_4442h"]
+[ext_resource type="ArrayMesh" path="res://arte/ciudad/modelos/valla_pared.res" id="2_ybjny"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_uhaif"]
+render_priority = 0
+shader = ExtResource("1_4442h")
+shader_parameter/c_muro = null
+shader_parameter/c_tejado = null
+shader_parameter/c_persiana = null
+shader_parameter/c_toldo = null
+shader_parameter/c_cristal = null
+shader_parameter/c_zocalo = null
+shader_parameter/c_carroceria = null
+shader_parameter/apagado = 0.7
+shader_parameter/luz_ventanas = null
+
+[node name="VallaPared" type="Node3D"]
+
+[node name="Malla" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_uhaif")
+mesh = ExtResource("2_ybjny")

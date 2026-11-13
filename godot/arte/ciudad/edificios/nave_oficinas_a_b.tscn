@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://arte/ciudad/kit.gdshader" id="1_hsde0"]
+[ext_resource type="ArrayMesh" path="res://arte/ciudad/modelos/nave_oficinas_a.res" id="2_hlpe2"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_15igi"]
+render_priority = 0
+shader = ExtResource("1_hsde0")
+shader_parameter/c_muro = Color(0.839216, 0.815686, 0.752941, 1)
+shader_parameter/c_tejado = null
+shader_parameter/c_persiana = Color(0.560784, 0.290196, 0.207843, 1)
+shader_parameter/c_toldo = Color(0.419608, 0.290196, 0.207843, 1)
+shader_parameter/c_cristal = Color(0.435294, 0.541176, 0.627451, 1)
+shader_parameter/c_zocalo = Color(0.548039, 0.543922, 0.528627, 1)
+shader_parameter/c_carroceria = null
+shader_parameter/apagado = null
+shader_parameter/luz_ventanas = null
+
+[node name="NaveOficinasAB" type="Node3D"]
+
+[node name="Malla" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_15igi")
+mesh = ExtResource("2_hlpe2")

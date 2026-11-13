@@ -22,3 +22,16 @@ Lo propio (muebles de bar procedurales, árbol, papelera, sombreador de fachada,
 
 ## GD-7 (muebles de casa): sin descargas nuevas
 Todo lo añadido sale de los glTF KayKit ya incluidos (Furniture Bits / Restaurant Bits, CC0) o está construido con primitivas propias. Del pack: sillón (`armchair`), mesa baja (`table_low`), alfombra (`rug_rectangle_A`), lámpara de pie y de mesa (`lamp_standing`, `lamp_table`), fregadero (`kitchencounter_sink`). Con primitivas: váter, lavabo, mesa de comedor, tele con mueble, armario, mesilla, estantería (con libros), lavadora, escritorio con ordenador, planta, espejo de pie, cubo de basura. Los packs KayKit/Quaternius/Kenney consultados por GitHub no traen váter, lavabo, lavadora ni tele CC0 utilizables. Generador: `herramientas/generar_muebles_casa.gd`.
+
+## GD-9 (catálogo de ciudad): packs Kenney, todos CC0
+Origen: los `.zip` que el autor dejó en `arte/entrada/` (kenney.nl). Licencia de cada uno (`License.txt`, «Creative Commons Zero, CC0», copia en `licencias/Kenney-*-License.txt`). Se convierten con `herramientas/generar_ciudad_kenney.gd` (mallas `.res` con el color de paleta horneado en los vértices y un sombreador propio `ciudad/kit.gdshader`; no se copia ninguna textura ni modelo original).
+
+| Pack | Qué se ha cogido | Qué no |
+|---|---|---|
+| Kenney «City Kit (Commercial) 2.1» | 9 bloques/edificios (building-a…i), 2 rascacielos, toldo | casi todos los `low-detail-*` (siluetas de fondo), 3 rascacielos, torres l/m/k/n/j (muy pesadas), sombrillas, voladizos |
+| Kenney «City Kit (Suburban) 2.0» | 16 casas/chalets (building-type-*), valla | árboles, caminos, vados, resto de vallas |
+| Kenney «City Kit (Industrial) 2.0» | 10 naves, 2 naves con oficinas, depósito, chimenea, contenedor marítimo | molinos, paneles solares, torre de agua, resto de chimeneas |
+| Kenney «City Kit (Roads) 2.2» | 14 tramos de calle (recta, cruce, T, curva, paso de cebra…), 3 farolas, 2 semáforos, 3 señales, poste eléctrico, contenedor de obra, cono, valla de obra | rampas, puentes, barreras, señales de autovía |
+| Kenney «Car Kit» | 7 vehículos (berlina, SUV, SUV de lujo, taxi, furgoneta, furgoneta de reparto, camión) | karts, coches de carreras, tractores, policía, bomberos, ambulancia, basura (peso), ruedas y restos |
+| Kenney «3D Road Tiles» | nada: 80+ piezas con nombres numéricos (`roadTile_001`…), repite lo del City Kit Roads |  |
+| Kenney «Train Kit», «Factory Kit» | no dio tiempo (prioridad 4) | |

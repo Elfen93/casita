@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://arte/ciudad/kit.gdshader" id="1_05vg5"]
+[ext_resource type="ArrayMesh" path="res://arte/ciudad/modelos/coche_taxi.res" id="2_5712o"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qwo57"]
+render_priority = 0
+shader = ExtResource("1_05vg5")
+shader_parameter/c_muro = null
+shader_parameter/c_tejado = null
+shader_parameter/c_persiana = null
+shader_parameter/c_toldo = null
+shader_parameter/c_cristal = null
+shader_parameter/c_zocalo = null
+shader_parameter/c_carroceria = Color(0.909804, 0.901961, 0.87451, 1)
+shader_parameter/apagado = 0.0
+shader_parameter/luz_ventanas = null
+
+[node name="CocheTaxiC" type="Node3D"]
+
+[node name="Malla" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_qwo57")
+mesh = ExtResource("2_5712o")

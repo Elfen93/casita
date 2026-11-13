@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://arte/ciudad/kit.gdshader" id="1_xtb2y"]
+[ext_resource type="ArrayMesh" path="res://arte/ciudad/modelos/nave_g.res" id="2_jfpj5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jvd1s"]
+render_priority = 0
+shader = ExtResource("1_xtb2y")
+shader_parameter/c_muro = Color(0.682353, 0.733333, 0.662745, 1)
+shader_parameter/c_tejado = null
+shader_parameter/c_persiana = Color(0.419608, 0.290196, 0.207843, 1)
+shader_parameter/c_toldo = Color(0.247059, 0.372549, 0.498039, 1)
+shader_parameter/c_cristal = Color(0.435294, 0.541176, 0.627451, 1)
+shader_parameter/c_zocalo = Color(0.477451, 0.506863, 0.488039, 1)
+shader_parameter/c_carroceria = null
+shader_parameter/apagado = null
+shader_parameter/luz_ventanas = null
+
+[node name="NaveGB" type="Node3D"]
+
+[node name="Malla" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_jvd1s")
+mesh = ExtResource("2_jfpj5")
