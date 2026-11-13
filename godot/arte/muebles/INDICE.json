@@ -1,6 +1,16 @@
 {
 	"_nota": "tipo -> escena, tam [x,y,z] en metros, usos: punto relativo al origen del mueble (suelo, centro) y hacia dónde mira la persona (+z/-z/+x/-x en coordenadas del mueble). Frente del mueble = -Z.",
 	"muebles": {
+		"alfombra": {
+			"escena": "res://arte/muebles/alfombra.tscn",
+			"solido": false,
+			"tam": [
+				2,
+				0.02,
+				1.4
+			],
+			"usos": []
+		},
 		"arbol": {
 			"escena": "res://arte/ciudad/objetos/arbol.tscn",
 			"tam": [
@@ -9,6 +19,25 @@
 				2.71
 			],
 			"usos": []
+		},
+		"armario": {
+			"escena": "res://arte/muebles/armario.tscn",
+			"tam": [
+				1.24,
+				2,
+				0.63
+			],
+			"usos": [
+				{
+					"nombre": "abrir",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.75
+					]
+				}
+			]
 		},
 		"banco_parque": {
 			"altura_asiento": 0.45,
@@ -139,6 +168,25 @@
 				}
 			]
 		},
+		"cubo_basura": {
+			"escena": "res://arte/muebles/cubo_basura.tscn",
+			"tam": [
+				0.29,
+				0.46,
+				0.34
+			],
+			"usos": [
+				{
+					"nombre": "tirar",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.5
+					]
+				}
+			]
+		},
 		"ducha": {
 			"escena": "res://arte/muebles/ducha.tscn",
 			"tam": [
@@ -154,6 +202,46 @@
 						0,
 						0.0799999982118607,
 						0
+					]
+				}
+			]
+		},
+		"escritorio": {
+			"altura_tablero": 0.76,
+			"con": "ordenador",
+			"escena": "res://arte/muebles/escritorio.tscn",
+			"tam": [
+				1.2,
+				1.18,
+				0.6
+			],
+			"usos": [
+				{
+					"nombre": "sentarse_silla",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.64999997615814
+					]
+				}
+			]
+		},
+		"espejo": {
+			"escena": "res://arte/muebles/espejo.tscn",
+			"tam": [
+				0.55,
+				1.7,
+				0.3
+			],
+			"usos": [
+				{
+					"nombre": "mirarse",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.60000002384186
 					]
 				}
 			]
@@ -178,6 +266,25 @@
 				}
 			]
 		},
+		"estanteria": {
+			"escena": "res://arte/muebles/estanteria.tscn",
+			"tam": [
+				1,
+				1.93,
+				0.34
+			],
+			"usos": [
+				{
+					"nombre": "coger",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.60000002384186
+					]
+				}
+			]
+		},
 		"farola": {
 			"escena": "res://arte/ciudad/objetos/farola.tscn",
 			"luz_nocturna": "Luz (energía 0 de día; subirla de noche)",
@@ -187,6 +294,26 @@
 				0.32
 			],
 			"usos": []
+		},
+		"fregadero": {
+			"altura_encimera": 0.92,
+			"escena": "res://arte/muebles/fregadero.tscn",
+			"tam": [
+				0.9,
+				0.92,
+				0.63
+			],
+			"usos": [
+				{
+					"nombre": "fregar",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.64999997615814
+					]
+				}
+			]
 		},
 		"grifo_cerveza": {
 			"escena": "res://arte/muebles/grifo_cerveza.tscn",
@@ -207,6 +334,74 @@
 					]
 				}
 			]
+		},
+		"lampara_mesa": {
+			"escena": "res://arte/muebles/lampara_mesa.tscn",
+			"sobre": "mesilla",
+			"tam": [
+				0.37,
+				0.38,
+				0.37
+			],
+			"usos": []
+		},
+		"lampara_pie": {
+			"escena": "res://arte/muebles/lampara_pie.tscn",
+			"tam": [
+				0.63,
+				1.6,
+				0.63
+			],
+			"usos": []
+		},
+		"lavabo": {
+			"altura_borde": 0.85,
+			"escena": "res://arte/muebles/lavabo.tscn",
+			"tam": [
+				0.58,
+				0.99,
+				0.47
+			],
+			"usos": [
+				{
+					"nombre": "lavarse",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.5
+					]
+				}
+			]
+		},
+		"lavadora": {
+			"escena": "res://arte/muebles/lavadora.tscn",
+			"tam": [
+				0.6,
+				0.85,
+				0.64
+			],
+			"usos": [
+				{
+					"nombre": "cargar",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.69999998807907
+					]
+				}
+			]
+		},
+		"mesa_baja": {
+			"altura_tablero": 0.42,
+			"escena": "res://arte/muebles/mesa_baja.tscn",
+			"tam": [
+				1,
+				0.42,
+				0.55
+			],
+			"usos": []
 		},
 		"mesa_bar": {
 			"altura_tablero": 0.76,
@@ -255,6 +450,72 @@
 				}
 			]
 		},
+		"mesa_comedor": {
+			"altura_tablero": 0.75,
+			"escena": "res://arte/muebles/mesa_comedor.tscn",
+			"tam": [
+				1.4,
+				0.75,
+				0.8
+			],
+			"usos": [
+				{
+					"nombre": "silla_0",
+					"persona_mira": "+z",
+					"pos": [
+						-0.34999999403954,
+						0,
+						-0.60000002384186
+					]
+				},
+				{
+					"nombre": "silla_1",
+					"persona_mira": "+z",
+					"pos": [
+						0.349999994039536,
+						0,
+						-0.60000002384186
+					]
+				},
+				{
+					"nombre": "silla_2",
+					"persona_mira": "-z",
+					"pos": [
+						-0.34999999403954,
+						0,
+						0.600000023841858
+					]
+				},
+				{
+					"nombre": "silla_3",
+					"persona_mira": "-z",
+					"pos": [
+						0.349999994039536,
+						0,
+						0.600000023841858
+					]
+				}
+			]
+		},
+		"mesilla": {
+			"escena": "res://arte/muebles/mesilla.tscn",
+			"tam": [
+				0.48,
+				0.5,
+				0.45
+			],
+			"usos": [
+				{
+					"nombre": "abrir",
+					"persona_mira": "+z",
+					"pos": [
+						0,
+						0,
+						-0.55000001192093
+					]
+				}
+			]
+		},
 		"nevera": {
 			"escena": "res://arte/muebles/nevera.tscn",
 			"tam": [
@@ -283,6 +544,15 @@
 			],
 			"usos": []
 		},
+		"planta": {
+			"escena": "res://arte/muebles/planta.tscn",
+			"tam": [
+				0.61,
+				1.13,
+				0.61
+			],
+			"usos": []
+		},
 		"silla": {
 			"altura_asiento": 0.43,
 			"escena": "res://arte/muebles/silla.tscn",
@@ -298,6 +568,26 @@
 					"pos": [
 						0,
 						0.430000007152557,
+						0
+					]
+				}
+			]
+		},
+		"sillon": {
+			"altura_asiento": 0.4,
+			"escena": "res://arte/muebles/sillon.tscn",
+			"tam": [
+				0.85,
+				0.85,
+				0.85
+			],
+			"usos": [
+				{
+					"nombre": "sentarse",
+					"persona_mira": "-z",
+					"pos": [
+						0,
+						0.400000005960464,
 						0
 					]
 				}
@@ -352,6 +642,17 @@
 				}
 			]
 		},
+		"tele": {
+			"es_pantalla": true,
+			"escena": "res://arte/muebles/tele.tscn",
+			"nota_uso": "sin uso propio: se mira desde el sofá (la pantalla da a -Z)",
+			"tam": [
+				1.4,
+				1.16,
+				0.41
+			],
+			"usos": []
+		},
 		"tragaperras": {
 			"escena": "res://arte/muebles/tragaperras.tscn",
 			"tam": [
@@ -367,6 +668,26 @@
 						0,
 						0,
 						-0.69999998807907
+					]
+				}
+			]
+		},
+		"vater": {
+			"altura_asiento": 0.42,
+			"escena": "res://arte/muebles/vater.tscn",
+			"tam": [
+				0.4,
+				0.8,
+				0.59
+			],
+			"usos": [
+				{
+					"nombre": "sentarse",
+					"persona_mira": "-z",
+					"pos": [
+						0,
+						0.419999986886978,
+						-0.02999999932945
 					]
 				}
 			]

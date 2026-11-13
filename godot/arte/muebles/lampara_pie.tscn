@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://arte/muebles/modelos/hogar/lamp_standing.gltf" id="1_6b6n4"]
+
+[node name="LamparaPie" type="Node3D"]
+
+[node name="Modelo" type="Node3D" parent="." instance=ExtResource("1_6b6n4")]
+transform = Transform3D(-0.634921, 0, -5.55065e-08, 0, 0.634921, 0, 5.55065e-08, 0, -0.634921, 0, 7.56884e-08, -3.78442e-08)

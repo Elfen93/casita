@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_27xl6"]
+albedo_color = Color(0.305882, 0.2, 0.133333, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_0idco"]
+size = Vector3(0.55, 1.65, 0.04)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1q8t6"]
+albedo_color = Color(0.772549, 0.862745, 0.909804, 1)
+roughness = 0.1
+
+[sub_resource type="BoxMesh" id="BoxMesh_hl55e"]
+size = Vector3(0.47, 1.57, 0.01)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kecid"]
+size = Vector3(0.06, 0.05, 0.3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4upkg"]
+size = Vector3(0.06, 0.05, 0.3)
+
+[node name="Espejo" type="Node3D"]
+
+[node name="Marco" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.88, 0)
+material_override = SubResource("StandardMaterial3D_27xl6")
+mesh = SubResource("BoxMesh_0idco")
+
+[node name="Luna" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.88, -0.022)
+material_override = SubResource("StandardMaterial3D_1q8t6")
+mesh = SubResource("BoxMesh_hl55e")
+
+[node name="PieIzq" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.025, 0.12)
+material_override = SubResource("StandardMaterial3D_27xl6")
+mesh = SubResource("BoxMesh_kecid")
+
+[node name="PieDer" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.025, 0.12)
+material_override = SubResource("StandardMaterial3D_27xl6")
+mesh = SubResource("BoxMesh_4upkg")

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://arte/muebles/modelos/hogar/rug_rectangle_A.gltf" id="1_ur7yp"]
+
+[node name="Alfombra" type="Node3D"]
+
+[node name="Modelo" type="Node3D" parent="." instance=ExtResource("1_ur7yp")]
+transform = Transform3D(-0.666667, 0, -6.11959e-08, 0, 0.2, 0, 5.82819e-08, 0, -0.7, 0, 0, 0)

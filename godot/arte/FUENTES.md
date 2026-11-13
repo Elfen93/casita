@@ -19,3 +19,6 @@
 ## Atribución
 Todo lo incluido es CC0: no exige atribución. Se agradece igualmente: Quaternius (quaternius.com) y Kay Lousberg (kaylousberg.com).
 Lo propio (muebles de bar procedurales, árbol, papelera, sombreador de fachada, código) lo he escrito yo para este proyecto.
+
+## GD-7 (muebles de casa): sin descargas nuevas
+Todo lo añadido sale de los glTF KayKit ya incluidos (Furniture Bits / Restaurant Bits, CC0) o está construido con primitivas propias. Del pack: sillón (`armchair`), mesa baja (`table_low`), alfombra (`rug_rectangle_A`), lámpara de pie y de mesa (`lamp_standing`, `lamp_table`), fregadero (`kitchencounter_sink`). Con primitivas: váter, lavabo, mesa de comedor, tele con mueble, armario, mesilla, estantería (con libros), lavadora, escritorio con ordenador, planta, espejo de pie, cubo de basura. Los packs KayKit/Quaternius/Kenney consultados por GitHub no traen váter, lavabo, lavadora ni tele CC0 utilizables. Generador: `herramientas/generar_muebles_casa.gd`.

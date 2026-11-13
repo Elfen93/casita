@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://arte/muebles/modelos/hogar/table_low.gltf" id="1_l7b5y"]
+
+[node name="MesaBaja" type="Node3D"]
+
+[node name="Modelo" type="Node3D" parent="." instance=ExtResource("1_l7b5y")]
+transform = Transform3D(-0.416667, 0, -3.2055e-08, 0, 0.84, 0, 3.64262e-08, 0, -0.366667, 0, 0, 0)
