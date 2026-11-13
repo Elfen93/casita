@@ -174,7 +174,7 @@
     "nevera": {
       "n": "Nevera",
       "e": "🧊",
-      "huella": [0.62, 0.69],
+      "huella": [0.6, 0.65],
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.92, 0], "s": [0.62, 1.85, 0.69], "c": "#dddddd"}],
       "uso": [[0, 0.95]],
@@ -184,7 +184,7 @@
     "cocina": {
       "n": "Cocina",
       "e": "🍳",
-      "huella": [0.6, 0.63],
+      "huella": [0.6, 0.6],
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [0.6, 0.92, 0.63], "c": "#cfcfcf"}],
       "uso": [[0, 0.95]],
@@ -219,7 +219,7 @@
     "fregadero": {
       "n": "Fregadero",
       "e": "🚰",
-      "huella": [0.9, 0.63],
+      "huella": [0.6, 0.6],
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [0.9, 0.92, 0.63], "c": "#c9ccd0"}],
       "uso": [[0, 0.95]],
@@ -229,7 +229,7 @@
     "lavabo": {
       "n": "Lavabo",
       "e": "🚰",
-      "huella": [0.58, 0.47],
+      "huella": [0.55, 0.46],
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.5, 0], "s": [0.58, 0.99, 0.47], "c": "#e8eef0"}],
       "uso": [[0, 0.9]],
@@ -239,7 +239,7 @@
     "vater": {
       "n": "Váter",
       "e": "🚽",
-      "huella": [0.4, 0.59],
+      "huella": [0.4, 0.68],
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.4, 0], "s": [0.4, 0.8, 0.59], "c": "#f2f2ee"}],
       "uso": [[0, 0.9]],
@@ -261,9 +261,20 @@
       ],
       "modelo": {"escena": "res://arte/muebles/mesa_comedor.tscn", "alto": 0.75, "asiento": 0.43}
     },
-    "tele": {"n": "Tele", "e": "📺", "huella": [1.4, 0.41], "solido": true, "partes": [{"t": "caja", "p": [0, 0.58, 0], "s": [1.4, 1.16, 0.41], "c": "#2c2d33"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/tele.tscn", "alto": 1.16}},
-    "armario": {"n": "Armario", "e": "🚪", "huella": [1.24, 0.63], "solido": true, "partes": [{"t": "caja", "p": [0, 1.0, 0], "s": [1.24, 2.0, 0.63], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/armario.tscn", "alto": 2.0}},
-    "mesilla": {"n": "Mesilla", "e": "🛏️", "huella": [0.48, 0.45], "solido": true, "partes": [{"t": "caja", "p": [0, 0.25, 0], "s": [0.48, 0.5, 0.45], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/mesilla.tscn", "alto": 0.5}}
+    "tele": {"n": "Tele", "e": "📺", "huella": [1.3, 0.42], "solido": true, "partes": [{"t": "caja", "p": [0, 0.58, 0], "s": [1.4, 1.16, 0.41], "c": "#2c2d33"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/tele.tscn", "alto": 1.16}},
+    "armario": {"n": "Armario", "e": "🚪", "huella": [0.94, 0.59], "solido": true, "partes": [{"t": "caja", "p": [0, 1.0, 0], "s": [1.24, 2.0, 0.63], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/armario.tscn", "alto": 2.0}},
+    "mesilla": {"n": "Mesilla", "e": "🛏️", "huella": [0.48, 0.4], "solido": true, "partes": [{"t": "caja", "p": [0, 0.25, 0], "s": [0.48, 0.5, 0.45], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/mesilla.tscn", "alto": 0.5}},
+    "lavadora": {"n": "Lavadora", "e": "🧺", "huella": [0.6, 0.6], "solido": true, "partes": [{"t": "caja", "p": [0, 0.42, 0], "s": [0.6, 0.85, 0.6], "c": "#e8e5de"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/lavadora.tscn", "alto": 0.85}},
+    "sillon": {"n": "Sillón", "e": "🛋️", "huella": [0.85, 0.85], "solido": true, "partes": [{"t": "caja", "p": [0, 0.42, 0], "s": [0.85, 0.85, 0.85], "c": "#6b7f9a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/sillon.tscn", "alto": 0.85}},
+    "mesa_baja": {"n": "Mesa baja", "e": "🪑", "huella": [1.0, 0.55], "solido": true, "partes": [{"t": "caja", "p": [0, 0.21, 0], "s": [1.0, 0.42, 0.55], "c": "#b07a48"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/mesa_baja.tscn", "alto": 0.42}},
+    "alfombra": {"n": "Alfombra", "e": "🟫", "huella": [2.0, 1.4], "solido": false, "partes": [{"t": "caja", "p": [0, 0.01, 0], "s": [2.0, 0.02, 1.4], "c": "#c9a878"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/alfombra.tscn", "alto": 0.02}},
+    "lampara_pie": {"n": "Lámpara de pie", "e": "💡", "huella": [0.63, 0.63], "solido": true, "partes": [{"t": "caja", "p": [0, 0.8, 0], "s": [0.63, 1.6, 0.63], "c": "#e8e0d0"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/lampara_pie.tscn", "alto": 1.6}},
+    "estanteria": {"n": "Estantería", "e": "📚", "huella": [1.0, 0.34], "solido": true, "partes": [{"t": "caja", "p": [0, 0.96, 0], "s": [1.0, 1.93, 0.34], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/estanteria.tscn", "alto": 1.93}},
+    "escritorio": {"n": "Escritorio con ordenador", "e": "💻", "huella": [1.2, 0.6], "solido": true, "partes": [{"t": "caja", "p": [0, 0.57, 0], "s": [1.2, 1.15, 0.6], "c": "#b07a48"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/escritorio.tscn", "alto": 1.15}},
+    "planta": {"n": "Planta", "e": "🪴", "huella": [0.37, 0.42], "solido": true, "partes": [{"t": "caja", "p": [0, 0.57, 0], "s": [0.37, 1.15, 0.42], "c": "#4a8a3c"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/planta.tscn", "alto": 1.15}},
+    "espejo": {"n": "Espejo de pie", "e": "🪞", "huella": [0.55, 0.3], "solido": true, "partes": [{"t": "caja", "p": [0, 0.85, 0], "s": [0.55, 1.7, 0.3], "c": "#c5dce8"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/espejo.tscn", "alto": 1.7}},
+    "cubo_basura": {"n": "Cubo de basura", "e": "🗑️", "huella": [0.24, 0.27], "solido": true, "partes": [{"t": "caja", "p": [0, 0.25, 0], "s": [0.24, 0.5, 0.27], "c": "#8e959b"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/cubo_basura.tscn", "alto": 0.5}},
+    "banera": {"n": "Bañera", "e": "🛁", "huella": [1.55, 0.72], "solido": true, "partes": [{"t": "caja", "p": [0, 0.28, 0], "s": [1.55, 0.55, 0.72], "c": "#e8e5de"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/banera.tscn", "alto": 0.55}}
   },
 
   "interiores": {
@@ -321,9 +332,9 @@
       "tabiques": [{"id": "salon_este", "a": [3.5, 0], "b": [3.5, 7], "huecos": [[1, 2], [5, 6]]}, {"id": "bano_dormitorio", "a": [4, 3.5], "b": [7, 3.5], "huecos": []}],
       "estancias": {"salon": [-2, 0, 3, 7], "bano": [4, 0, 7, 3], "dormitorio": [4, 4, 7, 7]},
       "muebles": [
-        {"id": "nevera", "tipo": "nevera", "pos": [-1.5, 6.5], "giro": 0},
-        {"id": "cocina", "tipo": "cocina", "pos": [-0.5, 6.5], "giro": 0},
-        {"id": "fregadero", "tipo": "fregadero", "pos": [0.55, 6.5], "giro": 0},
+        {"id": "nevera", "tipo": "nevera", "pos": [-1.7, 6.5], "giro": 0},
+        {"id": "cocina", "tipo": "cocina", "pos": [-1.1, 6.5], "giro": 0},
+        {"id": "fregadero", "tipo": "fregadero", "pos": [-0.5, 6.5], "giro": 0},
         {"id": "tele", "tipo": "tele", "pos": [2.2, 6.75], "giro": 0},
         {"id": "sofa", "tipo": "sofa", "pos": [1.85, 3.6], "giro": 180},
         {"id": "mesa_comedor", "tipo": "mesa_comedor", "pos": [-1.3, 1.5], "giro": 0},

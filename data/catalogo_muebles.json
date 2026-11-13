@@ -1,142 +1,32 @@
 {
- "_": "Catálogo de muebles comprables de tu piso (Godot, GD-8b). Ver data/README.md, sección catalogo_muebles.json. Un tipo que no esté en interiores.json -> tipos se ignora.",
- "categorias": [
-  [
-   "dormitorio",
-   "Dormitorio"
-  ],
-  [
-   "bano",
-   "Baño"
-  ],
-  [
-   "cocina",
-   "Cocina"
-  ],
-  [
-   "salon",
-   "Salón"
-  ],
-  [
-   "decoracion",
-   "Decoración"
-  ]
- ],
- "muebles": {
-  "cama": {
-   "p": 450,
-   "cat": "dormitorio",
-   "d": "Colchón de 90 y somier. Dormir en el suelo ya no te sale a cuenta."
-  },
-  "armario": {
-   "p": 320,
-   "cat": "dormitorio",
-   "d": "Dos puertas, una barra y un cajón que atranca."
-  },
-  "mesilla": {
-   "p": 70,
-   "cat": "dormitorio",
-   "d": "Un cajón y sitio para el móvil. La luz de lectura no viene."
-  },
-  "ducha": {
-   "p": 350,
-   "cat": "bano",
-   "d": "Plato, mampara y un grifo con dos temperaturas: fría y menos fría."
-  },
-  "vater": {
-   "p": 200,
-   "cat": "bano",
-   "d": "Lo que dice. Con tapa."
-  },
-  "lavabo": {
-   "p": 160,
-   "cat": "bano",
-   "d": "Pila con grifo y un espejo encima si hay suerte."
-  },
-  "lavadora": {
-   "p": 420,
-   "cat": "bano",
-   "d": "Carga frontal, 7 kilos. Hace ruido al centrifugar."
-  },
-  "nevera": {
-   "p": 400,
-   "cat": "cocina",
-   "d": "Combi con congelador. Dentro cabe lo de una semana."
-  },
-  "cocina": {
-   "p": 300,
-   "cat": "cocina",
-   "d": "Tres fuegos y un horno que tarda en calentar."
-  },
-  "fregadero": {
-   "p": 150,
-   "cat": "cocina",
-   "d": "Una pila de acero y un escurreplatos."
-  },
-  "mesa_comedor": {
-   "p": 180,
-   "cat": "cocina",
-   "d": "Cuatro comensales si se aprietan."
-  },
-  "silla": {
-   "p": 60,
-   "cat": "salon",
-   "d": "Madera y asiento recto. Aguanta."
-  },
-  "sofa": {
-   "p": 350,
-   "cat": "salon",
-   "d": "Tres plazas, tela gris. Se hunde por el medio."
-  },
-  "sillon": {
-   "p": 380,
-   "cat": "salon",
-   "d": "Orejero, con reposabrazos. Para leer sin que te molesten."
-  },
-  "mesa_baja": {
-   "p": 120,
-   "cat": "salon",
-   "d": "A la altura de las rodillas. Sirve para el mando y las tazas."
-  },
-  "tele": {
-   "p": 450,
-   "cat": "salon",
-   "d": "Plana, 43 pulgadas. Pantalla y poco más."
-  },
-  "estanteria": {
-   "p": 190,
-   "cat": "salon",
-   "d": "Cinco baldas. Los libros ya los pones tú."
-  },
-  "escritorio": {
-   "p": 280,
-   "cat": "salon",
-   "d": "Tablero y cajonera. Para trabajar sin la cama de mesa."
-  },
-  "alfombra": {
-   "p": 70,
-   "cat": "decoracion",
-   "d": "Pelo corto. Esconde alguna mancha."
-  },
-  "planta": {
-   "p": 80,
-   "cat": "decoracion",
-   "d": "Verde y sin pretensiones. Pide agua de vez en cuando."
-  },
-  "espejo": {
-   "p": 160,
-   "cat": "decoracion",
-   "d": "De cuerpo entero, con marco fino."
-  },
-  "lampara_pie": {
-   "p": 90,
-   "cat": "decoracion",
-   "d": "Pie metálico y pantalla de tela. Luz cálida."
-  },
-  "cubo_basura": {
-   "p": 15,
-   "cat": "decoracion",
-   "d": "Cubo con pedal. Se llena."
+  "_": "Catálogo de muebles comprables de tu piso (Godot, GD-8b). Ver data/README.md, sección catalogo_muebles.json. Un tipo que no esté en interiores.json -> tipos se ignora.",
+
+  "categorias": [["dormitorio", "Dormitorio"], ["bano", "Baño"], ["cocina", "Cocina"], ["salon", "Salón"], ["decoracion", "Decoración"]],
+
+  "muebles": {
+    "cama": {"p": 450, "cat": "dormitorio", "d": "Colchón de 90 y somier. Dormir en el suelo ya no te sale a cuenta."},
+    "armario": {"p": 320, "cat": "dormitorio", "d": "Dos puertas, una barra y un cajón que atranca."},
+    "mesilla": {"p": 70, "cat": "dormitorio", "d": "Un cajón y sitio para el móvil. La luz de lectura no viene."},
+    "ducha": {"p": 350, "cat": "bano", "d": "Plato, mampara y un grifo con dos temperaturas: fría y menos fría."},
+    "vater": {"p": 200, "cat": "bano", "d": "Lo que dice. Con tapa."},
+    "lavabo": {"p": 160, "cat": "bano", "d": "Pila con grifo y un espejo encima si hay suerte."},
+    "lavadora": {"p": 420, "cat": "bano", "d": "Carga frontal, 7 kilos. Hace ruido al centrifugar."},
+    "nevera": {"p": 400, "cat": "cocina", "d": "Combi con congelador. Dentro cabe lo de una semana."},
+    "cocina": {"p": 300, "cat": "cocina", "d": "Tres fuegos y un horno que tarda en calentar."},
+    "fregadero": {"p": 150, "cat": "cocina", "d": "Una pila de acero y un escurreplatos."},
+    "mesa_comedor": {"p": 180, "cat": "cocina", "d": "Cuatro comensales si se aprietan."},
+    "silla": {"p": 60, "cat": "salon", "d": "Madera y asiento recto. Aguanta."},
+    "sofa": {"p": 350, "cat": "salon", "d": "Tres plazas, tela gris. Se hunde por el medio."},
+    "sillon": {"p": 380, "cat": "salon", "d": "Orejero, con reposabrazos. Para leer sin que te molesten."},
+    "mesa_baja": {"p": 120, "cat": "salon", "d": "A la altura de las rodillas. Sirve para el mando y las tazas."},
+    "tele": {"p": 450, "cat": "salon", "d": "Plana, 43 pulgadas. Pantalla y poco más."},
+    "estanteria": {"p": 190, "cat": "salon", "d": "Cinco baldas. Los libros ya los pones tú."},
+    "escritorio": {"p": 280, "cat": "salon", "d": "Tablero y cajonera. Para trabajar sin la cama de mesa."},
+    "alfombra": {"p": 70, "cat": "decoracion", "d": "Pelo corto. Esconde alguna mancha."},
+    "planta": {"p": 80, "cat": "decoracion", "d": "Verde y sin pretensiones. Pide agua de vez en cuando."},
+    "espejo": {"p": 160, "cat": "decoracion", "d": "De cuerpo entero, con marco fino."},
+    "lampara_pie": {"p": 90, "cat": "decoracion", "d": "Pie metálico y pantalla de tela. Luz cálida."},
+    "cubo_basura": {"p": 15, "cat": "decoracion", "d": "Cubo con pedal. Se llena."},
+    "banera": {"p": 380, "cat": "bano", "d": "De chapa esmaltada. Llenarla es media factura del agua."}
   }
- }
 }

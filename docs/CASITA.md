@@ -2,7 +2,7 @@
 
 **Léeme primero.** Quien llegue al proyecto (una persona, un chat nuevo, un agente de la fábrica) empieza aquí y luego abre solo los documentos que su tarea necesite.
 
-Última revisión: 12 de noviembre de 2026.
+Última revisión: 13 de noviembre de 2026.
 
 ---
 
@@ -172,8 +172,9 @@ Reglas de la fábrica: 2 o 3 agentes por tanda, cada uno en su worktree (`git wo
    - **Estado (GD-3, G3):** el arte libre (`godot/arte/`) ya está dentro del juego: personas con esqueleto (aspecto estable por id, animación según el estado real, LOD: solo las ≤70 m y a la vista, máx. 25, llevan esqueleto; el resto es una cápsula), muebles del bar como escenas (`modelo` por tipo en `data/interiores.json`), fachadas con ventanas que se encienden de noche, farolas/árboles/bancos/papeleras con MultiMesh y tu casa como bloque de 4 plantas con patio; cámara por defecto 18 m en la calle y 13 m dentro.
    - Límites GD-3: sin interior en tu casa; tipos sin modelo (puerta del baño) siguen siendo cajas; animaciones de gestos rudimentarias; sin transiciones de sentarse/levantarse.
    - **Estado (GD-4 a GD-7, 13 nov 2026):** gestos de dedo (dos toques o dedo quieto = andar ahí aunque haya algo debajo); tu piso es un interior andable (bajo del bloque, 9×7 m, tres estancias con tabiques) y se duerme en la cama; la partida se guarda sola (`guardado.gd`, secciones con versión, clave `casita3d_partida`); 18 muebles de casa nuevos en `godot/arte/muebles/` y packs CC0 sin tocar en `godot/arte/entrada/`.
-   - Límites GD-7: en casa solo la cama tiene acciones; los muebles nuevos no están colocados; no hay modo comprar; las personas no se estorban entre sí; de lejos el solar de casa se confunde con la hierba (precisión de profundidad).
-   - **Plan por fases (acordado):** 1 mundo libre + un interior (hecho) · 2 tu casa por dentro (en curso: falta acciones de casa, necesidades completas y comprar/colocar muebles) · 3 arte · 4 ciudad entera · 5 trabajo y dinero · 6 política · 7 relevo del juego web.
+   - **Estado (GD-8 y GD-9, 13 nov 2026):** en casa se cubren las seis necesidades (nevera, cocinar-comer-fregar, ducha, lavabo, váter, sofá y tele), hay modo muebles (comprar, colocar, mover, girar, vender; catálogo en `data/catalogo_muebles.json`; guardado), los muebles de casa son modelos del Kenney Furniture Kit y hay un catálogo de arte de ciudad listo en `godot/arte/ciudad/` (sin usar aún; excluido de la exportación).
+   - Límites GD-8: no se pintan paredes ni suelos ni se mueven tabiques; las personas no se estorban entre sí; la comida no cuesta dinero; de lejos el solar de casa se confunde con la hierba; el catálogo de ciudad es de estilo juguete y le faltan edificios singulares (colegio, centro de salud, iglesia, mercado).
+   - **Plan por fases (acordado):** 1 mundo libre + un interior (hecho) · 2 tu casa por dentro (hecho lo básico; queda pintar paredes y suelos, recolorear muebles y mover tabiques) · 3 arte · 4 ciudad entera · 5 trabajo y dinero · 6 política · 7 relevo del juego web.
    - Medidas y cómo probarlo: `godot/README.md`. El `sw.js` del juego web ya no intercepta `/play3d/`.
 4. Si convence, **migrar por bloques**: vida diaria → trabajo y dinero → política. El juego web sigue vivo mientras tanto.
 
