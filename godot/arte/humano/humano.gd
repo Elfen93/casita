@@ -22,6 +22,13 @@ var _ropa := {}            # capa -> {"id","color"}
 var _mats := {}
 var _dh := {}              # nombre de forma -> variación de altura (m) por unidad
 var _listo := false
+var _esq: Skeleton3D
+var _reproductor: AnimationPlayer
+var _cat: Dictionary
+var _sucio := false
+var _anim_actual := ""
+var _mezcla := 0.2
+const PANTALONES := ["vaqueros", "chandal"]
 
 func _ready() -> void:
 	_montar()
@@ -34,13 +41,22 @@ func _montar() -> void:
 	add_child(_modelo)
 	for n in _buscar(_modelo):
 		_piezas[n.name] = n
-	_dh = catalogo().get("dh", {})
+	_cat = catalogo()
+	_dh = _cat.get("dh", {})
+	_esq = _nodo_tipo(_modelo, "Skeleton3D") as Skeleton3D
+	_reproductor = _nodo_tipo(_modelo, "AnimationPlayer") as AnimationPlayer
+	if _reproductor != null:
+		for a in _reproductor.get_animation_list():
+			_reproductor.get_animation(a).loop_mode = Animation.LOOP_LINEAR
 	var cuerpo := _piezas["Cuerpo"] as MeshInstance3D
 	var mp := StandardMaterial3D.new()
 	mp.vertex_color_use_as_albedo = true
 	mp.roughness = 0.72
 	_mats["piel"] = mp
 	cuerpo.material_override = mp
+	for k in _piezas:
+		if k.begins_with("Cuerpo"):
+			(_piezas[k] as MeshInstance3D).material_override = mp
 	for o in ["Ojo_izq", "Ojo_der"]:
 		var mo := StandardMaterial3D.new()
 		mo.albedo_texture = load("res://arte/humano/ojo.png")
@@ -62,6 +78,82 @@ func _montar() -> void:
 		(_piezas["ropa_base"] as MeshInstance3D).visible = true
 		(_piezas["ropa_base"] as MeshInstance3D).material_override = mb
 	set_piel(_piel)
+	_marcar()
+	if _reproductor != null:
+		anim("parado")
+
+func _nodo_tipo(n: Node, tipo: String) -> Node:
+	for c in n.get_children():
+		if c.get_class() == tipo:
+			return c
+		var r := _nodo_tipo(c, tipo)
+		if r != null:
+			return r
+	return null
+
+# El esqueleto sigue al cuerpo: cabezas de hueso = neutras + suma de deltas de cada forma activa.
+func _marcar() -> void:
+	if not _sucio:
+		_sucio = true
+		_sincronizar.call_deferred()
+
+func _sincronizar() -> void:
+	_sucio = false
+	if _esq == null:
+		return
+	var nombres: Array = _cat["huesos"]
+	var base: Array = _cat["huesos_pos"]
+	var padres: Array = _cat["huesos_padre"]
+	var dj: Dictionary = _cat["dj"]
+	var pos := []
+	for i in nombres.size():
+		var b: Array = base[i]
+		pos.append(Vector3(b[0], b[1], b[2]))
+	for f in _formas:
+		var v: float = _formas[f]
+		for signo in ["+", "-"]:
+			var w := maxf(v, 0.0) if signo == "+" else maxf(-v, 0.0)
+			if w == 0.0 or not dj.has(f + signo):
+				continue
+			var d: Dictionary = dj[f + signo]
+			for i in nombres.size():
+				if d.has(nombres[i]):
+					var a: Array = d[nombres[i]]
+					pos[i] += w * Vector3(a[0], a[1], a[2])
+	for i in nombres.size():
+		var bi := _esq.find_bone(nombres[i])
+		if bi < 0:
+			continue
+		var loc: Vector3 = pos[i]
+		if padres[i] != null:
+			loc -= pos[nombres.find(padres[i])]
+		_esq.set_bone_rest(bi, Transform3D(Basis(), loc))
+		_esq.set_bone_pose_position(bi, loc)
+	var piel := _esq.create_skin_from_rest_transforms()
+	for k in _piezas:
+		(_piezas[k] as MeshInstance3D).skin = piel
+	_actualizar_partes()
+
+func _actualizar_partes() -> void:
+	var arriba := _ropa.has("arriba") or _ropa.has("entero")
+	var abajo := _ropa.has("abajo") or _ropa.has("entero")
+	var pantalon: bool = _ropa.has("abajo") and PANTALONES.has(_ropa["abajo"]["id"])
+	var vis := {"torso": not arriba, "brazo": not arriba, "cadera": not (arriba or abajo),
+		"muslo": not abajo, "pierna": not pantalon, "pie": not _ropa.has("pies")}
+	for k in vis:
+		if _piezas.has("Cuerpo_" + k):
+			(_piezas["Cuerpo_" + k] as MeshInstance3D).visible = vis[k]
+
+func animaciones() -> Array:
+	return _cat.get("animaciones", []).duplicate() if _cat.size() > 0 else catalogo().get("animaciones", []).duplicate()
+
+func anim(id: String, velocidad := 1.0) -> void:
+	_montar()
+	if _reproductor == null or not _reproductor.has_animation(id):
+		return
+	_anim_actual = id
+	_reproductor.speed_scale = velocidad
+	_reproductor.play(id, _mezcla)
 
 func _buscar(n: Node) -> Array:
 	var r := []
@@ -83,6 +175,7 @@ func set_forma(id: String, v: float) -> void:
 	_formas[id] = v
 	_blend(id + "+", maxf(v, 0.0))
 	_blend(id + "-", maxf(-v, 0.0))
+	_marcar()
 
 func set_piel(id: String) -> void:
 	_montar()
@@ -113,17 +206,23 @@ func set_ropa(capa: String, id: String, color: Color) -> void:
 	for c in _ropa:
 		activas["ropa_" + _ropa[c]["id"]] = _ropa[c]
 	var entero := _ropa.has("entero")
+	for k in _piezas:
+		if k.begins_with("ropa_") and k != "ropa_base":
+			(_piezas[k] as MeshInstance3D).visible = false
 	for r in cat["ropas"]:
-		var nodo: String = "ropa_" + r["id"]
-		if not _piezas.has(nodo):
+		var nodo: String = "ropa_" + r.get("malla", r["id"])
+		var clave: String = "ropa_" + r["id"]
+		if not _piezas.has(nodo) or not activas.has(clave):
+			continue
+		if entero and (r["capa"] == "arriba" or r["capa"] == "abajo"):
 			continue
 		var p := _piezas[nodo] as MeshInstance3D
-		var on := activas.has(nodo)
-		if entero and (r["capa"] == "arriba" or r["capa"] == "abajo"):
-			on = false
-		p.visible = on
-		if on:
-			(p.material_override as StandardMaterial3D).albedo_color = activas[nodo]["color"]
+		p.visible = true
+		(p.material_override as StandardMaterial3D).albedo_color = activas[clave]["color"]
+	_marcar()
+
+func _fin_ropa() -> void:
+	_marcar()
 
 func set_expresion(id: String, v: float) -> void:
 	_montar()

@@ -77,6 +77,7 @@ func _ready() -> void:
 		var h: Humano = load("res://arte/humano/humano.tscn").instantiate()
 		add_child(h)
 		h.aplicar(lista[i])
+		if vista == "frente": h.rotation_degrees.y = 0
 		h.position.x = (i - (n - 1) / 2.0) * (0.45 if vista == "cara" else 1.15)
 		if vista == "perfil": h.rotation_degrees.y = 90
 		if vista == "espalda": h.rotation_degrees.y = 180
@@ -105,8 +106,33 @@ func _ready() -> void:
 		camara.fov = 30
 		camara.look_at_from_position(Vector3(0, 0.88, -dist), Vector3(0, 0.88, 0))
 	camara.current = true
+	for _i in 3:
+		await get_tree().process_frame
+	for i in n:
+		var asp: Dictionary = lista[i]
+		var h: Humano = hs[i]
+		if asp.has("anim"):
+			h._mezcla = 0.0
+			h._reproductor.stop()
+			h.anim(asp["anim"])
+			if h._reproductor != null and asp.has("t"):
+				h._reproductor.seek(float(asp["t"]), true)
+				h._reproductor.pause()
+		if asp.has("pose") and h._esq != null:
+			h._reproductor.stop()
+			h._esq.reset_bone_poses()
+			for b in asp["pose"]:
+				var bi: int = h._esq.find_bone(b)
+				var e: Array = asp["pose"][b]
+				h._esq.set_bone_pose_rotation(bi, Quaternion.from_euler(Vector3(deg_to_rad(e[0]), deg_to_rad(e[1]), deg_to_rad(e[2]))))
+	await get_tree().process_frame
 	if ruta != "":
 		await get_tree().create_timer(2.0).timeout
+		if "debug" in ua:
+			var sk: Skeleton3D = hs[0]._esq
+			for b in ["pelvis", "thigh_l", "calf_l", "foot_l", "thigh_r", "calf_r", "foot_r"]:
+				var i := sk.find_bone(b)
+				print(b, " rest ", sk.get_bone_global_rest(i).origin, " pose ", sk.get_bone_global_pose(i).origin, " q ", sk.get_bone_pose_rotation(i))
 		await RenderingServer.frame_post_draw
 		get_viewport().get_texture().get_image().save_png(ruta)
 		get_tree().quit()
