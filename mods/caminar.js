@@ -86,6 +86,7 @@ function cmPos0(){const s=S.sim,f=cmFase();if(!f)return null;const home=cmHome()
     if(Array.isArray(fin)){const q=cmLane(fin[0],[[fin[1],fin[2]]])[0];x=q[0];y=q[1];}else{const q=cmPuertaPts(id);if(q){x=q.side[0];y=q.side[1];}}
     const m=s.dest==='_punto'?null:cmColaMia(f);
     if(m){const q=cmColaPosMia(m);if(q)return {k:'dentro',b:bFin||home,id,t0:f.t0,t1:f.t1,esc:null,vis:true,x:q.x,y:q.y,dx:q.dx,dy:q.dy,walk:q.walk,txt:q.txt,cola:true};}
+    if(mfActiva()){const q=mfPos();if(q)return {k:'dentro',b:q.b,id,t0:f.t0,t1:f.t1,esc:null,vis:true,x:q.x,y:q.y,dx:q.dx,dy:q.dy,walk:q.walk,vest:true,act:q.walk?null:'cheer',prop:'📣',txt:cmT('manif_pastilla',{calle:q.calle})};}
     if(s.outingActive==='piquete'&&!Array.isArray(fin)){const q=cmPuertaPts(id);if(q){x=q.xd+.55;y=q.y1+1.15;ex={dx:1,dy:0,vest:true,act:'cheer',prop:'📣',txt:cmT('piquete_pastilla',{lugar:placeName(id)})};}}
     return {k:'dentro',b:bFin||home,id,t0:f.t0-((s.tr&&s.tr.cq>0)?s.tr.cq0+s.tr.cq:0),t1:f.t1,esc,vis:true,x,y,dx:ex.dx!=null?ex.dx:0,dy:ex.dy!=null?ex.dy:-1,walk:false,vest:ex.vest,act:ex.act,prop:ex.prop,txt:ex.txt};}
   const ida=f.k==='ida',{from,to,turn}=cmRutaF(f,fin),R=cmRuta(from,to);
@@ -112,7 +113,7 @@ function cmLead(pts,sale){const s=S.sim,L=cmLot(),ex=s.exit||[N>>1,N-1],E=[L[0]+
   const lead=[E,[E[0],Math.min(y1-.4,Math.max(E[1],fy))],[xd,Math.min(y1-.4,Math.max(E[1],fy))],[xd,y1]];
   return sale?lead.concat(pts):pts.concat(lead.slice().reverse());}
 const cmDoors=bar=>Object.keys(CDX().barrios[bar].puertas).filter(k=>k!=='casaV'&&k!=='casa2');
-const cmEscena=k=>(k&&SCENES[k]&&k!=='_ride'&&S.sim.outingActive!=='piquete'&&!cmEnCola()&&cmMid(k)&&cdRect(cmMid(k)))?k:null;
+const cmEscena=k=>(k&&SCENES[k]&&k!=='_ride'&&S.sim.outingActive!=='piquete'&&!mfActiva()&&!cmEnCola()&&cmMid(k)&&cdRect(cmMid(k)))?k:null;
 const cmBar=()=>{if(typeof BM!=='undefined'&&BM.on)return BM.b;if(!(viewPlace&&mode==='live'))return cmHome();const p=cmPos();return p&&p.b||cmHome();};
 // el personaje está ahora de verdad dentro de ese sitio
 const cmDentro=k=>{const s=S.sim;if(!(s.work>0)||!s.dest)return false;const f=cmFase();return !!f&&f.k==='dentro'&&!!cmEscena(s.dest)&&(s.dest===k||cmMid(s.dest)===k);};
@@ -245,7 +246,7 @@ function cmCamTick(dt){if(BM.on||mode!=='live'||!viewPlace)return;const pos=cmPo
 {const _ak=awayKey;awayKey=function(){const s=S.sim;if(!(s.work>0)||!s.dest)return null;const f=cmFase();if(!f)return _ak.apply(this,arguments);
   if(s.dest==='_ride')return '_ride';if(s.dest==='comisaria')return s.dest;
   if(f.k!=='dentro'||s.dest==='_punto')return '_calle';
-  if(s.outingActive==='piquete')return '_piquete';return s.dest;};}
+  if(s.outingActive==='piquete'||mfActiva())return '_piquete';return s.dest;};}
 {const _st=sceneTitle;sceneTitle=function(key){const s=S.sim,f=cmFase();
   if(f&&key==='_calle'){const p=cmPos();if(p&&p.txt)return p.txt;if(s.dest==='_punto'&&f.k==='dentro'){const c=s.irPt&&cmCalle(s.irPt[0],[s.irPt[1],s.irPt[2]],true);return cmT('paseo_calle',{calle:c?c.n:''});}
     return f.k==='vuelta'?cmT('titulo_vuelta'):cmT('titulo_ida',{lugar:s.dest==='_punto'?cmT('paseo_calle',{calle:''}).trim():placeName(s.dest)});}
@@ -375,11 +376,11 @@ function cmEnfrente(id){const q=cdPuerta(id);if(!q)return null;const c=cmCalle(c
 // la profundidad de lo que está delante de la puerta de un edificio: nunca por detrás de su fachada
 const cmDF=(id,u,v)=>{try{const r=cmV(cdRect(id));return Math.max(u+v,r[2]+r[3]+.01+(u+v)*1e-3);}catch(e){return u+v;}};
 // ---------- PIQUETES ----------
-const PQ={k:'',cs:[],nom:new Set()};
+const PQ={k:'',cs:[],nom:new Set(),ruta:{}};
 const PQ_SL=[[-5.0,.45],[-1.9,.45],[2.3,.5],[-3.4,1.3],[-1.2,1.3],[3.4,1.25],[3.6,.4],[-6.4,1.1]];   // dónde se pone cada quien, respecto a la puerta (xd, fachada y1)
 function pqCentros(){const h=S.t/60,w=W_(),st=S.strike,k=S.day+'|'+Math.floor(h*4)+'|'+cmHome()+'|'+(st&&st.on?1:0)+(w.gs===S.day?1:0)+(S.sim.outingActive==='piquete'?1:0);
   if(PQ.k===k)return PQ.cs;PQ.k=k;PQ.cs=[];PQ.nom=new Set();
-  const H=cmCfg().piquete_horas||[6.75,14];if(!(h>=H[0]&&h<H[1])||dayType(S.day)!=='work')return PQ.cs;
+  const H=cmCfg().piquete_horas||[6.75,14],EX=cmCfg().piquete_anda_h||.55;if(!(h>=H[0]-EX&&h<H[1]+EX)||dayType(S.day)!=='work')return PQ.cs;
   let wk=null;try{wk=destOf('work');}catch(e){}if(!(wk&&wk!=='_ride'&&cdPuerta(wk)))wk=null;
   const ids=[];if(wk&&((st&&st.on)||w.gs===S.day))ids.push(wk);
   if(w.gs===S.day){const n=new Map();for(const v of pbVec()){const l=v&&v.trabajo&&v.trabajo.lugar;if(l&&l!=='fuera'&&l!==wk&&cdPuerta(l)&&!['casaV','casa2','casa'].includes(l))n.set(l,(n.get(l)||0)+1);}
@@ -391,14 +392,30 @@ function pqCentros(){const h=S.t/60,w=W_(),st=S.strike,k=S.day+'|'+Math.floor(h*
     PQ.cs.push({id,mio,gs:w.gs===S.day,nP,nom,cops});}
   return PQ.cs;}
 const pqEn=vid=>{pqCentros();return PQ.nom.has(vid);};
-// un trozo de tela entre dos puntos de la acera (x0..x1 a la altura y), con su texto
-function pqPancarta(x0,x1,y,tt,txt,txt2){const k=6,top=[],bot=[],sw=Math.sin(tt*1.6)*1.4;
-  for(let i=0;i<=k;i++){const x=x0+(x1-x0)*i/k,[u,v]=cmW2V(x,y),s=Math.sin(i/k*Math.PI);top.push(P(u,v,48-s*1.5+sw*s));bot.push(P(u,v,15+sw*s*.7));}
-  poly(top.concat(bot.reverse()),'#fffdf8');const [u0,v0]=cmW2V(x0,y),[u1,v1]=cmW2V(x1,y);
-  poly([P(u0,v0,48),P(u1,v1,48),P(u1,v1,43),P(u0,v0,43)],'#d1242f');
-  for(const [u,v] of [[u0,v0],[u1,v1]]){const [a,b]=P(u,v,12),[c,d]=P(u,v,52);capsule(a,b,c,d,1.5,'#8a7560');}
-  if(rot===0){const [um,vm]=cmW2V((x0+x1)/2,y),[a,b]=P(um,vm,28+sw*.4);ctx.save();ctx.fillStyle='#d1242f';ctx.font='900 14px Nunito, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.translate(a,b+1.5);ctx.transform(1,.5,0,1,0,0);ctx.fillText(txt,0,-1.5);
-    if(txt2){ctx.fillStyle='#3b3247';ctx.font='800 7px Nunito, sans-serif';ctx.fillText(txt2,0,9);}ctx.restore();}}
+// los nombrados llegan andando en los minutos previos (desde su casa, o desde la parada si viven en otro barrio) y se van andando al terminar
+function pqAnda(g,nm,i,slot,h,H0,bar){const Q=cmCfg(),k=(nm.v?nm.v.id:'compi')+'|'+g.id;
+  let c=PQ.ruta[k];if(c===undefined){c=null;let pts=null,lm=1.2;
+    try{if(nm.v){const ho=clHog(nm.v),R=ho&&cmRuta(ho,g.id);if(R){const L=R.legs.filter(l=>l.k==='pie'&&l.b===cdBarrioDe(g.id)&&l.pts&&l.pts.length>1);if(L.length){pts=L[L.length-1].pts.slice();lm=L[L.length-1].min||lm;}}}
+      else{const q=cmPuertaPts(g.id);pts=[[q.xd-13,slot[1]],[q.xd-8,slot[1]]];}}catch(e){pts=null;}
+    if(pts){c={pts:pts.concat([slot]),d:Math.max(.04,Math.min(Q.piquete_anda_max_h||.33,lm/60+.01))};}
+    PQ.ruta[k]=c;}
+  const sl=(Q.piquete_llegada_h||[.02,.2]),n=(nm.v?String(nm.v.id).length:3)+i,h0=H0[0],h1=H0[1];
+  if(!c)return h<h0?null:{x:slot[0],y:slot[1],dx:1,dy:0,walk:false};
+  if(h<h0){const arr=h0-sl[0]-(n%4)*(sl[1]-sl[0])/3,g0=(h-(arr-c.d))/c.d;if(g0<0)return null;if(g0>=1)return {x:slot[0],y:slot[1],dx:1,dy:0,walk:false};
+    const p=cmAlong(c.pts,g0);return {x:p.x,y:p.y,dx:p.dx,dy:p.dy,walk:true};}
+  const dep=h1+sl[0]+(n%4)*(sl[1]-sl[0])/3,g1=(h-dep)/c.d;if(g1<0)return {x:slot[0],y:slot[1],dx:1,dy:0,walk:false};if(g1>=1)return null;
+  const p=cmAlong(c.pts.slice().reverse(),g1);return {x:p.x,y:p.y,dx:p.dx,dy:p.dy,walk:true};}
+// la pancarta: dos palos y un rectángulo por encima de las cabezas; el texto va a tamaño fijo de pantalla (sistema de rótulos) para que se lea con cualquier zoom y no lo tapen las figuras
+function pqPancarta(x0,x1,y,tt,txt,txt2){const sw=Math.sin(tt*1.6)*1.2,zB=84,zT=110,k=6;
+  const [u0,v0]=cmW2V(x0+.12,y),[u1,v1]=cmW2V(x1-.12,y);
+  for(const [u,v] of [[u0,v0],[u1,v1]]){const [a,b]=P(u,v,0),[c,d]=P(u,v,zT+8);capsule(a,b,c,d,2.2,"#6b5440");}
+  const top=[],bot=[];for(let i=0;i<=k;i++){const f=i/k,u=u0+(u1-u0)*f,v=v0+(v1-v0)*f,s=Math.sin(f*Math.PI);top.push(P(u,v,zT+sw*s));bot.push(P(u,v,zB+sw*s*.6));}
+  poly(top.concat(bot.reverse()),'#fffdf8');poly([P(u0,v0,zT),P(u1,v1,zT),P(u1,v1,zT-4),P(u0,v0,zT-4)],'#d1242f');
+  const [um,vm]=[(u0+u1)/2,(v0+v1)/2],[a,b]=P(um,vm,(zT+zB)/2),pt=rtPt?rtPt(a,b):[a,b];
+  const pinta=(sx,sy,c,fijo)=>{if(fijo){const A=rtAreas(),hh=txt2?26:18;sy=Math.max(A.top+hh/2+2,Math.min(A.bot-hh/2-2,sy));sx=Math.max(50,Math.min(A.Wd-50,sx));}c.save();c.textAlign='center';c.textBaseline='middle';c.font='900 12px Nunito, sans-serif';const w=Math.max(c.measureText(txt).width,txt2?c.measureText(txt2).width*.8:0)+12,h=txt2?26:18;
+    c.fillStyle='rgba(255,253,248,.96)';c.strokeStyle='#d1242f';c.lineWidth=1.5;c.beginPath();if(c.roundRect)c.roundRect(sx-w/2,sy-h/2,w,h,4);else c.rect(sx-w/2,sy-h/2,w,h);c.fill();c.stroke();
+    c.fillStyle='#d1242f';c.fillText(txt,sx,sy-(txt2?5:0));if(txt2){c.fillStyle='#3b3247';c.font='800 8.5px Nunito, sans-serif';c.fillText(txt2,sx,sy+7);}c.restore();};
+  if(!(typeof rotuloDespues==='function'&&RT.on&&rotuloDespues(()=>{ctx.save();ctx.setTransform(rtD(),0,0,rtD(),0,0);pinta(pt[0],pt[1],ctx,true);ctx.restore();}))){const m=ctx.getTransform();ctx.save();ctx.translate(a,b);ctx.scale(1/m.a,1/m.d);pinta(0,0,ctx);ctx.restore();}}
 function pqBandera(x,y,col,tt,k,txt){const [u,v]=cmW2V(x,y),[a,b]=P(u,v,22),[c,d]=P(u,v,70);capsule(a,b,c,d,1.3,'#8a7560');const s=Math.sin(tt*2.2+k)*2.2,s2=Math.sin(tt*2.2+k+1.2)*2.2;
   ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(c,d);ctx.quadraticCurveTo(c+9,d-3+s,c+20,d+s2);ctx.lineTo(c+20,d+13+s2);ctx.quadraticCurveTo(c+9,d+10+s,c,d+13);ctx.fill();
   if(txt){ctx.fillStyle='#fff';ctx.font='900 5px Nunito, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,c+10,d+7+(s+s2)/2);}}
@@ -408,17 +425,19 @@ function pqItems(bar,tt,vis){const out=[],Q=cmCfg();
     const slot=i=>[xd+PQ_SL[i][0],y1+PQ_SL[i][1]];
     // quienes están: los nombrados (compañeras y vecinas que trabajan allí) en los puestos de a pie y el resto, sin nombre
     const ord=[2,5,4,6,7,0,1].filter(i=>i<g.nP);const nomAt=new Map();g.nom.forEach((p,i)=>{if(ord[i]!=null)nomAt.set(ord[i],p);});
-    for(let i=0;i<g.nP;i++){const nm=nomAt.get(i),ch=nm?nm.ch:cmFilaDe('pq'+g.id,i+3);let [x,y]=slot(i),walk=false,dx=i%2?-1:1,dy=0,prop=null,act=null;
+    const H0=(Q.piquete_horas||[6.75,14]),hh=S.t/60,dentro=hh>=H0[0]&&hh<H0[1];
+    for(let i=0;i<g.nP;i++){const nm=nomAt.get(i);if(!dentro&&!nm)continue;const ch=nm?nm.ch:cmFilaDe('pq'+g.id,i+3);let [x,y]=slot(i),walk=false,dx=i%2?-1:1,dy=0,prop=null,act=null;
+      if(nm&&!dentro){const w=pqAnda(g,nm,i,[x,y],hh,H0,bar);if(!w)continue;x=w.x;y=w.y;dx=w.dx;dy=w.dy;walk=w.walk;if(w.walk){act=null;prop=null;}}
       if(i===3){const per=14,u0=(S.t*.5+i*3)%per,f=u0<per/2?u0/(per/2):2-u0/(per/2),x0=xd-4.4,x1=xd-2.4;x=x0+(x1-x0)*f;walk=true;dx=u0<per/2?1:-1;prop=Q.piquete_octavilla||'📄';}
       else if(i===0||i===1){dx=i===0?1:-1;act='cheer';}
       if(!vis(x,y))continue;const [u,v]=cmW2V(x,y),X=x,Y=y,DX=dx,DY=dy,W=walk,A=act,PR=prop;
       out.push({d:cmDF(g.id,u,v),f:()=>cmFigura(X,Y,DX,DY,ch,{walk:W,ph:tt*5+i,vest:true,act:A,prop:PR,edad:30,name:nm?nm.n:null,rot:nm&&nm.v?{hogar:nm.v.hogar,trab:false}:null})});}
     // pancarta entre los dos primeros y banderas
-    {const [ua,va]=cmW2V(xd-5.0,y1+.45),[ub,vb]=cmW2V(xd-1.9,y1+.45);const b0=xd-5.0+.15,b1=xd-1.9-.15;
+    if(dentro){const [ua,va]=cmW2V(xd-5.0,y1+.45),[ub,vb]=cmW2V(xd-1.9,y1+.45);const b0=xd-5.0+.15,b1=xd-1.9-.15;
       if(vis((b0+b1)/2,y1+.45))out.push({d:cmDF(g.id,(ua+ub)/2,(va+vb)/2)+.04,f:()=>pqPancarta(b0,b1,y1+.45,tt,g.gs?cmT('piquete_pancarta_gs'):cmT('piquete_pancarta'),g.mio&&S.office?cmT('piquete_pancarta_de',{lugar:S.office.n}):null)});}
-    for(const [i,col,txt] of [[2,'#c0262d','✊'],[6,'#2a6fd1',cmT('piquete_bandera')]]){if(i>=g.nP)continue;const [x,y]=slot(i);if(!vis(x,y))continue;const [u,v]=cmW2V(x,y);out.push({d:cmDF(g.id,u,v)+.02,f:()=>pqBandera(x+.15,y,col,tt,i,txt)});}
+    if(dentro)for(const [i,col,txt] of [[2,'#c0262d','✊'],[6,'#2a6fd1',cmT('piquete_bandera')]]){if(i>=g.nP)continue;const [x,y]=slot(i);if(!vis(x,y))continue;const [u,v]=cmW2V(x,y);out.push({d:cmDF(g.id,u,v)+.02,f:()=>pqBandera(x+.15,y,col,tt,i,txt)});}
     // la policía, en la acera de enfrente
-    if(g.cops){const ye=cmEnfrente(g.id);if(ye!=null)for(const [i,dxp] of [[0,-.9],[1,1.3]]){const x=xd+dxp,y=ye;if(!vis(x,y))continue;const [u,v]=cmW2V(x,y),ch={...cmFilaDe('pol'+g.id,i+7),pants:'#1d2a44',style:'rapado'};
+    if(g.cops&&dentro){const ye=cmEnfrente(g.id);if(ye!=null)for(const [i,dxp] of [[0,-.9],[1,1.3]]){const x=xd+dxp,y=ye;if(!vis(x,y))continue;const [u,v]=cmW2V(x,y),ch={...cmFilaDe('pol'+g.id,i+7),pants:'#1d2a44',style:'rapado'};
       out.push({d:u+v,f:()=>cmFigura(x,y,0,-1,ch,{walk:false,shirt:'#1d2a44',edad:35})});}}
   }
   return out;}
@@ -498,14 +517,30 @@ const rdColor=()=>{const c=cmCfg().reparto_colores||['#1fb59a'],cos=(DATA.profes
 function cmMochila(px,py,front,right,col){ctx.save();const w=11,h=12,x0=front?px+(right?-w-1:1):px-w/2,y0=py-42;ctx.fillStyle=col;ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=1;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x0,y0,w,h,2);else ctx.rect(x0,y0,w,h);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(255,255,255,.6)';ctx.fillRect(x0+1.5,y0+4.5,w-3,1.6);ctx.restore();}
 
 // ---------- manifestación: sale del ayuntamiento y recorre su calle en grupo ----------
-function mfItems(bar,tt,vis){const w=W_(),m=w.manif,h=S.t/60,H=cmCfg().manif_horas||[11.25,13];if(!m||m.day!==S.day||!(h>=H[0]&&h<H[1])||!cdPuerta('ayto')||cdBarrioDe('ayto')!==bar)return [];
-  const q=cdPuerta('ayto'),c=cmCalle(bar,q.p,true);if(!c)return [];const far=(q.p[0]-c.a[0]<c.b[0]-q.p[0])?c.b[0]-3:c.a[0]+3,R=cmRuta('ayto',[bar,Math.round(far*10)/10,c.a[1]]);if(!R||!R.legs[0].pts)return [];
-  const pts=R.legs[0].pts,f=(h-H[0])/(H[1]-H[0]),n=10,out=[],lemas=cmCfg().manif_lemas||['BASTA YA'],lema=lemas[Math.floor(pbH('mf'+S.day)*lemas.length)%lemas.length];
-  const at=k=>cmAlong(pts,Math.max(0,Math.min(1,f*1.08-k*.016)));
-  for(let k=0;k<n;k++){const p=at(k),y=p.y+(k%3===1?.55:0),x=p.x;if(f*1.08-k*.016<0||!vis(x,y))continue;const [u,v]=cmW2V(x,y),ch=cmFilaDe('mf',k+11);
-    out.push({d:u+v,f:()=>cmFigura(x,y,p.dx||1,0,ch,{walk:f<.97,ph:tt*7+k,vest:k%3===0,act:k===2||k===5?'cheer':null,edad:30})});}
-  const a=at(0),b=at(1);if(vis(a.x,a.y)&&f*1.08>.02){const [u,v]=cmW2V((a.x+b.x)/2,a.y);out.push({d:u+v+.05,f:()=>pqPancarta(Math.min(a.x,b.x)+.2,Math.max(a.x,b.x)-.2,a.y,tt,lema,null)});}
+// el recorrido: de la puerta del ayuntamiento hasta el otro extremo de su calle
+const MF={k:'',z:null};
+function mfTrazo(){const k=S.day+'|'+cmHome();if(MF.k===k)return MF.z;MF.k=k;MF.z=null;
+  try{if(!cdPuerta('ayto'))return null;const bar=cdBarrioDe('ayto'),q=cdPuerta('ayto'),c=cmCalle(bar,q.p,true);if(!c)return null;
+    const far=(q.p[0]-c.a[0]<c.b[0]-q.p[0])?c.b[0]-3:c.a[0]+3,fin=[bar,Math.round(far*10)/10,c.a[1]],R=cmRuta('ayto',fin);if(!R||!R.legs[0].pts)return null;MF.z={bar,pts:R.legs[0].pts,fin,calle:c.n||''};}catch(e){console.error('manif',e);}
+  return MF.z;}
+// el personaje va a la manifestación: la marcha sale cuando él llega (si es después de las 11:15) y él va dentro
+const mfActiva=()=>{const s=S.sim,m=W_().manif;return s.outingActive==='manifestacion'&&s.work>0&&!!m&&m.day===S.day&&s.dest==='ayto';};
+function mfReloj(){const H=cmCfg().manif_horas||[11.25,13],h=S.t/60;let hS=H[0],lim=H[1];
+  if(mfActiva()){const f=cmFase();if(f&&f.k==='dentro'){hS=Math.max(H[0],h-f.t0/60);lim=h+1;}else if(f&&f.k==='vuelta'){hS=h-(H[1]-H[0])-.01;lim=h+.5;}else{hS=Math.max(H[0],h)+.05;lim=hS+(H[1]-H[0]);}}
+  return {hS,M:H[1]-H[0],ini:H[0],fin:lim,h};}
+const mfFrac=r=>Math.max(0,Math.min(1,(r.h-r.hS)/r.M));
+const mfLugar=(pts,f,k)=>cmAlong(pts,Math.max(0,Math.min(1,f*1.08-k*.016)));
+function mfPos(){const z=mfTrazo();if(!z)return null;const r=mfReloj(),f=mfFrac(r),p=mfLugar(z.pts,f,4);
+  return {b:z.bar,x:p.x,y:p.y+.55,dx:p.dx||1,dy:0,walk:f>0&&f<.97,calle:z.calle};}
+function mfItems(bar,tt,vis){const w=W_(),m=w.manif,R=mfReloj(),h=R.h;if(!m||m.day!==S.day||!(h>=R.ini&&h<R.fin)||!cdPuerta('ayto')||cdBarrioDe('ayto')!==bar)return [];
+  const z=mfTrazo();if(!z)return [];const pts=z.pts,f=mfFrac(R),n=10,out=[],lemas=cmCfg().manif_lemas||['BASTA YA'],lema=lemas[Math.floor(pbH('mf'+S.day)*lemas.length)%lemas.length];
+  const at=k=>mfLugar(pts,f,k),yo=mfActiva();
+  for(let k=0;k<n;k++){if(yo&&k===4)continue;const p=at(k),y=p.y+(k%3===1?.55:0),x=p.x;if(f*1.08-k*.016<0||!vis(x,y))continue;const [u,v]=cmW2V(x,y),ch=cmFilaDe('mf',k+11);
+    out.push({d:u+v,f:()=>cmFigura(x,y,p.dx||1,0,ch,{walk:f>0&&f<.97,ph:tt*7+k,vest:k%3===0,act:k===2||k===5?'cheer':null,edad:30})});}
+  const a=at(0),b=at(1);if(vis(a.x,a.y)){const [u,v]=cmW2V((a.x+b.x)/2,a.y);out.push({d:u+v+.05,f:()=>pqPancarta(Math.min(a.x,b.x)+.2,Math.max(a.x,b.x)-.2,a.y,tt,lema,null)});}
   return out;}
+// la vuelta a casa sale del final de la marcha, no de la puerta del ayuntamiento
+{const _rf=cmRutaF;cmRutaF=function(f,fin){const r=_rf.apply(this,arguments);try{if(mfActiva()&&f.k==='vuelta'&&r&&r.from===fin&&f.tr.turn==null){const z=mfTrazo();if(z)r.from=z.fin;}}catch(e){}return r;};}
 // todo lo que se agrupa en la acera de un barrio
 function cmAcera(bar,tt){const vis=(x,y)=>{const [u,v]=cmW2V(x,y),[px,py]=P(u,v),sx=cam.x+px*cam.z,sy=cam.y+py*cam.z;return sx>-60&&sx<W+60&&sy>-110&&sy<H+60;},out=[];
   try{for(const it of pqItems(bar,tt,vis))out.push(it);}catch(e){console.error('piquete',e);}

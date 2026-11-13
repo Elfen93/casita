@@ -175,6 +175,22 @@ setTimeout(()=>{try{window.__errs=window.__errs||[];const bad=[];const oe=consol
    ok(vistos>20,'no se ve repartiendo');ok(maxJ<12/* el rider aprieta el paso: hasta 20 casillas/min en línea recta no es un salto */,'salto de '+maxJ+' casillas repartiendo (0,5 min a 16 casillas/min)');ok(quietos>=1,'no se detiene a entregar');ok(s.work<=0&&!s.dest,'no termina la jornada');
    info.reparto={entregas:pl.n,tandas:tandas,barrios:[...bars].length,plan:Math.round(pl.fin),jornada:Math.round(tot)};}}
 
+ // 14. T-143 · el piquete llega y se va andando; la pancarta va sobre las cabezas; la manifestación con ella dentro
+ {nuevo('viejo');const wk=destOf('work'),bar=cdBarrioDe(wk);S.t=8*60;S.strike={on:true,left:3,total:3,join:false,by:'plantilla',start:S.day,picket:0};PQ.k='';
+  const H0=cmCfg().piquete_horas,cuenta=hh=>{S.t=hh*60;PQ.k='';const g=pqCentros()[0];if(!g)return [0,0];const q=cmPuertaPts(g.id);const ord=[2,5,4,6,7,0,1].filter(j=>j<g.nP);let n=0,w=0;g.nom.forEach((nm,i)=>{const sl=PQ_SL[ord[i]],r=pqAnda(g,nm,ord[i],[q.xd+sl[0],q.y1+sl[1]],hh,H0,bar);if(r){n++;if(r.walk)w++;}});return [n,w];};
+  const a0=cuenta(6.0),a1=cuenta(6.45),a2=cuenta(6.74),b1=cuenta(14.1),b2=cuenta(14.3),b3=cuenta(14.6);
+  ok(a0[0]===0,'piquete: los nombrados ya están a las 6:00 ('+a0+')');ok(a1[1]>=1,'piquete: nadie llega andando a las 6:27 ('+a1+')');ok(b1[0]>=1&&b2[1]>=1,'piquete: no se van andando ('+b1+' '+b2+')');ok(b3[0]===0,'piquete: siguen a las 14:36 ('+b3+')');
+  info.piquete_anda={'6:00':a0,'6:27':a1,'6:44':a2,'14:06':b1,'14:18':b2,'14:36':b3};
+  S.t=9*60;PQ.k='';const it=pqItems(bar,1,()=>true);ok(it.length>=pqCentros()[0].nP+2,'piquete a las 9: faltan figuras');
+  // manifestación con ella dentro
+  nuevo('viejo');while(dateOf(S.day).wd!==5)S.day++;W_().manif={day:S.day,cause:'vivienda',side:'i'};const s2=S.sim;s2.outingActive='manifestacion';s2.dest='ayto';s2.exit=[10,19];S.t=11.5*60;cmDefine(s2,'ayto',150,'casa');
+  const pos=el=>{s2.work=s2.awayTotal-(s2.tr.a+el);S.t=(11.5*60)+el-30;CW.posT=0;return cmPos();};
+  const q=cmPuertaPts('ayto'),p0=pos(5),p1=pos(40),p2=pos(100),p3=pos(140);
+  ok(p1&&p1.k==='dentro'&&p1.b===cdBarrioDe('ayto'),'manif: no va por la calle del ayuntamiento');ok(!cmEscena('ayto'),'manif: se queda dentro del ayuntamiento');
+  const d=pp=>Math.hypot(pp.x-q.xd,pp.y-q.y1);ok(d(p2)>d(p1)+3&&d(p1)>d(p0),'manif: no recorre la calle con el grupo ('+[p0,p1,p2].map(d).map(x=>x.toFixed(1))+')');ok(p2.walk,'manif: no anda con el grupo');
+  ok(mfItems(cdBarrioDe('ayto'),1,()=>true).length>=10,'manif: faltan figuras del grupo (más la pancarta)');
+  info.manif={d0:+d(p0).toFixed(1),d1:+d(p1).toFixed(1),d2:+d(p2).toFixed(1),d3:+d(p3).toFixed(1),txt:p1.txt};
+  s2.work=s2.tr.b*.5;S.t=14*60;CW.posT=0;const pv=cmPos();ok(pv&&pv.k==='vuelta'&&pv.b,'manif: la vuelta no sale de la marcha ('+(pv&&pv.k)+')');info.manif.vuelta=pv&&[pv.b,+d(pv).toFixed(1)];}
  console.error=oe;
  document.title=(bad.length||__errs.length?'ERR ':'OK ')+JSON.stringify({bad:[...new Set(bad)].slice(0,12),nbad:bad.length,errs:__errs.slice(0,3),info});
 }catch(err){document.title='ERR '+err.message+' '+(err.stack||'').slice(0,500)}},300);
