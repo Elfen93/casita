@@ -128,6 +128,9 @@ var guardado: Guardado  # --- guardado ---
 var muebles: Muebles  # --- muebles ---
 
 func _ready() -> void:
+	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
+		get_tree().change_scene_to_file.call_deferred("res://crear/crear.tscn")  # --- crear ---
+		return  # --- crear ---
 	ciudad = Datos.cargar("ciudad")
 	lugares = Datos.cargar("lugares")
 	barrio_edif = Datos.cargar("barrio")
