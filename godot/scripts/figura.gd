@@ -21,7 +21,8 @@ static func aspecto_de(v: Dictionary) -> Dictionary:
 
 static func aspecto_jugador(base: Dictionary) -> Dictionary:
 	var camisa := Color.html(str(base.get("shirt", "#ff8a5b")))
-	return {"genero": "f", "edad": int(base.get("age", 27)), "piel": 1, "pelo": "castano", "semilla": 11,
+	# "modelo": "autumn" -> la chica hecha en Blender (arte/personajes/autumn); sin "modelo", una Persona del paquete libre
+	return {"genero": "f", "edad": int(base.get("age", 27)), "piel": 1, "pelo": "castano", "semilla": 11, "modelo": "autumn",
 		"ropa": {"variante": 0, "arriba": camisa, "abajo": Color.html(str(base.get("pants", "#3d405b")))}, "camisa": camisa}
 
 static func crear(camisa: Color, _piel: Color, esc := 1.0, asp := {}) -> Dictionary:
@@ -45,6 +46,10 @@ static func crear(camisa: Color, _piel: Color, esc := 1.0, asp := {}) -> Diction
 
 # la persona con esqueleto (cara). Origen en el suelo; mira a -Z (el holder de Actor la gira para que mire a +Z)
 static func persona(asp: Dictionary) -> Node3D:
+	if str(asp.get("modelo", "")) == "autumn":
+		var pa := PersonaAutumn.new()
+		pa.set_aspecto(asp)
+		return pa
 	var p: Node3D = PERSONA.instantiate()
 	p.set_aspecto(asp)   # antes de add_child: el aspecto es estable
 	return p
