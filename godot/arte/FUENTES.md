@@ -75,3 +75,8 @@ Cómo se regenera (con las FBX en una carpeta, p. ej. `/home/claude/mixamo/`):
 - `python3 arte/herramientas/blender/exportar_remy.py <carpeta> arte/mixamo/remy.glb arte/mixamo/remy.json`
 - `python3 arte/herramientas/blender/exportar_autumn.py --anims=<carpeta> <mujer_arkit.blend> arte/mixamo/autumn_mixamo.glb` (la chica con las mismas animaciones, pasadas a su esqueleto con `mixamo_retarget.py`)
 Uso en el juego: `PersonaAnimada` (arte/personajes/persona_animada.gd). La chica es el jugador; Remy, los vecinos hombres adultos. Si faltan los .glb (copia limpia del repo), el juego vuelve solo a `PersonaAutumn` (animación por código) y a las personas de Quaternius.
+
+### Más personajes de Mixamo (15 nov 2026) — también fuera del repositorio
+Descargados en T-pose con piel (FBX): James, Leonard, Brian, Adam, Joe, The Boss (boss), Louise, Megan, Kate, Sophie, Jody, Martha, Sporty Granny (granny) y Timmy. Mixamo limita las descargas seguidas (respuestas 429), así que se bajaron de uno en uno.
+`arte/herramientas/blender/exportar_mixamo_pj.py <carpeta FBX> arte/mixamo/pj` los deja en `arte/mixamo/pj/<nombre>.glb` (texturas a 512, mallas a ~14 000 vértices, ~1,1 MB cada uno) SIN animaciones: comparten las de `remy.glb` (mismo esqueleto de Mixamo; en Godot se quitan las pistas de posición salvo la cadera y la cadera se escala con `Skeleton3D.motion_scale`).
+Reparto en el juego (`Figura.modelo_mixamo`): jugadora Kate; hombres adultos Remy, James, Leonard, Brian, Adam, Joe; mujeres adultas Louise, Megan, Kate, Sophie, Jody, Martha; mayores The Boss y Sporty Granny; niños Timmy (niñas: siguen las personas de Quaternius). La chica de Blender (Autumn) ya no se usa en el juego.
