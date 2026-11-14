@@ -1,9 +1,11 @@
 # Exporta la chica (Autumn) a GLB para Godot: malla de cara+cuerpo con las shape keys de ARKit, pelo y ropa,
 # solo huesos de deformacion, materiales sencillos con texturas reducidas.
-# Uso: python3 exportar_autumn.py [--todas] <mujer_arkit.blend> <salida.glb>   (--todas: las 52 formas; si no, solo las del juego)
+# Uso: python3 exportar_autumn.py [--todas] [--anims=<carpeta Mixamo>] <mujer_arkit.blend> <salida.glb>
+#   --todas: las 52 formas; si no, solo las del juego. --anims: hornea las animaciones de Mixamo (ver mixamo_retarget.py);
+#   ese .glb lleva datos de Mixamo y NO va al repositorio (arte/mixamo/ está en .gitignore).
 import bpy, bmesh, sys, os, math
 import numpy as np
-from mathutils import Vector
+from mathutils import Vector, Matrix
 SRC,OUT=sys.argv[-2],sys.argv[-1]
 TMP='/tmp/exp_autumn'; os.makedirs(TMP,exist_ok=True)
 bpy.ops.wm.open_mainfile(filepath=SRC)
@@ -152,11 +154,22 @@ for o in (B,P,R):
     mw=o.matrix_world.copy(); o.parent=ESQ; o.matrix_world=mw
 print('esqueleto de juego: huesos',len(ESQ.data.bones),'reemparentados',nrep,'raices',[b_.name for b_ in ESQ.data.bones if b_.parent is None])
 RIG=ESQ
+CARPETA_ANIMS=[a.split('=',1)[1] for a in sys.argv if a.startswith('--anims=')]
+if CARPETA_ANIMS:
+    import json
+    exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'mixamo_retarget.py')).read())
+    sc.render.fps=30
+    for pb_ in ESQ.pose.bones: pb_.matrix_basis=Matrix.Identity(4)
+    falta=[v for v in MIXAMO_A_RIGIFY.values() if v not in ESQ.data.bones]
+    print('huesos de Mixamo sin pareja en la chica:',falta)
+    meta=hornear(ESQ,CARPETA_ANIMS[0],MIXAMO_A_RIGIFY,andar='andar_f')
+    zs=[(B.matrix_world@v.co).z for v in B.data.vertices]; meta['altura']=round(max(zs)-min(zs),4)
+    json.dump(meta,open(os.path.splitext(OUT)[0]+'.json','w'),indent=1); print('meta',meta)
 # ---------- 5) exportar ----------
 bpy.ops.object.select_all(action='DESELECT')
 for o in (RIG,B,P,R): o.hide_set(False); o.hide_viewport=False; o.select_set(True)
 bpy.context.view_layer.objects.active=RIG
-kw=dict(filepath=OUT,export_format='GLB',use_selection=True,export_apply=False,export_def_bones=False,export_animations=False,export_morph=True,export_morph_normal=False,export_skins=True,export_yup=True,export_image_format='WEBP',export_image_quality=82)
+kw=dict(filepath=OUT,export_format='GLB',use_selection=True,export_apply=False,export_def_bones=False,export_animations=bool(CARPETA_ANIMS),export_animation_mode='NLA_TRACKS',export_force_sampling=True,export_morph=True,export_morph_normal=False,export_skins=True,export_yup=True,export_image_format='WEBP',export_image_quality=82)
 try: bpy.ops.export_scene.gltf(export_try_sparse_sk=True,**kw)
 except TypeError: bpy.ops.export_scene.gltf(**kw)
 print('GLB',OUT,round(os.path.getsize(OUT)/1e6,2),'MB')
