@@ -6,7 +6,7 @@ exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'mixamo_retarg
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc=bpy.context.scene; sc.render.fps=30
 bpy.ops.import_scene.fbx(filepath=os.path.join(CARPETA,'Remy.fbx'))
-T=[o for o in bpy.data.objects if o.type=='ARMATURE'][0]; T.name='Remy'
+T=[o for o in bpy.data.objects if o.type=='ARMATURE'][0]; T.name='Armature'; T.data.name='Armature'   # mismo nombre que los demás personajes: sus animaciones sirven para todos
 T.animation_data_clear()
 for a in list(bpy.data.actions): bpy.data.actions.remove(a)
 mapa={b.name.replace('mixamorig:',''):b.name for b in T.data.bones}

@@ -21,8 +21,8 @@ static func aspecto_de(v: Dictionary) -> Dictionary:
 
 static func aspecto_jugador(base: Dictionary) -> Dictionary:
 	var camisa := Color.html(str(base.get("shirt", "#ff8a5b")))
-	# "modelo": "autumn" -> la chica hecha en Blender (arte/personajes/autumn); sin "modelo", una Persona del paquete libre
-	return {"genero": "f", "edad": int(base.get("age", 27)), "piel": 1, "pelo": "castano", "semilla": 11, "modelo": "autumn",
+	# "modelo": un personaje de Mixamo (arte/mixamo/, fuera del repo); si no está, una Persona del paquete libre
+	return {"genero": "f", "edad": int(base.get("age", 27)), "piel": 1, "pelo": "castano", "semilla": 11, "modelo": "kate",
 		"ropa": {"variante": 0, "arriba": camisa, "abajo": Color.html(str(base.get("pants", "#3d405b")))}, "camisa": camisa}
 
 static func crear(camisa: Color, _piel: Color, esc := 1.0, asp := {}) -> Dictionary:
@@ -47,20 +47,32 @@ static func crear(camisa: Color, _piel: Color, esc := 1.0, asp := {}) -> Diction
 # la persona con esqueleto (cara). Origen en el suelo; mira a -Z (el holder de Actor la gira para que mire a +Z)
 static func persona(asp: Dictionary) -> Node3D:
 	var mod := str(asp.get("modelo", ""))
-	# los hombres adultos usan a Remy (Mixamo) si sus archivos están (arte/mixamo/, fuera del repo)
-	if mod == "" and str(asp.get("genero", "")) == "h" and int(asp.get("edad", 30)) >= 16 and PersonaAnimada.disponible("remy"):
-		mod = "remy"
+	if mod == "":
+		mod = modelo_mixamo(asp)
 	if PersonaAnimada.disponible(mod):
 		var pm := PersonaAnimada.new(mod)
 		pm.set_aspecto(asp)
 		return pm
-	if mod == "autumn":
-		var pa := PersonaAutumn.new()
-		pa.set_aspecto(asp)
-		return pa
 	var p: Node3D = PERSONA.instantiate()
 	p.set_aspecto(asp)   # antes de add_child: el aspecto es estable
 	return p
+
+# personaje de Mixamo para un vecino, estable (sale de su semilla), según género y edad. "" si no hay ninguno que encaje.
+const MIX_H := ["remy", "james", "leonard", "brian", "adam", "joe"]
+const MIX_F := ["louise", "megan", "kate", "sophie", "jody", "martha"]
+static func modelo_mixamo(asp: Dictionary) -> String:
+	var edad := int(asp.get("edad", 30))
+	var h := str(asp.get("genero", "h")) != "f"
+	var sem := int(asp.get("semilla", 1))
+	var lista: Array = []
+	if edad < 16:
+		lista = ["timmy"] if h else []
+	elif edad >= 65:
+		lista = ["boss"] if h else ["granny"]
+	else:
+		lista = MIX_H if h else MIX_F
+	var ok := lista.filter(func(m): return PersonaAnimada.disponible(m))
+	return "" if ok.is_empty() else str(ok[sem % ok.size()])
 
 static func _mat(c: Color) -> StandardMaterial3D:
 	var k := c.to_html()

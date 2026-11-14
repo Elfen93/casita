@@ -5,7 +5,6 @@ class_name PersonaAnimada
 ## Los .glb viven en arte/mixamo/, que NO está en el repositorio (licencia de Mixamo): si faltan, Figura usa otra persona.
 
 const MODELOS := {
-	"autumn": {"glb": "res://arte/mixamo/autumn_mixamo.glb", "meta": "res://arte/mixamo/autumn_mixamo.json", "altura": 1.62},
 	"remy": {"glb": "res://arte/mixamo/remy.glb", "meta": "res://arte/mixamo/remy.json", "altura": 1.80},
 }
 const ANIMS_DISPONIBLES := ["parado", "andar", "correr", "sentado", "usar", "beber", "hablar", "dormir"]
@@ -30,17 +29,76 @@ var _t := 0.0
 var _t_parpadeo := 2.0
 var _parpadeo := 0.0
 
+## Personajes de Mixamo sin animaciones propias (arte/mixamo/pj/<nombre>.glb): usan las de Remy (mismo esqueleto).
+## Altura en el juego de cada uno (m); el resto de datos sale de pj/personajes.json.
+const PJ := {
+	"james": 1.80, "leonard": 1.78, "brian": 1.76, "adam": 1.79, "joe": 1.80, "boss": 1.74,
+	"louise": 1.66, "megan": 1.65, "kate": 1.67, "sophie": 1.64, "jody": 1.63, "martha": 1.66, "granny": 1.58, "timmy": 1.45,
+}
+const PJ_META := "res://arte/mixamo/pj/personajes.json"
+static var _pj_meta := {}
+static var _lib: AnimationLibrary
+static var _cadera_lib := 0.0
+
+static func _ruta(m: String) -> String:
+	return MODELOS[m]["glb"] if MODELOS.has(m) else "res://arte/mixamo/pj/%s.glb" % m
+
 static func disponible(m: String) -> bool:
-	return MODELOS.has(m) and ResourceLoader.exists(MODELOS[m]["glb"])
+	if MODELOS.has(m):
+		return ResourceLoader.exists(MODELOS[m]["glb"])
+	return PJ.has(m) and ResourceLoader.exists(_ruta(m)) and disponible("remy")
+
+## animaciones compartidas: las de remy.glb, y la altura de su cadera en reposo (espacio del esqueleto)
+static func _libreria() -> AnimationLibrary:
+	if _lib == null:
+		var r: Node = _cargar("remy").instantiate()
+		var ap: AnimationPlayer = r.find_children("*", "AnimationPlayer", true, false)[0]
+		# copia sin pistas de posición (salvo la cadera) ni de escala: cada esqueleto conserva el largo de sus huesos
+		var orig := ap.get_animation_library("")
+		_lib = AnimationLibrary.new()
+		for n in orig.get_animation_list():
+			var an: Animation = orig.get_animation(n).duplicate(true)
+			for i in range(an.get_track_count() - 1, -1, -1):
+				var tt := an.track_get_type(i)
+				var hueso := str(an.track_get_path(i).get_concatenated_subnames())
+				if tt == Animation.TYPE_SCALE_3D or (tt == Animation.TYPE_POSITION_3D and not hueso.ends_with("Hips")):
+					an.remove_track(i)
+			_lib.add_animation(n, an)
+		var sk: Skeleton3D = r.find_children("*", "Skeleton3D", true, false)[0]
+		_cadera_lib = _cadera_esq(sk)
+		r.free()
+	return _lib
+
+static func _cadera_esq(sk: Skeleton3D) -> float:
+	for i in sk.get_bone_count():
+		if sk.get_bone_name(i).ends_with("Hips"):
+			return sk.get_bone_global_rest(i).origin.length()   # el «arriba» del esqueleto no siempre es +Y (Mixamo: -Z)
+	return 1.0
+
+static func _leer_json(ruta: String) -> Dictionary:
+	var f := FileAccess.open(ruta, FileAccess.READ)
+	if f == null:
+		return {}
+	var d = JSON.parse_string(f.get_as_text())
+	return d if d is Dictionary else {}
 
 static func _cargar(m: String) -> PackedScene:
 	if not _escenas.has(m):
-		_escenas[m] = load(MODELOS[m]["glb"])
-		var meta := {}
-		var f := FileAccess.open(MODELOS[m]["meta"], FileAccess.READ)
-		if f != null:
-			meta = JSON.parse_string(f.get_as_text())
-		_metas[m] = meta if meta is Dictionary else {}
+		_escenas[m] = load(_ruta(m))
+		if MODELOS.has(m):
+			_metas[m] = _leer_json(MODELOS[m]["meta"])
+		else:
+			if _pj_meta.is_empty():
+				_pj_meta = _leer_json(PJ_META)
+			# los datos de asiento son los de Remy, pasados a la cadera de este personaje
+			var mr := _leer_json(MODELOS["remy"]["meta"])
+			var mp: Dictionary = _pj_meta.get(m, {})
+			var k := float(mp.get("cadera", 1.0)) / float(mr.get("cadera_pie", 1.0))
+			var meta := {"altura": float(mp.get("altura", 1.75))}
+			for c in mr:
+				if str(c).begins_with("cadera_"):
+					meta[c] = float(mr[c]) * k
+			_metas[m] = meta
 	return _escenas[m]
 
 func _init(m := "remy") -> void:
@@ -58,13 +116,22 @@ func _montar() -> void:
 	cuerpo.name = "Cuerpo"
 	add_child(cuerpo)
 	_meta = _metas.get(modelo, {})
-	altura = float(MODELOS[modelo]["altura"])
+	altura = float(MODELOS[modelo]["altura"]) if MODELOS.has(modelo) else float(PJ.get(modelo, 1.75))
 	if aspecto.has("edad") and int(aspecto["edad"]) < 16:
 		altura *= Figura.factor_edad(int(aspecto["edad"]))
 	_esc = altura / float(_meta.get("altura", altura))
 	cuerpo.scale = Vector3.ONE * _esc
 	cuerpo.rotation.y = PI          # los modelos miran a +Z; la persona mira a -Z
-	_ap = cuerpo.find_children("*", "AnimationPlayer", true, false)[0]
+	var aps := cuerpo.find_children("*", "AnimationPlayer", true, false)
+	if aps.is_empty():
+		# personaje sin animaciones: las de Remy, con la traslación de la cadera escalada a su tamaño
+		_ap = AnimationPlayer.new()
+		cuerpo.add_child(_ap)
+		_ap.add_animation_library("", _libreria())
+		var sk: Skeleton3D = cuerpo.find_children("*", "Skeleton3D", true, false)[0]
+		sk.motion_scale = _cadera_esq(sk) / _cadera_lib
+	else:
+		_ap = aps[0]
 	for n in _ap.get_animation_list():
 		var an := _ap.get_animation(n)
 		an.loop_mode = Animation.LOOP_NONE if SIN_BUCLE.has(n) else Animation.LOOP_LINEAR
