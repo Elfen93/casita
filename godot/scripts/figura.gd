@@ -46,7 +46,15 @@ static func crear(camisa: Color, _piel: Color, esc := 1.0, asp := {}) -> Diction
 
 # la persona con esqueleto (cara). Origen en el suelo; mira a -Z (el holder de Actor la gira para que mire a +Z)
 static func persona(asp: Dictionary) -> Node3D:
-	if str(asp.get("modelo", "")) == "autumn":
+	var mod := str(asp.get("modelo", ""))
+	# los hombres adultos usan a Remy (Mixamo) si sus archivos están (arte/mixamo/, fuera del repo)
+	if mod == "" and str(asp.get("genero", "")) == "h" and int(asp.get("edad", 30)) >= 16 and PersonaAnimada.disponible("remy"):
+		mod = "remy"
+	if PersonaAnimada.disponible(mod):
+		var pm := PersonaAnimada.new(mod)
+		pm.set_aspecto(asp)
+		return pm
+	if mod == "autumn":
 		var pa := PersonaAutumn.new()
 		pa.set_aspecto(asp)
 		return pa

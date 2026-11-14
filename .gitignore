@@ -5,3 +5,7 @@ __pycache__/
 # Godot (prueba 3D)
 godot/.godot/
 godot/data/
+
+# Mixamo: la licencia no permite repartir los archivos sueltos y el repo es público.
+# Se generan con godot/arte/herramientas/blender/exportar_remy.py y exportar_autumn.py --anims=... (ver FUENTES.md)
+godot/arte/mixamo/
