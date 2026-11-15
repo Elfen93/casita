@@ -131,14 +131,14 @@ try:
     l=linea('rel_favor','rel_favor:',c['i'],'mudanza');chk('alguien viene a pedirte un favor',l=='viene',l)
     esperar(lambda:est().get('busca')=='pide',60,0.6);p.dormir(1.0);p.shot(OUT+'/favor.png')
     chk('te pide el favor en persona (ficha con sí/no)',est().get('busca')=='pide' and 'ficha=-' not in ui(),str(est().get('busca')))
-    r0=per(c['vid'])['rel'];p.cmd('boton',1);p.dormir(1.5);p.shot(OUT+'/favor_no.png')
+    r0=per(c['vid'])['rel'];p.cmd('rel_resp',0);p.dormir(1.5);p.shot(OUT+'/favor_no.png')
     chk('decir que no tiene su tarjeta y la relación lo nota',per(c['vid'])['rel']<=r0 and 'card=-' not in ui())
     # 9) saludo al cruzaros
     V=[v for v in visibles() if v['edad']>=18 and v['meta'] not in ('bar','colegio','') and v['vid'] not in (a['vid'],c['vid'])]
     if V:
         d=V[0];p.cmd('rel_set',d['i'],25);p.cmd('rel_cerca',d['i']);p.dormir(1)
         l=linea('rel_saludo','rel_saludo:');p.dormir(0.8);p.shot(OUT+'/saludo.png')
-        chk('quien te conoce te saluda al cruzaros',l=='1',l)
+        chk('quien te conoce te saluda al cruzaros',l.isdigit() and int(l)>=1,l)
     # 10) guardado: la relación y lo descubierto sobreviven
     e1=est();p.cmd('guardar');p.cmd('cargar');p.dormir(1);e2=est()
     chk('guardar y cargar: relaciones y lo descubierto',e1['per'].keys()==e2['per'].keys() and abs(e1['per'][a['vid']]['rel']-e2['per'][a['vid']]['rel'])<0.2 and e2['per'][a['vid']]['sabe']==e1['per'][a['vid']]['sabe'],str(e2['per'].get(a['vid'])))

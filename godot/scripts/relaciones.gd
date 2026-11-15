@@ -1474,6 +1474,8 @@ func _busca_fin() -> void:
 	if busca.is_empty():
 		return
 	var x: Dictionary = busca["x"]
+	if per.has(str(x["v"]["id"])):
+		per[str(x["v"]["id"])]["saludo"] = dia()     # ya os habéis visto hoy
 	x["visita"] = false
 	_soltar(x)
 	busca = {}
@@ -1710,6 +1712,20 @@ func cmd(c: String, args: Array) -> bool:
 			jg.jugador.ruta = []
 			jg.pivote.position = jg.jugador.nodo.position
 			print("rel_cerca: %d,%d" % [int(pc.x), int(pc.y)])
+		"rel_resp":
+			# responder al favor que te están pidiendo (1 sí, 0 no)
+			if not busca.is_empty():
+				responder_favor(busca["x"], str(busca["id"]), int(a) == 1)
+			print("rel_resp: ", a)
+		"menu_rect":
+			# centro en pantalla de un botón del panel «Menú» por su texto (las pruebas no dependen del orden)
+			var out := "-"
+			if jg.guardado.panel != null:
+				for b in jg.guardado.panel.get_child(0).get_children():
+					if b is Button and b.is_visible_in_tree() and str(b.text).begins_with(str(a)):
+						var r: Rect2 = b.get_global_rect()
+						out = "%d,%d" % [int(r.get_center().x), int(r.get_center().y)]
+			print("menu_rect: ", out)
 		"rel_pant":
 			var x4: Dictionary = jg.vecinos[int(a)]
 			var sp: Vector2 = jg.camara.unproject_position(x4["cam"].nodo.global_position + Vector3(0, 0.9, 0))
