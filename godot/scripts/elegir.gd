@@ -95,7 +95,11 @@ func _montar_3d() -> void:
 	giro = Node3D.new()
 	vista.add_child(giro)
 
-func _poner() -> void:
+func _llego(_nombre: String, modelo: String) -> void:
+	if is_inside_tree() and str(lista[i]["modelo"]) == modelo and Figura.esperando(persona) != "":
+		_poner(true)
+
+func _poner(cambio := false) -> void:
 	var j: Dictionary = lista[i]
 	var modelo := str(j["modelo"])
 	if persona != null:
@@ -106,8 +110,16 @@ func _poner() -> void:
 	giro.add_child(persona)
 	if persona.has_method("anim"):
 		persona.anim("parado")
-	giro.rotation.y = 0.0
-	_quieto = 0.6
+	if not cambio:
+		giro.rotation.y = 0.0
+		_quieto = 0.6
+	# web: si su paquete no ha llegado se ve la persona de repuesto y se cambia al llegar; los de al lado se piden ya
+	if Figura.esperando(persona) != "":
+		Paquetes.pedir(Figura.esperando(persona), _llego.bind(modelo), true)
+	for d in [1, -1]:
+		var m := str(lista[posmod(i + d, lista.size())]["modelo"])
+		if PersonaAnimada.disponible(m) and not PersonaAnimada.listo(m):
+			Paquetes.pedir(PersonaAnimada.paquete(m))
 	var edad := int(Figura.aspecto_jugador(base, modelo)["edad"])
 	lbl_nombre.text = Figura.nombre_de(modelo, base)
 	lbl_info.text = "%d años  ·  %d de %d" % [edad, i + 1, lista.size()]

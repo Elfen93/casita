@@ -175,6 +175,8 @@ func _ready() -> void:
 		set_process(true)
 		set_process_input(true)
 	Figura.modelo_jugador = modelo_pj
+	if PersonaAnimada.disponible(modelo_pj) and not PersonaAnimada.listo(modelo_pj):
+		Paquetes.pedir(PersonaAnimada.paquete(modelo_pj), Callable(), true)   # web: el suyo, lo primero
 	nombre_pj = Figura.nombre_de(modelo_pj, personas.get("personaje_base", {}))
 	_entorno()
 	cola = Cola.new(self)

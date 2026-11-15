@@ -45,6 +45,8 @@ func set_lod(on: bool, sombra := false) -> void:
 			alto_cab = persona.altura + 0.25
 			_anim_k = ""
 			_zancadas = {}
+			if Figura.esperando(persona) != "":
+				Paquetes.pedir(Figura.esperando(persona), _llego)
 		if not esq_on:
 			esq_on = true
 			persona.visible = true
@@ -61,6 +63,19 @@ func set_lod(on: bool, sombra := false) -> void:
 		persona.visible = false
 		persona.process_mode = Node.PROCESS_MODE_DISABLED
 		cuerpo.visible = true
+
+# llegó el paquete del personaje (web): fuera la persona de repuesto, se monta la de verdad si se estaba viendo
+func _llego(_nombre: String) -> void:
+	if persona == null or not is_instance_valid(persona) or Figura.esperando(persona) == "":
+		return
+	var on := esq_on
+	var sombra := sombra_on
+	holder.queue_free()
+	holder = null
+	persona = null
+	esq_on = false
+	if on:
+		set_lod(true, sombra)
 
 # la animación sale del estado real: andar/correr, sentado (con brazos al beber o hablar), usar (barra de progreso), beber, hablar
 func anim_tick() -> void:

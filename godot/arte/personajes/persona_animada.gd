@@ -42,34 +42,63 @@ static var _pj_meta := {}
 static var _lib: AnimationLibrary
 static var _cadera_lib := 0.0
 
+## Animaciones compartidas ya horneadas (arte/herramientas/hornear_anims.gd, lo llama scripts/godot_export.sh): así
+## no hace falta cargar remy.glb (malla y texturas) para animar a los demás. Si falta, se sacan de remy.glb al vuelo.
+## Grupos futuros (dia, social, trabajo, gimnasio, boxeo, policia, musica, agua): arte/mixamo/anim/<grupo>.res, uno
+## por paquete web (play3d/anim/<grupo>.pck, ver Paquetes y godot/README.md).
+const ANIM_BASE := "res://arte/mixamo/anim/base.res"
+
 static func _ruta(m: String) -> String:
 	return MODELOS[m]["glb"] if MODELOS.has(m) else "res://arte/mixamo/pj/%s.glb" % m
 
-static func disponible(m: String) -> bool:
-	if MODELOS.has(m):
-		return ResourceLoader.exists(MODELOS[m]["glb"])
-	return PJ.has(m) and ResourceLoader.exists(_ruta(m)) and disponible("remy")
+## nombre del paquete web que trae el modelo (Paquetes): «pj/<nombre>», también Remy
+static func paquete(m: String) -> String:
+	return "pj/" + m
 
-## animaciones compartidas: las de remy.glb, y la altura de su cadera en reposo (espacio del esqueleto)
+## ¿hay este personaje? (en disco, en index.pck o para bajar en la web)
+static func disponible(m: String) -> bool:
+	if not MODELOS.has(m) and not PJ.has(m):
+		return false
+	if not (ResourceLoader.exists(_ruta(m)) or Paquetes.existe(paquete(m))):
+		return false
+	return MODELOS.has(m) or anims_disponibles()
+
+## ¿se puede montar ya? (en la web, si no, hay que pedir su paquete: Figura.persona lo hace)
+static func listo(m: String) -> bool:
+	return ResourceLoader.exists(_ruta(m))
+
+static func anims_disponibles() -> bool:
+	return ResourceLoader.exists(ANIM_BASE) or ResourceLoader.exists(MODELOS["remy"]["glb"])
+
+## animaciones compartidas y la altura de la cadera de Remy en reposo (espacio del esqueleto, meta «cadera_reposo»)
 static func _libreria() -> AnimationLibrary:
 	if _lib == null:
-		var r: Node = _cargar("remy").instantiate()
-		var ap: AnimationPlayer = r.find_children("*", "AnimationPlayer", true, false)[0]
-		# copia sin pistas de posición (salvo la cadera) ni de escala: cada esqueleto conserva el largo de sus huesos
-		var orig := ap.get_animation_library("")
-		_lib = AnimationLibrary.new()
-		for n in orig.get_animation_list():
-			var an: Animation = orig.get_animation(n).duplicate(true)
-			for i in range(an.get_track_count() - 1, -1, -1):
-				var tt := an.track_get_type(i)
-				var hueso := str(an.track_get_path(i).get_concatenated_subnames())
-				if tt == Animation.TYPE_SCALE_3D or (tt == Animation.TYPE_POSITION_3D and not hueso.ends_with("Hips")):
-					an.remove_track(i)
-			_lib.add_animation(n, an)
-		var sk: Skeleton3D = r.find_children("*", "Skeleton3D", true, false)[0]
-		_cadera_lib = _cadera_esq(sk)
-		r.free()
+		if ResourceLoader.exists(ANIM_BASE):
+			_lib = load(ANIM_BASE)
+		else:
+			_lib = hornear_libreria()
+		_cadera_lib = float(_lib.get_meta("cadera_reposo", 1.0))
 	return _lib
+
+## las animaciones de remy.glb, listas para cualquier esqueleto de Mixamo
+static func hornear_libreria() -> AnimationLibrary:
+	var r: Node = load(MODELOS["remy"]["glb"]).instantiate()
+	var ap: AnimationPlayer = r.find_children("*", "AnimationPlayer", true, false)[0]
+	# copia sin pistas de posición (salvo la cadera) ni de escala: cada esqueleto conserva el largo de sus huesos
+	var orig := ap.get_animation_library("")
+	var lib := AnimationLibrary.new()
+	for n in orig.get_animation_list():
+		var an: Animation = orig.get_animation(n).duplicate(true)
+		for i in range(an.get_track_count() - 1, -1, -1):
+			var tt := an.track_get_type(i)
+			var hueso := str(an.track_get_path(i).get_concatenated_subnames())
+			if tt == Animation.TYPE_SCALE_3D or (tt == Animation.TYPE_POSITION_3D and not hueso.ends_with("Hips")):
+				an.remove_track(i)
+		lib.add_animation(n, an)
+	var sk: Skeleton3D = r.find_children("*", "Skeleton3D", true, false)[0]
+	lib.set_meta("cadera_reposo", _cadera_esq(sk))
+	r.free()
+	return lib
 
 static func _cadera_esq(sk: Skeleton3D) -> float:
 	for i in sk.get_bone_count():
@@ -138,9 +167,14 @@ func _montar() -> void:
 	for n in _ap.get_animation_list():
 		var an := _ap.get_animation(n)
 		an.loop_mode = Animation.LOOP_NONE if SIN_BUCLE.has(n) else Animation.LOOP_LINEAR
+	# caja de visibilidad: las animaciones salen de la caja de reposo (sentado, tumbado, brazos), así que cada malla lleva
+	# una fija que cubre a la persona en cualquier postura. Se da en metros en el espacio de ESTA persona y se pasa al de
+	# la malla: entre medias está el «Armature» de Mixamo (escala 0,01 y girado 90°), y la caja hecha a ojo en el
+	# espacio de la malla salía de 2 cm y tumbada: la persona desaparecía en cuanto los pies salían de plano.
+	var caja := AABB(Vector3(-1.5, -1.2, -1.5), Vector3(3.0, altura + 2.2, 3.0))   # ±1 m en Y: sentado sube/baja el cuerpo
 	for mi_ in cuerpo.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = mi_
-		mi.custom_aabb = AABB(Vector3(-1, -0.2, -1) / _esc, Vector3(2, 2.4, 2) / _esc)   # las animaciones salen de la caja de reposo
+		mi.custom_aabb = _a_persona(mi).affine_inverse() * caja
 		if mi.mesh.get_blend_shape_count() > 0 and _cara == null:
 			_cara = mi
 			for i in mi.mesh.get_blend_shape_count():
@@ -155,6 +189,14 @@ func _montar() -> void:
 				mat.alpha_scissor_threshold = 0.32
 				mat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	anim("parado")
+
+## transformación del espacio de un nodo del cuerpo al de esta persona (sin el desplazamiento de _colocar)
+func _a_persona(n: Node3D) -> Transform3D:
+	var t := Transform3D.IDENTITY
+	while n != null and n != cuerpo:
+		t = n.transform * t
+		n = n.get_parent() as Node3D
+	return Transform3D(cuerpo.transform.basis, Vector3.ZERO) * t
 
 # ---------------------------------------------------------------- API de Persona
 func anim(nombre: String, velocidad := 1.0, brazos := "") -> void:

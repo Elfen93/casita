@@ -110,14 +110,23 @@ static func persona(asp: Dictionary) -> Node3D:
 	var mod := str(asp.get("modelo", ""))
 	if mod == "":
 		mod = modelo_mixamo(asp)
-	if PersonaAnimada.disponible(mod):
+	if PersonaAnimada.disponible(mod) and PersonaAnimada.listo(mod):
 		_preparar_pistas(mod)
 		var pm := PersonaAnimada.new(mod)
 		pm.set_aspecto(asp)
 		return pm
 	var p: Node3D = PERSONA.instantiate()
 	p.set_aspecto(asp)   # antes de add_child: el aspecto es estable
+	if PersonaAnimada.disponible(mod):
+		# web: su paquete aún no ha llegado. Se pide y, mientras, la persona libre de repuesto; quien la monta
+		# (Actor, la pantalla de elegir) la cambia al llegar: ver esperando() y Paquetes.pedir(…, al_llegar)
+		p.set_meta("espera", PersonaAnimada.paquete(mod))
+		Paquetes.pedir(PersonaAnimada.paquete(mod))
 	return p
+
+## paquete que espera esta persona de repuesto para cambiarse por la de verdad ("" si ya es la de verdad)
+static func esperando(p: Node) -> String:
+	return str(p.get_meta("espera", "")) if p != null and is_instance_valid(p) else ""
 
 # Las animaciones compartidas (las de remy.glb) apuntan a «Remy/Skeleton3D», pero los pj/*.glb traen
 # «Armature/Skeleton3D»: se quedaban en pose T y llenaban la consola de avisos. Una vez por modelo, antes de
