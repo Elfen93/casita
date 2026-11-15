@@ -97,8 +97,9 @@ static func _cargar(m: String) -> PackedScene:
 			var mp: Dictionary = _pj_meta.get(m, {})
 			var k := float(mp.get("cadera", 1.0)) / float(mr.get("cadera_pie", 1.0))
 			var meta := {"altura": float(mp.get("altura", 1.75))}
+			# (y el avance de andar/correr: piernas más largas, pasos más largos; ver zancada())
 			for c in mr:
-				if str(c).begins_with("cadera_"):
+				if str(c).begins_with("cadera_") or str(c).begins_with("avance_"):
 					meta[c] = float(mr[c]) * k
 			_metas[m] = meta
 	return _escenas[m]
@@ -169,8 +170,26 @@ func anim(nombre: String, velocidad := 1.0, brazos := "") -> void:
 		if real != "andar" and real != "correr":
 			_ap.seek(randf() * _ap.current_animation_length * 0.8, true)
 	_real = real
-	_ap.speed_scale = 1.0
+	# velocidad = ritmo de la animación; Actor la ajusta al andar/correr para que los pies no resbalen (ver zancada())
+	_ap.speed_scale = velocidad
 	_colocar()
+
+## m/s que avanza el pie apoyado en «andar»/«correr» con la animación a velocidad 1,0, ya a la escala de ESTA persona
+## (altura, edad). Remy (animaciones propias): el dato horneado por exportar_remy.py (avance_<anim> del JSON, en
+## unidades del modelo). Los personajes «pj» llevan las animaciones de Remy en SU esqueleto: se mide en la animación
+## (Escala.medir_zancada), porque escalar el de Remy por la cadera falla en cuerpos de otras proporciones (Timmy: -9 %).
+## Si algo falta: el JSON escalado y, al final, la reserva de Escala.
+func zancada(nombre: String) -> float:
+	var json := float(_meta.get("avance_" + nombre, 0.0)) * _esc
+	var a := json if MODELOS.has(modelo) else 0.0
+	if a <= 0.0 and _ap != null and _ap.has_animation(nombre):
+		var sk: Skeleton3D = cuerpo.find_children("*", "Skeleton3D", true, false)[0]
+		a = Escala.medir_zancada(sk, _ap.get_animation(nombre), self, "mixamo/" + nombre)
+	if a <= 0.0:
+		a = json
+	if a <= 0.0:
+		a = float(Escala.ZANCADA_RESERVA.get(nombre, 1.0)) * altura
+	return a
 
 func set_altura_asiento(h: float) -> void:
 	_alto_asiento = h

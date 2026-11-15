@@ -23,6 +23,9 @@ var esq_on := false  # persona montada, visible y animándose; si no, solo la c�
 var alt_asiento := 0.5
 var sombra_on := false
 var _anim_k := ""
+var _ritmo := 1.0         # speed_scale que se le dio a la persona por última vez
+var _paso := 0.0          # metros que pidió avanzar el último mover() (velocidad real = _paso / delta del frame)
+var _zancadas := {}       # "andar"/"correr" -> m/s que avanza el pie de ESTA persona con la animación a velocidad 1
 
 func esqueleto_activo() -> bool:
 	return persona != null and esq_on
@@ -41,6 +44,7 @@ func set_lod(on: bool, sombra := false) -> void:
 			holder.add_child(persona)
 			alto_cab = persona.altura + 0.25
 			_anim_k = ""
+			_zancadas = {}
 		if not esq_on:
 			esq_on = true
 			persona.visible = true
@@ -81,12 +85,10 @@ func anim_tick() -> void:
 		elif hablando:
 			br = "hablar"
 	elif anda:
-		if vel >= Escala.VEL_CORRER - 0.1:
-			n = "correr"
-			vel_a = 1.35
-		else:
-			n = "andar"
-			vel_a = 1.7
+		n = "correr" if vel >= Escala.VEL_CORRER - 0.1 else "andar"
+		# PIES SIN RESBALAR: la animación va al ritmo de la velocidad REAL del actor (main la multiplica: x0,9 los
+		# vecinos, x1,8 a doble velocidad de juego), dividida por lo que avanza su zancada a ritmo 1
+		vel_a = clampf(_vel_real() / _zancada(n), Escala.RITMO_MIN, Escala.RITMO_MAX)
 	elif espera or hablando:
 		n = "hablar"
 	elif usando:
@@ -94,12 +96,38 @@ func anim_tick() -> void:
 	elif bebe:
 		n = "beber"
 	var k := "%s/%s" % [n, br]
-	if k == _anim_k:
+	if k == _anim_k and absf(vel_a - _ritmo) <= 0.03 * _ritmo:
 		return
 	_anim_k = k
+	_ritmo = vel_a
 	if n == "sentado":
 		persona.set_altura_asiento(alt_asiento)
 	persona.anim(n, vel_a, br)
+
+# m/s a los que se ha movido el actor en este frame (anim_tick va justo después de mover() en el mismo frame)
+func _vel_real() -> float:
+	var dt := nodo.get_process_delta_time() if nodo.is_inside_tree() else 0.0
+	return _paso / dt if dt > 0.0 and _paso > 0.0 else vel
+
+# avance del pie apoyado (m/s a ritmo 1) de la animación `n` en esta persona, ya con su altura. Se calcula una vez.
+# PersonaAnimada (Mixamo) lo da con zancada(); a la Persona de Quaternius se le mide su animación con Escala.medir_zancada.
+func _zancada(n: String) -> float:
+	if _zancadas.has(n):
+		return _zancadas[n]
+	var z := 0.0
+	if persona.has_method("zancada"):
+		z = persona.zancada(n)
+	else:
+		var mapa: Dictionary = persona.get_script().get_script_constant_map().get("MAPA_ANIM", {})
+		var real := str(mapa.get(n, n))
+		var aps: Array = persona.find_children("*", "AnimationPlayer", true, false)
+		var sks: Array = persona.find_children("*", "Skeleton3D", true, false)
+		if not aps.is_empty() and not sks.is_empty() and (aps[0] as AnimationPlayer).has_animation(real):
+			z = Escala.medir_zancada(sks[0], (aps[0] as AnimationPlayer).get_animation(real), persona, "persona/" + real)
+	if z <= 0.0:
+		z = float(Escala.ZANCADA_RESERVA.get(n, 1.0)) * float(persona.altura)
+	_zancadas[n] = z
+	return z
 
 func _init(f: Dictionary) -> void:
 	nodo = f["nodo"]
@@ -129,6 +157,7 @@ func mirar(dir: Vector2) -> void:
 # true cuando termina el camino
 func mover(paso: float) -> bool:
 	ult_paso = 0.0
+	_paso = paso
 	if ruta.is_empty():
 		anda = false
 		return false
