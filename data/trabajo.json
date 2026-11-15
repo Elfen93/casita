@@ -1,0 +1,203 @@
+{
+  "_": "Trabajo y dinero en Godot (godot/scripts/trabajo.gd y cuenta.gd): puestos del barrio, jornada, faltas, nómina, paro, alquiler y facturas. Sueldos de profesiones.json, impuestos de gobiernos.json (fiscal.centro), alquiler de viviendas.json. Campos en data/README.md.",
+  "calendario": {"dias_mes": 28, "hora_pagos": 9},
+  "puestos": {
+    "bar_camarera": {"t": ["Camarera de mediodía", "Camarero de mediodía"], "sector": "hosteleria", "nivel": 0, "lugar": "bar", "grupo": "bar", "e": "🍽", "empresa": "Bar Manolo", "h": [10, 18], "dias": [1, 2, 3, 4, 5], "contrato": "Temporal, seis meses", "jefa": "mariano", "compis": ["ruben", "tamara"], "d": "Barra, mesas y el menú del día. A la una y media no cabe un alfiler."},
+    "super_cajera": {"t": ["Cajera", "Cajero"], "sector": "super", "nivel": 0, "lugar": "super", "grupo": "super", "e": "🛒", "empresa": "SuperPronto", "h": [8, 16], "dias": [1, 2, 3, 4, 5], "contrato": "Indefinido", "jefa": "charo", "compis": ["paca", "daniela"], "d": "Caja, reponer cuando no hay cola y sonreír cuando la hay."},
+    "super_reponedora": {"t": ["Reponedora de tarde", "Reponedor de tarde"], "sector": "super", "nivel": 0, "lugar": "super", "grupo": "super", "e": "🛒", "empresa": "SuperPronto", "h": [15, 21], "dias": [0, 1, 2, 3, 4], "contrato": "Temporal, a tiempo parcial", "jefa": "charo", "compis": ["nuria", "mar"], "d": "Palés, cajas y lineales. Seis horas de agacharse.", "asciende": false},
+    "tienda_dependienta": {"t": ["Dependienta", "Dependiente"], "sector": "super", "nivel": 0, "lugar": "tienda", "grupo": "tienda", "e": "🏪", "empresa": "Comestibles Wei", "h": [15, 21], "dias": [0, 1, 2, 3, 4, 5], "contrato": "Temporal, a tiempo parcial", "jefa": "wei", "compis": ["mei", "nasrin"], "d": "Mostrador, fiado a las vecinas de siempre y cuentas en una libreta.", "asciende": false},
+    "ambulatorio_limpieza": {"t": ["Limpiadora", "Limpiador"], "sector": "cuidados", "nivel": 0, "pay": 62, "estudios": [], "lugar": "ambulatorio", "grupo": "limpieza", "e": "🧼", "empresa": "Brillo Servicios", "h": [6, 10], "dias": [0, 1, 2, 3, 4], "contrato": "Subcontrata, a tiempo parcial", "jefa": "", "compis": ["angeles", "ainhoa"], "d": "El centro de salud antes de que abra. La empresa es otra: la del concurso más barato.", "asciende": false},
+    "colegio_comedor": {"t": ["Monitora de comedor", "Monitor de comedor"], "sector": "cuidados", "nivel": 0, "pay": 62, "estudios": [], "lugar": "colegio", "grupo": "comedor", "e": "🍲", "empresa": "Comedores Arcoíris", "h": [12, 15], "dias": [0, 1, 2, 3, 4], "contrato": "Fijo discontinuo, curso escolar", "jefa": "lourdes", "compis": ["mercedes"], "d": "Doscientas criaturas, una hora y media y un plato de lentejas que nadie quiere.", "asciende": false},
+    "torre_teleoperadora": {"t": ["Teleoperadora", "Teleoperador"], "sector": "oficina", "nivel": 1, "pay": 60, "lugar": "torre", "fuera": true, "viaje": 20, "grupo": "oficina", "e": "🏢", "empresa": "Soluciones Tándem", "h": [9, 17], "dias": [0, 1, 2, 3, 4], "contrato": "Por ETT, renovación semanal", "jefa": "", "compis": ["nahia"], "d": "Cascos, guion y un contador de llamadas en la pantalla. En la Torre de oficinas, en El Ensanche.", "asciende": false},
+    "obra_peona": {"t": ["Peona", "Peón"], "sector": "obra", "nivel": 0, "lugar": "obra", "fuera": true, "viaje": 25, "grupo": "obra", "e": "🏗", "empresa": "Hermanos Ruiz S.L.", "h": [8, 16], "dias": [0, 1, 2, 3, 4], "contrato": "Fijo de obra", "jefa": "gonzalo", "compis": ["hassan", "wilmer", "moussa"], "d": "Sacos, escombro y andamio. La obra de El Ensanche: pisos que nadie del barrio podrá pagar."},
+    "naves_mozo": {"t": ["Moza de almacén", "Mozo de almacén"], "sector": "obra", "nivel": 0, "pay": 64, "estudios": [], "lugar": "naves", "fuera": true, "viaje": 35, "grupo": "almacen", "e": "📦", "empresa": "Logística Pardo", "h": [6, 14], "dias": [0, 1, 2, 3, 4], "contrato": "Por ETT, por días", "jefa": "inaki", "compis": ["joel", "cheikh", "amine"], "d": "Pedidos, escáner y una pistola que pita si vas lento. En las naves del Polígono.", "asciende": false},
+    "residencia_auxiliar": {"t": ["Auxiliar de cuidados", "Auxiliar de cuidados"], "sector": "cuidados", "nivel": 0, "lugar": "residencia", "fuera": true, "viaje": 25, "grupo": "cuidados", "e": "🩺", "empresa": "Residencia Los Olivos", "h": [7, 15], "dias": [0, 1, 2, 3, 4], "contrato": "Indefinido", "jefa": "", "compis": ["fina", "lazaro"], "d": "Levantar, asear y dar de comer a veinte personas con dos manos. La residencia es de un fondo."},
+    "torre_programadora": {"t": ["Programadora junior", "Programador junior"], "sector": "tech", "nivel": 0, "lugar": "torre", "fuera": true, "viaje": 20, "grupo": "oficina", "e": "💻", "empresa": "Datanova", "h": [10, 18], "dias": [0, 1, 2, 3, 4], "contrato": "Indefinido", "jefa": "", "compis": ["inigo", "samanta"], "d": "Tickets, reuniones de pie y una mesa de pimpón que nadie usa."}
+  },
+  "puesto_inicial": "bar_camarera",
+  "estudios_inicial": "eso",
+  "edad_min": 16,
+  "jefa_generica": ["la encargada", "el encargado"],
+  "compi_generico": "una compañera",
+  "ofertas": {"por_semana": 6, "minimas": 4, "titulo_semana": "Ofertas de esta semana"},
+  "entrevista": {
+    "h": [9, 14], "dias": [0, 1, 2, 3, 4], "min": 45, "base": 0.35, "por_contrato": 0.9, "estudios_extra": 0.05, "higiene_baja": -0.15, "energia_baja": -0.1, "reintento_dias": 7,
+    "preguntas": {"f": "Te preguntan si tienes hijos o piensas tenerlos.", "h": "Te preguntan si tienes «cargas familiares».", "mayor": "Te preguntan si «aguantarás el ritmo» a tu edad.", "comun": "Y, de pasada, si estás en algún sindicato."},
+    "si": ["Contestas lo que quieren oír. Empiezas mañana.", "Te miran el currículum treinta segundos. Empiezas mañana.", "«¿Puedes empezar mañana?» Puedes. No hay otra respuesta."],
+    "no": ["«Ya te llamaremos.» El tono dice que no.", "Buscan a alguien «con más experiencia y menos años».", "Había once personas para el mismo puesto. Lo ha cogido el sobrino de alguien.", "Te dicen que el puesto «ya está cubierto». Lo publicaron ayer."],
+    "higiene": "Se nota que no te has duchado. Lo notan.",
+    "energia": "Bostezas en mitad de la pregunta. Lo notan."
+  },
+  "jornada": {
+    "salir_antes_min": 25, "entrar_desde_min": 90, "entrar_hasta_min": 30, "retraso_min": 5, "retraso_grave_min": 60,
+    "tasas": {
+      "bar": {"hambre": 0.04, "energia": 0.085, "diversion": 0.05, "social": -0.02, "higiene": 0.06},
+      "super": {"hambre": 0.04, "energia": 0.075, "diversion": 0.055, "social": 0.0, "higiene": 0.04},
+      "tienda": {"hambre": 0.04, "energia": 0.06, "diversion": 0.05, "social": -0.02, "higiene": 0.03},
+      "limpieza": {"hambre": 0.05, "energia": 0.09, "diversion": 0.055, "social": 0.03, "higiene": 0.08},
+      "comedor": {"hambre": 0.03, "energia": 0.09, "diversion": 0.04, "social": -0.02, "higiene": 0.05},
+      "oficina": {"hambre": 0.04, "energia": 0.06, "diversion": 0.065, "social": 0.01, "higiene": 0.02},
+      "obra": {"hambre": 0.06, "energia": 0.1, "diversion": 0.06, "social": 0.0, "higiene": 0.09},
+      "almacen": {"hambre": 0.06, "energia": 0.1, "diversion": 0.065, "social": 0.02, "higiene": 0.07},
+      "cuidados": {"hambre": 0.05, "energia": 0.1, "diversion": 0.06, "social": -0.01, "higiene": 0.07}
+    },
+    "vejiga_fin": 70,
+    "velo": "Trabajando",
+    "velo_viaje": "En metro y a trabajar",
+    "titulo": "Jornada · {puesto}",
+    "horas": "De {ini} a {fin} en {lugar}.",
+    "tarde": "Llegas {min} minutos tarde. {jefa} lo apunta.",
+    "tarde_grave": "Llegas con {min} minutos de retraso. {jefa} lo apunta con letra grande.",
+    "pie": "Jornadas: {n}. Nómina el día {dia}.",
+    "bar_servidos": "Has servido {n}: {caja} para la caja de {empresa}. {prop}",
+    "bar_prop_si": "Para ti, {v} de propinas.",
+    "bar_prop_no": "Propinas: ninguna.",
+    "bar_nada": "No has servido nada en todo el turno. {jefa} se ha dado cuenta.",
+    "bar_fuera": "Has dejado la barra {min} minutos. Te los descuentan.",
+    "bar_fin_aviso": "Se acaba tu turno en el bar.",
+    "falta_titulo": "Hoy no has ido a trabajar",
+    "falta": "{jefa} lo ha apuntado: falta sin justificar. Te descuentan el día entero.",
+    "salir_aviso": "Hora de ir a trabajar: entras a las {ini} en {lugar}.",
+    "salir_titulo": "Hora de ir a trabajar",
+    "salir_texto": "Entras a las {ini} en {lugar}.",
+    "tarde_texto": "Tu turno en {lugar} empezó a las {ini}. Cada minuto cuenta en la nómina.",
+    "ir": "Ir a trabajar",
+    "metro_boca": "Metro · Puente Viejo",
+    "metro_d": "Línea 1 hacia El Casco y Pinares. Bus 2 en la Plaza del Canal. Billete sencillo: {b}.",
+    "sucesos": {
+      "comun": [
+        {"t": "{compi} cumple años y ha traído un bizcocho. Tocáis a un trozo pequeño y a cinco minutos de risa.", "ef": {"social": 8, "diversion": 4}},
+        {"t": "El grupo de whatsapp del curro echa humo: han cambiado los turnos de la semana que viene sin preguntar.", "ef": {"diversion": -6}},
+        {"t": "Media hora más «para dejarlo recogido». No sale en la nómina. Nunca sale.", "ef": {"energia": -6}, "extra_min": 30},
+        {"t": "{compi} y tú os cubrís el descanso. Diez minutos de silencio valen más que el café.", "ef": {"social": 5, "energia": 3}},
+        {"t": "Un día normal. Ni bien ni mal: ocho horas menos de vida y unas cuantas más de alquiler.", "ef": {}},
+        {"t": "Han puesto un cartel nuevo: «Aquí somos una familia». La familia no cobra horas extra.", "ef": {"diversion": -3}}
+      ],
+      "bar": [
+        {"t": "Hora punta del menú: catorce mesas, una cocinera y tú. {jefa} cuenta la caja con una sonrisa.", "ef": {"energia": -6}},
+        {"t": "Un señor chasquea los dedos para pedir la cuenta y deja diez céntimos. {compi} te pasa una caña por debajo de la barra.", "ef": {"diversion": -4, "social": 4}},
+        {"t": "Rompes un vaso. {jefa} dice que «ya se descontará». No se puede, pero lo dice.", "ef": {"diversion": -3}}
+      ],
+      "super": [
+        {"t": "Una clienta discute el precio del aceite contigo como si lo hubieras subido tú. Lo ha subido la distribuidora.", "ef": {"diversion": -6}},
+        {"t": "{jefa} pide «más velocidad en caja». Lo mide una máquina que cuenta artículos por minuto.", "ef": {"diversion": -4, "energia": -3}},
+        {"t": "Un crío te da un dibujo de una cajera con corona. Lo guardas en el bolsillo del chaleco.", "ef": {"diversion": 8}},
+        {"t": "Llega el camión a las doce. Hasta las tres, palés. Las rodillas se acuerdan.", "ef": {"energia": -6}}
+      ],
+      "tienda": [
+        {"t": "La señora del quinto paga lo fiado del mes. {jefa} lo tacha en la libreta con ceremonia.", "ef": {"social": 5}},
+        {"t": "Tarde tranquila. Demasiado: {jefa} mira la caja y suspira por el alquiler del local.", "ef": {"diversion": -3}},
+        {"t": "Una vecina te cuenta su vida entera mientras pesas tomates. Sales sabiendo más del barrio que el ayuntamiento.", "ef": {"social": 8}}
+      ],
+      "limpieza": [
+        {"t": "A las siete y media llega la primera paciente y te da las gracias por el suelo. Es la única en todo el mes.", "ef": {"diversion": 5}},
+        {"t": "Brillo Servicios ha recortado el producto: mismo suelo, la mitad de friegasuelos y la misma prisa.", "ef": {"energia": -5}},
+        {"t": "{compi} te saluda por tu nombre. Las de la subcontrata no suelen tener nombre aquí.", "ef": {"social": 6}}
+      ],
+      "comedor": [
+        {"t": "Un niño de tres años llora porque las lentejas «le miran». Le entiendes.", "ef": {"diversion": 4}},
+        {"t": "Hay que vigilar a sesenta criaturas entre dos. La ratio la firmó alguien que no ha comido nunca aquí.", "ef": {"energia": -6}},
+        {"t": "Una niña te enseña a hacer una pajarita con la servilleta. Te la llevas a casa.", "ef": {"diversion": 6, "social": 3}}
+      ],
+      "oficina": [
+        {"t": "Reunión de una hora para decidir cuándo será la próxima reunión.", "ef": {"diversion": -8}},
+        {"t": "El contador de llamadas sale en rojo en la pantalla grande. Todo el mundo mira, nadie dice nada.", "ef": {"diversion": -6}},
+        {"t": "{compi} te enseña un atajo de teclado que te ahorra media hora. La empresa se queda la media hora.", "ef": {"diversion": 2}}
+      ],
+      "obra": [
+        {"t": "Sin agua en la obra hasta las once. El calor no espera a nadie.", "ef": {"energia": -8}},
+        {"t": "{jefa} manda subir al andamio sin línea de vida «que es un momento». {compi} se niega y te niegas con él.", "ef": {"social": 6, "diversion": -2}},
+        {"t": "Bocadillo en el bordillo con {compi}. De lo mejor del día, y es un bordillo.", "ef": {"social": 7}}
+      ],
+      "almacen": [
+        {"t": "La pistola pita: vas un nueve por ciento por debajo del objetivo. El objetivo sube cada mes.", "ef": {"diversion": -7}},
+        {"t": "{compi} lleva once contratos de una semana seguidos. Hoy le han renovado otro. Lo celebra a medias.", "ef": {"social": 4, "diversion": -3}},
+        {"t": "Una caja de sesenta kilos etiquetada como de veinte. La espalda lee la de verdad.", "ef": {"energia": -7}}
+      ],
+      "cuidados": [
+        {"t": "Doña Elvira te llama por el nombre de su hija. Le contestas como si lo fueras.", "ef": {"social": 6, "diversion": -2}},
+        {"t": "Faltan dos compañeras y no las cubren. Las camas las haces igual, la mitad de deprisa.", "ef": {"energia": -9}},
+        {"t": "Un residente te cuenta cómo construyó el barrio con sus manos. Ahora el fondo cobra 2.400 al mes por su cama.", "ef": {"social": 5}}
+      ]
+    }
+  },
+  "faltas": {
+    "ventana_dias": 28, "retrasos_por_punto": 3, "despido_puntos": 3,
+    "aviso_titulo": "Aviso de {jefa}",
+    "aviso": "«Que no se repita.» Primera vez. La próxima, por escrito.",
+    "escrito_titulo": "Amonestación por escrito",
+    "escrito": "Una carta con tu nombre y la palabra «grave». Firmas el recibí. Una más y te vas a la calle.",
+    "despido_titulo": "Despido disciplinario",
+    "despido": "Carta de despido por faltas de asistencia y puntualidad. Sin indemnización. El paro sí: un despido es un despido, aunque lo llamen disciplinario.",
+    "descuento": "Descuento en la próxima nómina: {v}."
+  },
+  "nomina": {
+    "dia": 26, "valor_por_coste": 2.4,
+    "titulo": "Nómina · mes {mes}",
+    "empresa": "{empresa} · {puesto}",
+    "base": "Salario base del mes",
+    "prorrata": "Días de alta: {d} de {t}",
+    "descuentos": "Descuentos (faltas y retrasos)",
+    "bruto": "Bruto",
+    "ss": "Seguridad Social ({p})",
+    "irpf": "Retención de IRPF ({p})",
+    "neto": "Neto: a tu cuenta",
+    "empresa_ss": "La empresa ha pagado además {v} a la Seguridad Social. Le has costado {c}.",
+    "valor": "Con tu trabajo, la empresa ha facturado unos {v}. La diferencia no sale en la nómina.",
+    "ascenso": "Ascenso: ahora eres {puesto}. Sueldo nuevo desde el mes que viene.",
+    "finiquito_titulo": "Finiquito",
+    "finiquito": "Lo trabajado este mes, hasta el día de la baja. Las vacaciones que no has disfrutado no salen: el juego aún no las cuenta."
+  },
+  "paro": {
+    "cotizado_inicial": 540, "base_inicial": 1350, "contributiva_min_dias": 360, "dias_por_180": 60, "max_dias": 720,
+    "pct": [[180, 0.7], [100000, 0.6]], "min": 560, "max": 1225,
+    "subsidio_min_dias": 90, "subsidio": 570, "subsidio_meses": [[180, 3], [360, 6]],
+    "dia_pago": 10,
+    "sepe": "Oficina de empleo",
+    "sepe_barrio": "El Casco",
+    "sepe_viaje": 15, "sepe_min": 120, "sepe_h": [9, 14], "sepe_dias": [0, 1, 2, 3, 4],
+    "sepe_cerrado": "La oficina de empleo abre de lunes a viernes de 9:00 a 14:00. Hay que llegar antes de las 13:00.",
+    "sepe_velo": "Cola en la oficina de empleo",
+    "sepe_titulo": "Oficina de empleo · El Casco",
+    "sepe_cola": "Número 117. Pantalla en el 84. Dos horas de sillas de plástico. Te atiende {quien}.",
+    "contributiva": "Tienes {cot} días cotizados: te corresponde paro durante {dias} días. {c1} al mes los seis primeros meses y {c2} después.",
+    "subsidio_txt": "No llegas a un año cotizado. Te queda el subsidio: {c} al mes durante {m} meses.",
+    "nada": "Con {cot} días cotizados no te corresponde nada. Ni paro ni subsidio. «Siguiente.»",
+    "baja": "Dejaste el trabajo tú: baja voluntaria. Eso no da paro. «Lo siento, es la ley.» Lo siente de verdad, se le nota.",
+    "ya": "Ya te inscribiste. Cobras el día {dia} de cada mes.",
+    "trabajando": "Tienes trabajo: no hay paro que pedir. {quien} te mira con envidia: su plaza es interina.",
+    "fin": "Se te ha acabado el paro. Ahora, a ver.",
+    "pago": "Prestación por desempleo",
+    "pago_sub": "Subsidio por desempleo",
+    "quien": ["Casilda", "Plácido"]
+  },
+  "dinero": {
+    "banco": "Banco Atlántico",
+    "vivienda": "viejo",
+    "alquiler_dia": 1,
+    "casero": "el casero",
+    "billete": 1.5,
+    "abono": {"n": "Abono de transporte", "i": 20, "dia": 1},
+    "facturas": [
+      {"id": "internet", "n": "Internet (fibra)", "e": "💻", "dia": 3, "i": 30, "var": 0},
+      {"id": "movil", "n": "Móvil", "e": "📞", "dia": 3, "i": 12, "var": 0},
+      {"id": "luz", "n": "Luz", "e": "⚡", "dia": 8, "i": 48, "var": 10},
+      {"id": "agua", "n": "Agua", "e": "🚿", "dia": 15, "i": 22, "var": 4}
+    ],
+    "recargo": 6,
+    "recargo_n": "Gastos de devolución",
+    "devuelto_titulo": "Recibo devuelto",
+    "devuelto": "{n}: {v}. No había saldo. La compañía cobra {r} por la devolución y lo volverá a pasar.",
+    "alquiler_impagado_titulo": "No llega para el alquiler",
+    "alquiler_impagado": "El alquiler son {v} y en la cuenta hay {s}. Queda debiendo. El banco no presta a quien no tiene; {casero} tampoco espera.",
+    "casero_avisos": [
+      [3, "Mensaje del casero", "«Buenas, que no me ha llegado lo de este mes. Seguro que es un error del banco.» No es un error del banco."],
+      [10, "Llamada del casero", "Ya no es un mensaje: es una llamada. «Yo también tengo gastos.» Tiene seis pisos."],
+      [20, "Burofax", "Requerimiento de pago por burofax. Si no pagas, el siguiente papel lo firma un juzgado."]
+    ],
+    "pagada_deuda": "Pagado lo que debías: {n}, {v}.",
+    "desahucio_pendiente": "Pendiente: el desahucio aún no está en el juego. Queda apuntado.",
+    "categorias": {"Nómina": "ingresos", "Finiquito": "ingresos", "Propinas": "ingresos", "Prestación por desempleo": "ingresos", "Subsidio por desempleo": "ingresos", "Venta de muebles": "ingresos", "Premio": "ingresos", "Ingreso": "ingresos", "Alquiler": "casa", "Luz": "casa", "Agua": "casa", "Internet (fibra)": "casa", "Móvil": "casa", "Gastos de devolución": "deudas", "Abono de transporte": "transporte", "Billete de metro": "transporte", "Súper": "comida", "Compra": "comida", "Compra en el súper": "comida", "Comer en el súper": "comida", "Comida a domicilio": "comida", "Menú del día": "comida", "Bar": "ocio", "Muebles": "casa", "Otros gastos": "otros"},
+    "cat_n": {"ingresos": "Ingresos", "casa": "Casa", "comida": "Comida", "ocio": "Bar y ocio", "transporte": "Transporte", "deudas": "Recargos", "otros": "Otros"}
+  }
+}

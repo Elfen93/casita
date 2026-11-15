@@ -949,6 +949,131 @@ def comprobar(d):
     E=_gd8b_comprobar(d);_gd8b_catalogo(d,E);return E
 # --- gd8b end ---
 
+# --- trabajo y dinero (Godot): validación de data/trabajo.json ---
+def _trabajo(d,E):
+    K=d.get('trabajo')
+    if not K:return
+    sec=d['profesiones']['sectores'];lug=d['lugares']['lugares'];vec={v['id'] for v in d['personas']['vecinos']};niv=d['estudios']['niveles']
+    G=set(K.get('jornada',{}).get('tasas',{}))
+    for k,p in K.get('puestos',{}).items():
+        q='trabajo.puestos.%s'%k
+        if not(isinstance(p.get('t'),list) and len(p['t'])==2):E.append(q+'.t: [femenino, masculino]')
+        if p.get('sector') not in sec:E.append(q+'.sector: desconocido');continue
+        if not 0<=p.get('nivel',0)<len(sec[p['sector']]['levels']):E.append(q+'.nivel: fuera de la escala del sector')
+        if p.get('lugar') not in lug:E.append(q+'.lugar: desconocido')
+        elif bool(p.get('fuera'))!=(lug[p['lugar']].get('barrio')!='ribera'):E.append(q+'.fuera: no cuadra con el barrio del lugar')
+        if p.get('fuera') and not p.get('viaje'):E.append(q+'.viaje: falta (minutos en metro)')
+        if p.get('grupo') not in G:E.append(q+'.grupo: sin tasas en jornada.tasas')
+        h=p.get('h',[]);
+        if not(len(h)==2 and 0<=h[0]<h[1]<=24):E.append(q+'.h: [entrada, salida] entre 0 y 24')
+        if not p.get('dias') or any(x not in range(7) for x in p['dias']):E.append(q+'.dias: 0..6')
+        for r in p.get('estudios',[]):
+            if r not in niv:E.append(q+'.estudios: «%s» no está en estudios.niveles'%r)
+        for x in [p.get('jefa')]+p.get('compis',[]):
+            if x and x not in vec:E.append(q+': «%s» no es un vecino del censo'%x)
+        if 'pay' in p and not(isinstance(p['pay'],(int,float)) and p['pay']>0):E.append(q+'.pay: neto por jornada > 0')
+    if K.get('puesto_inicial') not in K.get('puestos',{}):E.append('trabajo.puesto_inicial: no es un puesto')
+    if K.get('estudios_inicial') not in niv:E.append('trabajo.estudios_inicial: no es un nivel de estudios')
+    for g,L in K.get('jornada',{}).get('sucesos',{}).items():
+        if g!='comun' and g not in G:E.append('trabajo.jornada.sucesos.%s: grupo sin tasas'%g)
+        for s_ in L:
+            if not s_.get('t'):E.append('trabajo.jornada.sucesos.%s: suceso sin texto'%g)
+            for n_ in s_.get('ef',{}):
+                if n_ not in ('hambre','energia','diversion','social','vejiga','higiene'):E.append('trabajo.jornada.sucesos.%s: necesidad desconocida «%s»'%(g,n_))
+    for g,t in K.get('jornada',{}).get('tasas',{}).items():
+        for n_ in t:
+            if n_ not in ('hambre','energia','diversion','social','higiene'):E.append('trabajo.jornada.tasas.%s: necesidad desconocida «%s»'%(g,n_))
+    D_=K.get('dinero',{})
+    if D_.get('vivienda') not in d['viviendas']['viviendas']:E.append('trabajo.dinero.vivienda: no es un tipo de viviendas.json')
+    dm=K.get('calendario',{}).get('dias_mes',28)
+    for f in D_.get('facturas',[]):
+        if not(1<=f.get('dia',0)<=dm):E.append('trabajo.dinero.facturas.%s.dia: 1..%d'%(f.get('id'),dm))
+        if not(isinstance(f.get('i'),(int,float)) and f['i']>0):E.append('trabajo.dinero.facturas.%s.i: euros > 0'%f.get('id'))
+    for c,k in D_.get('categorias',{}).items():
+        if k not in D_.get('cat_n',{}):E.append('trabajo.dinero.categorias.%s: categoría sin nombre en cat_n'%c)
+    if not(1<=K.get('nomina',{}).get('dia',0)<=dm):E.append('trabajo.nomina.dia: 1..%d'%dm)
+_trab_comprobar=comprobar
+def comprobar(d):
+    E=_trab_comprobar(d);_trabajo(d,E);return E
+# --- trabajo end ---
+# --- compras begin: data/comida.json (súper, despensa, recetas) ---
+def _compras(d,E):
+    K=d.get('comida')
+    if not K:return
+    P=K.get('productos',{});secs={x[0] for x in K.get('secciones',[])}
+    for k,p in P.items():
+        q='comida.productos.%s'%k
+        if not(isinstance(p.get('precio'),(int,float)) and p['precio']>0):E.append(q+'.precio: euros, mayor que 0')
+        if p.get('sec') not in secs:E.append(q+'.sec: pasillo desconocido')
+        if not(isinstance(p.get('usos'),int) and p['usos']>0):E.append(q+'.usos: entero mayor que 0')
+        if p.get('dias') is not None and not(isinstance(p['dias'],int) and p['dias']>0):E.append(q+'.dias: entero o null')
+        if p.get('sitio') not in ('nevera','armario'):E.append(q+'.sitio: nevera o armario')
+    for x in K.get('inicial',[]):
+        if x[0] not in P:E.append('comida.inicial: «%s» no es un producto'%x[0])
+    nv=len(K.get('niveles',[]))
+    for k,r in K.get('recetas',{}).items():
+        q='comida.recetas.%s'%k
+        for ing in r.get('ing',[]):
+            for a in str(ing[0]).split('|'):
+                if a not in P:E.append(q+'.ing: «%s» no es un producto'%a)
+        if not 0<=r.get('nivel',0)<nv:E.append(q+'.nivel: fuera de niveles')
+        for c in ('min','raciones','hambre','calidad'):
+            if not isinstance(r.get(c),(int,float)):E.append(q+'.%s: falta'%c)
+        if not r.get('pasos'):E.append(q+'.pasos: faltan')
+    I=d.get('interiores',{});IP=I.get('productos',{})
+    for t in I.get('tipos',{}).values():
+        for a in t.get('acciones',[]):
+            if a.get('tipo')=='de_nevera' and a.get('producto') not in P:E.append('interiores: %s pide «%s», que no está en comida.productos'%(a.get('id'),a.get('producto')))
+    if 'menu' not in IP:E.append('interiores.productos: falta «menu» (menú del día)')
+_compras_comprobar=comprobar
+def comprobar(d):
+    E=_compras_comprobar(d);_compras(d,E);return E
+# --- compras end ---
+# --- vecinos (Godot): validación de data/gente3d.json ---
+def _gente3d(d,E):
+    G=d.get('gente3d')
+    if not G:return
+    def res(r):
+        x=d
+        for k in r[1:].split('.'):
+            if isinstance(x,dict) and k in x:x=x[k]
+            else:return None
+        return x
+    def refs(q,x):
+        if isinstance(x,str) and x.startswith('@'):
+            if res(x) is None:E.append('%s: referencia rota «%s»'%(q,x))
+        elif isinstance(x,list):
+            for i,y in enumerate(x):refs('%s[%d]'%(q,i),y)
+        elif isinstance(x,dict):
+            for k,y in x.items():refs(q+'.'+k,y)
+    refs('gente3d',G)
+    A=d.get('animaciones',{}).get('animaciones',{})
+    for o in G.get('opciones',[]):
+        q='gente3d.opciones.'+str(o.get('id'))
+        for k in ('quien','otra'):
+            v=o.get(k,'');v=res(v) if isinstance(v,str) and v.startswith('@') else v
+            if v not in A:E.append('%s.%s: animación desconocida «%s»'%(q,k,v))
+        if o.get('id') not in G.get('efectos',{}) and o.get('id') not in ('politica',):E.append(q+': sin efectos')
+    NEC=('rel','amor','social','diversion','hambre','energia','te')
+    for k,e in G.get('efectos',{}).items():
+        for r,f in e.items():
+            for c,v in f.items():
+                if c not in NEC:E.append('gente3d.efectos.%s.%s: efecto «%s» desconocido'%(k,r,c))
+                if c in ('rel','amor') and not(isinstance(v,(int,float)) or (isinstance(v,list) and len(v)==2)):E.append('gente3d.efectos.%s.%s.%s: número o [mín, máx]'%(k,r,c))
+    for k in ('historia','lazos','amiga','intima','llamar','invitar','saludar','favor','caracter'):
+        if k not in G.get('umbrales',{}):E.append('gente3d.umbrales: falta «%s»'%k)
+    F=d.get('trato',{}).get('favores',{})
+    for id in G.get('favores',{}).get('pide',[]):
+        if id not in F or F[id].get('dir')!='pide':E.append('gente3d.favores.pide: «%s» no es un favor «pide» de trato.json'%id)
+    for k in G.get('animo',{}).values():
+        if len(k.get('n',[]))!=2:E.append('gente3d.animo: n es [femenino, masculino]')
+    for k in G.get('caracter',{}).values():
+        if len(k.get('n',[]))!=2:E.append('gente3d.caracter: n es [femenino, masculino]')
+_g3d_comprobar=comprobar
+def comprobar(d):
+    E=_g3d_comprobar(d);_gente3d(d,E);return E
+# --- vecinos end ---
+
 if __name__=='__main__':
     d=cargar()
     if '--fmt' in sys.argv:print('formateados:',formatear(d))

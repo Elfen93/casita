@@ -187,7 +187,9 @@ func _hacer(dm: float) -> void:
 		for k in ac["efectos_min"]:
 			ef[k] = float(ac["efectos_min"][k]) * dmk
 		Acciones.aplicar_efectos(ef, jg)
-	if ac.has("receta"):
+	if ac.has("plato_receta"):  # --- compras ---
+		jg.texto_estado(a, Compras.paso_receta(str(ac["plato_receta"]), f))  # --- compras ---
+	elif ac.has("receta"):
 		var r: Dictionary = Acciones.D["recetas"][ac["receta"]]
 		var acum := 0.0
 		var txt := ""
@@ -209,6 +211,7 @@ func _hacer(dm: float) -> void:
 func _fin_dormir() -> void:
 	if act.is_empty():
 		return
+	Objetivos.hecho("dormir", {"min": float(act["ac"].get("min", 0.0))})  # --- objetivos ---
 	act["est"] = "hacer"
 	_soltar()
 	act = {}
@@ -222,7 +225,10 @@ func _terminar() -> void:
 	var msg := str(ac.get("fin", ""))   # texto al terminar; sin él, las acciones corrientes no avisan (ya se ve la barra)
 	var c := Acciones.coste(ac)
 	if c > 0.0:
-		jg.dinero -= c
+		jg.cuenta.mover("Bar" if o.interior == "bar" else "Otros gastos", -c)  # --- trabajo ---
+	var mc = jg.compras.terminar(ac, o) if jg.get("compras") != null else null  # --- compras ---
+	if mc != null:  # --- compras ---
+		msg = str(mc)  # --- compras ---
 	match t:
 		"pedir":
 			a.poner_mano(str(ac["producto"]), jg)
@@ -243,8 +249,11 @@ func _terminar() -> void:
 		"comer":
 			var pc := Acciones.producto(a.mano)
 			var de_pie := str(ac.get("postura", "de_pie")) != "sentado"
-			Acciones.aplicar_efectos(pc.get("comer_de_pie" if de_pie else "comer", {}), jg)
-			msg = "Te comes el %s%s." % [Acciones.nombre_mano(a.mano), " de pie" if de_pie else ""]
+			var ef_c: Dictionary = pc.get("comer_de_pie" if de_pie else "comer", {})
+			if jg.get("compras") != null:  # --- compras --- cada plato llena lo suyo y cuenta para la nutrición
+				ef_c = jg.compras.al_comer(a.mano, de_pie, o, ef_c)  # --- compras ---
+			Acciones.aplicar_efectos(ef_c, jg)
+			msg = "Comes %s%s." % [Acciones.nombre_mano(a.mano), " de pie" if de_pie else ""]
 			a.poner_mano("", jg)
 		"servir":
 			var cl: Dictionary = o.cli
@@ -252,8 +261,10 @@ func _terminar() -> void:
 			var prop := 0.0
 			if randf() < 0.3 + 0.05 * jg.hab["cocteleria"]:
 				prop = snappedf(precio * randf_range(0.1, 0.3), 0.1)
-			jg.dinero += precio + prop
-			msg = "Cobras %s%s." % [Acciones.jg_eur(precio), (" y %s de propina" % Acciones.jg_eur(prop)) if prop > 0.0 else ""]
+			# --- trabajo --- el precio va a la caja del bar; la propina, a tu cuenta
+			jg.cuenta.ingresar("Propinas", prop)  # --- trabajo ---
+			jg.trabajo.servido(precio, prop)  # --- trabajo ---
+			msg = "Cobras %s para la caja%s." % [Acciones.jg_eur(precio), (" y %s de propina para ti" % Acciones.jg_eur(prop)) if prop > 0.0 else ""]
 			jg.bar.servido(cl, a.mano)
 			a.poner_mano("", jg)
 	for k in ac.get("habilidad", {}):
@@ -261,12 +272,15 @@ func _terminar() -> void:
 	Acciones.aplicar_efectos(ac.get("efectos", {}), jg)
 	Acciones.aplicar_estado(ac.get("estado", {}), jg)
 	if ac.has("azar") and randf() < float(ac["azar"]["prob"]):
-		jg.dinero += float(ac["azar"]["premio"])
+		jg.cuenta.ingresar("Premio", float(ac["azar"]["premio"]))  # --- trabajo ---
 		msg = "¡Premio! +%s." % Acciones.jg_eur(float(ac["azar"]["premio"]))
 	elif ac.has("azar"):
 		msg = "Nada. Otra vez será."
 	if msg != "":
 		jg._aviso(msg)
+	Objetivos.hecho("accion", {"ac": ac, "obj": o, "tipo": t})  # --- objetivos ---
+	if o.tipo == "cliente" and jg.get("relaciones") != null:  # --- vecinos --- charlar o un chiste en el bar también cuentan
+		jg.relaciones.gesto_bar(o.cli.get("x", {}), str(ac.get("id", "")))  # --- vecinos ---
 	_soltar()
 	act = {}
 	uso = -1

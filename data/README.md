@@ -117,9 +117,29 @@ Interiores y sistema de objetos y acciones de la versión Godot (`godot/scripts/
 | `interiores.*.tabiques` | Paredes interiores con huecos de paso (sin hoja de puerta): `{id, a [dx, dz], b [dx, dz], huecos [[desde, hasta], …]}`. `a`-`b` es un segmento alineado con un eje (mismas coordenadas que `pos` de los muebles); `huecos` usa la coordenada del eje a lo largo del tabique y cada uno mide ≥ 1 m. En la rejilla de 1 m el tabique ocupa la hilera de celdas donde cae (se dibuja fino, centrado en ella; ponlo en `n,5`), sólido salvo los huecos; con las paredes bajas también se bajan. `scripts/datos.py` valida eje, plano y huecos. |
 | `tipos.*.acciones[].anim` | Animación de Godot mientras se hace (ver `animaciones.json`): un nombre del catálogo o `x+y` (`sentado+comer`), `objeto.actividad` de `animaciones.json` → `actividades` (`fogon.receta`), o `gesto:<id>` de `animaciones.json` → `gestos` (lo hace quien empieza; la otra persona, un cliente, hace lo de `otra` y se miran). Sin `anim`: `usar`, o lo de la postura. |
 | `tipos.*.acciones[].tipo` `dormir` | Acción de cama: `min` (minutos de juego que salta con velo), `energia_min` (energía por minuto), `postura` `tumbado`. |
-| `tipos.*.acciones[]` casa | Campos de la vida en casa: `fin` (texto del aviso al terminar; sin él no hay aviso), tipo `comer` (come el `plato` de la mano: efecto `producto.comer`, o `comer_de_pie` si la postura es `de_pie`), `efectos_min` (`{necesidad: por minuto}`, se aplica mientras dura), `estado` (`{bandera: bool}` en `main.estado_casa`, p. ej. `platos_sucios`). `tipos.*.asientos`: por cada punto de `uso`, `[x, y, z, giro extra]` donde se sienta. `productos.*.comer` / `comer_de_pie`: efecto de comer ese producto. |
+| `tipos.*.acciones[]` casa | Campos de la vida en casa: `fin` (texto del aviso al terminar; sin él no hay aviso), tipo `comer` (come lo que lleva en la mano: efecto `producto.comer`, o el de la receta de `comida.json` si es `plato:<receta>`, o `comer_de_pie` si la postura es `de_pie`), `efectos_min` (`{necesidad: por minuto}`, se aplica mientras dura), `estado` (`{bandera: bool}` en `main.estado_casa`, p. ej. `platos_sucios`). `tipos.*.asientos`: por cada punto de `uso`, `[x, y, z, giro extra]` donde se sienta. `productos.*.comer` / `comer_de_pie`: efecto de comer ese producto. |
 | `interiores.necesidades` | `umbral` (aviso por debajo, se rearma a umbral + 10), `avisos` (`{necesidad: texto}`) y `percance` (`aviso`, `higiene` y `vejiga` al quedar la vejiga a 0). |
 Ejemplo (grifo de cerveza): `"grifo": {"huella": [0.5, 0.4], "solido": false, "partes": [...], "uso": [[0, -1.1]], "acciones": [{"id": "tirar_cana", "n": "Tirar una caña", "e": "🍺", "tipo": "tirar", "producto": "cana", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}]}`.
+
+### comida.json
+Compras y comida de la versión Godot (`godot/scripts/compras.gd`; el juego web no lo lee). Precios de súper de barrio en España, 2026, marca blanca. Las calidades de las comidas son las del juego web (`textos_mods_ag.json` → `comidas.calidad`).
+| Sección | Qué es |
+|---|---|
+| `secciones` | Pasillos del súper en orden: `[id, nombre]`. |
+| `productos` | Por id: `n` (nombre con formato), `e`, `precio` (€ el paquete), `sec` (pasillo), `usos` (raciones o veces que da un paquete en la despensa), `dias` (días hasta caducar desde que se compra; `null` = no caduca), `sitio` (`nevera`·`armario`, solo para enseñarlo) y `picar` (se puede picar de la nevera). |
+| `inicial` | Lo que hay en casa en una partida nueva: `[[producto, paquetes], …]`. |
+| `picar` | `min` y `calidad` de picar algo de la nevera. |
+| `recetas` | Por id: `n`, `e`, `nivel` (0-2, ver `niveles`), `min`, `ing` (`[["a\|b", usos], …]`: un ingrediente con alternativas separadas por `\|`), `raciones` (una a la mano, el resto a la nevera como sobras), `hambre` (lo que llena una ración; de pie, el 70 %), `energia` (opcional), `calidad` (0-1, para la nutrición) y `pasos` (textos que salen mientras se cocina). |
+| `niveles` | Puntos de la habilidad `cocina` (en `main.hab`) que pide cada nivel de receta. `habilidad`: lo que sube al cocinar (× 1 + 0,5 × nivel). |
+| `sobras_dias` | Días que aguantan las sobras en la nevera (calentarlas: acción `sobras` de la nevera). |
+| `nevera_llena` | Productos distintos sin caducar (sin contar sobras) para que la nevera cuente como llena al guardar la compra (`Objetivos.hecho("nevera", {llena})`). |
+| `fuera` | Platos que no salen de una receta (`domicilio`, `menu`, `super`): `n`, `e`, `hambre`, `calidad`. |
+| `domicilio` | `pedido` + `envio` (€), `espera_min` (hasta que llega el rider), `espera_puerta_min` (lo que espera en la puerta antes de dejarlo), `app` (inventada) y `rider` (`id`, `g`, `edad` para su aspecto). |
+| `menu` | Menú del día del bar: `h` `[desde, hasta]` y `dias` (0 = lunes). El producto `menu` (precio, efecto) está en `interiores.json` → `productos`. |
+| `super` | `comer_precio`, `comer_min` (comer algo en el súper), y lo que se tarda en comprar: `min_base` + `min_por_articulo`, con tope `min_max`. |
+| `nutricion` | `inicial`, `peso_dia` (media móvil diaria, como el juego web), umbrales `bien`/`mal` y la energía que se gana o se pierde cada día. |
+| `textos` | Avisos (`{v}` euros, `{k}` cantidad, `{m}` minutos). Una lista = se elige uno al azar. |
+En `interiores.json`: acciones de la nevera (`picar`, `sobras`, `guardar_compra`, `de_nevera` con `producto`, `tirar_caducado`), la cocina (`cocinar` con `por_plato`: una variante por receta, id `cocinar:<receta>`), `pedir_menu` en la barra (tipo `menu_bar`: se espera `min`, se paga el `precio` del producto `menu` y se lleva en la mano), `comer_sentado` en silla y taburete, y las condiciones `hay_picar`, `hay_sobras`, `bolsa_mano`, `hay_caducado`, `hay_producto`, `ingredientes`, `nivel_cocina`, `hora_menu`, `dinero_menu` (lógica en `compras.gd`, `Compras.motivo`). `plato_mano` vale para cualquier producto con `comer`.
 
 ### catalogo_muebles.json
 Muebles que se pueden comprar para tu piso en Godot (`godot/scripts/muebles.gd`). El nombre y el modelo salen de `interiores.json` → `tipos`; **un tipo del catálogo que no exista en `tipos` se ignora sin error** (y aparece solo cuando exista).
@@ -127,6 +147,34 @@ Muebles que se pueden comprar para tu piso en Godot (`godot/scripts/muebles.gd`)
 |---|---|
 | `categorias` | Lista ordenada de `[id, nombre]` (dormitorio, bano, cocina, salon, decoracion). |
 | `muebles` | Por tipo: `p` precio en euros (donde hay equivalente en `objetos.json` se usa el mismo), `cat` id de categoría y `d` una línea de descripción. Vender devuelve la mitad de `p`. |
+
+### trabajo.json
+Trabajo y dinero de la versión Godot (`godot/scripts/trabajo.gd`, `cuenta.gd`, `fiscal.gd`; el juego web no lo lee). Los sueldos salen de `profesiones.json` (`levels[].pay`, neto por jornada como en la web), los impuestos de `gobiernos.json` → `fiscal.centro`, el alquiler de `viviendas.json` y los requisitos de estudios de `estudios.json`.
+| Sección | Qué es |
+|---|---|
+| `calendario` | `dias_mes` (el mes de juego: 28 días, cuatro semanas; el día 1 es lunes) y `hora_pagos` (hora a la que se cobran y pagan las cosas del día). |
+| `puestos` | Por id: `t` `[femenino, masculino]`, `sector` y `nivel` (de `profesiones.sectores`), `pay` (opcional: neto por jornada si no es el del nivel), `estudios` (opcional: lista de `estudios.niveles` que se piden; sin él, `estudios.requisitos[sector]`), `lugar` (id de `lugares.json`), `fuera` (en otro barrio: se va en metro) y `viaje` (minutos de puerta a puerta desde la boca de metro), `grupo` (qué sucesos y qué desgaste tiene la jornada: `jornada.tasas`/`jornada.sucesos`), `e` (emoji, de los que trae `godot/fonts/emoji.ttf`), `empresa`, `h` `[entrada, salida]`, `dias` (0 = lunes), `contrato`, `jefa` y `compis` (ids de `personas.vecinos`: salen por su nombre en las tarjetas), `d` (una línea), `asciende` (false: no sube por la escala del sector). El sueldo se ajusta a las horas (`h` / 8). |
+| `puesto_inicial`, `estudios_inicial`, `edad_min` | Con qué empieza una partida nueva (sin trabajo si el personaje tiene menos de `edad_min` o 67 o más). |
+| `jefa_generica`, `compi_generico` | Si el puesto no tiene `jefa` o `compis` del censo. |
+| `ofertas` | `por_semana` y `minimas`: cuántas ofertas salen cada semana (cambian cada lunes). |
+| `entrevista` | Horario (`h`, `dias`), duración (`min`), probabilidad (`base` + `prob_contrato[sector]` × `por_contrato`, ± `estudios_extra`, `higiene_baja`, `energia_baja`), `reintento_dias` y textos (`preguntas` por `f`/`h`/`mayor`, `si`, `no`, `higiene`, `energia`). |
+| `jornada` | `salir_antes_min` (sale andando sola tanto antes de la hora, más el viaje), ventana para entrar (`entrar_desde_min` antes de la entrada, `entrar_hasta_min` antes de la salida), `retraso_min`/`retraso_grave_min`, `tasas` (por `grupo`: bajada por minuto de cada necesidad durante el salto de la jornada; negativa = sube; la vejiga no baja y acaba en `vejiga_fin`), `sucesos` (por `grupo` y `comun`: `t` texto con `{jefa}`/`{compi}`, `ef` cambio de necesidades, `extra_min` minutos de más sin cobrar) y los textos de la tarjeta. |
+| `faltas` | `ventana_dias`, `retrasos_por_punto` (3 retrasos = 1 punto; una falta o un retraso grave = 1 punto), `despido_puntos` y textos de aviso, amonestación por escrito, despido disciplinario y descuento. |
+| `nomina` | `dia` del mes en que se cobra, `valor_por_coste` (lo que factura la empresa por cada euro que cuesta la trabajadora) y textos de la tarjeta de nómina y del finiquito. |
+| `paro` | `cotizado_inicial` (días cotizados al empezar) y `base_inicial` (base reguladora si aún no hay nóminas); prestación contributiva (`contributiva_min_dias`, `dias_por_180`, `max_dias`, `pct` `[[hasta el día, %]]`, `min`, `max` en euros al mes); subsidio (`subsidio_min_dias`, `subsidio`, `subsidio_meses` `[[menos de N días, meses]]`); `dia_pago`; la oficina de empleo (`sepe_*`, en El Casco: se va en metro) y textos. |
+| `dinero` | `banco`, `vivienda` (tipo de `viviendas.json` del piso: alquiler mensual = `rent` × 52 / 12, redondeado a 5 €), `alquiler_dia`, `billete` (metro, por trayecto), `abono` (`n`, `i`, `dia`: se cobra si el trabajo es en otro barrio), `facturas` (`id`, `n`, `e`, `dia`, `i` euros, `var` ± euros según el mes), `recargo` (gastos de devolución de un recibo sin saldo), textos de recibos devueltos, alquiler impagado y `casero_avisos` `[[días de retraso, título, texto]]`, `categorias` (concepto de movimiento → categoría) y `cat_n` (nombre de cada categoría). |
+
+### objetivos.json
+Empezar y objetivos en Godot (`godot/scripts/inicio.gd`, `objetivos.gd`, `historia.gd`). Huecos: `{o}` terminación del género del personaje (a/o) y los que diga cada texto.
+| Sección | Qué es |
+|---|---|
+| `inicio` | Situación de partida: `dinero` (euros con los que se empieza: lo que queda con la fianza y el primer mes de alquiler pagados), `titulo`, `texto` (`{nombre}`, `{edad}`, `{dinero}`), `casa` (`{alquiler}`: el alquiler del mes, de `trabajo.json` → `dinero.vivienda`), `sin_trabajo` (si no hay puestos para el personaje), `elige_trabajo` y `boton_sin_trabajo` (con las ofertas de `Trabajo.ofertas_inicio`), etiquetas del nombre, `historia` (primera línea del diario) y `aviso`. |
+| `portada` | Textos de la portada con partida guardada: `titulo`, `sub`, `lema`, `partida` (`{nombre}`, `{dia}`, `{n}`, `{hora}`), botones y confirmación. |
+| `pasos` | Primeros pasos guiados: `lista` de `{id, e, t (lo que hay que hacer), f (una frase de pista)}`. Los `id` (`casa`, `comer`, `dormir`, `super`, `hablar`, `trabajo`) los marca el código. `t_con`/`f_con` (opcional): el texto si ya se tiene trabajo. `titulo`, `fin`, `saltar`, `saltados`, `hecho` (`{t}`). |
+| `deseos` | `lista` de deseos: `id`, `e`, `t`, `f` (frase para la historia al cumplirlo), `r` (ánimo que da; nunca dinero), `regla` (cómo se cumple, es código: `compra`, `dormir`, `cena`, `amistad`, `platos`, `mueble`, `ahorro`, `fin_mes` o `accion:<id de acción>`), `meta` (cifra de la regla: minutos, euros; `amistad` no la usa: se cumple cuando relaciones.gd avisa de una amistad), `dias` (caduca sin castigo), `si` (etiquetas que lo hacen probable: `siempre`, `energia_baja`, `hambre_baja`, `social_bajo`, `diversion_baja`, `higiene_baja`, `en_casa`, `platos_sucios`; y requisitos: `con_trabajo`, `dinero_<euros>`). `max` deseos a la vez (`max_con_pasos` mientras hay primeros pasos), `cada_min` minutos de juego entre uno nuevo y el siguiente, y los textos `nuevo`, `cumplido`, `caducado`, `ninguno`. |
+| `animo` | `niveles` `[[desde, palabra], …]` de mayor a menor, `decae_dia` (lo que se pasa al día la alegría de los deseos), `max_alegria`, `explica`. |
+| `historia` | `dias` que se guardan, textos del panel y del resumen al despertar, y las frases del diario: `acciones` (por id de acción de `interiores.json`: `[icono, frase]`, `{p}` = con quién) y sueltas (`casa`, `super`, `compra` `{g}`, `dormir` `{h}`, `siesta`, `mueble`, `fin_mes` `{d}`). Cocinar, el trabajo y el dinero los cuentan compras.gd, trabajo.gd y cuenta.gd con sus propias frases. |
+| `menu` | Nombres de las secciones del Menú. |
 
 ### libros.json
 | Sección | En el código | Qué es |
@@ -224,6 +272,21 @@ Tratar con los vecinos (`mods/trato.js`). Secciones:
 - `ficha`: textos de la interfaz y del diario.
 
 Efectos (`fx`): rel, social, diversion, hambre, energia, coste_h, fiar_h, presta_h, presto_h, pista, despensa, agua, hijos_hap, mov, sol, te, chisme. Condiciones (`req`): huerto, hijos_cole, con_trabajo, en_paro, trabajo_dentro, ella_hijos, bloque, politica, justa, solvente. Huecos: `{v}`, `{x}`, `{y}`, `{k}`, `{c}`, `{n}`, `{o}`, `{quien}`, `{sitio}`, `{frase}`, `{que}`, `{st}`, `{l}`, `{why}`. `datos.py` lo comprueba todo.
+
+
+### gente3d.json
+Tratar con los vecinos del censo en el juego de Godot (`godot/scripts/relaciones.gd`, `gente_ui.gd`). Reutiliza los textos del juego web: cualquier texto puede ser una referencia `"@archivo.sección.clave"` (p. ej. `"@interacciones.vecinos_ficha.presentarse"`, `"@textos_mods_hz.social_fx.llamando"`); `datos.py` comprueba que exista.
+| Sección | Qué es |
+|---|---|
+| `umbrales` | Amistad mínima para: `historia` (te cuenta su historia), `lazos` (sabes con quién se trata), `amiga`, `intima` (fases), `llamar`, `invitar` (a casa), `saludar` (te saluda al cruzaros), `favor` (viene a pedirte uno), `caracter` (lo descubres hablando). |
+| `opciones` | El menú al tocar a alguien, en orden: `id`, `e` icono, `n` nombre, `quien`/`otra` animación de la jugadora y de la otra persona (de `animaciones.json`; sentada se usa su versión sentada), `seg` segundos que dura verlo, `rel` amistad mínima, `conocer` (solo si aún no os conocéis), `menor` (también con menores de 18), `adultos` (solo entre adultas). Además salen hasta dos acciones de `trato.json` (`oficios` si está en su puesto, si no `lugares`) cuyos efectos y condiciones ya sabe cumplir Godot. |
+| `efectos` | Por opción y resultado (`ok`, `ko`, `otra_vez` si ya se hizo hoy): `rel` y `amor` (número o `[mín, máx]`), `social`, `diversion`, `hambre`, `energia` (necesidades del HUD), `te` (te debe un favor). También `llamar`, `saludo`, `visita_charlar` y `comer` (comer juntas en casa). |
+| `caracter`, `animo` | Carácter estable por persona (del id) y ánimo del momento (en su curro: `liada`; de noche: `cansada`; si no, al azar por día): `n` `[femenino, masculino]`, `p` lo que suma a que salga bien, `chiste` (carácter) y `rel` (multiplica lo que sube la amistad). |
+| `fases` | Nombre de la relación `[f, m]`: `nadie`, `conocida`, `amiga`, `intima`, `tonteo` (hay chispa), `cita` (chispa ≥ 3 y romance ≥ 40). |
+| `bocadillos` | Lo que se dicen encima de la cabeza, por opción: `dice` (la jugadora), `ok`/`ko` (la respuesta). Huecos `{n}`, `{o}` (jugadora) y `{vo}` (terminación de la otra persona). |
+| `vida`, `politica`, `ficha`, `resultados` | Textos de «Preguntar por su vida» (`{puesto}`, `{sitio}`, `{desde}`, `{hasta}`), de política, de la ficha y de las tarjetas (`[título, línea]`). |
+| `gente`, `llamada`, `visita` | Pestaña Gente (`ir` es `[ella, él]`), la llamada y la visita a casa. |
+| `favores` | `pide`: favores de `trato.favores` (con `dir: pide`) que un vecino puede venir a pedirte en persona; `visita_min`: minutos que se pasa en su casa en los de `modo: visita`; `prob_dia`: probabilidad de que alguien venga cada día. |
 
 <!-- p0b -->
 ### textos_mods_ag.json

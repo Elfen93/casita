@@ -7,7 +7,6 @@ const BARRIO := "ribera"
 const MIN_POR_SEG := 1.5          # un día = 16 min reales a 1× (1440 / 960)
 const VEL_SALTO := 480.0          # minutos de juego por segundo mientras pasa el tiempo (dormir, etc.)
 const DIAS := ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
-const PRECIO_SUPER := 12
 # solares vacíos del barrio (en unidades del dato): pisables, con algo de chatarra; el primero lleva valla con la entrada por el sur y el este
 const SOLARES := [[8, 55, 24, 63.5], [96, 8, 114, 26]]
 
@@ -54,11 +53,17 @@ var m_andados := 0.0
 # ---- estado de juego ----
 var minutos := 9.0 * 60.0
 var vel_juego := 1
-var dinero := 1000.0
+var dinero := 1000.0:  # --- trabajo --- cada cambio queda apuntado en la cuenta (cuenta.gd: pagar/ingresar/mover)
+	set(v):  # --- trabajo ---
+		if cuenta != null:  # --- trabajo ---
+			cuenta.al_cambiar(dinero, v)  # --- trabajo ---
+		dinero = v  # --- trabajo ---
 var nec := {"hambre": 85.0, "energia": 80.0, "diversion": 70.0, "social": 60.0, "vejiga": 75.0, "higiene": 80.0}
 var nec_tasa := {"hambre": 0.075, "energia": 0.055, "diversion": 0.06, "social": 0.04, "vejiga": 0.09, "higiene": 0.045}
 var hab := {"cocteleria": 0.0}
-var trabaja_bar := false     # PROVISIONAL: interruptor de prueba hasta que exista el sistema de trabajo en Godot
+var trabaja_bar: bool:  # --- trabajo --- de turno detrás de la barra del bar (trabajo.gd); lo leen acciones.gd y bar.gd
+	get:  # --- trabajo ---
+		return trabajo != null and trabajo.en_barra()  # --- trabajo ---
 var interiores: Dictionary
 var tipos_obj: Dictionary
 var interior: Interior          # el interior en el que está el jugador ahora (null si está fuera)
@@ -67,7 +72,6 @@ var bar: BarCtl
 var cola: Cola
 var en_interior := false
 var cola_hb: HBoxContainer
-var btn_trabajo: Button
 var cola_txt := ""
 var nombre_pj := "Ana"
 var modelo_pj := Figura.MODELO_DEFECTO   # con quién se juega (Figura.JUGABLES); se guarda en la sección «personaje»
@@ -129,6 +133,11 @@ var d_pinza := 0.0
 
 var guardado: Guardado  # --- guardado ---
 var muebles: Muebles  # --- muebles ---
+var trabajo: Trabajo  # --- trabajo ---
+var cuenta: Cuenta  # --- trabajo ---
+var compras: Compras  # --- compras ---
+var objetivos: Objetivos  # --- objetivos ---
+var relaciones: Relaciones  # --- vecinos ---
 
 func _ready() -> void:
 	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
@@ -153,32 +162,16 @@ func _ready() -> void:
 			nec_tasa[n[0]] = float(n[3])
 	dinero = float(reglas.get("dificultades", {}).get("normal", {}).get("money", 1000))
 	_fuentes()
-	# --- elegir personaje --- partida guardada: el suyo (Kate si es antigua); partida nueva: se elige antes de montar el mundo
-	modelo_pj = Guardado.modelo_guardado()
-	var nueva := modelo_pj == ""
-	if nueva:
-		set_process(false)
-		set_process_input(false)
-		var capa := CanvasLayer.new()
-		capa.layer = 20
-		add_child(capa)
-		var el := ElegirPersonaje.new(personas.get("personaje_base", {}), Figura.MODELO_DEFECTO, fuente)
-		capa.add_child(el)
-		if OS.has_feature("web"):
-			# las pruebas (window.casita_cmd) no pasan por la pantalla: la primera orden elige el de siempre y espera al mundo
-			js_cb = JavaScriptBridge.create_callback(func(args: Array):
-				if cmd_pendiente.is_empty():
-					cmd_pendiente = args.duplicate()
-					el.elegido.emit.call_deferred(Figura.MODELO_DEFECTO))
-			JavaScriptBridge.get_interface("window").casita_cmd = js_cb
-		modelo_pj = await el.elegido
-		capa.queue_free()
-		set_process(true)
-		set_process_input(true)
+	# --- objetivos --- portada (Continuar / Partida nueva), elegir personaje y situación de partida: scripts/inicio.gd
+	var ini: Dictionary = await Inicio.new(self).correr()  # --- objetivos ---
+	modelo_pj = ini["modelo"]  # --- objetivos ---
+	var nueva: bool = ini["nueva"]  # --- objetivos ---
 	Figura.modelo_jugador = modelo_pj
 	if PersonaAnimada.disponible(modelo_pj) and not PersonaAnimada.listo(modelo_pj):
 		Paquetes.pedir(PersonaAnimada.paquete(modelo_pj), Callable(), true)   # web: el suyo, lo primero
 	nombre_pj = Figura.nombre_de(modelo_pj, personas.get("personaje_base", {}))
+	if str(ini.get("nombre", "")) != "":  # --- objetivos ---
+		nombre_pj = str(ini["nombre"])  # --- objetivos ---
 	_entorno()
 	cola = Cola.new(self)
 	_mundo()
@@ -194,7 +187,18 @@ func _ready() -> void:
 	guardado.escuchas_web()  # --- guardado ---
 	muebles = Muebles.new(self)  # --- muebles ---
 	muebles.crear_ui(ui)  # --- muebles ---
+	trabajo = Trabajo.new(self)  # --- trabajo --- registra sus secciones antes de cargar
+	cuenta = Cuenta.new(self)  # --- trabajo ---
+	trabajo.crear_ui(ui)  # --- trabajo ---
+	cuenta.crear_ui(ui)  # --- trabajo ---
+	compras = Compras.new(self)  # --- compras --- (registra su sección antes de cargar)
+	compras.crear_ui(ui)  # --- compras ---
+	objetivos = Objetivos.new(self)  # --- objetivos --- (registra sus secciones de guardado antes de cargar)
+	objetivos.crear_ui(ui)  # --- objetivos ---
+	relaciones = Relaciones.new(self)  # --- vecinos ---
+	relaciones.crear_ui(ui)  # --- vecinos ---
 	guardado.cargar_inicio()  # --- guardado ---
+	objetivos.empezar(ini)  # --- objetivos --- partida nueva: nombre, dinero, primer deseo; cargada: sigue
 	if nueva:
 		guardado.guardar()  # la elección queda guardada aunque se cierre enseguida
 	if OS.has_feature("web"):
@@ -227,6 +231,7 @@ func elegir_personaje() -> void:
 		var antes := modelo_pj
 		modelo_pj = m
 		if guardado.guardar():
+			Inicio.saltar_portada = true  # --- objetivos --- al recargar no sale la portada
 			get_tree().reload_current_scene()
 		else:
 			modelo_pj = antes
@@ -1016,20 +1021,13 @@ func _ui() -> void:
 	ficha_botones = VBoxContainer.new()
 	ficha_botones.add_theme_constant_override("separation", 6)
 	fv.add_child(ficha_botones)
-	# --- cola de acciones (arriba a la izquierda) y interruptor provisional ---
+	# --- cola de acciones (arriba a la izquierda) ---
 	cola_hb = HBoxContainer.new()
 	cola_hb.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	cola_hb.offset_left = 8
 	cola_hb.offset_top = 100
 	cola_hb.add_theme_constant_override("separation", 4)
 	ui.add_child(cola_hb)
-	btn_trabajo = Button.new()
-	btn_trabajo.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	btn_trabajo.offset_left = 8
-	btn_trabajo.offset_top = 152
-	btn_trabajo.add_theme_font_size_override("font_size", 13)
-	btn_trabajo.pressed.connect(func(): trabaja_bar = not trabaja_bar)
-	ui.add_child(btn_trabajo)
 	# cámara: bloqueada (sigue al personaje) o libre (se queda donde la dejes)
 	btn_camara = Button.new()
 	btn_camara.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -1077,7 +1075,6 @@ func _boton_vel(t: String, v: int, g: ButtonGroup) -> Button:
 
 func _hud() -> void:
 	lbl_nombre.text = nombre_pj + ((" · 🍸 %.1f" % hab["cocteleria"]) if hab["cocteleria"] > 0.0 else "")
-	btn_trabajo.text = "Trabajas en el bar (prueba): %s" % ("sí" if trabaja_bar else "no")
 	_hud_cola()
 	lbl_dinero.text = _eur(dinero)
 	var dia := int(minutos / 1440.0)
@@ -1123,6 +1120,8 @@ func _eur(x: float) -> String:
 	return ("-" if x < 0.0 else "") + s + o + dec + " €"
 
 func _aviso(t: String) -> void:
+	if objetivos != null and objetivos.aviso(t):  # --- objetivos --- cola de avisos: no se pisan
+		return  # --- objetivos ---
 	toast.text = t
 	toast.visible = true
 	toast_t = 2.6
@@ -1132,6 +1131,7 @@ func _ficha(titulo: String, texto: String, botones: Array) -> void:
 	ficha_texto.text = texto
 	ficha_texto.visible = texto != ""
 	for c in ficha_botones.get_children():
+		c.visible = false  # --- compras --- oculto ya: si no, la ficha se queda con la altura de la anterior
 		c.queue_free()
 	for b in botones:
 		var bt := Button.new()
@@ -1260,6 +1260,8 @@ func _llegar() -> void:
 	var id := destino
 	destino = ""
 	var e: Dictionary = edificios[id]
+	if trabajo.al_llegar(id):  # --- trabajo --- su puesto a su hora, la entrevista, la boca de metro
+		return  # --- trabajo ---
 	if id == "casa":
 		# se entra andando: unos pasos más allá de la puerta, ya dentro del piso
 		var it_c: Interior = e["interior"]
@@ -1270,26 +1272,14 @@ func _llegar() -> void:
 		_aviso("%s está cerrado. %s" % [e["n"], _horario_hoy(id)])
 		_ficha("%s %s" % [e["e"], e["n"]], "Cerrado ahora. %s" % _horario_hoy(id), [])
 		return
-	if id == "super":
-		dentro = true
-		jugador.nodo.visible = false
-		_ficha("🛒 %s" % e["n"], "%s\nCompras algo de comer y lo despachas en un banco: %s, media hora." % [e["d"], _eur(PRECIO_SUPER)], [
-			["🥖 Comprar y comer (%s)" % _eur(PRECIO_SUPER), _accion_super]])
-		return
+	if id == "super":  # --- compras --- el súper: cesta, total y comer allí
+		compras.abrir_super(e)  # --- compras ---
+		return  # --- compras ---
 	var tx: String = e["d"]
 	var hr := _horario_hoy(id)
 	if hr != "":
 		tx += "\n" + hr
 	_ficha("%s %s" % [e["e"], e["n"]], tx, [])
-
-func _accion_super() -> void:
-	if dinero < PRECIO_SUPER:
-		_aviso("No te llega el dinero.")
-		return
-	_cerrar_ficha_y_saltar(30.0, "Comprando y comiendo…", func():
-		dinero -= PRECIO_SUPER
-		nec["hambre"] = minf(100.0, nec["hambre"] + 45.0)
-		_aviso("Has comido algo. Hambre arriba."))
 
 # dormir en la cama (acción «dormir» de cola.gd): salto de tiempo con velo; al acabar se llama a fin
 func dormir_cama(dm: float, k: float, fin: Callable) -> void:
@@ -1391,6 +1381,8 @@ func _lugar_de(x: Dictionary) -> String:
 
 func _actualizar_vecinos(salto: bool) -> void:
 	for x in vecinos:
+		if x.get("ocupado", false):  # --- vecinos --- hablando contigo, de visita o buscándote: el horario espera
+			continue  # --- vecinos ---
 		var lug := _lugar_de(x)
 		var c: Actor = x["cam"]
 		var prev: String = x["meta"]
@@ -1432,14 +1424,29 @@ func _calcular_rutas() -> void:
 		it[0]["ocultar"] = true
 
 # =============== entrada táctil ===============
+# --- compras --- «Comer juntas» con una visita (relaciones.gd): el plato de la mano, dos raciones de sobras o algo de picar
+func comida_para_invitar() -> bool:  # --- compras ---
+	return compras.para_invitar() != ""  # --- compras ---
+
+func gastar_comida_invitar() -> void:  # --- compras ---
+	compras.gastar_invitar()  # --- compras ---
+
 func _en_ui(p: Vector2) -> bool:
-	for c in [panel_arriba, panel_abajo, panel_ficha, btn_trabajo, cola_hb]:
+	for c in [panel_arriba, panel_abajo, panel_ficha, cola_hb]:
 		if c.visible and c.get_global_rect().has_point(p):
 			return true
 	if muebles.en_ui(p):  # --- muebles ---
 		return true  # --- muebles ---
+	if compras.en_ui(p):  # --- compras ---
+		return true  # --- compras ---
 	if guardado.en_ui(p):  # --- guardado ---
 		return true  # --- guardado ---
+	if trabajo.en_ui(p) or cuenta.en_ui(p):  # --- trabajo ---
+		return true  # --- trabajo ---
+	if objetivos.en_ui(p):  # --- objetivos ---
+		return true  # --- objetivos ---
+	if relaciones != null and relaciones.en_ui(p):  # --- vecinos ---
+		return true  # --- vecinos ---
 	return velo.visible
 
 func _input(ev: InputEvent) -> void:
@@ -1621,7 +1628,8 @@ func _dedo_tick(dt: float) -> void:
 
 func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 	var botones: Array = []
-	for e in Acciones.lista(ob, self):
+	var lista_ac: Array = compras.menu_lista(ob, Acciones.lista(ob, self))  # --- compras ---
+	for e in lista_ac:
 		var ac: Dictionary = e["ac"]
 		var txt := Acciones.etiqueta(ac)
 		if not e["ok"]:
@@ -1630,6 +1638,7 @@ func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 		botones.append([txt, func():
 			cola.añadir(ob, capt)
 			panel_ficha.visible = false, not e["ok"]])
+	botones.append_array(compras.botones_extra(ob, lista_ac))  # --- compras ---
 	if not vecino.is_empty():
 		botones.append(["🧍 Ver ficha", func(): _ficha_vecino(vecino)])
 	var titulo := "%s %s" % [ob.def.get("e", ""), ob.def.get("n", "")]
@@ -1641,6 +1650,9 @@ func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 	_ficha(titulo, sub, botones)
 
 func _ficha_vecino(x: Dictionary) -> void:
+	if relaciones != null:  # --- vecinos --- ficha con lo que sabes y el menú (relaciones.gd)
+		relaciones.ficha(x)  # --- vecinos ---
+		return  # --- vecinos ---
 	var v: Dictionary = x["v"]
 	var of: Array = v.get("oficio", [])
 	var oficio := ""
@@ -1656,9 +1668,14 @@ func _ficha_vecino(x: Dictionary) -> void:
 # =============== bucle ===============
 func _process(dt: float) -> void:
 	guardado.tick(dt)  # --- guardado ---
+	trabajo.tick()  # --- trabajo ---
+	cuenta.tick()  # --- trabajo ---
 	muebles.tick(dt)  # --- muebles ---
+	objetivos.tick(dt)  # --- objetivos ---
 	if muebles.activo:  # --- muebles --- el tiempo y el personaje se paran
 		dt = 0.0  # --- muebles ---
+	compras.tick(dt)  # --- compras ---
+	relaciones.tick(dt)  # --- vecinos ---
 	_dedo_tick(dt)
 	var rapido := salto_rest > 0.0
 	if rapido:
@@ -1820,6 +1837,14 @@ func _cmd_js(args: Array) -> void:
 		return  # --- cámara ---
 	if muebles.cmd(c, args):  # --- muebles ---
 		return  # --- muebles ---
+	if trabajo.cmd(c, args) or cuenta.cmd(c, args):  # --- trabajo ---
+		return  # --- trabajo ---
+	if compras.cmd(c, args):  # --- compras ---
+		return  # --- compras ---
+	if objetivos.cmd(c, args):  # --- objetivos ---
+		return  # --- objetivos ---
+	if relaciones.cmd(c, args):  # --- vecinos ---
+		return  # --- vecinos ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))
@@ -1865,9 +1890,6 @@ func _cmd_js(args: Array) -> void:
 			k_amb = float(args[2])
 			entorno.tonemap_exposure = float(args[3])
 			_sol()
-		"trabaja":
-			trabaja_bar = bool(a)
-			_hud()
 		"accion":
 			var o = _objeto_por_id(str(a))
 			var ok := false

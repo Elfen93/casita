@@ -255,10 +255,9 @@ func comprar(tipo: String, pl: Vector2, giro: float) -> String:
 	if m != "":
 		return m
 	var p := precio(tipo)
-	if jg.dinero < p:
+	if not jg.cuenta.pagar("Muebles", p):  # --- trabajo --- el dinero pasa por la cuenta
 		return "No te llega el dinero."
 	it.añadir_mueble(jg, {"id": _id_nuevo(tipo), "tipo": tipo, "pos": [pl.x, pl.y], "giro": giro}, jg.tipos_obj)
-	jg.dinero -= p
 	jg._hud()
 	return ""
 
@@ -288,7 +287,7 @@ func vender(mid: String) -> String:
 	if objeto_sel == o:
 		objeto_sel = null
 	it.quitar_mueble(jg, mid)
-	jg.dinero += v
+	jg.cuenta.ingresar("Venta de muebles", v)  # --- trabajo ---
 	jg._hud()
 	return ""
 

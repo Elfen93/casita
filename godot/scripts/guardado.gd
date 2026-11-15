@@ -35,6 +35,9 @@ var btn_nueva: Button
 var btn_sicero: Button
 var btn_no: Button
 var btn_cerrar: Button
+var rejilla_menu: GridContainer  # --- objetivos --- secciones del Menú (Historia, Objetivos, Gente, Trabajo, Dinero)
+var secciones_menu := {}  # --- objetivos --- id -> Button
+var sep_menu: HSeparator  # --- objetivos ---
 
 func _init(m: Node) -> void:
 	main = m
@@ -60,8 +63,7 @@ func _registrar_basicas() -> void:
 		func(d: Dictionary):
 			for k in main.hab:
 				main.hab[k] = _num(d, k, main.hab[k]))
-	registrar("trabajo", 1, func(): return {"bar": main.trabaja_bar},
-		func(d: Dictionary): main.trabaja_bar = bool(d.get("bar", main.trabaja_bar)))
+	# «trabajo» lo registra scripts/trabajo.gd (versión 2; lee las partidas de la versión 1)
 	# banderas de la vida en casa (platos sin fregar…): solo valores sí/no
 	registrar("vida_casa", 1, func(): return main.estado_casa.duplicate(),
 		func(d: Dictionary):
@@ -279,12 +281,13 @@ func crear_ui(ui: Control) -> void:
 	btn_menu.pressed.connect(func(): _abrir_panel(true))
 	ui.add_child(btn_menu)
 	panel = PanelContainer.new()
-	panel.set_anchors_preset(Control.PRESET_CENTER)
+	# --- objetivos --- con las secciones el Menú es más alto: cuelga de arriba, por debajo de los botones de la derecha
+	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	panel.offset_left = -150
 	panel.offset_right = 150
-	panel.offset_top = 0
-	panel.offset_bottom = 0
-	panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	panel.offset_top = 250
+	panel.offset_bottom = 250
+	panel.grow_vertical = Control.GROW_DIRECTION_END
 	var est := StyleBoxFlat.new()
 	est.bg_color = Color(0.1, 0.11, 0.15, 0.96)
 	est.set_corner_radius_all(14)
@@ -298,6 +301,7 @@ func crear_ui(ui: Control) -> void:
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	t.add_theme_font_size_override("font_size", 20)
 	vb.add_child(t)
+	_crear_secciones(vb)  # --- objetivos ---
 	btn_guardar = _boton(vb, "Guardar ahora", func():
 		if guardar():
 			main._aviso("Partida guardada")
@@ -315,6 +319,55 @@ func crear_ui(ui: Control) -> void:
 	ui.add_child(panel)
 	_confirmacion(false)
 
+# --- objetivos --- secciones del Menú. Cada bloque pone la suya con seccion_menu(id, texto, callable);
+# las de siempre salen en este orden y, mientras nadie las ponga, apagadas («Aún no hay nada aquí»).
+const SECCIONES_MENU := [["historia", "Historia"], ["objetivos", "Objetivos"], ["gente", "Gente"], ["trabajo", "Trabajo"], ["dinero", "Dinero"]]
+
+func _crear_secciones(vb: VBoxContainer) -> void:
+	rejilla_menu = GridContainer.new()
+	rejilla_menu.columns = 2
+	rejilla_menu.add_theme_constant_override("h_separation", 8)
+	rejilla_menu.add_theme_constant_override("v_separation", 8)
+	vb.add_child(rejilla_menu)
+	for s in SECCIONES_MENU:
+		var b := Button.new()
+		b.text = s[1]
+		b.custom_minimum_size = Vector2(0, 50)
+		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		b.focus_mode = Control.FOCUS_NONE
+		b.add_theme_font_size_override("font_size", 17)
+		b.disabled = true
+		b.tooltip_text = "Aún no hay nada aquí."
+		for n in ["normal", "hover", "pressed", "focus", "disabled"]:
+			var e := StyleBoxFlat.new()
+			e.bg_color = Color(0.24, 0.42, 0.4) if n != "pressed" else Color(0.32, 0.55, 0.52)
+			if n == "disabled":
+				e.bg_color = Color(0.2, 0.22, 0.27)
+			e.set_corner_radius_all(10)
+			b.add_theme_stylebox_override(n, e)
+		b.add_theme_color_override("font_disabled_color", Color(0.5, 0.52, 0.58))
+		rejilla_menu.add_child(b)
+		secciones_menu[s[0]] = b
+	sep_menu = HSeparator.new()
+	sep_menu.add_theme_constant_override("separation", 6)
+	vb.add_child(sep_menu)
+
+func seccion_menu(id: String, texto: String, f: Callable) -> Button:
+	var b: Button = secciones_menu.get(id, null)
+	if b == null:
+		b = (secciones_menu.values()[0] as Button).duplicate()
+		rejilla_menu.add_child(b)
+		secciones_menu[id] = b
+	b.text = texto
+	b.disabled = false
+	b.tooltip_text = ""
+	for c in b.pressed.get_connections():
+		b.pressed.disconnect(c["callable"])
+	b.pressed.connect(func():
+		_abrir_panel(false)
+		f.call())
+	return b
+
 func _boton(vb: VBoxContainer, txt: String, f: Callable) -> Button:
 	var b := Button.new()
 	b.text = txt
@@ -330,12 +383,17 @@ func _boton(vb: VBoxContainer, txt: String, f: Callable) -> Button:
 	return b
 
 func _confirmacion(si: bool) -> void:
+	if rejilla_menu != null:  # --- objetivos ---
+		rejilla_menu.visible = not si  # --- objetivos ---
+		sep_menu.visible = not si  # --- objetivos ---
 	btn_guardar.visible = not si
 	btn_personaje.visible = not si
 	btn_nueva.visible = not si
 	btn_cerrar.visible = not si
 	btn_sicero.visible = si
 	btn_no.visible = si
+	if panel != null:  # --- objetivos --- que encoja al ocultar las secciones
+		panel.offset_bottom = panel.offset_top  # --- objetivos ---
 
 func _abrir_panel(v: bool) -> void:
 	_confirmacion(false)
