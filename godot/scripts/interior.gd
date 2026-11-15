@@ -1,14 +1,16 @@
 class_name Interior
 extends RefCounted
 # Un interior con paredes, suelo, techo y muebles, construido desde data/interiores.json -> interiores[id].
-# Corte tipo casa de muñecas: al estar dentro se oculta el techo y se aplastan las paredes de delante (sur y oeste).
+# Corte tipo casa de muñecas: al estar dentro se oculta el techo y se aplastan las paredes que dan a la cámara (con la
+# cámara de siempre, sur y oeste; al girarla, las que queden entre ella y el piso: orientar()).
 var id := ""
 var def: Dictionary = {}
 var rect := Rect2()          # suelo útil, en metros del mundo
 var puerta := Vector2.ZERO   # centro de la puerta, sobre la línea de la fachada
 var raiz: Node3D
 var techo: Node3D
-var frente: Node3D
+var lados := {}           # "n", "e", "s", "o" -> Node3D con cada pared exterior (y su zócalo y ventanas)
+var cam_dir := Vector2(-0.4, 0.9)   # de dónde mira la cámara (horizontal, del centro del piso hacia ella)
 var objetos: Array = []
 var por_id := {}
 var alto := 3.0
@@ -84,16 +86,19 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	var t := 0.3
 	var nav: Nav = jg.nav
 	nav.tipo_rect(r, Nav.T_SUELO)
-	# norte y este (siempre altas)
-	_caja(alt_, Vector3(r.get_center().x, h * 0.5, r.position.y - t * 0.5), Vector3(w + 2 * t, h, t), pared)
-	_caja(alt_, Vector3(r.end.x + t * 0.5, h * 0.5, r.get_center().y), Vector3(t, h, d), pared)
+	for k in ["n", "e", "s", "o"]:
+		var nl := Node3D.new()
+		nl.name = "Pared_" + k
+		raiz_.add_child(nl)
+		it.lados[k] = nl
+	# norte y este (con la cámara de siempre, las de atrás)
+	_caja(it.lados["n"], Vector3(r.get_center().x, h * 0.5, r.position.y - t * 0.5), Vector3(w + 2 * t, h, t), pared)
+	_caja(it.lados["e"], Vector3(r.end.x + t * 0.5, h * 0.5, r.get_center().y), Vector3(t, h, d), pared)
 	nav.solido_rect(Rect2(r.position.x - t, r.position.y - t, w + 2 * t, t), true)
 	nav.solido_rect(Rect2(r.end.x, r.position.y, t, d), true)
-	# sur y oeste (las de delante: se aplastan al entrar)
-	var fr := Node3D.new()
-	raiz_.add_child(fr)
-	it.frente = fr
-	_caja(fr, Vector3(r.position.x - t * 0.5, h * 0.5, r.get_center().y), Vector3(t, h, d), pared)
+	# sur y oeste (las de delante con la cámara de siempre)
+	var fr: Node3D = it.lados["s"]
+	_caja(it.lados["o"], Vector3(r.position.x - t * 0.5, h * 0.5, r.get_center().y), Vector3(t, h, d), pared)
 	nav.solido_rect(Rect2(r.position.x - t, r.position.y, t, d), true)
 	var izq := (dx - 1.0) - (r.position.x - t)
 	var der := (r.end.x + t) - (dx + 1.0)
@@ -105,9 +110,9 @@ static func construir(jg, id_: String, def_: Dictionary, tipos: Dictionary, parc
 	_caja(raiz_, Vector3(dx, 1.05, fz + t * 0.5), Vector3(1.8, 2.1, 0.06), Color(0.28, 0.2, 0.15)).visible = false
 	# zócalo (franja oscura de 1 m en el lado de dentro) y ventanas encendidas en la fachada
 	var zh := 1.0
-	_caja(alt_, Vector3(r.get_center().x, zh * 0.5, r.position.y + 0.03), Vector3(w, zh, 0.06), zoc)
-	_caja(alt_, Vector3(r.end.x - 0.03, zh * 0.5, r.get_center().y), Vector3(0.06, zh, d), zoc)
-	_caja(fr, Vector3(r.position.x + 0.03, zh * 0.5, r.get_center().y), Vector3(0.06, zh, d), zoc)
+	_caja(it.lados["n"], Vector3(r.get_center().x, zh * 0.5, r.position.y + 0.03), Vector3(w, zh, 0.06), zoc)
+	_caja(it.lados["e"], Vector3(r.end.x - 0.03, zh * 0.5, r.get_center().y), Vector3(0.06, zh, d), zoc)
+	_caja(it.lados["o"], Vector3(r.position.x + 0.03, zh * 0.5, r.get_center().y), Vector3(0.06, zh, d), zoc)
 	_caja(fr, Vector3(r.position.x + izq * 0.5 - t, zh * 0.5, fz - 0.03), Vector3(izq - 0.1, zh, 0.06), zoc)
 	_caja(fr, Vector3(dx + 1.0 + der * 0.5 - t, zh * 0.5, fz - 0.03), Vector3(der - 0.1, zh, 0.06), zoc)
 	it.vent_mat = StandardMaterial3D.new()
@@ -329,11 +334,33 @@ func cortar(on: bool) -> void:
 		return
 	cortado = on
 	techo.visible = not on
-	frente.scale.y = (ALTO_MEDIO_MURO if bajas else 0.1) if on else 1.0
 	if altas != null:
 		altas.scale.y = ALTO_MEDIO_MURO if on else 1.0
 	for n in al_entrar:
 		(n as Node3D).visible = not on
+	_alturas_paredes()
+
+## la cámara se ha movido: `dir` = dirección horizontal (x, z) del centro del piso hacia la cámara. Se aplastan las
+## paredes que dan a ese lado (la cámara mira por encima de ellas); las demás quedan altas (o a medio muro si paredes_bajas).
+func orientar(dir: Vector2) -> void:
+	if dir.length() < 0.001:
+		return
+	dir = dir.normalized()
+	if dir.distance_to(cam_dir) < 0.05:
+		return
+	cam_dir = dir
+	if cortado:
+		_alturas_paredes()
+
+const NORMALES := {"n": Vector2(0, -1), "e": Vector2(1, 0), "s": Vector2(0, 1), "o": Vector2(-1, 0)}
+func _alturas_paredes() -> void:
+	for k in lados:
+		var y := 1.0
+		if cortado:
+			# da a la cámara si su normal hacia fuera apunta hacia ella (vista de canto no tapa: se queda)
+			var da: bool = (NORMALES[k] as Vector2).dot(cam_dir) > 0.2
+			y = (ALTO_MEDIO_MURO if bajas else 0.1) if da else (ALTO_MEDIO_MURO if bajas else 1.0)
+		(lados[k] as Node3D).scale.y = y
 
 func de_tipo(t: String) -> Array:
 	var r: Array = []

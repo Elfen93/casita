@@ -105,6 +105,8 @@ func _guardar_camara() -> Dictionary:
 	var d := {"libre": main.cam_libre}
 	if not main.en_interior:
 		d["dist"] = snappedf(main.dist, 0.1)
+	if main.camctl != null:
+		d.merge(main.camctl.guardar())   # giro, inclinación y, si está libre, adónde mira
 	return d
 
 func _aplicar_camara(d: Dictionary) -> void:
@@ -114,6 +116,8 @@ func _aplicar_camara(d: Dictionary) -> void:
 		main.dist = _num(d, "dist", main.dist)
 	main._texto_camara()
 	main._poner_camara()
+	if main.camctl != null:
+		main.camctl.aplicar(d)
 
 # =============== texto de la partida ===============
 func a_texto() -> String:
