@@ -225,6 +225,21 @@ Tratar con los vecinos (`mods/trato.js`). Secciones:
 
 Efectos (`fx`): rel, social, diversion, hambre, energia, coste_h, fiar_h, presta_h, presto_h, pista, despensa, agua, hijos_hap, mov, sol, te, chisme. Condiciones (`req`): huerto, hijos_cole, con_trabajo, en_paro, trabajo_dentro, ella_hijos, bloque, politica, justa, solvente. Huecos: `{v}`, `{x}`, `{y}`, `{k}`, `{c}`, `{n}`, `{o}`, `{quien}`, `{sitio}`, `{frase}`, `{que}`, `{st}`, `{l}`, `{why}`. `datos.py` lo comprueba todo.
 
+
+### gente3d.json
+Tratar con los vecinos del censo en el juego de Godot (`godot/scripts/relaciones.gd`, `gente_ui.gd`). Reutiliza los textos del juego web: cualquier texto puede ser una referencia `"@archivo.sección.clave"` (p. ej. `"@interacciones.vecinos_ficha.presentarse"`, `"@textos_mods_hz.social_fx.llamando"`); `datos.py` comprueba que exista.
+| Sección | Qué es |
+|---|---|
+| `umbrales` | Amistad mínima para: `historia` (te cuenta su historia), `lazos` (sabes con quién se trata), `amiga`, `intima` (fases), `llamar`, `invitar` (a casa), `saludar` (te saluda al cruzaros), `favor` (viene a pedirte uno), `caracter` (lo descubres hablando). |
+| `opciones` | El menú al tocar a alguien, en orden: `id`, `e` icono, `n` nombre, `quien`/`otra` animación de la jugadora y de la otra persona (de `animaciones.json`; sentada se usa su versión sentada), `seg` segundos que dura verlo, `rel` amistad mínima, `conocer` (solo si aún no os conocéis), `menor` (también con menores de 18), `adultos` (solo entre adultas). Además salen hasta dos acciones de `trato.json` (`oficios` si está en su puesto, si no `lugares`) cuyos efectos y condiciones ya sabe cumplir Godot. |
+| `efectos` | Por opción y resultado (`ok`, `ko`, `otra_vez` si ya se hizo hoy): `rel` y `amor` (número o `[mín, máx]`), `social`, `diversion`, `hambre`, `energia` (necesidades del HUD), `te` (te debe un favor). También `llamar`, `saludo`, `visita_charlar` y `comer` (comer juntas en casa). |
+| `caracter`, `animo` | Carácter estable por persona (del id) y ánimo del momento (en su curro: `liada`; de noche: `cansada`; si no, al azar por día): `n` `[femenino, masculino]`, `p` lo que suma a que salga bien, `chiste` (carácter) y `rel` (multiplica lo que sube la amistad). |
+| `fases` | Nombre de la relación `[f, m]`: `nadie`, `conocida`, `amiga`, `intima`, `tonteo` (hay chispa), `cita` (chispa ≥ 3 y romance ≥ 40). |
+| `bocadillos` | Lo que se dicen encima de la cabeza, por opción: `dice` (la jugadora), `ok`/`ko` (la respuesta). Huecos `{n}`, `{o}` (jugadora) y `{vo}` (terminación de la otra persona). |
+| `vida`, `politica`, `ficha`, `resultados` | Textos de «Preguntar por su vida» (`{puesto}`, `{sitio}`, `{desde}`, `{hasta}`), de política, de la ficha y de las tarjetas (`[título, línea]`). |
+| `gente`, `llamada`, `visita` | Pestaña Gente (`ir` es `[ella, él]`), la llamada y la visita a casa. |
+| `favores` | `pide`: favores de `trato.favores` (con `dir: pide`) que un vecino puede venir a pedirte en persona; `visita_min`: minutos que se pasa en su casa en los de `modo: visita`; `prob_dia`: probabilidad de que alguien venga cada día. |
+
 <!-- p0b -->
 ### textos_mods_ag.json
 Los textos sueltos de los módulos de `mods/` de la «a» a la «g» (`agenda` … `gym`): lo que cuentan `tell()`, `toast()` y `chapter()`, las líneas del móvil, las fichas de interfaz y los dilemas de la comunidad. Una sección por módulo, con el nombre del módulo (`colectivo`, `comunidad`, `crianza`, `curro`, `entrevista`, `ducha`, `energia`, `facturas`, `ciclos`, `gobierno`, `fiscal`, `banco`, `banco2`, `banco3`, `casa`, `comidas`, `estudios`, `final`, `fregar`, `cocinar`, `convivencia`, `gente_menu`, `encadenar`, `agenda`, `body3d`); la clave `_` es la nota del archivo. Cada módulo lo lee con `const {modulo:TX_modulo}=DATA.textos_mods_ag;` al principio.

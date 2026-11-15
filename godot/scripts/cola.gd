@@ -267,6 +267,8 @@ func _terminar() -> void:
 		msg = "Nada. Otra vez será."
 	if msg != "":
 		jg._aviso(msg)
+	if o.tipo == "cliente" and jg.get("relaciones") != null:  # --- vecinos --- charlar o un chiste en el bar también cuentan
+		jg.relaciones.gesto_bar(o.cli.get("x", {}), str(ac.get("id", "")))  # --- vecinos ---
 	_soltar()
 	act = {}
 	uso = -1

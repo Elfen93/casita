@@ -129,6 +129,7 @@ var d_pinza := 0.0
 
 var guardado: Guardado  # --- guardado ---
 var muebles: Muebles  # --- muebles ---
+var relaciones: Relaciones  # --- vecinos ---
 
 func _ready() -> void:
 	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
@@ -194,6 +195,8 @@ func _ready() -> void:
 	guardado.escuchas_web()  # --- guardado ---
 	muebles = Muebles.new(self)  # --- muebles ---
 	muebles.crear_ui(ui)  # --- muebles ---
+	relaciones = Relaciones.new(self)  # --- vecinos ---
+	relaciones.crear_ui(ui)  # --- vecinos ---
 	guardado.cargar_inicio()  # --- guardado ---
 	if nueva:
 		guardado.guardar()  # la elección queda guardada aunque se cierre enseguida
@@ -1391,6 +1394,8 @@ func _lugar_de(x: Dictionary) -> String:
 
 func _actualizar_vecinos(salto: bool) -> void:
 	for x in vecinos:
+		if x.get("ocupado", false):  # --- vecinos --- hablando contigo, de visita o buscándote: el horario espera
+			continue  # --- vecinos ---
 		var lug := _lugar_de(x)
 		var c: Actor = x["cam"]
 		var prev: String = x["meta"]
@@ -1440,6 +1445,8 @@ func _en_ui(p: Vector2) -> bool:
 		return true  # --- muebles ---
 	if guardado.en_ui(p):  # --- guardado ---
 		return true  # --- guardado ---
+	if relaciones != null and relaciones.en_ui(p):  # --- vecinos ---
+		return true  # --- vecinos ---
 	return velo.visible
 
 func _input(ev: InputEvent) -> void:
@@ -1641,6 +1648,9 @@ func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 	_ficha(titulo, sub, botones)
 
 func _ficha_vecino(x: Dictionary) -> void:
+	if relaciones != null:  # --- vecinos --- ficha con lo que sabes y el menú (relaciones.gd)
+		relaciones.ficha(x)  # --- vecinos ---
+		return  # --- vecinos ---
 	var v: Dictionary = x["v"]
 	var of: Array = v.get("oficio", [])
 	var oficio := ""
@@ -1659,6 +1669,7 @@ func _process(dt: float) -> void:
 	muebles.tick(dt)  # --- muebles ---
 	if muebles.activo:  # --- muebles --- el tiempo y el personaje se paran
 		dt = 0.0  # --- muebles ---
+	relaciones.tick(dt)  # --- vecinos ---
 	_dedo_tick(dt)
 	var rapido := salto_rest > 0.0
 	if rapido:
@@ -1820,6 +1831,8 @@ func _cmd_js(args: Array) -> void:
 		return  # --- cámara ---
 	if muebles.cmd(c, args):  # --- muebles ---
 		return  # --- muebles ---
+	if relaciones.cmd(c, args):  # --- vecinos ---
+		return  # --- vecinos ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))

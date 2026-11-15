@@ -1,0 +1,178 @@
+{
+  "_": "Tratar con los vecinos del censo en el juego de Godot (godot/scripts/relaciones.gd y gente_ui.gd): menú al tocar a alguien, relación por persona, pestaña Gente, llamadas, visitas, saludos y favores en persona. Lo que ya existe se reutiliza con «@archivo.sección.clave» (mismos textos que el juego web: interacciones, trato, textos_mods_hz). Campos en data/README.md.",
+
+  "umbrales": {"historia": 35, "lazos": 55, "amiga": 40, "intima": 75, "llamar": 30, "invitar": 45, "saludar": 15, "favor": 30, "caracter": 20},
+
+  "opciones": [
+    {"id": "presentarse", "e": "🤝", "n": "@interacciones.vecinos_ficha.presentarse", "conocer": true, "quien": "saludo_formal", "otra": "saludar", "seg": 3.4},
+    {"id": "charlar", "e": "💬", "n": "@interacciones.vecinos_ficha.charlar", "quien": "hablar", "otra": "hablar", "seg": 4.2, "menor": true},
+    {"id": "chiste", "e": "😂", "n": "@interacciones.gestos.chiste.n", "quien": "@animaciones.gestos.chiste.quien", "otra": "@animaciones.gestos.chiste.otra", "seg": 3.6, "menor": true},
+    {"id": "vida", "e": "🏠", "n": "Preguntar por su trabajo y su vida", "quien": "hablar", "otra": "hablar_contento", "seg": 4.0, "rel": 8},
+    {"id": "cotillear", "e": "🗣️", "n": "@trato.ficha.chisme", "quien": "hablar", "otra": "hablar_contento", "seg": 4.0, "rel": 25},
+    {"id": "politica", "e": "📢", "n": "@trato.ficha.politica", "quien": "hablar", "otra": "discutir", "seg": 4.0, "rel": 20},
+    {"id": "ligar", "e": "💘", "n": "@interacciones.gestos.ligar.n", "quien": "@animaciones.gestos.ligar.quien", "otra": "@animaciones.gestos.ligar.otra", "seg": 3.6, "rel": 30, "adultos": true},
+    {"id": "abrazar", "e": "🫂", "n": "@interacciones.gestos.abrazar.n", "quien": "@animaciones.gestos.abrazar.quien", "otra": "@animaciones.gestos.abrazar.otra", "seg": 3.0, "rel": 40, "adultos": true},
+    {"id": "discutir", "e": "😠", "n": "@interacciones.gestos.discutir.n", "quien": "@animaciones.gestos.discutir.quien", "otra": "@animaciones.gestos.discutir.otra", "seg": 3.6}
+  ],
+
+  "efectos": {
+    "presentarse": {"ok": {"rel": [16, 24], "social": 6}, "ko": {"rel": [6, 10], "social": 2}},
+    "charlar": {"ok": {"rel": [2, 4], "social": 8, "diversion": 2}, "ko": {"rel": [0.5, 1], "social": 3}, "otra_vez": {"rel": [0.3, 0.6], "social": 3}},
+    "chiste": {"ok": {"rel": [4, 6], "diversion": 10, "social": 4}, "ko": {"rel": [-1, -1], "social": 2}, "otra_vez": {"rel": [-1, -1]}},
+    "vida": {"ok": {"rel": [2, 3], "social": 5}, "otra_vez": {"rel": [0.3, 0.6], "social": 2}},
+    "cotillear": {"ok": {"rel": [2, 2], "social": 4}, "ko": {"rel": [1, 1]}},
+    "ligar": {"ok": {"amor": [8, 12], "social": 10, "diversion": 12}, "ko": {"diversion": -12}},
+    "abrazar": {"ok": {"rel": [4, 4], "amor": [2, 2], "social": 10}},
+    "discutir": {"ok": {"rel": [-8, -8], "amor": [-5, -5], "social": -5}},
+    "llamar": {"ok": {"rel": [3, 5], "social": 10, "diversion": 4}, "otra_vez": {"rel": [0.5, 1], "social": 5}},
+    "saludo": {"ok": {"rel": [0.5, 1], "social": 2}},
+    "visita_charlar": {"ok": {"rel": [3, 5], "social": 12, "diversion": 6}},
+    "comer": {"ok": {"rel": [5, 6], "social": 15, "hambre": 45}}
+  },
+
+  "caracter": {
+    "abierta": {"n": ["abierta", "abierto"], "p": 0.12, "chiste": 0.5, "rel": 1.2},
+    "reservada": {"n": ["reservada", "reservado"], "p": -0.12, "chiste": 0.0, "rel": 0.8},
+    "guasona": {"n": ["guasona", "guasón"], "p": 0.04, "chiste": 1.6, "rel": 1.0},
+    "seria": {"n": ["seria", "serio"], "p": -0.04, "chiste": -1.4, "rel": 1.0}
+  },
+
+  "animo": {
+    "contenta": {"n": ["de buen humor", "de buen humor"], "p": 0.12},
+    "normal": {"n": ["como siempre", "como siempre"], "p": 0.0},
+    "liada": {"n": ["liada con el curro", "liado con el curro"], "p": -0.15},
+    "cansada": {"n": ["cansada", "cansado"], "p": -0.1},
+    "torcida": {"n": ["con el día torcido", "con el día torcido"], "p": -0.2}
+  },
+
+  "fases": {"nadie": ["No os conocéis", "No os conocéis"], "conocida": ["Conocida", "Conocido"], "amiga": ["Amiga", "Amigo"], "intima": ["Muy amiga", "Muy amigo"], "tonteo": ["Hay tonteo", "Hay tonteo"], "cita": ["Os gustáis", "Os gustáis"]},
+
+  "bocadillos": {
+    "presentarse": {"dice": ["Hola, soy {n}. Del bajo.", "Hola, {n}. Vecin{o} nuev{o}."], "ok": ["¡Encantada! Ya era hora.", "Ah, la del bajo. Bienvenid{o}."], "ko": ["Hola… sí. Tengo prisa.", "Encantada. Luego hablamos."]},
+    "charlar": {"dice": ["¿Qué tal todo?", "¿Has visto lo del contenedor?", "Vaya semanita…"], "ok": ["No me hables del alquiler.", "Tirando, que no es poco.", "¿Te has enterado de lo del tercero?"], "ko": ["Bien, bien… voy tarde.", "Lo de siempre."]},
+    "chiste": {"dice": ["¿Sabes el del casero?", "Te cuento uno malísimo."], "ok": ["¡Jajaja! Qué malo.", "Ay, que me meo."], "ko": ["…Ya.", "Ese no lo pillo."]},
+    "vida": {"dice": ["¿Y tú a qué te dedicas?", "¿Cuánto llevas en el barrio?"], "ok": ["Uf, si yo te contara…", "Pues mira…"]},
+    "cotillear": {"dice": ["¿Qué se cuenta por el barrio?", "¿Alguna novedad?"], "ok": ["Esto no te lo he dicho yo…", "Baja la voz."], "ko": ["Nada que no sepas.", "Está todo muy tranquilo."]},
+    "politica": {"dice": ["¿Has visto quién gobierna?", "Otra subida del alquiler…"], "ok": ["Pues yo lo veo claro.", "Mira, te digo una cosa."], "ko": ["Mejor no hablemos de eso."]},
+    "ligar": {"dice": ["Hoy estás guapísim{vo}.", "¿Te apetece un café un día?"], "ok": ["Anda… qué cosas dices.", "Igual sí."], "ko": ["Jaja… no.", "Eh… vale, ya."]},
+    "abrazar": {"dice": ["Ven aquí."], "ok": ["Lo necesitaba."]},
+    "discutir": {"dice": ["Eso no es así.", "Siempre igual contigo."], "ok": ["¡Tú sabrás!", "¿Perdona?"]},
+    "saludo": {"dice": ["¡Hola, {n}!", "¡Ey, {n}!", "¿Qué pasa, {n}?", "Buenas, {n}."]},
+    "favor": {"dice": ["Oye, {n}, ¿tienes un minuto?", "¡{n}! Justo te buscaba."]},
+    "visita": {"dice": ["¡Toc, toc!", "¿Se puede?"]},
+    "comer": {"dice": ["Esto está buenísimo.", "Qué bien se come acompañad{vo}."]}
+  },
+
+  "vida": {
+    "trabajo": "Trabaja de {puesto} en {sitio}, de {desde} a {hasta}.",
+    "trabajo_fuera": "Trabaja de {puesto} fuera del barrio, de {desde} a {hasta}.",
+    "situacion": "Te cuenta que es {oficio}.",
+    "estudia": "{estudia}.",
+    "casa": "Vive en {sitio}.",
+    "nada": "Ya te lo ha contado todo. Ahora toca escuchar lo de hoy.",
+    "titulo": "{v} te cuenta su vida",
+    "sabes": "Lo que sabes"
+  },
+
+  "politica": {"titulo_ideo": "{v} es {ideo}", "ideo": "Ideas: {ideo}"},
+
+  "ficha": {
+    "edad": "@interacciones.vecinos_ficha.edad",
+    "caracter": "Carácter: {c}",
+    "animo": "Hoy está {a}.",
+    "amistad": "Amistad",
+    "romance": "Romance",
+    "no_conoces": "@interacciones.vecinos_ficha.no_conoces",
+    "pista_historia": "@interacciones.vecinos_ficha.pista_historia",
+    "pista_lazos": "@interacciones.vecinos_ficha.pista_lazos",
+    "historia": "@interacciones.vecinos_ficha.historia_titulo",
+    "lazos": "@interacciones.vecinos_ficha.lazos_titulo",
+    "dicen": "@trato.ficha.dicen",
+    "te_debe_una": "@trato.ficha.te_debe_una",
+    "te_debe_n": "@trato.ficha.te_debe_n",
+    "ya_hoy": "@trato.ficha.ya_hoy",
+    "lejos": "Está lejos: acércate para hablar.",
+    "ocupada": "Ahora está a lo suyo.",
+    "menor": "@trato.romance.menor",
+    "pareja": "@trato.ficha.tiene_pareja",
+    "no_interesa": "@textos_mods_hz.relaciones.esta_interesad_esa_manera",
+    "no_insistir": "@textos_mods_hz.relaciones.ya_dejo_claro_mejor_insistir",
+    "no_para_ligar": "@textos_mods_hz.relaciones.no_para_ligar",
+    "huele": "@textos_mods_hz.relaciones.huele_tigre",
+    "hambre": "@textos_mods_hz.relaciones.tiene_hambre",
+    "agotada": "@textos_mods_hz.relaciones.agotado",
+    "ya_hoy_ligar": "@textos_mods_hz.relaciones.ya_ha_intentado_hoy_insistir",
+    "chiste_repetido": "Ese ya se lo has contado hoy.",
+    "cancelada": "Se ha ido antes de que llegaras.",
+    "fx": "@trato.ficha.fx"
+  },
+
+  "resultados": {
+    "charla_ko": [["{v} va a lo suyo", "Dos frases y un «bueno, te dejo». Hoy no tocaba."], ["{v} tiene prisa", "Te ha contestado andando. Otro día habrá más tiempo."]],
+    "chiste_ok": ["Se ríe de verdad", "@textos_mods_hz.relaciones.rie_verdad"],
+    "chiste_ko": ["Sonrisa de compromiso", "@textos_mods_hz.relaciones.sonrie_compromiso"],
+    "abrazo": ["Un abrazo", "@textos_mods_hz.relaciones.abrazo_largo"],
+    "discusion": ["Bronca", "@textos_mods_hz.relaciones.han_discutido"],
+    "temas": ["@textos_mods_hz.relaciones.platos", "@textos_mods_hz.relaciones.discute_politica", "@textos_mods_hz.relaciones.discute_dinero", "@textos_mods_hz.relaciones.quien_contesta_mensajes", "@textos_mods_hz.relaciones.tonteria_era_tonteria"],
+    "ligar_ok": ["@textos_mods_hz.social_fx.ha_gustado", "@textos_mods_hz.relaciones.ha_reido_mas_chiste_malo", "@textos_mods_hz.relaciones.ha_habido_mirada_poco_mas", "@textos_mods_hz.relaciones.ha_tocado_brazo_al_hablar"],
+    "ligar_ko": ["@textos_mods_hz.social_fx.esta_labor", "@textos_mods_hz.social_fx.esta_vez_ha_salido_veces"],
+    "ligar_cita": ["Os gustáis", "Después de varias miradas de más, {v} te ha dicho que sí: un café, solas, sin prisa. Lo demás ya se verá."],
+    "ligar_no": ["@textos_mods_hz.relaciones.quiere_nada_mas_al_menos", "@textos_mods_hz.relaciones.ha_sido_clar_te_quiero"],
+    "charla_hoy": "@interacciones.vecinos_ficha.charla_hoy",
+    "sube_historia": "@interacciones.vecinos_ficha.sube_historia",
+    "sube_lazos": "@interacciones.vecinos_ficha.sube_lazos",
+    "saludo": ["{v} te saluda", "Al cruzaros, {v} se ha parado a decirte hola. En el barrio, eso es un sitio."]
+  },
+
+  "gente": {
+    "boton": "👥 Gente",
+    "titulo": "Gente",
+    "vacia": "Todavía no conoces a nadie. Toca a alguien por la calle y preséntate.",
+    "ahora": "Ahora: {sitio}",
+    "en_casa": "en su casa ({sitio})",
+    "trabajando": "trabajando en {sitio}",
+    "fuera": "fuera del barrio",
+    "contigo": "en tu casa, contigo",
+    "de_camino": "de camino a tu casa ({hora})",
+    "ir": ["🚶 Ir a verla", "🚶 Ir a verlo"],
+    "llamar": "@interacciones.menu_persona.call",
+    "invitar": "@interacciones.menu_persona.home",
+    "ficha": "@interacciones.vecinos_ficha.ficha",
+    "cerrar": "Cerrar",
+    "no_esta": "No está en el barrio ahora.",
+    "ya_llamado": "Hoy ya habéis hablado por teléfono."
+  },
+
+  "llamada": {
+    "llamando": "@textos_mods_hz.social_fx.llamando",
+    "en_llamada": "@textos_mods_hz.social_fx.llamada",
+    "titulo": "@textos_mods_hz.social_fx.llamada2",
+    "no_coge": "@textos_mods_hz.social_fx.coge",
+    "horas_raras": "@textos_mods_hz.social_fx.son_horas_raras_para_llamar",
+    "poca_confianza": "@textos_mods_hz.social_fx.todavia_hay_tanta_confianza_mensaje",
+    "liada": "@textos_mods_hz.social_fx.estara_liada_seguro_devuelve_llamada",
+    "temas": ["@textos_mods_hz.social_fx.nada_todo", "@textos_mods_hz.social_fx.curro", "@textos_mods_hz.social_fx.familia", "@textos_mods_hz.social_fx.caro_esta_todo", "@textos_mods_hz.social_fx.serie", "@textos_mods_hz.social_fx.planes_para_finde"],
+    "minutos": "@textos_mods_hz.social_fx.han_estado_minutos_hablando",
+    "alegra": "@textos_mods_hz.social_fx.ha_alegrado_llamada",
+    "ocupada": "Ahora no puedes: termina lo que estás haciendo."
+  },
+
+  "visita": {
+    "viene": "@textos_mods_hz.social_fx.viene_casa",
+    "vendra": "Quedáis a las {hora}. Estate en casa.",
+    "no_puede": "@textos_mods_hz.social_fx.puede_venir",
+    "otro_dia": "@textos_mods_hz.social_fx.hoy_viene_bien_prueba_otro",
+    "ya_hay": "Ya tienes una visita apalabrada.",
+    "llega": ["{v} llama a la puerta", "Viene con las manos vacías y ganas de sofá. Tócale para hacer algo juntas."],
+    "no_estabas": ["No estabas", "{v} ha llamado al timbre dos veces y se ha ido. Te ha dejado un audio: «Otro día, ¿eh?»."],
+    "se_va": ["{v} se va a casa", "«Mañana madrugo». Lo de siempre, y es verdad."],
+    "echar": "Despedirse hasta otro día",
+    "comer": "🍲 Comer juntas",
+    "sin_comida": "No hay comida hecha en casa",
+    "comiendo": "Coméis juntas…",
+    "comida": ["Comida con {v}", "Un plato cada una y la sobremesa que se alarga. Lo mejor de cocinar es no comer sola."],
+    "mesa": "¿Ponemos la mesa?"
+  },
+
+  "favores": {"pide": ["firmar", "mudanza", "cuidar"], "visita_min": {"mudanza": 180, "cuidar": 180}, "titulo": "@trato.ficha.te_pide", "si": "@trato.ficha.cuenta", "no": "@trato.ficha.no_puedo", "yendo": "Vas a casa de {v}…", "prob_dia": 0.5}
+}
