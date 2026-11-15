@@ -103,6 +103,7 @@ var toast_t := 0.0
 var velo: ColorRect
 var velo_txt: Label
 var js_cb = null
+var cmd_pendiente: Array = []   # orden de prueba llegada con la pantalla de elegir abierta
 
 # ---- toques ----
 var toques := {}
@@ -162,6 +163,13 @@ func _ready() -> void:
 		add_child(capa)
 		var el := ElegirPersonaje.new(personas.get("personaje_base", {}), Figura.MODELO_DEFECTO, fuente)
 		capa.add_child(el)
+		if OS.has_feature("web"):
+			# las pruebas (window.casita_cmd) no pasan por la pantalla: la primera orden elige el de siempre y espera al mundo
+			js_cb = JavaScriptBridge.create_callback(func(args: Array):
+				if cmd_pendiente.is_empty():
+					cmd_pendiente = args.duplicate()
+					el.elegido.emit.call_deferred(Figura.MODELO_DEFECTO))
+			JavaScriptBridge.get_interface("window").casita_cmd = js_cb
 		modelo_pj = await el.elegido
 		capa.queue_free()
 		set_process(true)
@@ -188,6 +196,8 @@ func _ready() -> void:
 		guardado.guardar()  # la elección queda guardada aunque se cierre enseguida
 	if OS.has_feature("web"):
 		_puente_js()
+		if not cmd_pendiente.is_empty():
+			_cmd_js(cmd_pendiente)
 	print("Casita 3D listo: %d edificios, %d vecinos" % [edificios.size(), vecinos.size()])
 
 # =============== elegir personaje (Menú → «Cambiar personaje») ===============

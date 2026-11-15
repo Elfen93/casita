@@ -110,12 +110,37 @@ static func persona(asp: Dictionary) -> Node3D:
 	if mod == "":
 		mod = modelo_mixamo(asp)
 	if PersonaAnimada.disponible(mod):
+		_preparar_pistas(mod)
 		var pm := PersonaAnimada.new(mod)
 		pm.set_aspecto(asp)
 		return pm
 	var p: Node3D = PERSONA.instantiate()
 	p.set_aspecto(asp)   # antes de add_child: el aspecto es estable
 	return p
+
+# Las animaciones compartidas (las de remy.glb) apuntan a «Remy/Skeleton3D», pero los pj/*.glb traen
+# «Armature/Skeleton3D»: se quedaban en pose T y llenaban la consola de avisos. Una vez por modelo, antes de
+# montarlo, se cambia en la escena guardada en PersonaAnimada el nombre del nodo del esqueleto al de las pistas.
+# Solo actúa si la ruta de las pistas no existe en el modelo: si PersonaAnimada reescribe las rutas, no hace nada.
+static var _pistas_ok := {}
+static func _preparar_pistas(m: String) -> void:
+	if _pistas_ok.has(m) or PersonaAnimada.MODELOS.has(m):
+		return
+	_pistas_ok[m] = true
+	var lib := PersonaAnimada._libreria()
+	if not lib.has_animation("parado") or lib.get_animation("parado").get_track_count() == 0:
+		return
+	var ruta := NodePath(lib.get_animation("parado").track_get_path(0).get_concatenated_names())
+	var esc: PackedScene = PersonaAnimada._cargar(m)
+	var r := esc.instantiate()
+	var sks := r.find_children("*", "Skeleton3D", true, false)
+	if ruta.get_name_count() == 2 and not r.has_node(ruta) and sks.size() == 1 and sks[0].get_parent().get_parent() == r \
+			and not r.has_node(NodePath(ruta.get_name(0))):
+		sks[0].get_parent().name = ruta.get_name(0)
+		var nueva := PackedScene.new()
+		if nueva.pack(r) == OK:
+			PersonaAnimada._escenas[m] = nueva
+	r.free()
 
 # personaje de Mixamo para un vecino, estable (sale de su semilla), según género y edad (franjas de JUGABLES).
 # Nunca el que lleva la jugadora. "" si no hay ninguno que encaje.

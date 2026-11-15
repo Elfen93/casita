@@ -142,10 +142,16 @@ func desde_texto(txt: String) -> String:
 	return "ok"
 
 # =============== almacenamiento ===============
-# personaje de la partida guardada, sin cargarla: "" si no hay partida (o no se puede leer) -> partida nueva
+# personaje de la partida guardada, sin cargarla: "" si no hay partida -> partida nueva.
+# Una partida rota se aparta aquí (igual que en cargar): copia en CLAVE_ROTA y se borra.
 static func modelo_guardado() -> String:
+	var txt := _leer(CLAVE)
+	if txt.strip_edges() == "":
+		return ""
 	var j := JSON.new()
-	if j.parse(_leer(CLAVE)) != OK or not (j.data is Dictionary) or not (j.data.get("secciones", null) is Dictionary):
+	if j.parse(txt) != OK or not (j.data is Dictionary) or not (j.data.get("secciones", null) is Dictionary):
+		_escribir(CLAVE_ROTA, txt)
+		_quitar(CLAVE)
 		return ""
 	var p = j.data["secciones"].get("personaje", {})
 	var m := str(p.get("modelo", "")) if p is Dictionary else ""
@@ -163,7 +169,7 @@ static func _leer(clave: String) -> String:
 		return ""
 	return FileAccess.get_file_as_string(ruta)
 
-func _escribir(clave: String, txt: String) -> void:
+static func _escribir(clave: String, txt: String) -> void:
 	if _web():
 		JavaScriptBridge.eval("try{window.localStorage.setItem(%s,%s)}catch(e){}" % [JSON.stringify(clave), JSON.stringify(txt)])
 		return
@@ -171,7 +177,7 @@ func _escribir(clave: String, txt: String) -> void:
 	if f != null:
 		f.store_string(txt)
 
-func _quitar(clave: String) -> void:
+static func _quitar(clave: String) -> void:
 	if _web():
 		JavaScriptBridge.eval("window.localStorage.removeItem(%s)" % JSON.stringify(clave))
 	else:
