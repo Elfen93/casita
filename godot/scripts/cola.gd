@@ -52,6 +52,9 @@ func _soltar() -> void:
 		a.poner(o.punto_uso(maxi(uso, 0)) if o.n_usos() > 0 else a.pos2())
 	a.poner_postura("de_pie")
 	a.progreso(-1.0, jg)
+	a.act_anim = ""
+	if o.tipo == "cliente" and o.actor != null:
+		o.actor.act_anim = ""
 	if a.estado_etq != null:
 		a.estado_etq.visible = false
 
@@ -103,6 +106,7 @@ func _empezar() -> void:
 	act = {"obj": o, "ac": ac, "est": "ir", "job": {}}
 	if o.n_usos() == 0:
 		act["est"] = "hacer"
+		jg.jugador.act_anim = _anim_accion(ac)
 		_preparar_hacer()
 		return
 	var ruta: Array = jg.nav.camino(jg.jugador.pos2(), o.punto_uso(i))
@@ -137,8 +141,25 @@ func _llegar() -> void:
 		else:
 			a.mirar(cara)
 	a.poner_postura(str(ac.get("postura", "de_pie")), o.alt_asiento())
+	# animación de la acción (data/interiores.json → anim; ver Animaciones.de_accion). En un gesto social, la otra
+	# persona hace lo suyo (data/animaciones.json → gestos) y se miran.
+	a.act_anim = _anim_accion(ac)
+	if o.tipo == "cliente" and o.actor != null:
+		var otra := Animaciones.gesto_otra(ac)
+		if otra != "":
+			o.actor.act_anim = otra
+			if o.actor.postura == "de_pie":
+				o.actor.mirar(a.pos2() - o.actor.pos2())
 	act["est"] = "hacer"
 	_preparar_hacer()
+
+## animación de una acción; la de preparar cócteles va con la habilidad (a nivel bajo, a trompicones: ver Actor)
+func _anim_accion(ac: Dictionary) -> String:
+	var a: Actor = jg.jugador
+	a.act_nivel = 0
+	for k in ac.get("habilidad", {}):
+		a.act_nivel = Actor.nivel_de(float(jg.hab.get(k, 0.0)))
+	return Animaciones.de_accion(ac)
 
 func _preparar_hacer() -> void:
 	var ac: Dictionary = act["ac"]
@@ -215,6 +236,8 @@ func _terminar() -> void:
 		"beber":
 			var pr := Acciones.producto(a.mano)
 			Acciones.aplicar_efectos(pr.get("beber", {}), jg)
+			if bool(pr.get("alcohol", false)) or a.mano.begins_with("coctel"):
+				a.beber_copa()
 			msg = "Te bebes %s." % Acciones.nombre_mano(a.mano)
 			a.poner_mano("", jg)
 		"comer":

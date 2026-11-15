@@ -16,8 +16,13 @@ static func factor_edad(edad: int) -> float:
 static func aspecto_de(v: Dictionary) -> Dictionary:
 	var hs := absi(hash(str(v["id"])))
 	var camisa := Color.from_hsv(float(hs % 360) / 360.0, 0.45, 0.82)
-	return {"genero": "f" if str(v.get("g", "m")) == "f" else "h", "edad": int(v.get("edad", 35)),
+	var asp := {"genero": "f" if str(v.get("g", "m")) == "f" else "h", "edad": int(v.get("edad", 35)),
 		"semilla": hs % 100000 + 1, "ropa": {"arriba": camisa}, "camisa": camisa}
+	# oficio que se ve en cómo está (Actor): la policía de servicio vigila y patrulla
+	if str(v.get("oficio", [""])[0] if v.get("oficio", null) is Array else "").begins_with("policía"):
+		asp["policia"] = true
+		asp["trabajo"] = v.get("trabajo", null)
+	return asp
 
 # Personajes que se pueden llevar: UNA TABLA. Para añadir uno, una línea más (el glb en arte/mixamo/pj/<modelo>.glb;
 # si no está, se salta). "nombre": nombre en el juego; "genero" f/h; "edad": la del personaje y su franja de vecino

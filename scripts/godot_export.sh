@@ -16,7 +16,8 @@ cd "$RAIZ/godot"
 "$GODOT" --headless --path . --import >/dev/null 2>&1 || true
 # texturas de Mixamo con pérdida (WebP): ~10 veces menos que sin pérdida, igual de cerca (ver README)
 if [ "$($PQ texturas)" != "0" ]; then "$GODOT" --headless --path . --import >/dev/null 2>&1 || true; fi
-# animaciones compartidas horneadas (arte/mixamo/anim/base.res): animar sin cargar la malla de Remy
+# animaciones horneadas por grupo (arte/mixamo/anims/<grupo>.glb -> arte/mixamo/anim/<grupo>.res): base va en index.pck,
+# el resto en play3d/anim/<grupo>.pck, que el juego baja cuando alguien usa una de sus animaciones
 timeout 300 "$GODOT" --headless --path . -s res://arte/herramientas/hornear_anims.gd 2>&1 | grep "hornear_anims" || true
 
 # los presets se retocan para cada paquete: se deja export_presets.cfg como estaba al acabar

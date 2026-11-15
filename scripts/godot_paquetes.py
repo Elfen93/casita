@@ -78,6 +78,8 @@ def excluir_web():
         ex += [base + '.glb', base + '_*'] if nombre.startswith('pj/') else [base + '.res']
     if any(n == 'pj/remy' for n, _ in paquetes()):
         ex.append('arte/mixamo/remy_*')                 # texturas de Remy (remy.json se queda)
+    # los glb de animaciones por grupo solo sirven para hornear anim/<grupo>.res (lo que va en los paquetes)
+    ex.append('arte/mixamo/anims/*')
     _presets_set('Web', 'exclude_filter', '"%s"' % ','.join(ex))
 
 def indice():
