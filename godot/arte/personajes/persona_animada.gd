@@ -34,6 +34,8 @@ var _parpadeo := 0.0
 const PJ := {
 	"james": 1.80, "leonard": 1.78, "brian": 1.76, "adam": 1.79, "joe": 1.80, "boss": 1.74,
 	"louise": 1.66, "megan": 1.65, "kate": 1.67, "sophie": 1.64, "jody": 1.63, "martha": 1.66, "granny": 1.58, "timmy": 1.45,
+	"josh": 1.79, "chad": 1.77, "alex": 1.77, "david": 1.76, "lewis": 1.77, "pete": 1.78,
+	"elizabeth": 1.68, "michelle": 1.64, "jackie": 1.62, "suzie": 1.65, "amy": 1.45,
 }
 const PJ_META := "res://arte/mixamo/pj/personajes.json"
 static var _pj_meta := {}

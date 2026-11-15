@@ -39,7 +39,7 @@ const JUGABLES := [
 	{"modelo": "boss", "nombre": "Benito", "genero": "h", "edad": 66, "semilla": 41},
 	{"modelo": "granny", "nombre": "Rosario", "genero": "f", "edad": 72, "semilla": 42},
 	{"modelo": "timmy", "nombre": "Tomás", "genero": "h", "edad": 12, "semilla": 43},
-	# los que llegarán (sin glb, o sin altura en PersonaAnimada.PJ, se saltan solos):
+	# los de la calle (Mixamo, 15 nov 2026)
 	{"modelo": "josh", "nombre": "José", "genero": "h", "edad": 27, "semilla": 51},
 	{"modelo": "chad", "nombre": "Carlos", "genero": "h", "edad": 29, "semilla": 52},
 	{"modelo": "alex", "nombre": "Álex", "genero": "h", "edad": 25, "semilla": 53},
@@ -50,6 +50,7 @@ const JUGABLES := [
 	{"modelo": "michelle", "nombre": "Miriam", "genero": "f", "edad": 29, "semilla": 62},
 	{"modelo": "jackie", "nombre": "Jacinta", "genero": "f", "edad": 31, "semilla": 63},
 	{"modelo": "suzie", "nombre": "Susana", "genero": "f", "edad": 23, "semilla": 64},
+	{"modelo": "amy", "nombre": "Alba", "genero": "f", "edad": 12, "semilla": 65},   # la niña
 ]
 const MODELO_DEFECTO := "kate"
 # el que lleva la jugadora: no sale entre los vecinos
