@@ -69,6 +69,7 @@ var cola_hb: HBoxContainer
 var btn_trabajo: Button
 var cola_txt := ""
 var nombre_pj := "Ana"
+var modelo_pj := Figura.MODELO_DEFECTO   # con quién se juega (Figura.JUGABLES); se guarda en la sección «personaje»
 var dentro := false
 var destino := ""
 var estado_casa := {}              # banderas de la vida en casa (platos_sucios…); se guarda en la sección vida_casa
@@ -150,6 +151,23 @@ func _ready() -> void:
 			nec_tasa[n[0]] = float(n[3])
 	dinero = float(reglas.get("dificultades", {}).get("normal", {}).get("money", 1000))
 	_fuentes()
+	# --- elegir personaje --- partida guardada: el suyo (Kate si es antigua); partida nueva: se elige antes de montar el mundo
+	modelo_pj = Guardado.modelo_guardado()
+	var nueva := modelo_pj == ""
+	if nueva:
+		set_process(false)
+		set_process_input(false)
+		var capa := CanvasLayer.new()
+		capa.layer = 20
+		add_child(capa)
+		var el := ElegirPersonaje.new(personas.get("personaje_base", {}), Figura.MODELO_DEFECTO, fuente)
+		capa.add_child(el)
+		modelo_pj = await el.elegido
+		capa.queue_free()
+		set_process(true)
+		set_process_input(true)
+	Figura.modelo_jugador = modelo_pj
+	nombre_pj = Figura.nombre_de(modelo_pj, personas.get("personaje_base", {}))
 	_entorno()
 	cola = Cola.new(self)
 	_mundo()
@@ -166,9 +184,40 @@ func _ready() -> void:
 	muebles = Muebles.new(self)  # --- muebles ---
 	muebles.crear_ui(ui)  # --- muebles ---
 	guardado.cargar_inicio()  # --- guardado ---
+	if nueva:
+		guardado.guardar()  # la elección queda guardada aunque se cierre enseguida
 	if OS.has_feature("web"):
 		_puente_js()
 	print("Casita 3D listo: %d edificios, %d vecinos" % [edificios.size(), vecinos.size()])
+
+# =============== elegir personaje (Menú → «Cambiar personaje») ===============
+# Se guarda la partida con el personaje nuevo y se vuelve a montar la escena: el mundo se monta ya con él.
+func elegir_personaje() -> void:
+	if guardado._en_salto() or muebles.activo or get_tree().paused:
+		_aviso("Ahora no se puede cambiar de personaje")
+		return
+	var capa := CanvasLayer.new()
+	capa.layer = 20
+	capa.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(capa)
+	var el := ElegirPersonaje.new(personas.get("personaje_base", {}), modelo_pj, fuente, true)
+	capa.add_child(el)
+	get_tree().paused = true
+	var cerrar := func():
+		get_tree().paused = false
+		capa.queue_free()
+	el.cancelado.connect(cerrar)
+	el.elegido.connect(func(m: String):
+		cerrar.call()
+		if m == modelo_pj:
+			return
+		var antes := modelo_pj
+		modelo_pj = m
+		if guardado.guardar():
+			get_tree().reload_current_scene()
+		else:
+			modelo_pj = antes
+			_aviso("Ahora no se puede cambiar de personaje"))
 
 # =============== fuentes y entorno ===============
 func _fuentes() -> void:
@@ -770,7 +819,7 @@ func _edificios() -> void:
 
 # =============== personajes ===============
 func _jugador() -> void:
-	var asp_j := Figura.aspecto_jugador(personas["personaje_base"])
+	var asp_j := Figura.aspecto_jugador(personas["personaje_base"], modelo_pj)
 	var f := Figura.crear(asp_j["camisa"], Color.WHITE, Figura.factor_edad(int(asp_j["edad"])), asp_j)
 	jugador = Actor.new(f)
 	add_child(jugador.nodo)

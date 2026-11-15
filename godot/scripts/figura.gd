@@ -19,11 +19,71 @@ static func aspecto_de(v: Dictionary) -> Dictionary:
 	return {"genero": "f" if str(v.get("g", "m")) == "f" else "h", "edad": int(v.get("edad", 35)),
 		"semilla": hs % 100000 + 1, "ropa": {"arriba": camisa}, "camisa": camisa}
 
-static func aspecto_jugador(base: Dictionary) -> Dictionary:
+# Personajes que se pueden llevar: UNA TABLA. Para añadir uno, una línea más (el glb en arte/mixamo/pj/<modelo>.glb;
+# si no está, se salta). "nombre": nombre en el juego; "genero" f/h; "edad": la del personaje y su franja de vecino
+# (< 16 niño, >= 65 mayor); "semilla": aspecto estable de la persona libre de repuesto (si falta el glb).
+# El orden importa: es el de la pantalla de elegir y el reparto estable de los vecinos.
+const JUGABLES := [
+	{"modelo": "remy", "nombre": "Raúl", "genero": "h", "edad": 30, "semilla": 21},
+	{"modelo": "james", "nombre": "Jaime", "genero": "h", "edad": 34, "semilla": 22},
+	{"modelo": "leonard", "nombre": "Leo", "genero": "h", "edad": 45, "semilla": 23},
+	{"modelo": "brian", "nombre": "Bruno", "genero": "h", "edad": 28, "semilla": 24},
+	{"modelo": "adam", "nombre": "Adrián", "genero": "h", "edad": 32, "semilla": 25},
+	{"modelo": "joe", "nombre": "Jorge", "genero": "h", "edad": 38, "semilla": 26},
+	{"modelo": "louise", "nombre": "Luisa", "genero": "f", "edad": 33, "semilla": 31},
+	{"modelo": "megan", "nombre": "Marta", "genero": "f", "edad": 26, "semilla": 32},
+	{"modelo": "kate", "nombre": "", "genero": "f", "edad": 27, "semilla": 11},   # la de siempre: nombre de personas.json (Ana)
+	{"modelo": "sophie", "nombre": "Sofía", "genero": "f", "edad": 24, "semilla": 33},
+	{"modelo": "jody", "nombre": "Julia", "genero": "f", "edad": 30, "semilla": 34},
+	{"modelo": "martha", "nombre": "Maribel", "genero": "f", "edad": 48, "semilla": 35},
+	{"modelo": "boss", "nombre": "Benito", "genero": "h", "edad": 66, "semilla": 41},
+	{"modelo": "granny", "nombre": "Rosario", "genero": "f", "edad": 72, "semilla": 42},
+	{"modelo": "timmy", "nombre": "Tomás", "genero": "h", "edad": 12, "semilla": 43},
+	# los que llegarán (sin glb, o sin altura en PersonaAnimada.PJ, se saltan solos):
+	{"modelo": "josh", "nombre": "José", "genero": "h", "edad": 27, "semilla": 51},
+	{"modelo": "chad", "nombre": "Carlos", "genero": "h", "edad": 29, "semilla": 52},
+	{"modelo": "alex", "nombre": "Álex", "genero": "h", "edad": 25, "semilla": 53},
+	{"modelo": "david", "nombre": "Dani", "genero": "h", "edad": 36, "semilla": 54},
+	{"modelo": "lewis", "nombre": "Luis", "genero": "h", "edad": 31, "semilla": 55},
+	{"modelo": "pete", "nombre": "Pedro", "genero": "h", "edad": 40, "semilla": 56},
+	{"modelo": "elizabeth", "nombre": "Elisa", "genero": "f", "edad": 35, "semilla": 61},
+	{"modelo": "michelle", "nombre": "Miriam", "genero": "f", "edad": 29, "semilla": 62},
+	{"modelo": "jackie", "nombre": "Jacinta", "genero": "f", "edad": 31, "semilla": 63},
+	{"modelo": "suzie", "nombre": "Susana", "genero": "f", "edad": 23, "semilla": 64},
+]
+const MODELO_DEFECTO := "kate"
+# el que lleva la jugadora: no sale entre los vecinos
+static var modelo_jugador := MODELO_DEFECTO
+
+static func jugable(modelo: String) -> Dictionary:
+	for j in JUGABLES:
+		if j["modelo"] == modelo:
+			return j
+	return {}
+
+# los jugables con modelo; si no hay NINGUNO (sin arte/mixamo), todos: se ven con la persona libre de repuesto
+static func jugables_disponibles() -> Array:
+	var ok := JUGABLES.filter(func(j): return PersonaAnimada.disponible(str(j["modelo"])))
+	return ok if not ok.is_empty() else JUGABLES.duplicate()
+
+static func nombre_de(modelo: String, base: Dictionary) -> String:
+	var n := str(jugable(modelo).get("nombre", ""))
+	return n if n != "" else str(base.get("name", "Ana"))
+
+static func aspecto_jugador(base: Dictionary, modelo := MODELO_DEFECTO) -> Dictionary:
+	var j := jugable(modelo)
+	if j.is_empty():
+		j = jugable(MODELO_DEFECTO)
 	var camisa := Color.html(str(base.get("shirt", "#ff8a5b")))
 	# "modelo": un personaje de Mixamo (arte/mixamo/, fuera del repo); si no está, una Persona del paquete libre
-	return {"genero": "f", "edad": int(base.get("age", 27)), "piel": 1, "pelo": "castano", "semilla": 11, "modelo": "kate",
-		"ropa": {"variante": 0, "arriba": camisa, "abajo": Color.html(str(base.get("pants", "#3d405b")))}, "camisa": camisa}
+	var asp := {"genero": str(j["genero"]), "edad": int(j.get("edad", base.get("age", 27))), "semilla": int(j.get("semilla", 11)),
+		"modelo": str(j["modelo"]), "camisa": camisa,
+		"ropa": {"variante": 0, "arriba": camisa, "abajo": Color.html(str(base.get("pants", "#3d405b")))}}
+	if j["modelo"] == MODELO_DEFECTO:
+		asp["edad"] = int(base.get("age", 27))
+		asp["piel"] = 1
+		asp["pelo"] = "castano"
+	return asp
 
 static func crear(camisa: Color, _piel: Color, esc := 1.0, asp := {}) -> Dictionary:
 	var raiz := Node3D.new()
@@ -57,22 +117,22 @@ static func persona(asp: Dictionary) -> Node3D:
 	p.set_aspecto(asp)   # antes de add_child: el aspecto es estable
 	return p
 
-# personaje de Mixamo para un vecino, estable (sale de su semilla), según género y edad. "" si no hay ninguno que encaje.
-const MIX_H := ["remy", "james", "leonard", "brian", "adam", "joe"]
-const MIX_F := ["louise", "megan", "kate", "sophie", "jody", "martha"]
+# personaje de Mixamo para un vecino, estable (sale de su semilla), según género y edad (franjas de JUGABLES).
+# Nunca el que lleva la jugadora. "" si no hay ninguno que encaje.
 static func modelo_mixamo(asp: Dictionary) -> String:
 	var edad := int(asp.get("edad", 30))
-	var h := str(asp.get("genero", "h")) != "f"
+	var g := "f" if str(asp.get("genero", "h")) == "f" else "h"
 	var sem := int(asp.get("semilla", 1))
-	var lista: Array = []
-	if edad < 16:
-		lista = ["timmy"] if h else []
-	elif edad >= 65:
-		lista = ["boss"] if h else ["granny"]
-	else:
-		lista = MIX_H if h else MIX_F
-	var ok := lista.filter(func(m): return PersonaAnimada.disponible(m))
+	var franja := _franja(edad)
+	var ok: Array = []
+	for j in JUGABLES:
+		var m := str(j["modelo"])
+		if j["genero"] == g and _franja(int(j["edad"])) == franja and m != modelo_jugador and PersonaAnimada.disponible(m):
+			ok.append(m)
 	return "" if ok.is_empty() else str(ok[sem % ok.size()])
+
+static func _franja(edad: int) -> int:
+	return 0 if edad < 16 else (2 if edad >= 65 else 1)
 
 static func _mat(c: Color) -> StandardMaterial3D:
 	var k := c.to_html()

@@ -30,6 +30,7 @@ var recuperada_aviso := ""
 var btn_menu: Button
 var panel: PanelContainer
 var btn_guardar: Button
+var btn_personaje: Button
 var btn_nueva: Button
 var btn_sicero: Button
 var btn_no: Button
@@ -68,6 +69,8 @@ func _registrar_basicas() -> void:
 				if d[k] is bool:
 					main.estado_casa[str(k)] = d[k])
 	registrar("jugador", 1, _guardar_jugador, _aplicar_jugador)
+	# con quién juega (Figura.JUGABLES). Se lee ANTES de montar el mundo (modelo_guardado); partidas antiguas: Kate
+	registrar("personaje", 1, func(): return {"modelo": main.modelo_pj}, func(_d: Dictionary): pass)
 	registrar("camara", 1, _guardar_camara, _aplicar_camara)
 
 func _num(d: Dictionary, k: String, defecto: float) -> float:
@@ -139,10 +142,19 @@ func desde_texto(txt: String) -> String:
 	return "ok"
 
 # =============== almacenamiento ===============
-func _web() -> bool:
+# personaje de la partida guardada, sin cargarla: "" si no hay partida (o no se puede leer) -> partida nueva
+static func modelo_guardado() -> String:
+	var j := JSON.new()
+	if j.parse(_leer(CLAVE)) != OK or not (j.data is Dictionary) or not (j.data.get("secciones", null) is Dictionary):
+		return ""
+	var p = j.data["secciones"].get("personaje", {})
+	var m := str(p.get("modelo", "")) if p is Dictionary else ""
+	return m if not Figura.jugable(m).is_empty() else Figura.MODELO_DEFECTO
+
+static func _web() -> bool:
 	return OS.has_feature("web")
 
-func _leer(clave: String) -> String:
+static func _leer(clave: String) -> String:
 	if _web():
 		var r = JavaScriptBridge.eval("window.localStorage.getItem(%s)" % JSON.stringify(clave))
 		return "" if r == null else str(r)
@@ -282,6 +294,9 @@ func crear_ui(ui: Control) -> void:
 			_abrir_panel(false)
 		else:
 			main._aviso("Ahora no se puede guardar"))
+	btn_personaje = _boton(vb, "Cambiar personaje", func():
+		_abrir_panel(false)
+		main.elegir_personaje())
 	btn_nueva = _boton(vb, "Partida nueva", func(): _confirmacion(true))
 	btn_sicero = _boton(vb, "Sí, empezar de cero", partida_nueva)
 	btn_no = _boton(vb, "No, volver", func(): _confirmacion(false))
@@ -306,6 +321,7 @@ func _boton(vb: VBoxContainer, txt: String, f: Callable) -> Button:
 
 func _confirmacion(si: bool) -> void:
 	btn_guardar.visible = not si
+	btn_personaje.visible = not si
 	btn_nueva.visible = not si
 	btn_cerrar.visible = not si
 	btn_sicero.visible = si
