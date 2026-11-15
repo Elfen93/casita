@@ -144,6 +144,18 @@ Muebles que se pueden comprar para tu piso en Godot (`godot/scripts/muebles.gd`)
 | `privada` | `UNI_D` | Pública o privada para los programas con `place: 'uni'`. `centros` nombre, lugar, tamaño de grupo y cansancio extra por hora de clase · `mult` cuánto se multiplica `cost` en la privada, por nivel · `sched`, `days` su horario · `examenes` meses (0 = enero) y día del mes desde el que hay exámenes. La elección se guarda en la matrícula (`cur.centro`; si falta, pública). |
 | `requisitos`, `sueldo` | `EDU_REQ`, `EDU_PAY` | Estudios que pide cada sector y cuánto sube el sueldo con cada título. |
 
+### animaciones.json
+Solo lo lee el juego de Godot. Las animaciones van en paquetes `.glb` por grupo (`godot/arte/mixamo/anims/<grupo>.glb`, fuera del repo por la licencia de Mixamo) con el esqueleto de Remy (`Armature`, el de `remy.glb` y los personajes de `arte/mixamo/pj/`); se generan con `godot/arte/herramientas/blender/exportar_anims.py`, que reescribe `remy`, `grupos` y `animaciones` y respeta el resto.
+| Sección | Qué es |
+|---|---|
+| `remy` | `altura` de la malla de Remy y `cadera_pie` (altura de su cadera de pie), en las unidades del modelo: las mismas de `cadera`. |
+| `grupos` | Por paquete: `kb` que pesa el `.glb` y `n` animaciones. `base` va siempre (las 10 de `remy.glb` y lo imprescindible); `dia`, `social`, `baile`, `musica`, `trabajo`, `gimnasio`, `boxeo` (con artes marciales), `policia`, `agua`, `mayores_ninos` se cargan cuando hacen falta. |
+| `animaciones` | Por nombre de animación (el del `.glb`): `g` grupo · `bucle` si se repite (si no, se hace una vez) · `dur` segundos · `post` postura: `de_pie`, `sentado` (en silla), `suelo` (de rodillas, agachado, sentado en el suelo, flexiones), `tumbado`, `agua` · `brazos` si casi solo mueve brazos y cabeza (se puede poner sobre las piernas de `parado` o `sentado`, como `usar`) · `nivel` 1 torpe … 4 experta (boxeo y artes marciales) · `fuente` `mixamo` o `quaternius` · `orig` nombre en la fuente · `cadera` altura de la cadera al empezar (sentado, suelo, tumbado, agua; unidades de `remy`) · `desp` metros que se aparta la cadera del sitio (abrir la puerta, levantarse, bailes que se mueven…; sin `desp`, menos de 20 cm). En `agua`, la superficie del agua es el suelo de la animación. Las de bucle están «en el sitio» (sin avance de la cadera) y su último fotograma es el primero. |
+| `actividades` | Por objeto de `objetos.json` y clave de actividad de `objetos.actividades`: la animación que usa. `x+y` = piernas y tronco de `x` con brazos y cabeza de `y`. |
+| `apanos` | `objeto.actividad` (o `objeto.*`) cuya animación es un sustituto: se parece, pero no es lo que dice la actividad. |
+| `gestos` | Por gesto de `interacciones.gestos`: `quien` lo hace y la `otra` persona (`apano` si es sustituto). |
+| `huecos` | Lo que no existe en Mixamo ni en la UAL de Quaternius, con el mejor apaño provisional (`a`) y una `nota`. |
+
 ### interacciones.json
 | Sección | En el código | Qué es |
 |---|---|---|

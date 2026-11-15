@@ -20,3 +20,9 @@ Guiones:
 - `godot/arte/humano/ver_glb.gd`: enseña un `.glb` en Godot con las luces de retrato y saca dos fotos.
 
 Pendiente al traerlo a Godot: el pelo, las cejas, las pestañas y los ojos llegan con transparencia mal puesta (hay que darles recorte de alfa y dos caras); la pose es la de reposo (brazos abiertos); el `.glb` pesa 17 MB por las texturas a tamaño completo. Para leer un sim hecho en MakeHuman: `HumanService.deserialize_from_mhm`.
+
+## Animaciones (Mixamo + Quaternius)
+
+- `mixamo_retarget.py`: pasa animaciones de un esqueleto a otro (rotaciones en mundo relativas al reposo; la cadera, escalada por su altura). `muestrear()` para FBX de Mixamo, `muestrear_accion()` para un esqueleto ya cargado; `QUATERNIUS_A_MIXAMO`, `cargar_quaternius()` y `pares_quaternius()` para la UAL de Quaternius.
+- `exportar_remy.py`: `remy.glb` con las 10 animaciones de siempre.
+- `exportar_anims.py`: los paquetes por grupo (`arte/mixamo/anims/<grupo>.glb`) y el catálogo `data/animaciones.json`. Tabla de animaciones al principio del guion (nombre, grupo, fuente, bucle, postura, recortes). Unos 5 min todos los grupos.
