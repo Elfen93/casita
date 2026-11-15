@@ -140,7 +140,15 @@ func _montar() -> void:
 		an.loop_mode = Animation.LOOP_NONE if SIN_BUCLE.has(n) else Animation.LOOP_LINEAR
 	for mi_ in cuerpo.find_children("*", "MeshInstance3D", true, false):
 		var mi: MeshInstance3D = mi_
-		mi.custom_aabb = AABB(Vector3(-1, -0.2, -1) / _esc, Vector3(2, 2.4, 2) / _esc)   # las animaciones salen de la caja de reposo
+		# las animaciones salen de la caja de reposo. La caja va en metros de la malla: los pj de Mixamo traen el Armature
+		# a 0,01 (centímetros); sin contarlo la caja medía 2 cm en los pies y de cerca (pies fuera de pantalla) desaparecían
+		var k := _esc
+		var n: Node = mi
+		while n != null and n != cuerpo:
+			if n is Node3D:
+				k *= (n as Node3D).scale.x
+			n = n.get_parent()
+		mi.custom_aabb = AABB(Vector3(-1, -0.2, -1) / k, Vector3(2, 2.4, 2) / k)
 		if mi.mesh.get_blend_shape_count() > 0 and _cara == null:
 			_cara = mi
 			for i in mi.mesh.get_blend_shape_count():

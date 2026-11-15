@@ -43,6 +43,7 @@ var seguir := true
 var con_raton := false          # se ha usado ratón de verdad (ordenador)
 var cam_libre := false          # cámara libre: no vuelve al personaje al mandarle andar
 var btn_camara: Button
+var camctl: Camara               # cámara libre (scripts/camara.gd): giro, inclinación, zoom, desplazar, seguir
 var etq_interior: Label3D        # rótulo del local con interior: se apaga al entrar
 var etiquetas: Array = []   # Label3D de edificios (escala con el zoom)
 var ult_dist := -1.0
@@ -879,16 +880,15 @@ func _camara() -> void:
 	camara.near = 0.3
 	camara.far = 4000.0
 	pivote.add_child(camara)
-	pivote.rotation.y = deg_to_rad(-24.0)
 	pivote.position = jugador.nodo.position
+	camctl = Camara.new(self)
+	add_child(camctl)
 	_poner_camara()
+	camctl.saltar()
 
 func _poner_camara() -> void:
-	dist = clampf(dist, 7.0, 520.0)
-	# lejos, la cámara baja para ver el horizonte
-	inclin = lerpf(deg_to_rad(52.0), deg_to_rad(24.0), clampf((dist - 40.0) / 300.0, 0.0, 1.0))
-	camara.position = Vector3(0, sin(inclin) * dist, cos(inclin) * dist)
-	camara.look_at(pivote.global_position + Vector3(0, 0.9, 0), Vector3.UP)
+	# dist es el zoom pedido; la cámara (camctl) lo alcanza suavemente y la coloca con su giro e inclinación
+	dist = clampf(dist, Camara.DIST_MIN, Camara.DIST_MAX)
 	if absf(dist - ult_dist) > 0.5:
 		ult_dist = dist
 		# de cerca los rótulos mantienen su tamaño en pantalla; de lejos encogen y los secundarios se apagan, para que no se pisen
@@ -1441,19 +1441,11 @@ func _en_ui(p: Vector2) -> bool:
 	return velo.visible
 
 func _input(ev: InputEvent) -> void:
-	if ev is InputEventMouseButton and ev.pressed:
-		if ev.button_index == MOUSE_BUTTON_WHEEL_UP:
-			dist *= 0.9
-			_poner_camara()
-		elif ev.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			dist *= 1.1
-			_poner_camara()
-		elif ev.button_index == MOUSE_BUTTON_RIGHT and ev.device != InputEvent.DEVICE_ID_EMULATION:
-			# ordenador: el botón derecho es solo para andar adonde se señala
-			con_raton = true
-			if not _en_ui(ev.position):
-				_andar_a_pantalla(ev.position)
-	elif ev is InputEventScreenTouch:
+	# ratón (rueda, botón derecho/central), teclas y gestos de trackpad: los lleva la cámara (scripts/camara.gd);
+	# el botón derecho sin arrastrar sigue siendo «andar ahí»
+	if camctl != null and camctl.entrada(ev):
+		return
+	if ev is InputEventScreenTouch:
 		if ev.pressed:
 			if _en_ui(ev.position) and toques.is_empty():
 				return
@@ -1491,30 +1483,16 @@ func _input(ev: InputEvent) -> void:
 			return
 		toques[ev.index] = ev.position
 		mov_total += ev.relative.length()
-		if toques.size() >= 2:
-			var ks: Array = toques.keys()
-			var d: float = (toques[ks[0]] - toques[ks[1]]).length()
-			if d_pinza > 0.0 and d > 4.0:
-				dist *= d_pinza / d
-				_poner_camara()
-			d_pinza = d
-		elif toques.size() == 1 and mov_total >= 10.0 and cam_libre:
-			seguir = false
-			var vp := get_viewport().get_visible_rect().size
-			var k := 2.0 * tan(deg_to_rad(camara.fov * 0.5)) * dist / vp.x
-			var b := pivote.global_transform.basis
-			pivote.position -= (b.x * ev.relative.x + b.z * ev.relative.y / sin(inclin)) * k
-			pivote.position.x = clampf(pivote.position.x, -60.0, 120.0 * Escala.M_UNIDAD + 60.0)
-			pivote.position.z = clampf(pivote.position.z, -60.0, 100.0 * Escala.M_UNIDAD + 60.0)
+		# desplazar (un dedo), pellizcar/girar/inclinar (dos): camctl, una vez por fotograma con los dos dedos a la vez
 
 func _texto_camara() -> void:
-	btn_camara.text = "Cámara: libre" if cam_libre else "Cámara: fija"
+	btn_camara.text = "Centrar cámara" if cam_libre else "Cámara: sigue"
 
 func _alternar_camara() -> void:
 	cam_libre = not cam_libre
 	seguir = not cam_libre
 	_texto_camara()
-	_aviso("Cámara libre: arrastra para mirar; no vuelve al personaje." if cam_libre else "Cámara fija: sigue al personaje.")
+	_aviso("Cámara libre: un dedo desplaza; dos dedos acercan, giran e inclinan." if cam_libre else "La cámara sigue a %s." % nombre_pj)
 
 func _andar_a_pantalla(p: Vector2) -> void:
 	if muebles.activo:  # --- muebles ---
@@ -1698,7 +1676,7 @@ func _process(dt: float) -> void:
 	elif not jugador.anda:
 		_avanzar(MIN_POR_SEG * vel_juego * dt)
 	var mult := 1.0 if vel_juego == 1 else 1.8
-	if jugador.mover(jugador.vel * mult * dt):
+	if jugador.mover(jugador.vel * mult * Escala.prisa(jugador.pos2(), jugador.ruta) * dt):
 		_llegar()
 	if jugador.ult_paso > 0.0 and not rapido:
 		# el trayecto cobra los minutos del dato (Escala.MIN_POR_UNIDAD), no los que dure verlo
@@ -1719,7 +1697,7 @@ func _process(dt: float) -> void:
 			x["visible"] = false
 			x["ocultar"] = false
 		if c.nodo.visible:
-			c.mover(Escala.VEL_ANDAR * 0.9 * mult * dt if c.vel < Escala.VEL_CORRER else Escala.VEL_CORRER * 0.9 * mult * dt)
+			c.mover((Escala.VEL_ANDAR if c.vel < Escala.VEL_CORRER else Escala.VEL_CORRER) * 0.9 * mult * Escala.prisa(c.pos2(), c.ruta) * dt)
 	_lod_t += dt
 	if _lod_t > 0.25:
 		_lod_t = 0.0
@@ -1836,6 +1814,8 @@ func _cmd_js(args: Array) -> void:
 	var a = args[1] if args.size() > 1 else null
 	if guardado.cmd(c, a):  # --- guardado ---
 		return  # --- guardado ---
+	if camctl.cmd(c, args):  # --- cámara ---
+		return  # --- cámara ---
 	if muebles.cmd(c, args):  # --- muebles ---
 		return  # --- muebles ---
 	match c:

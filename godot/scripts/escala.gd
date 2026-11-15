@@ -7,9 +7,19 @@ const ALTURA_PJ := 1.7
 const CALLE := 8.0            # ancho de calzada
 const ACERA := 3.0            # ancho de cada acera
 const CELDA := 1.0            # rejilla de caminos (m)
-const VEL_ANDAR := 3.5        # m/s visual, paso vivo
-const VEL_CORRER := 7.0       # el doble si el destino queda lejos
-const CORRER_DESDE := 60.0    # m de trayecto a partir de los que se corre
+# VELOCIDADES DE VERDAD: andar 1,6 m/s (5,8 km/h, paso normal de adulto) y trotar 2,4 m/s (8,6 km/h). Con la zancada
+# medida de las animaciones de Mixamo (andar 1,36-1,44 m/s y trote 1,63-1,79 m/s a ritmo 1 en adultos) el ritmo de
+# las piernas queda en 1,1-1,2 andando y 1,3-1,5 trotando: no parece una película acelerada. (La animación «correr»
+# es un trote: a 3,3-3,8 m/s pediría ritmo 2-2,3.) Los niños dan pasos más cortos y llevan más ritmo (Timmy ~2,5).
+const VEL_ANDAR := 1.6        # m/s
+const VEL_CORRER := 2.4       # trote, si el destino queda lejos
+const CORRER_DESDE := 20.0    # m de trayecto a partir de los que se trota (dentro de casa siempre se anda)
+# PRISA EN TRAYECTOS LARGOS: a paso real cruzar el barrio (~400 m) tardaría casi 3 min de tiempo real. Mientras quedan
+# muchos metros, el que anda va más deprisa (x1 hasta PRISA_DESDE m por delante, subiendo hasta xPRISA_MAX a 2·PRISA_DESDE)
+# y frena a su paso natural al acercarse: lo que se ve de cerca (salir, llegar, andar por casa) va al ritmo de verdad.
+# Las animaciones siguen a la velocidad real (los pies no resbalan); el reloj del juego no depende de esto (MIN_POR_UNIDAD).
+const PRISA_DESDE := 30.0
+const PRISA_MAX := 2.5
 # EL RELOJ AL ANDAR: el trayecto cobra lo que costaría en el juego web, no lo que dure verlo:
 # 10 m por unidad (0,119 min de juego por unidad del dato; cruzar los 120 de punta a punta = 14 min de juego)
 # 10 m por unidad del dato a 84 m/min = 0,119 min de juego por unidad.
@@ -25,6 +35,17 @@ static func v2(a: Array) -> Vector2:
 static func rect(rb: Array) -> Rect2:
 	return Rect2(float(rb[0]) * M_UNIDAD, float(rb[1]) * M_UNIDAD, float(rb[2] - rb[0]) * M_UNIDAD, float(rb[3] - rb[1]) * M_UNIDAD)
 
+## multiplicador de velocidad por prisa (ver PRISA_DESDE) para quien le quedan `ruta` puntos desde `desde`
+static func prisa(desde: Vector2, ruta: Array) -> float:
+	var rest := 0.0
+	var ant := desde
+	for p in ruta:
+		rest += ant.distance_to(p)
+		ant = p
+		if rest >= PRISA_DESDE * PRISA_MAX:
+			break
+	return clampf(rest / PRISA_DESDE, 1.0, PRISA_MAX)
+
 # minutos de juego que cuesta recorrer `metros` andando por la calle
 static func min_de_metros(metros: float) -> float:
 	return metros / M_UNIDAD * MIN_POR_UNIDAD
@@ -39,7 +60,7 @@ static func min_de_metros(metros: float) -> float:
 #   1,79 m/s; la carrera de Quaternius da 2,0-2,1).
 const ZANCADA_RESERVA := {"andar": 0.8, "correr": 1.0}
 const RITMO_MIN := 0.4        # topes de speed_scale: fuera de esto algo va mal (dato raro); mejor que resbale un poco
-const RITMO_MAX := 8.0        # (a doble velocidad de juego el actor va 1,8 veces más rápido; un niño a VEL_ANDAR ya pide ~5)
+const RITMO_MAX := 8.0        # (x1,8 a doble velocidad de juego y hasta x2 de prisa: un niño trotando lejos a doble velocidad llega al tope)
 static var _zancadas := {}    # caché de medidas: clave -> avance por unidad de escala de la cadena de nodos
 
 ## m/s del pie apoyado de `an` (a velocidad 1,0) en el espacio de `raiz` (la persona: origen en el suelo, +Y arriba).
