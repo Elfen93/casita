@@ -17,7 +17,7 @@ meta=hornear(T,CARPETA,mapa,andar='andar')
 def avance(T, nombre, pies, fps):
     """m/s (unidades del mundo de Blender, las mismas que «altura» y «cadera_pie») que recorre el pie apoyado en la
     animación horneada `nombre` a velocidad 1,0. El juego pone la animación a v_actor / avance y el pie no resbala.
-    Se mira cada pie mientras está cerca de su punto más bajo (pisando): lo que recorre en planta / lo que tarda."""
+    Se mira cada pie mientras está cerca de su punto más bajo (pisando): mediana de su velocidad en planta."""
     A=bpy.data.actions[nombre]; ad=T.animation_data
     mudas=[(tr,tr.mute) for tr in ad.nla_tracks]
     for tr,_ in mudas: tr.mute=True          # solo esta acción, sin las pistas NLA del resto
@@ -32,22 +32,23 @@ def avance(T, nombre, pies, fps):
     ad.action=None
     for tr,m in mudas: tr.mute=m
     for pb in T.pose.bones: pb.matrix_basis=Matrix.Identity(4)
-    # tramos en que cada pie pisa (cerca de su punto más bajo): recorrido en planta / tiempo (igual que Escala.medir_zancada)
-    dist=0.0; tiempo=0.0
-    for p,tr in tray.items():
-        zs=[q.z for q in tr]; umbral=min(zs)+0.1*(max(zs)-min(zs)); ini=-1
-        for j in range(len(tr)+1):
-            abajo=j<len(tr) and tr[j].z<=umbral
-            if abajo and ini<0: ini=j
-            elif not abajo and ini>=0:
-                if j-1>ini:
-                    d=tr[j-1]-tr[ini]; dist+=math.hypot(d.x,d.y); tiempo+=(j-1-ini)/fps
-                ini=-1
+    # velocidad del pie mientras PISA: mediana de su velocidad en planta en los fotogramas a ras de su punto más bajo
+    # (banda del 3 % de lo que sube y baja, más ancha si salen pocas muestras). Igual que Escala._vel_pie_apoyado:
+    # con una banda ancha entran fotogramas en que el pie aún baja hacia delante y al correr el avance sale corto.
+    vel=0.0
+    for banda in (0.03,0.06,0.1,0.2):
+        vs=[]
+        for p,tr in tray.items():
+            zs=[q.z for q in tr]; umbral=min(zs)+banda*(max(zs)-min(zs))
+            for j in range(1,len(tr)-1):
+                if tr[j].z<=umbral:
+                    v=(tr[j+1]-tr[j-1])*(fps/2.0); vs.append(math.hypot(v.x,v.y))
+        if len(vs)>=4:
+            vs.sort(); vel=vs[len(vs)//2]; break
     # aviso: si la cadera avanza de verdad (animación sin «In Place»), el juego la movería dos veces y daría saltos
     d=cadera[-1]-cadera[0]
     if math.hypot(d.x,d.y)>0.25*meta.get('cadera_pie',1.0): print('AVISO: «%s» no es «In Place»: la cadera avanza'%nombre)
-    if tiempo<=0: return 0.0
-    return round(dist/tiempo,4)
+    return round(vel,4)
 for _n in ('andar','correr'):
     meta['avance_'+_n]=avance(T,_n,[mapa['LeftFoot'],mapa['RightFoot']],sc.render.fps)
 # texturas a 1024 (las de 2048 pesan demasiado para la web)

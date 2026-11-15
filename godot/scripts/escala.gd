@@ -35,10 +35,11 @@ static func min_de_metros(metros: float) -> float:
 # así el pie que pisa se queda quieto en el suelo. El avance depende del tamaño del personaje (piernas más cortas,
 # pasos más cortos), por eso se guarda relativo y se multiplica por la escala de cada persona.
 # Valores de reserva (si no hay dato ni se puede medir), en ALTURAS del personaje por segundo:
-#   andar ≈ 0,78 alturas/s (1,4 m/s para 1,80 m), correr ≈ 2,1 alturas/s (3,8 m/s para 1,80 m): lo típico de Mixamo.
-const ZANCADA_RESERVA := {"andar": 0.78, "correr": 2.1}
+#   andar ≈ 0,8 alturas/s (Remy: 1,44 m/s con 1,80 m; Quaternius 0,87-0,90), correr ≈ 1,0 alturas/s (Remy trota:
+#   1,79 m/s; la carrera de Quaternius da 2,0-2,1).
+const ZANCADA_RESERVA := {"andar": 0.8, "correr": 1.0}
 const RITMO_MIN := 0.4        # topes de speed_scale: fuera de esto algo va mal (dato raro); mejor que resbale un poco
-const RITMO_MAX := 5.0        # (a doble velocidad de juego el actor va 1,8 veces más rápido)
+const RITMO_MAX := 8.0        # (a doble velocidad de juego el actor va 1,8 veces más rápido; un niño a VEL_ANDAR ya pide ~5)
 static var _zancadas := {}    # caché de medidas: clave -> avance por unidad de escala de la cadena de nodos
 
 ## m/s del pie apoyado de `an` (a velocidad 1,0) en el espacio de `raiz` (la persona: origen en el suelo, +Y arriba).
@@ -89,36 +90,33 @@ static func medir_zancada(sk: Skeleton3D, an: Animation, raiz: Node, clave: Stri
 		var glob := {}
 		for pi_ in pies.size():
 			tray[pi_].append(cadena * _global_hueso(sk, an, pistas, pies[pi_], t, glob).origin)
-	# mientras un pie pisa (cerca de su punto más bajo) recorre hacia atrás lo mismo que debe avanzar el actor:
-	# avance = recorrido en planta del pie en esos tramos / tiempo que dura. Con la media del tramo entero el
-	# deslizamiento total es nulo aunque la animación no lleve el pie a velocidad constante (la carrera de Quaternius).
-	var dist := 0.0
-	var tiempo := 0.0
-	for tr in tray:
-		var ymin := INF
-		var ymax := -INF
-		for q in tr:
-			ymin = minf(ymin, q.y)
-			ymax = maxf(ymax, q.y)
-		var umbral := ymin + 0.1 * (ymax - ymin)
-		var ini := -1
-		for j in N + 2:
-			var abajo: bool = j <= N and tr[j].y <= umbral
-			if abajo and ini < 0:
-				ini = j
-			elif not abajo and ini >= 0:
-				if j - 1 > ini:
-					var d: Vector3 = tr[j - 1] - tr[ini]
-					dist += Vector2(d.x, d.z).length()
-					tiempo += (j - 1 - ini) * dt
-				ini = -1
-	if tiempo <= 0.0:
-		return 0.0
-	var med := dist / tiempo
+	var med := _vel_pie_apoyado(tray, dt, func(q: Vector3): return q.y, func(v: Vector3): return Vector2(v.x, v.z).length())
 	if not is_finite(med) or med <= 0.0:
 		return 0.0
 	_zancadas[k] = med / esc
 	return med
+
+## Velocidad en planta del pie mientras PISA = mediana de la velocidad de cada pie en los instantes en que está a
+## ras de su punto más bajo (banda del 3 % de lo que sube y baja; si salen muy pocas muestras se ensancha).
+## La banda tiene que ser estrecha: al correr, el pie baja casi rozando el suelo un par de fotogramas antes de pisar
+## y ahí aún va hacia delante; con una banda ancha el avance salía un 20-30 % corto. Mismo criterio que exportar_remy.py.
+static func _vel_pie_apoyado(tray: Array, dt: float, alto: Callable, planta: Callable) -> float:
+	for banda in [0.03, 0.06, 0.1, 0.2]:
+		var vs: Array[float] = []
+		for tr in tray:
+			var ymin := INF
+			var ymax := -INF
+			for q in tr:
+				ymin = minf(ymin, alto.call(q))
+				ymax = maxf(ymax, alto.call(q))
+			var umbral: float = ymin + banda * (ymax - ymin)
+			for j in range(1, tr.size() - 1):
+				if alto.call(tr[j]) <= umbral:
+					vs.append(planta.call((tr[j + 1] - tr[j - 1]) / (2.0 * dt)))
+		if vs.size() >= 4:
+			vs.sort()
+			return vs[vs.size() / 2]
+	return 0.0
 
 ## índices de los huesos de los pies (Mixamo: «…LeftFoot»; Quaternius: «Foot.L»)
 static func _huesos_pies(sk: Skeleton3D) -> Array:

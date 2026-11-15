@@ -173,13 +173,18 @@ func anim(nombre: String, velocidad := 1.0, brazos := "") -> void:
 	_colocar()
 
 ## m/s que avanza el pie apoyado en «andar»/«correr» con la animación a velocidad 1,0, ya a la escala de ESTA persona
-## (altura, edad). Primero el dato horneado por exportar_remy.py (avance_<anim> en el JSON, en unidades del modelo);
-## si no está, se mide en la propia animación (Escala.medir_zancada); si tampoco, la reserva de Escala.
+## (altura, edad). Remy (animaciones propias): el dato horneado por exportar_remy.py (avance_<anim> del JSON, en
+## unidades del modelo). Los personajes «pj» llevan las animaciones de Remy en SU esqueleto: se mide en la animación
+## (Escala.medir_zancada), porque escalar el de Remy por la cadera falla en cuerpos de otras proporciones (Timmy: -9 %).
+## Si algo falta: el JSON escalado y, al final, la reserva de Escala.
 func zancada(nombre: String) -> float:
-	var a := float(_meta.get("avance_" + nombre, 0.0)) * _esc
+	var json := float(_meta.get("avance_" + nombre, 0.0)) * _esc
+	var a := json if MODELOS.has(modelo) else 0.0
 	if a <= 0.0 and _ap != null and _ap.has_animation(nombre):
 		var sk: Skeleton3D = cuerpo.find_children("*", "Skeleton3D", true, false)[0]
 		a = Escala.medir_zancada(sk, _ap.get_animation(nombre), self, "mixamo/" + nombre)
+	if a <= 0.0:
+		a = json
 	if a <= 0.0:
 		a = float(Escala.ZANCADA_RESERVA.get(nombre, 1.0)) * altura
 	return a
