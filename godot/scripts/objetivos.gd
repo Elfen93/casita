@@ -529,9 +529,12 @@ func aviso(t: String) -> bool:
 		return false
 	main.toast.move_to_front()
 	if main.toast.visible and main.toast_t > 0.0:
-		if t == main.toast.text or cola_avisos.has(t):
+		if t == main.toast.text:
 			return true
-		cola_avisos.append(t)
+		for x in cola_avisos:
+			if x[0] == t:
+				return true
+		cola_avisos.append([t, Time.get_ticks_msec()])
 		while cola_avisos.size() > 5:
 			cola_avisos.pop_front()
 		main.toast_t = minf(main.toast_t, 1.4)
@@ -548,7 +551,12 @@ func _avisos_tick() -> void:
 		main.toast.offset_top = y
 	if cola_avisos.is_empty() or main.toast == null or main.toast.visible:
 		return
-	main.toast.text = cola_avisos.pop_front()
+	# un aviso que lleva esperando más de 6 s ya no viene a cuento («Estás muy cansado» después de dormir)
+	while not cola_avisos.is_empty() and Time.get_ticks_msec() - int(cola_avisos[0][1]) > 6000:
+		cola_avisos.pop_front()
+	if cola_avisos.is_empty():
+		return
+	main.toast.text = cola_avisos.pop_front()[0]
 	main.toast.visible = true
 	main.toast.move_to_front()
 	main.toast_t = 1.8 if not cola_avisos.is_empty() else 2.6
