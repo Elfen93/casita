@@ -39,7 +39,7 @@ try:
     chk('entra a casa','dentro=true' in p.estado())
     p.cmd('zoom',14);p.dormir(1.5);p.shot(OUT+'/piso_dia.png')
     # los muebles nuevos existen y se llega andando al punto de uso de cada uno
-    for o,a in [('nevera','picar'),('cocina','cocinar'),('fregadero','fregar'),('ducha','ducharse'),('lavabo','lavarse'),('vater','usar_vater'),('sofa','descansar'),('mesa_comedor','comer_mesa')]:
+    for o,a in [('nevera','picar'),('cocina','cocinar:pasta_tomate'),('fregadero','fregar'),('ducha','ducharse'),('lavabo','lavarse'),('vater','usar_vater'),('sofa','descansar'),('mesa_comedor','comer_mesa')]:
         n=len(p.log);p.cmd('accion',o,a)
         ok=any(('accion %s ok='%a) in l for l in p.log[n:]) or any('accion no disponible: %s'%o in l for l in p.log[n:])
         chk('existe %s con «%s»'%(o,a),ok)
@@ -50,7 +50,7 @@ try:
     h1=nec(p,'hambre');chk('picar algo: hambre +25',t and h1-h0>20,'%s -> %s'%(h0,h1))
     # 2) cocinar -> plato en la mano; no se puede cocinar otra vez con platos sucios después de comer
     p.cmd('nec','hambre',20);h0=nec(p,'hambre')
-    n=len(p.log);p.cmd('vel',1);p.cmd('zoom',7);p.cmd('accion','cocina','cocinar');esperar(lambda:'ruta=0' in p.estado() and 'cola=1' in p.estado(),40,1.0);p.dormir(1.5);p.shot(OUT+'/cocinando.png');p.cmd('vel',5);p.cmd('zoom',14)
+    n=len(p.log);p.cmd('vel',1);p.cmd('zoom',7);p.cmd('accion','cocina','cocinar:pasta_tomate');esperar(lambda:'ruta=0' in p.estado() and 'cola=1' in p.estado(),40,1.0);p.dormir(1.5);p.shot(OUT+'/cocinando.png');p.cmd('vel',5);p.cmd('zoom',14)
     esperar(lambda:'mano=plato' in p.estado(),40)
     chk('cocinar deja un plato en la mano','mano=plato' in p.estado(),p.estado()[-80:])
     p.dormir(1);p.shot(OUT+'/plato_mano.png')
@@ -63,7 +63,7 @@ try:
     esperar(lambda:'cola=0' in p.estado(),40)
     h2=nec(p,'hambre');chk('comer sentado: hambre +60 y plato fuera de la mano',h2-h1>=50 and 'mano=plato' not in p.estado(),'%s -> %s'%(h1,h2))
     # 4) con platos sucios no se puede cocinar
-    n=len(p.log);p.cmd('accion','cocina','cocinar')
+    n=len(p.log);p.cmd('accion','cocina','cocinar:pasta_tomate')
     chk('con platos sucios no se cocina',any('no disponible' in l or 'ok=false' in l for l in p.log[n:]) and 'cola=0' in p.estado(),str([l for l in p.log[n:] if 'accion' in l][:2]))
     p.cmd('vaciar')
     # 5) fregar
@@ -72,7 +72,7 @@ try:
     n=len(p.log);p.cmd('accion','fregadero','fregar')
     chk('fregar quita los platos sucios (ya no se puede volver a fregar)',t and any('no disponible' in l or 'ok=false' in l for l in p.log[n:]))
     p.cmd('vaciar')
-    n=len(p.log);p.cmd('accion','cocina','cocinar');chk('tras fregar se puede cocinar',any('ok=true' in l for l in p.log[n:]))
+    n=len(p.log);p.cmd('accion','cocina','cocinar:pasta_tomate');chk('tras fregar se puede cocinar',any('ok=true' in l for l in p.log[n:]))
     esperar(lambda:'mano=plato' in p.estado(),50)
     # 6) comer en el sofá
     p.cmd('nec','hambre',30);h0=nec(p,'hambre')

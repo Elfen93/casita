@@ -129,6 +129,7 @@ var d_pinza := 0.0
 
 var guardado: Guardado  # --- guardado ---
 var muebles: Muebles  # --- muebles ---
+var compras: Compras  # --- compras ---
 
 func _ready() -> void:
 	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
@@ -194,6 +195,8 @@ func _ready() -> void:
 	guardado.escuchas_web()  # --- guardado ---
 	muebles = Muebles.new(self)  # --- muebles ---
 	muebles.crear_ui(ui)  # --- muebles ---
+	compras = Compras.new(self)  # --- compras --- (registra su sección antes de cargar)
+	compras.crear_ui(ui)  # --- compras ---
 	guardado.cargar_inicio()  # --- guardado ---
 	if nueva:
 		guardado.guardar()  # la elección queda guardada aunque se cierre enseguida
@@ -1132,6 +1135,7 @@ func _ficha(titulo: String, texto: String, botones: Array) -> void:
 	ficha_texto.text = texto
 	ficha_texto.visible = texto != ""
 	for c in ficha_botones.get_children():
+		c.visible = false  # --- compras --- oculto ya: si no, la ficha se queda con la altura de la anterior
 		c.queue_free()
 	for b in botones:
 		var bt := Button.new()
@@ -1270,12 +1274,9 @@ func _llegar() -> void:
 		_aviso("%s está cerrado. %s" % [e["n"], _horario_hoy(id)])
 		_ficha("%s %s" % [e["e"], e["n"]], "Cerrado ahora. %s" % _horario_hoy(id), [])
 		return
-	if id == "super":
-		dentro = true
-		jugador.nodo.visible = false
-		_ficha("🛒 %s" % e["n"], "%s\nCompras algo de comer y lo despachas en un banco: %s, media hora." % [e["d"], _eur(PRECIO_SUPER)], [
-			["🥖 Comprar y comer (%s)" % _eur(PRECIO_SUPER), _accion_super]])
-		return
+	if id == "super":  # --- compras --- el súper: cesta, total y comer allí
+		compras.abrir_super(e)  # --- compras ---
+		return  # --- compras ---
 	var tx: String = e["d"]
 	var hr := _horario_hoy(id)
 	if hr != "":
@@ -1438,6 +1439,8 @@ func _en_ui(p: Vector2) -> bool:
 			return true
 	if muebles.en_ui(p):  # --- muebles ---
 		return true  # --- muebles ---
+	if compras.en_ui(p):  # --- compras ---
+		return true  # --- compras ---
 	if guardado.en_ui(p):  # --- guardado ---
 		return true  # --- guardado ---
 	return velo.visible
@@ -1621,7 +1624,8 @@ func _dedo_tick(dt: float) -> void:
 
 func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 	var botones: Array = []
-	for e in Acciones.lista(ob, self):
+	var lista_ac: Array = compras.menu_lista(ob, Acciones.lista(ob, self))  # --- compras ---
+	for e in lista_ac:
 		var ac: Dictionary = e["ac"]
 		var txt := Acciones.etiqueta(ac)
 		if not e["ok"]:
@@ -1630,6 +1634,7 @@ func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 		botones.append([txt, func():
 			cola.añadir(ob, capt)
 			panel_ficha.visible = false, not e["ok"]])
+	botones.append_array(compras.botones_extra(ob, lista_ac))  # --- compras ---
 	if not vecino.is_empty():
 		botones.append(["🧍 Ver ficha", func(): _ficha_vecino(vecino)])
 	var titulo := "%s %s" % [ob.def.get("e", ""), ob.def.get("n", "")]
@@ -1659,6 +1664,7 @@ func _process(dt: float) -> void:
 	muebles.tick(dt)  # --- muebles ---
 	if muebles.activo:  # --- muebles --- el tiempo y el personaje se paran
 		dt = 0.0  # --- muebles ---
+	compras.tick(dt)  # --- compras ---
 	_dedo_tick(dt)
 	var rapido := salto_rest > 0.0
 	if rapido:
@@ -1820,6 +1826,8 @@ func _cmd_js(args: Array) -> void:
 		return  # --- cámara ---
 	if muebles.cmd(c, args):  # --- muebles ---
 		return  # --- muebles ---
+	if compras.cmd(c, args):  # --- compras ---
+		return  # --- compras ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))

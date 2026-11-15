@@ -949,6 +949,40 @@ def comprobar(d):
     E=_gd8b_comprobar(d);_gd8b_catalogo(d,E);return E
 # --- gd8b end ---
 
+# --- compras begin: data/comida.json (súper, despensa, recetas) ---
+def _compras(d,E):
+    K=d.get('comida')
+    if not K:return
+    P=K.get('productos',{});secs={x[0] for x in K.get('secciones',[])}
+    for k,p in P.items():
+        q='comida.productos.%s'%k
+        if not(isinstance(p.get('precio'),(int,float)) and p['precio']>0):E.append(q+'.precio: euros, mayor que 0')
+        if p.get('sec') not in secs:E.append(q+'.sec: pasillo desconocido')
+        if not(isinstance(p.get('usos'),int) and p['usos']>0):E.append(q+'.usos: entero mayor que 0')
+        if p.get('dias') is not None and not(isinstance(p['dias'],int) and p['dias']>0):E.append(q+'.dias: entero o null')
+        if p.get('sitio') not in ('nevera','armario'):E.append(q+'.sitio: nevera o armario')
+    for x in K.get('inicial',[]):
+        if x[0] not in P:E.append('comida.inicial: «%s» no es un producto'%x[0])
+    nv=len(K.get('niveles',[]))
+    for k,r in K.get('recetas',{}).items():
+        q='comida.recetas.%s'%k
+        for ing in r.get('ing',[]):
+            for a in str(ing[0]).split('|'):
+                if a not in P:E.append(q+'.ing: «%s» no es un producto'%a)
+        if not 0<=r.get('nivel',0)<nv:E.append(q+'.nivel: fuera de niveles')
+        for c in ('min','raciones','hambre','calidad'):
+            if not isinstance(r.get(c),(int,float)):E.append(q+'.%s: falta'%c)
+        if not r.get('pasos'):E.append(q+'.pasos: faltan')
+    I=d.get('interiores',{});IP=I.get('productos',{})
+    for t in I.get('tipos',{}).values():
+        for a in t.get('acciones',[]):
+            if a.get('tipo')=='de_nevera' and a.get('producto') not in P:E.append('interiores: %s pide «%s», que no está en comida.productos'%(a.get('id'),a.get('producto')))
+    if 'menu' not in IP:E.append('interiores.productos: falta «menu» (menú del día)')
+_compras_comprobar=comprobar
+def comprobar(d):
+    E=_compras_comprobar(d);_compras(d,E);return E
+# --- compras end ---
+
 if __name__=='__main__':
     d=cargar()
     if '--fmt' in sys.argv:print('formateados:',formatear(d))

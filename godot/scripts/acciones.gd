@@ -10,11 +10,16 @@ static func producto(v: String) -> Dictionary:
 	return D.get("productos", {}).get(v.split(":")[0], {})
 
 static func icono_mano(v: String) -> String:
+	if v.begins_with("plato:") and not Compras.D.is_empty():  # --- compras ---
+		var k := v.split(":")[1]  # --- compras ---
+		return str(Compras.receta(k).get("e", Compras.D.get("fuera", {}).get(k, {}).get("e", "🍲")))  # --- compras ---
 	return str(producto(v).get("e", "🥤"))
 
 static func nombre_mano(v: String) -> String:
 	if v.begins_with("coctel:"):
 		return str(D["recetas"][v.split(":")[1]]["n"])
+	if v.begins_with("plato:"):  # --- compras ---
+		return Compras.nombre_plato(v)  # --- compras ---
 	return str(producto(v).get("n", v))
 
 static func precio_de(v: String) -> float:
@@ -44,6 +49,8 @@ static func lista(obj: Objeto, jg) -> Array:
 					mins += float(p[1])
 				v["min"] = mins
 				variantes.append(v)
+		elif ac.get("por_plato", false):  # --- compras --- una variante por receta de data/comida.json
+			variantes.append_array(Compras.variantes_cocinar(ac))  # --- compras ---
 		else:
 			variantes.append(ac)
 		for v in variantes:
@@ -67,7 +74,7 @@ static func motivo(rq: String, obj: Objeto, ac: Dictionary, jg) -> String:
 		"bebida_mano":
 			ok = jg.jugador.mano != "" and producto(jg.jugador.mano).has("beber")
 		"plato_mano":
-			ok = jg.jugador.mano.split(":")[0] == "plato"
+			ok = producto(jg.jugador.mano).has("comer")   # plato cocinado, sobras, pedido, menú del día
 		"platos_sucios":
 			ok = bool(jg.estado_casa.get("platos_sucios", false))
 		"sin_platos_sucios":
@@ -88,6 +95,11 @@ static func motivo(rq: String, obj: Objeto, ac: Dictionary, jg) -> String:
 			ok = jg.dinero >= coste(ac)
 		"libre":
 			ok = obj.uso_libre() != -1
+		_:
+			if jg.get("compras") != null:  # --- compras --- despensa, recetas, menú del día
+				var m = jg.compras.motivo(rq, ac)  # --- compras ---
+				if m != null:  # --- compras ---
+					return str(m)  # --- compras ---
 	return "" if ok else str(D["condiciones"].get(rq, rq))
 
 # ¿queda algún sitio libre donde sentarse a comer (mesa de comedor, silla o sofá) en el interior del mueble?

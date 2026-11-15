@@ -187,7 +187,9 @@ func _hacer(dm: float) -> void:
 		for k in ac["efectos_min"]:
 			ef[k] = float(ac["efectos_min"][k]) * dmk
 		Acciones.aplicar_efectos(ef, jg)
-	if ac.has("receta"):
+	if ac.has("plato_receta"):  # --- compras ---
+		jg.texto_estado(a, Compras.paso_receta(str(ac["plato_receta"]), f))  # --- compras ---
+	elif ac.has("receta"):
 		var r: Dictionary = Acciones.D["recetas"][ac["receta"]]
 		var acum := 0.0
 		var txt := ""
@@ -223,6 +225,9 @@ func _terminar() -> void:
 	var c := Acciones.coste(ac)
 	if c > 0.0:
 		jg.dinero -= c
+	var mc = jg.compras.terminar(ac, o) if jg.get("compras") != null else null  # --- compras ---
+	if mc != null:  # --- compras ---
+		msg = str(mc)  # --- compras ---
 	match t:
 		"pedir":
 			a.poner_mano(str(ac["producto"]), jg)
@@ -243,8 +248,11 @@ func _terminar() -> void:
 		"comer":
 			var pc := Acciones.producto(a.mano)
 			var de_pie := str(ac.get("postura", "de_pie")) != "sentado"
-			Acciones.aplicar_efectos(pc.get("comer_de_pie" if de_pie else "comer", {}), jg)
-			msg = "Te comes el %s%s." % [Acciones.nombre_mano(a.mano), " de pie" if de_pie else ""]
+			var ef_c: Dictionary = pc.get("comer_de_pie" if de_pie else "comer", {})
+			if jg.get("compras") != null:  # --- compras --- cada plato llena lo suyo y cuenta para la nutrición
+				ef_c = jg.compras.al_comer(a.mano, de_pie, o, ef_c)  # --- compras ---
+			Acciones.aplicar_efectos(ef_c, jg)
+			msg = "Comes %s%s." % [Acciones.nombre_mano(a.mano), " de pie" if de_pie else ""]
 			a.poner_mano("", jg)
 		"servir":
 			var cl: Dictionary = o.cli

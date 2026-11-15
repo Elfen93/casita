@@ -1,0 +1,94 @@
+{
+  "_": "Compras y comida de la versión Godot (godot/scripts/compras.gd): productos del súper con precios de España en 2026 (marca blanca, súper de barrio), lo que guarda la despensa, recetas por niveles, sobras, comida a domicilio, menú del día y nutrición. Campos en data/README.md, sección comida.json. Calidades de las comidas copiadas de textos_mods_ag.json → comidas.calidad (el juego web).",
+
+  "secciones": [["pan", "🥖 Pan y lácteos"], ["fresco", "🥬 Fruta y verdura"], ["carne", "🍗 Carne y pescado"], ["seco", "🫘 Despensa"], ["preparado", "🍕 Preparados"], ["bebida", "🍺 Bebida"]],
+
+  "productos": {
+    "pan": {"n": "Barra de pan", "e": "🥖", "precio": 1.1, "sec": "pan", "usos": 4, "dias": 2, "sitio": "armario", "picar": true},
+    "leche": {"n": "Leche (1 l)", "e": "🥛", "precio": 1.05, "sec": "pan", "usos": 4, "dias": 7, "sitio": "nevera"},
+    "huevos": {"n": "Huevos (docena)", "e": "🥚", "precio": 3.1, "sec": "pan", "usos": 12, "dias": 21, "sitio": "nevera"},
+    "yogures": {"n": "Yogures (4)", "e": "🥄", "precio": 1.3, "sec": "pan", "usos": 4, "dias": 20, "sitio": "nevera", "picar": true},
+    "queso": {"n": "Queso (cuña 250 g)", "e": "🧀", "precio": 3.2, "sec": "pan", "usos": 6, "dias": 21, "sitio": "nevera", "picar": true},
+    "tomates": {"n": "Tomates (1 kg)", "e": "🍅", "precio": 2.4, "sec": "fresco", "usos": 5, "dias": 7, "sitio": "nevera"},
+    "lechuga": {"n": "Lechuga", "e": "🥬", "precio": 1.1, "sec": "fresco", "usos": 2, "dias": 5, "sitio": "nevera"},
+    "cebolla": {"n": "Cebollas (malla 1 kg)", "e": "🧅", "precio": 1.6, "sec": "fresco", "usos": 5, "dias": 30, "sitio": "armario"},
+    "patatas": {"n": "Patatas (malla 3 kg)", "e": "🥔", "precio": 3.9, "sec": "fresco", "usos": 10, "dias": 30, "sitio": "armario"},
+    "manzanas": {"n": "Manzanas (1 kg)", "e": "🍎", "precio": 2.3, "sec": "fresco", "usos": 6, "dias": 14, "sitio": "nevera", "picar": true},
+    "platanos": {"n": "Plátanos (1 kg)", "e": "🍌", "precio": 2.1, "sec": "fresco", "usos": 6, "dias": 6, "sitio": "armario", "picar": true},
+    "pollo": {"n": "Pechuga de pollo (500 g)", "e": "🍗", "precio": 4.2, "sec": "carne", "usos": 2, "dias": 3, "sitio": "nevera"},
+    "fiambre": {"n": "Pavo en lonchas (200 g)", "e": "🥓", "precio": 2.1, "sec": "carne", "usos": 6, "dias": 10, "sitio": "nevera", "picar": true},
+    "atun": {"n": "Atún (pack de 3 latas)", "e": "🐟", "precio": 3.6, "sec": "carne", "usos": 3, "dias": null, "sitio": "armario"},
+    "pasta": {"n": "Macarrones (500 g)", "e": "🍝", "precio": 0.95, "sec": "seco", "usos": 5, "dias": null, "sitio": "armario"},
+    "arroz": {"n": "Arroz (1 kg)", "e": "🍚", "precio": 1.45, "sec": "seco", "usos": 10, "dias": null, "sitio": "armario"},
+    "lentejas": {"n": "Lentejas (1 kg)", "e": "🫘", "precio": 2.3, "sec": "seco", "usos": 10, "dias": null, "sitio": "armario"},
+    "garbanzos": {"n": "Garbanzos cocidos (bote)", "e": "🫘", "precio": 0.95, "sec": "seco", "usos": 2, "dias": null, "sitio": "armario"},
+    "tomate_frito": {"n": "Tomate frito (bote)", "e": "🥫", "precio": 1.1, "sec": "seco", "usos": 2, "dias": null, "sitio": "armario"},
+    "aceite": {"n": "Aceite de oliva (1 l)", "e": "🫒", "precio": 5.95, "sec": "seco", "usos": 20, "dias": null, "sitio": "armario"},
+    "cafe": {"n": "Café molido (250 g)", "e": "☕", "precio": 3.1, "sec": "seco", "usos": 25, "dias": null, "sitio": "armario"},
+    "pizza": {"n": "Pizza congelada", "e": "🍕", "precio": 2.95, "sec": "preparado", "usos": 1, "dias": 60, "sitio": "nevera"},
+    "lasana": {"n": "Lasaña preparada", "e": "🍲", "precio": 3.4, "sec": "preparado", "usos": 1, "dias": 6, "sitio": "nevera"},
+    "tortilla_env": {"n": "Tortilla de patatas envasada", "e": "🥘", "precio": 3.2, "sec": "preparado", "usos": 2, "dias": 10, "sitio": "nevera"},
+    "cerveza": {"n": "Cerveza (6 latas)", "e": "🍺", "precio": 3.9, "sec": "bebida", "usos": 6, "dias": null, "sitio": "nevera"},
+    "zumo": {"n": "Zumo de naranja (1 l)", "e": "🧃", "precio": 1.25, "sec": "bebida", "usos": 4, "dias": 10, "sitio": "nevera"}
+  },
+
+  "inicial": [["pasta", 1], ["tomate_frito", 1], ["huevos", 1], ["patatas", 1], ["aceite", 1], ["leche", 1], ["yogures", 1], ["cafe", 1]],
+
+  "picar": {"min": 8, "calidad": 0.35},
+
+  "recetas": {
+    "bocadillo": {"n": "Bocadillo", "e": "🥪", "nivel": 0, "min": 8, "ing": [["pan", 1], ["fiambre|queso|atun|huevos", 1]], "raciones": 1, "hambre": 35, "calidad": 0.5, "pasos": ["Abrir el pan", "Rellenar"]},
+    "desayuno": {"n": "Café con tostadas", "e": "☕", "nivel": 0, "min": 10, "ing": [["cafe", 1], ["pan", 1], ["leche", 1]], "raciones": 1, "hambre": 25, "energia": 6, "calidad": 0.45, "pasos": ["Poner la cafetera", "Tostar el pan"]},
+    "ensalada": {"n": "Ensalada", "e": "🥗", "nivel": 0, "min": 12, "ing": [["lechuga", 1], ["tomates", 1], ["atun|huevos|queso", 1]], "raciones": 1, "hambre": 30, "calidad": 0.95, "pasos": ["Lavar la lechuga", "Cortar el tomate", "Aliñar"]},
+    "preparado": {"n": "Calentar un preparado", "e": "🍕", "nivel": 0, "min": 8, "ing": [["pizza|lasana|tortilla_env", 1]], "raciones": 1, "hambre": 45, "calidad": 0.4, "pasos": ["Abrir el envase", "Calentar"]},
+    "pasta_tomate": {"n": "Pasta con tomate", "e": "🍝", "nivel": 0, "min": 20, "ing": [["pasta", 2], ["tomate_frito", 1]], "raciones": 2, "hambre": 60, "calidad": 0.55, "pasos": ["Hervir el agua", "Echar la pasta", "Escurrir", "Mezclar con el tomate"]},
+    "huevos_patatas": {"n": "Huevos fritos con patatas", "e": "🍳", "nivel": 0, "min": 25, "ing": [["huevos", 2], ["patatas", 2], ["aceite", 1]], "raciones": 1, "hambre": 60, "calidad": 0.55, "pasos": ["Pelar las patatas", "Freír las patatas", "Freír los huevos"]},
+    "tortilla": {"n": "Tortilla de patatas", "e": "🥘", "nivel": 1, "min": 40, "ing": [["huevos", 4], ["patatas", 3], ["cebolla", 1], ["aceite", 2]], "raciones": 3, "hambre": 60, "calidad": 0.8, "pasos": ["Pelar y cortar", "Pochar patata y cebolla", "Batir los huevos", "Cuajar", "Darle la vuelta"]},
+    "arroz_pollo": {"n": "Arroz con pollo", "e": "🍛", "nivel": 1, "min": 45, "ing": [["arroz", 3], ["pollo", 1], ["cebolla", 1], ["tomates", 1], ["aceite", 1]], "raciones": 3, "hambre": 65, "calidad": 0.9, "pasos": ["Dorar el pollo", "Sofreír", "Echar el arroz", "Cocer"]},
+    "lentejas": {"n": "Lentejas estofadas", "e": "🍲", "nivel": 1, "min": 60, "ing": [["lentejas", 3], ["patatas", 1], ["cebolla", 1], ["aceite", 1]], "raciones": 4, "hambre": 70, "calidad": 0.95, "pasos": ["Sofreír la cebolla", "Echar lentejas y patata", "Cocer a fuego lento", "Dejar reposar"]},
+    "potaje": {"n": "Potaje de garbanzos", "e": "🥣", "nivel": 2, "min": 50, "ing": [["garbanzos", 2], ["patatas", 1], ["cebolla", 1], ["huevos", 1], ["aceite", 1]], "raciones": 3, "hambre": 70, "calidad": 0.95, "pasos": ["Sofreír", "Echar garbanzos y patata", "Cocer", "Cuajar el huevo"]},
+    "pollo_guisado": {
+      "n": "Pollo guisado con patatas",
+      "e": "🍗",
+      "nivel": 2,
+      "min": 70,
+      "ing": [["pollo", 2], ["patatas", 3], ["cebolla", 1], ["tomates", 1], ["aceite", 1]],
+      "raciones": 4,
+      "hambre": 70,
+      "calidad": 0.95,
+      "pasos": ["Dorar el pollo", "Sofreír", "Guisar", "Echar las patatas", "Dejar reposar"]
+    }
+  },
+
+  "niveles": [0, 2, 5],
+
+  "habilidad": 0.4,
+
+  "sobras_dias": 3,
+
+  "fuera": {"domicilio": {"n": "comida a domicilio", "e": "🛵", "hambre": 55, "calidad": 0.4}, "menu": {"n": "menú del día", "e": "🍽️", "hambre": 70, "calidad": 0.7}, "super": {"n": "bocadillo y fruta del súper", "e": "🥪", "hambre": 45, "calidad": 0.5}},
+
+  "domicilio": {"pedido": 12.9, "envio": 2.99, "espera_min": 40, "espera_puerta_min": 15, "app": "Comidas Ya", "rider": {"id": "rider_comidas_ya", "g": "m", "edad": 24}},
+
+  "menu": {"h": [13, 16.5], "dias": [0, 1, 2, 3, 4]},
+
+  "super": {"comer_precio": 6.5, "comer_min": 30, "min_base": 8, "min_por_articulo": 1.5, "min_max": 35},
+
+  "nutricion": {"inicial": 60, "peso_dia": 0.15, "bien": 70, "mal": 45, "energia_mal": -4, "energia_bien": 2},
+
+  "textos": {
+    "super_abre": "Súper del barrio. Precios por kilo, marca blanca y la cola de la caja.",
+    "pagado": "🛒 Compra: {v}. A casa con las bolsas.",
+    "pagado_diario": ["{v} en el súper. El aceite otra vez más caro. El sueldo, no.", "La compra: {v}. Verdura, legumbre, arroz, huevos. Lo que da de sí.", "{v}. Has comparado precios por kilo como si fuera un trabajo. Lo es."],
+    "guardado": "Compra guardada en la nevera y el armario.",
+    "sin_comida": "No hay con qué cocinar.",
+    "caducado": "🗑️ Hay comida caducada en la nevera.",
+    "tirado": "Tiras {k} cosas caducadas. {v} a la basura.",
+    "pedido": "🛵 Pedido hecho: {v}. Llega en unos {m} min.",
+    "pedido_llega": "🛵 Llaman a la puerta: la comida.",
+    "pedido_recogido": "Recoges la comida. El rider ya va por el siguiente: cobra por pedido.",
+    "pedido_puerta": "El rider no podía esperar: la comida está en la puerta. La metes en la nevera.",
+    "nut_mal": "Llevas días comiendo de cualquier manera: te cansas antes.",
+    "nut_bien": "Comes bien estos días: se nota en el cuerpo."
+  }
+}
