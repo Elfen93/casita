@@ -222,7 +222,7 @@ func _terminar() -> void:
 	var msg := str(ac.get("fin", ""))   # texto al terminar; sin él, las acciones corrientes no avisan (ya se ve la barra)
 	var c := Acciones.coste(ac)
 	if c > 0.0:
-		jg.dinero -= c
+		jg.cuenta.mover("Bar" if o.interior == "bar" else "Otros gastos", -c)  # --- trabajo ---
 	match t:
 		"pedir":
 			a.poner_mano(str(ac["producto"]), jg)
@@ -252,8 +252,10 @@ func _terminar() -> void:
 			var prop := 0.0
 			if randf() < 0.3 + 0.05 * jg.hab["cocteleria"]:
 				prop = snappedf(precio * randf_range(0.1, 0.3), 0.1)
-			jg.dinero += precio + prop
-			msg = "Cobras %s%s." % [Acciones.jg_eur(precio), (" y %s de propina" % Acciones.jg_eur(prop)) if prop > 0.0 else ""]
+			# --- trabajo --- el precio va a la caja del bar; la propina, a tu cuenta
+			jg.cuenta.ingresar("Propinas", prop)  # --- trabajo ---
+			jg.trabajo.servido(precio, prop)  # --- trabajo ---
+			msg = "Cobras %s para la caja%s." % [Acciones.jg_eur(precio), (" y %s de propina para ti" % Acciones.jg_eur(prop)) if prop > 0.0 else ""]
 			jg.bar.servido(cl, a.mano)
 			a.poner_mano("", jg)
 	for k in ac.get("habilidad", {}):
@@ -261,7 +263,7 @@ func _terminar() -> void:
 	Acciones.aplicar_efectos(ac.get("efectos", {}), jg)
 	Acciones.aplicar_estado(ac.get("estado", {}), jg)
 	if ac.has("azar") and randf() < float(ac["azar"]["prob"]):
-		jg.dinero += float(ac["azar"]["premio"])
+		jg.cuenta.ingresar("Premio", float(ac["azar"]["premio"]))  # --- trabajo ---
 		msg = "¡Premio! +%s." % Acciones.jg_eur(float(ac["azar"]["premio"]))
 	elif ac.has("azar"):
 		msg = "Nada. Otra vez será."

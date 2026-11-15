@@ -949,6 +949,54 @@ def comprobar(d):
     E=_gd8b_comprobar(d);_gd8b_catalogo(d,E);return E
 # --- gd8b end ---
 
+# --- trabajo y dinero (Godot): validación de data/trabajo.json ---
+def _trabajo(d,E):
+    K=d.get('trabajo')
+    if not K:return
+    sec=d['profesiones']['sectores'];lug=d['lugares']['lugares'];vec={v['id'] for v in d['personas']['vecinos']};niv=d['estudios']['niveles']
+    G=set(K.get('jornada',{}).get('tasas',{}))
+    for k,p in K.get('puestos',{}).items():
+        q='trabajo.puestos.%s'%k
+        if not(isinstance(p.get('t'),list) and len(p['t'])==2):E.append(q+'.t: [femenino, masculino]')
+        if p.get('sector') not in sec:E.append(q+'.sector: desconocido');continue
+        if not 0<=p.get('nivel',0)<len(sec[p['sector']]['levels']):E.append(q+'.nivel: fuera de la escala del sector')
+        if p.get('lugar') not in lug:E.append(q+'.lugar: desconocido')
+        elif bool(p.get('fuera'))!=(lug[p['lugar']].get('barrio')!='ribera'):E.append(q+'.fuera: no cuadra con el barrio del lugar')
+        if p.get('fuera') and not p.get('viaje'):E.append(q+'.viaje: falta (minutos en metro)')
+        if p.get('grupo') not in G:E.append(q+'.grupo: sin tasas en jornada.tasas')
+        h=p.get('h',[]);
+        if not(len(h)==2 and 0<=h[0]<h[1]<=24):E.append(q+'.h: [entrada, salida] entre 0 y 24')
+        if not p.get('dias') or any(x not in range(7) for x in p['dias']):E.append(q+'.dias: 0..6')
+        for r in p.get('estudios',[]):
+            if r not in niv:E.append(q+'.estudios: «%s» no está en estudios.niveles'%r)
+        for x in [p.get('jefa')]+p.get('compis',[]):
+            if x and x not in vec:E.append(q+': «%s» no es un vecino del censo'%x)
+        if 'pay' in p and not(isinstance(p['pay'],(int,float)) and p['pay']>0):E.append(q+'.pay: neto por jornada > 0')
+    if K.get('puesto_inicial') not in K.get('puestos',{}):E.append('trabajo.puesto_inicial: no es un puesto')
+    if K.get('estudios_inicial') not in niv:E.append('trabajo.estudios_inicial: no es un nivel de estudios')
+    for g,L in K.get('jornada',{}).get('sucesos',{}).items():
+        if g!='comun' and g not in G:E.append('trabajo.jornada.sucesos.%s: grupo sin tasas'%g)
+        for s_ in L:
+            if not s_.get('t'):E.append('trabajo.jornada.sucesos.%s: suceso sin texto'%g)
+            for n_ in s_.get('ef',{}):
+                if n_ not in ('hambre','energia','diversion','social','vejiga','higiene'):E.append('trabajo.jornada.sucesos.%s: necesidad desconocida «%s»'%(g,n_))
+    for g,t in K.get('jornada',{}).get('tasas',{}).items():
+        for n_ in t:
+            if n_ not in ('hambre','energia','diversion','social','higiene'):E.append('trabajo.jornada.tasas.%s: necesidad desconocida «%s»'%(g,n_))
+    D_=K.get('dinero',{})
+    if D_.get('vivienda') not in d['viviendas']['viviendas']:E.append('trabajo.dinero.vivienda: no es un tipo de viviendas.json')
+    dm=K.get('calendario',{}).get('dias_mes',28)
+    for f in D_.get('facturas',[]):
+        if not(1<=f.get('dia',0)<=dm):E.append('trabajo.dinero.facturas.%s.dia: 1..%d'%(f.get('id'),dm))
+        if not(isinstance(f.get('i'),(int,float)) and f['i']>0):E.append('trabajo.dinero.facturas.%s.i: euros > 0'%f.get('id'))
+    for c,k in D_.get('categorias',{}).items():
+        if k not in D_.get('cat_n',{}):E.append('trabajo.dinero.categorias.%s: categoría sin nombre en cat_n'%c)
+    if not(1<=K.get('nomina',{}).get('dia',0)<=dm):E.append('trabajo.nomina.dia: 1..%d'%dm)
+_trab_comprobar=comprobar
+def comprobar(d):
+    E=_trab_comprobar(d);_trabajo(d,E);return E
+# --- trabajo end ---
+
 if __name__=='__main__':
     d=cargar()
     if '--fmt' in sys.argv:print('formateados:',formatear(d))

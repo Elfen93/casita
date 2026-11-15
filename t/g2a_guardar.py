@@ -68,7 +68,12 @@ try:
     congelar();recargar()
     chk('corrupto: sin errores de consola',not p.err,str(p.err[:2]))
     chk('corrupto: copia en _rota',ls('casita3d_partida_rota')==TXT)
-    chk('corrupto: partida nueva (09:00 del día 1)',minutos() is not None and minutos()<600,str(minutos()))
+    mn=None
+    for i in range(6):   # tras recargar, la primera orden elige personaje y monta el mundo: su respuesta puede tardar
+        mn=minutos()
+        if mn is not None:break
+        p.dormir(1)
+    chk('corrupto: partida nueva (09:00 del día 1)',mn is not None and mn<600,str(mn))
     # sección desconocida y campos que faltan
     js("localStorage.setItem('casita3d_partida',%s)"%json.dumps(json.dumps({"v":1,"secciones":{"reloj":{"v":1,"minutos":3000},"inventada":{"v":9,"x":1}}})))
     congelar();recargar()
@@ -81,7 +86,7 @@ try:
         for t in ('mousePressed','mouseReleased'):
             p.send('Input.dispatchMouseEvent',{'type':t,'x':x,'y':y,'button':'left','clickCount':1});p.dormir(0.2)
     tocar(340,165);p.dormir(1);p.shot(OUT+'/g6_menu.png')
-    tocar(210,478);p.dormir(1);p.shot(OUT+'/g6_confirmar.png')  # «Partida nueva» (debajo de «Cambiar personaje»)
+    tocar(210,508);p.dormir(1);p.shot(OUT+'/g6_confirmar.png')  # «Partida nueva» (debajo de «Cambiar personaje»; arriba están «Trabajo» y «Dinero»)
     tocar(210,419);p.dormir(2);p.dormir(25)
     chk('menú: «Sí, empezar de cero» borra la partida',ls('casita3d_partida') is None)
     # partida nueva: pantalla de elegir personaje; «›» y «Jugar» con el dedo
@@ -93,7 +98,7 @@ try:
     # (e) la clave antigua no se toca
     chk('casita-save-v1 intacta',ls('casita-save-v1')==VIEJA)
     # guardar ahora desde el menú
-    tocar(340,165);p.dormir(1);tocar(210,358);p.dormir(1);p.shot(OUT+'/g6_guardado.png')
+    tocar(340,165);p.dormir(1);tocar(210,388);p.dormir(1);p.shot(OUT+'/g6_guardado.png')
     chk('menú: «Guardar ahora» escribe la partida',ls('casita3d_partida') is not None)
 finally:
     p.cerrar();srv.kill()

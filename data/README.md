@@ -128,6 +128,22 @@ Muebles que se pueden comprar para tu piso en Godot (`godot/scripts/muebles.gd`)
 | `categorias` | Lista ordenada de `[id, nombre]` (dormitorio, bano, cocina, salon, decoracion). |
 | `muebles` | Por tipo: `p` precio en euros (donde hay equivalente en `objetos.json` se usa el mismo), `cat` id de categoría y `d` una línea de descripción. Vender devuelve la mitad de `p`. |
 
+### trabajo.json
+Trabajo y dinero de la versión Godot (`godot/scripts/trabajo.gd`, `cuenta.gd`, `fiscal.gd`; el juego web no lo lee). Los sueldos salen de `profesiones.json` (`levels[].pay`, neto por jornada como en la web), los impuestos de `gobiernos.json` → `fiscal.centro`, el alquiler de `viviendas.json` y los requisitos de estudios de `estudios.json`.
+| Sección | Qué es |
+|---|---|
+| `calendario` | `dias_mes` (el mes de juego: 28 días, cuatro semanas; el día 1 es lunes) y `hora_pagos` (hora a la que se cobran y pagan las cosas del día). |
+| `puestos` | Por id: `t` `[femenino, masculino]`, `sector` y `nivel` (de `profesiones.sectores`), `pay` (opcional: neto por jornada si no es el del nivel), `estudios` (opcional: lista de `estudios.niveles` que se piden; sin él, `estudios.requisitos[sector]`), `lugar` (id de `lugares.json`), `fuera` (en otro barrio: se va en metro) y `viaje` (minutos de puerta a puerta desde la boca de metro), `grupo` (qué sucesos y qué desgaste tiene la jornada: `jornada.tasas`/`jornada.sucesos`), `e` (emoji, de los que trae `godot/fonts/emoji.ttf`), `empresa`, `h` `[entrada, salida]`, `dias` (0 = lunes), `contrato`, `jefa` y `compis` (ids de `personas.vecinos`: salen por su nombre en las tarjetas), `d` (una línea), `asciende` (false: no sube por la escala del sector). El sueldo se ajusta a las horas (`h` / 8). |
+| `puesto_inicial`, `estudios_inicial`, `edad_min` | Con qué empieza una partida nueva (sin trabajo si el personaje tiene menos de `edad_min` o 67 o más). |
+| `jefa_generica`, `compi_generico` | Si el puesto no tiene `jefa` o `compis` del censo. |
+| `ofertas` | `por_semana` y `minimas`: cuántas ofertas salen cada semana (cambian cada lunes). |
+| `entrevista` | Horario (`h`, `dias`), duración (`min`), probabilidad (`base` + `prob_contrato[sector]` × `por_contrato`, ± `estudios_extra`, `higiene_baja`, `energia_baja`), `reintento_dias` y textos (`preguntas` por `f`/`h`/`mayor`, `si`, `no`, `higiene`, `energia`). |
+| `jornada` | `salir_antes_min` (sale andando sola tanto antes de la hora, más el viaje), ventana para entrar (`entrar_desde_min` antes de la entrada, `entrar_hasta_min` antes de la salida), `retraso_min`/`retraso_grave_min`, `tasas` (por `grupo`: bajada por minuto de cada necesidad durante el salto de la jornada; negativa = sube; la vejiga no baja y acaba en `vejiga_fin`), `sucesos` (por `grupo` y `comun`: `t` texto con `{jefa}`/`{compi}`, `ef` cambio de necesidades, `extra_min` minutos de más sin cobrar) y los textos de la tarjeta. |
+| `faltas` | `ventana_dias`, `retrasos_por_punto` (3 retrasos = 1 punto; una falta o un retraso grave = 1 punto), `despido_puntos` y textos de aviso, amonestación por escrito, despido disciplinario y descuento. |
+| `nomina` | `dia` del mes en que se cobra, `valor_por_coste` (lo que factura la empresa por cada euro que cuesta la trabajadora) y textos de la tarjeta de nómina y del finiquito. |
+| `paro` | `cotizado_inicial` (días cotizados al empezar) y `base_inicial` (base reguladora si aún no hay nóminas); prestación contributiva (`contributiva_min_dias`, `dias_por_180`, `max_dias`, `pct` `[[hasta el día, %]]`, `min`, `max` en euros al mes); subsidio (`subsidio_min_dias`, `subsidio`, `subsidio_meses` `[[menos de N días, meses]]`); `dia_pago`; la oficina de empleo (`sepe_*`, en El Casco: se va en metro) y textos. |
+| `dinero` | `banco`, `vivienda` (tipo de `viviendas.json` del piso: alquiler mensual = `rent` × 52 / 12, redondeado a 5 €), `alquiler_dia`, `billete` (metro, por trayecto), `abono` (`n`, `i`, `dia`: se cobra si el trabajo es en otro barrio), `facturas` (`id`, `n`, `e`, `dia`, `i` euros, `var` ± euros según el mes), `recargo` (gastos de devolución de un recibo sin saldo), textos de recibos devueltos, alquiler impagado y `casero_avisos` `[[días de retraso, título, texto]]`, `categorias` (concepto de movimiento → categoría) y `cat_n` (nombre de cada categoría). |
+
 ### libros.json
 | Sección | En el código | Qué es |
 |---|---|---|

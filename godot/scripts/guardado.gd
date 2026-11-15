@@ -60,8 +60,7 @@ func _registrar_basicas() -> void:
 		func(d: Dictionary):
 			for k in main.hab:
 				main.hab[k] = _num(d, k, main.hab[k]))
-	registrar("trabajo", 1, func(): return {"bar": main.trabaja_bar},
-		func(d: Dictionary): main.trabaja_bar = bool(d.get("bar", main.trabaja_bar)))
+	# «trabajo» lo registra scripts/trabajo.gd (versión 2; lee las partidas de la versión 1)
 	# banderas de la vida en casa (platos sin fregar…): solo valores sí/no
 	registrar("vida_casa", 1, func(): return main.estado_casa.duplicate(),
 		func(d: Dictionary):

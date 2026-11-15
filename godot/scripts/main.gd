@@ -54,11 +54,17 @@ var m_andados := 0.0
 # ---- estado de juego ----
 var minutos := 9.0 * 60.0
 var vel_juego := 1
-var dinero := 1000.0
+var dinero := 1000.0:  # --- trabajo --- cada cambio queda apuntado en la cuenta (cuenta.gd: pagar/ingresar/mover)
+	set(v):  # --- trabajo ---
+		if cuenta != null:  # --- trabajo ---
+			cuenta.al_cambiar(dinero, v)  # --- trabajo ---
+		dinero = v  # --- trabajo ---
 var nec := {"hambre": 85.0, "energia": 80.0, "diversion": 70.0, "social": 60.0, "vejiga": 75.0, "higiene": 80.0}
 var nec_tasa := {"hambre": 0.075, "energia": 0.055, "diversion": 0.06, "social": 0.04, "vejiga": 0.09, "higiene": 0.045}
 var hab := {"cocteleria": 0.0}
-var trabaja_bar := false     # PROVISIONAL: interruptor de prueba hasta que exista el sistema de trabajo en Godot
+var trabaja_bar: bool:  # --- trabajo --- de turno detrás de la barra del bar (trabajo.gd); lo leen acciones.gd y bar.gd
+	get:  # --- trabajo ---
+		return trabajo != null and trabajo.en_barra()  # --- trabajo ---
 var interiores: Dictionary
 var tipos_obj: Dictionary
 var interior: Interior          # el interior en el que está el jugador ahora (null si está fuera)
@@ -67,7 +73,6 @@ var bar: BarCtl
 var cola: Cola
 var en_interior := false
 var cola_hb: HBoxContainer
-var btn_trabajo: Button
 var cola_txt := ""
 var nombre_pj := "Ana"
 var modelo_pj := Figura.MODELO_DEFECTO   # con quién se juega (Figura.JUGABLES); se guarda en la sección «personaje»
@@ -129,6 +134,8 @@ var d_pinza := 0.0
 
 var guardado: Guardado  # --- guardado ---
 var muebles: Muebles  # --- muebles ---
+var trabajo: Trabajo  # --- trabajo ---
+var cuenta: Cuenta  # --- trabajo ---
 
 func _ready() -> void:
 	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
@@ -194,6 +201,10 @@ func _ready() -> void:
 	guardado.escuchas_web()  # --- guardado ---
 	muebles = Muebles.new(self)  # --- muebles ---
 	muebles.crear_ui(ui)  # --- muebles ---
+	trabajo = Trabajo.new(self)  # --- trabajo --- registra sus secciones antes de cargar
+	cuenta = Cuenta.new(self)  # --- trabajo ---
+	trabajo.crear_ui(ui)  # --- trabajo ---
+	cuenta.crear_ui(ui)  # --- trabajo ---
 	guardado.cargar_inicio()  # --- guardado ---
 	if nueva:
 		guardado.guardar()  # la elección queda guardada aunque se cierre enseguida
@@ -1016,20 +1027,13 @@ func _ui() -> void:
 	ficha_botones = VBoxContainer.new()
 	ficha_botones.add_theme_constant_override("separation", 6)
 	fv.add_child(ficha_botones)
-	# --- cola de acciones (arriba a la izquierda) y interruptor provisional ---
+	# --- cola de acciones (arriba a la izquierda) ---
 	cola_hb = HBoxContainer.new()
 	cola_hb.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	cola_hb.offset_left = 8
 	cola_hb.offset_top = 100
 	cola_hb.add_theme_constant_override("separation", 4)
 	ui.add_child(cola_hb)
-	btn_trabajo = Button.new()
-	btn_trabajo.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	btn_trabajo.offset_left = 8
-	btn_trabajo.offset_top = 152
-	btn_trabajo.add_theme_font_size_override("font_size", 13)
-	btn_trabajo.pressed.connect(func(): trabaja_bar = not trabaja_bar)
-	ui.add_child(btn_trabajo)
 	# cámara: bloqueada (sigue al personaje) o libre (se queda donde la dejes)
 	btn_camara = Button.new()
 	btn_camara.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -1077,7 +1081,6 @@ func _boton_vel(t: String, v: int, g: ButtonGroup) -> Button:
 
 func _hud() -> void:
 	lbl_nombre.text = nombre_pj + ((" · 🍸 %.1f" % hab["cocteleria"]) if hab["cocteleria"] > 0.0 else "")
-	btn_trabajo.text = "Trabajas en el bar (prueba): %s" % ("sí" if trabaja_bar else "no")
 	_hud_cola()
 	lbl_dinero.text = _eur(dinero)
 	var dia := int(minutos / 1440.0)
@@ -1260,6 +1263,8 @@ func _llegar() -> void:
 	var id := destino
 	destino = ""
 	var e: Dictionary = edificios[id]
+	if trabajo.al_llegar(id):  # --- trabajo --- su puesto a su hora, la entrevista, la boca de metro
+		return  # --- trabajo ---
 	if id == "casa":
 		# se entra andando: unos pasos más allá de la puerta, ya dentro del piso
 		var it_c: Interior = e["interior"]
@@ -1433,13 +1438,15 @@ func _calcular_rutas() -> void:
 
 # =============== entrada táctil ===============
 func _en_ui(p: Vector2) -> bool:
-	for c in [panel_arriba, panel_abajo, panel_ficha, btn_trabajo, cola_hb]:
+	for c in [panel_arriba, panel_abajo, panel_ficha, cola_hb]:
 		if c.visible and c.get_global_rect().has_point(p):
 			return true
 	if muebles.en_ui(p):  # --- muebles ---
 		return true  # --- muebles ---
 	if guardado.en_ui(p):  # --- guardado ---
 		return true  # --- guardado ---
+	if trabajo.en_ui(p) or cuenta.en_ui(p):  # --- trabajo ---
+		return true  # --- trabajo ---
 	return velo.visible
 
 func _input(ev: InputEvent) -> void:
@@ -1656,6 +1663,8 @@ func _ficha_vecino(x: Dictionary) -> void:
 # =============== bucle ===============
 func _process(dt: float) -> void:
 	guardado.tick(dt)  # --- guardado ---
+	trabajo.tick()  # --- trabajo ---
+	cuenta.tick()  # --- trabajo ---
 	muebles.tick(dt)  # --- muebles ---
 	if muebles.activo:  # --- muebles --- el tiempo y el personaje se paran
 		dt = 0.0  # --- muebles ---
@@ -1820,6 +1829,8 @@ func _cmd_js(args: Array) -> void:
 		return  # --- cámara ---
 	if muebles.cmd(c, args):  # --- muebles ---
 		return  # --- muebles ---
+	if trabajo.cmd(c, args) or cuenta.cmd(c, args):  # --- trabajo ---
+		return  # --- trabajo ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))
@@ -1865,9 +1876,6 @@ func _cmd_js(args: Array) -> void:
 			k_amb = float(args[2])
 			entorno.tonemap_exposure = float(args[3])
 			_sol()
-		"trabaja":
-			trabaja_bar = bool(a)
-			_hud()
 		"accion":
 			var o = _objeto_por_id(str(a))
 			var ok := false
