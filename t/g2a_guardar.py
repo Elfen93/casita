@@ -86,9 +86,16 @@ try:
     def tocar(x,y):
         for t in ('mousePressed','mouseReleased'):
             p.send('Input.dispatchMouseEvent',{'type':t,'x':x,'y':y,'button':'left','clickCount':1});p.dormir(0.2)
+    def boton(txt,x,y):
+        """centro del botón del Menú con ese texto (si el juego sabe decirlo; si no, donde estaba)"""
+        n=len(p.log);p.cmd('menu_rect',txt,espera=0.6)
+        for l in p.log[n:]:
+            m=re.match(r'menu_rect:\s*(\d+),(\d+)',l)
+            if m:return int(m.group(1)),int(m.group(2))
+        return x,y
     tocar(340,165);p.dormir(1);p.shot(OUT+'/g6_menu.png')
-    tocar(210,640);p.dormir(1);p.shot(OUT+'/g6_confirmar.png')  # «Partida nueva» (debajo de «Cambiar personaje»; el Menú cuelga de y=250)
-    tocar(210,326);p.dormir(2);p.dormir(25)
+    tocar(*boton('Partida nueva',210,478));p.dormir(1);p.shot(OUT+'/g6_confirmar.png')  # «Partida nueva» (debajo de «Cambiar personaje»)
+    tocar(*boton('Sí, empezar',210,419));p.dormir(2);p.dormir(25)
     chk('menú: «Sí, empezar de cero» borra la partida',ls('casita3d_partida') is None)
     # partida nueva: pantalla de elegir personaje; «›» y «Jugar» con el dedo
     p.shot(OUT+'/g6_elegir.png')
@@ -100,7 +107,7 @@ try:
     # (e) la clave antigua no se toca
     chk('casita-save-v1 intacta',ls('casita-save-v1')==VIEJA)
     # guardar ahora desde el menú
-    tocar(340,165);p.dormir(1);tocar(210,520);p.dormir(1);p.shot(OUT+'/g6_guardado.png')
+    tocar(340,165);p.dormir(1);tocar(*boton('Guardar ahora',210,358));p.dormir(1);p.shot(OUT+'/g6_guardado.png')
     chk('menú: «Guardar ahora» escribe la partida',ls('casita3d_partida') is not None)
 finally:
     p.cerrar();srv.kill()

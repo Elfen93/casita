@@ -12,8 +12,8 @@ extends RefCounted
 #   "super"                        entró en el súper (lo detecta Objetivos solo)
 #   "compra"   {donde, gasto}      compró: súper, domicilio o menú del día (compras.gd)
 #   "nevera"   {llena: bool}       guardó la compra; llena si la despensa tiene bastante (compras.gd)
-#   "hablar"   {id, nombre}        habló con alguien del barrio (VECINOS; hoy: charlar o un chiste en el bar)
-#   "amistad"  {id, nombre}        hizo amistad (VECINOS; hoy: tres charlas cuentan como una amistad)
+#   "hablar"   {id, nombre}        habló con alguien del barrio (relaciones.gd: cada encuentro, llamada)
+#   "amistad"  {id, nombre}        alguien pasa a amiga o muy amiga (relaciones.gd)
 #   "trabajo"  {que}               trabajo.gd: jornada, nomina, falta, aviso, despido, baja, entrevista {ok}, aceptar, sepe, ofertas
 #   "mueble"                       puso un mueble nuevo en casa (lo detecta Objetivos solo)
 #   "fin_mes"  {dinero, deuda}     cerró el mes de 28 días (cuenta.gd, el día 1 a la hora de los pagos, antes del alquiler)
@@ -155,13 +155,10 @@ func _hecho(clave: String, d: Dictionary) -> void:
 				_cumplir_regla("compra")
 		"hablar":
 			_paso("hablar")
-			charlas += 1
-			var meta := int(_def_deseo("amistad").get("meta", 3))
+			charlas += 1     # la amistad de verdad la avisa relaciones.gd («amistad» al pasar a amiga)
 			for x in deseos:
 				if x["id"] == "amistad":
 					x["n"] = charlas - int(x.get("base", 0))
-					if int(x["n"]) >= meta:
-						_cumplir_regla("amistad")
 					break
 		"amistad":
 			_paso("hablar")
@@ -200,8 +197,6 @@ func _accion(d: Dictionary) -> void:
 		var h := fposmod(main.minutos, 1440.0) / 60.0
 		if tipo == "comer" and (h >= 19.0 or h < 2.0):
 			_cumplir_regla("cena")
-	if id == "charlar" or id == "chiste":
-		_hecho("hablar", {"nombre": con})
 	if id == "servir":
 		_paso("trabajo")
 	_cumplir_regla("accion:" + id)
@@ -361,7 +356,7 @@ func progreso(x: Dictionary) -> String:
 		"ahorro":
 			return "%s de %s" % [Inicio.eur(float(x.get("n", 0.0))), Inicio.eur(float(d.get("meta", 300)))]
 		"amistad":
-			return "Charlas: %d de %d" % [int(x.get("n", 0)), int(d.get("meta", 3))]
+			return "Charlas desde entonces: %d" % int(x.get("n", 0))
 	if d.has("dias"):
 		var queda: float = float(d["dias"]) * 1440.0 - (float(main.minutos) - float(x.get("desde", 0.0)))
 		var dd := int(ceil(queda / 1440.0))
@@ -526,6 +521,8 @@ func _avisos_tick() -> void:
 			y = minf(panel.get_global_rect().end.y + 8.0, vh - 140.0)
 		elif main.cuenta.tarjeta_act != null and is_instance_valid(main.cuenta.tarjeta_act) and main.cuenta.tarjeta_act.visible:
 			y = minf(main.cuenta.tarjeta_act.get_global_rect().end.y + 8.0, vh - 140.0)   # las tarjetas de papel del trabajo y la cuenta
+		elif main.relaciones != null and main.relaciones.ui.card != null and main.relaciones.ui.card.visible:
+			y = minf(main.relaciones.ui.card.get_global_rect().end.y + 8.0, vh - 140.0)   # la tarjeta de un encuentro
 		main.toast.offset_top = y
 	if cola_avisos.is_empty() or main.toast == null or main.toast.visible:
 		return
@@ -690,7 +687,7 @@ func _visibilidad() -> void:
 	var tapa: bool = main.panel_ficha.visible or main.velo.visible or panel.visible \
 		or (main.muebles != null and main.muebles.activo) or (main.guardado.panel != null and main.guardado.panel.visible) \
 		or main.compras.panel.visible or main.compras.panel_info.visible or main.trabajo.abierta or main.cuenta.abierta \
-		or main.cuenta.hay_tarjeta()
+		or main.cuenta.hay_tarjeta() or (main.relaciones != null and main.relaciones.ui.panel.visible)
 	tarjeta.visible = listo and tarjeta_txt.text != "" and not tapa
 
 func cerrar() -> void:
@@ -703,6 +700,8 @@ func abrir(que: String) -> void:
 		main.guardado.panel.visible = false
 	main.trabajo.abrir(false)   # una hoja cada vez
 	main.cuenta.abrir(false)
+	if main.relaciones != null:
+		main.relaciones.ui.cerrar()
 	modo = que
 	for c in panel_cont.get_children():
 		c.queue_free()

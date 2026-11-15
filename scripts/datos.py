@@ -1029,6 +1029,50 @@ _compras_comprobar=comprobar
 def comprobar(d):
     E=_compras_comprobar(d);_compras(d,E);return E
 # --- compras end ---
+# --- vecinos (Godot): validación de data/gente3d.json ---
+def _gente3d(d,E):
+    G=d.get('gente3d')
+    if not G:return
+    def res(r):
+        x=d
+        for k in r[1:].split('.'):
+            if isinstance(x,dict) and k in x:x=x[k]
+            else:return None
+        return x
+    def refs(q,x):
+        if isinstance(x,str) and x.startswith('@'):
+            if res(x) is None:E.append('%s: referencia rota «%s»'%(q,x))
+        elif isinstance(x,list):
+            for i,y in enumerate(x):refs('%s[%d]'%(q,i),y)
+        elif isinstance(x,dict):
+            for k,y in x.items():refs(q+'.'+k,y)
+    refs('gente3d',G)
+    A=d.get('animaciones',{}).get('animaciones',{})
+    for o in G.get('opciones',[]):
+        q='gente3d.opciones.'+str(o.get('id'))
+        for k in ('quien','otra'):
+            v=o.get(k,'');v=res(v) if isinstance(v,str) and v.startswith('@') else v
+            if v not in A:E.append('%s.%s: animación desconocida «%s»'%(q,k,v))
+        if o.get('id') not in G.get('efectos',{}) and o.get('id') not in ('politica',):E.append(q+': sin efectos')
+    NEC=('rel','amor','social','diversion','hambre','energia','te')
+    for k,e in G.get('efectos',{}).items():
+        for r,f in e.items():
+            for c,v in f.items():
+                if c not in NEC:E.append('gente3d.efectos.%s.%s: efecto «%s» desconocido'%(k,r,c))
+                if c in ('rel','amor') and not(isinstance(v,(int,float)) or (isinstance(v,list) and len(v)==2)):E.append('gente3d.efectos.%s.%s.%s: número o [mín, máx]'%(k,r,c))
+    for k in ('historia','lazos','amiga','intima','llamar','invitar','saludar','favor','caracter'):
+        if k not in G.get('umbrales',{}):E.append('gente3d.umbrales: falta «%s»'%k)
+    F=d.get('trato',{}).get('favores',{})
+    for id in G.get('favores',{}).get('pide',[]):
+        if id not in F or F[id].get('dir')!='pide':E.append('gente3d.favores.pide: «%s» no es un favor «pide» de trato.json'%id)
+    for k in G.get('animo',{}).values():
+        if len(k.get('n',[]))!=2:E.append('gente3d.animo: n es [femenino, masculino]')
+    for k in G.get('caracter',{}).values():
+        if len(k.get('n',[]))!=2:E.append('gente3d.caracter: n es [femenino, masculino]')
+_g3d_comprobar=comprobar
+def comprobar(d):
+    E=_g3d_comprobar(d);_gente3d(d,E);return E
+# --- vecinos end ---
 
 if __name__=='__main__':
     d=cargar()

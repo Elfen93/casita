@@ -137,6 +137,7 @@ var trabajo: Trabajo  # --- trabajo ---
 var cuenta: Cuenta  # --- trabajo ---
 var compras: Compras  # --- compras ---
 var objetivos: Objetivos  # --- objetivos ---
+var relaciones: Relaciones  # --- vecinos ---
 
 func _ready() -> void:
 	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
@@ -194,6 +195,8 @@ func _ready() -> void:
 	compras.crear_ui(ui)  # --- compras ---
 	objetivos = Objetivos.new(self)  # --- objetivos --- (registra sus secciones de guardado antes de cargar)
 	objetivos.crear_ui(ui)  # --- objetivos ---
+	relaciones = Relaciones.new(self)  # --- vecinos ---
+	relaciones.crear_ui(ui)  # --- vecinos ---
 	guardado.cargar_inicio()  # --- guardado ---
 	objetivos.empezar(ini)  # --- objetivos --- partida nueva: nombre, dinero, primer deseo; cargada: sigue
 	if nueva:
@@ -1378,6 +1381,8 @@ func _lugar_de(x: Dictionary) -> String:
 
 func _actualizar_vecinos(salto: bool) -> void:
 	for x in vecinos:
+		if x.get("ocupado", false):  # --- vecinos --- hablando contigo, de visita o buscándote: el horario espera
+			continue  # --- vecinos ---
 		var lug := _lugar_de(x)
 		var c: Actor = x["cam"]
 		var prev: String = x["meta"]
@@ -1419,6 +1424,13 @@ func _calcular_rutas() -> void:
 		it[0]["ocultar"] = true
 
 # =============== entrada táctil ===============
+# --- compras --- «Comer juntas» con una visita (relaciones.gd): el plato de la mano, dos raciones de sobras o algo de picar
+func comida_para_invitar() -> bool:  # --- compras ---
+	return compras.para_invitar() != ""  # --- compras ---
+
+func gastar_comida_invitar() -> void:  # --- compras ---
+	compras.gastar_invitar()  # --- compras ---
+
 func _en_ui(p: Vector2) -> bool:
 	for c in [panel_arriba, panel_abajo, panel_ficha, cola_hb]:
 		if c.visible and c.get_global_rect().has_point(p):
@@ -1433,6 +1445,8 @@ func _en_ui(p: Vector2) -> bool:
 		return true  # --- trabajo ---
 	if objetivos.en_ui(p):  # --- objetivos ---
 		return true  # --- objetivos ---
+	if relaciones != null and relaciones.en_ui(p):  # --- vecinos ---
+		return true  # --- vecinos ---
 	return velo.visible
 
 func _input(ev: InputEvent) -> void:
@@ -1636,6 +1650,9 @@ func _menu_objeto(ob: Objeto, vecino: Dictionary) -> void:
 	_ficha(titulo, sub, botones)
 
 func _ficha_vecino(x: Dictionary) -> void:
+	if relaciones != null:  # --- vecinos --- ficha con lo que sabes y el menú (relaciones.gd)
+		relaciones.ficha(x)  # --- vecinos ---
+		return  # --- vecinos ---
 	var v: Dictionary = x["v"]
 	var of: Array = v.get("oficio", [])
 	var oficio := ""
@@ -1658,6 +1675,7 @@ func _process(dt: float) -> void:
 	if muebles.activo:  # --- muebles --- el tiempo y el personaje se paran
 		dt = 0.0  # --- muebles ---
 	compras.tick(dt)  # --- compras ---
+	relaciones.tick(dt)  # --- vecinos ---
 	_dedo_tick(dt)
 	var rapido := salto_rest > 0.0
 	if rapido:
@@ -1825,6 +1843,8 @@ func _cmd_js(args: Array) -> void:
 		return  # --- compras ---
 	if objetivos.cmd(c, args):  # --- objetivos ---
 		return  # --- objetivos ---
+	if relaciones.cmd(c, args):  # --- vecinos ---
+		return  # --- vecinos ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))

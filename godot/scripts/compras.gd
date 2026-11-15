@@ -170,6 +170,39 @@ func _hay_caducado() -> bool:
 			return true
 	return false
 
+# =============== comer con visita (gancho de VECINOS: main.comida_para_invitar / gastar_comida_invitar) ===============
+func _sobras_n() -> int:
+	var n := 0
+	for l in despensa:
+		if str(l["p"]).begins_with("sobras:") and not _caducado(l):
+			n += int(l["n"])
+	return n
+
+## qué se pone en la mesa: "plato" (el que se lleva en la mano), "sobras" (dos raciones), "picar" (dos cosas de picar) o ""
+func para_invitar() -> String:
+	if jg.jugador.mano.begins_with("plato:") or jg.jugador.mano == "menu":
+		return "plato"
+	if _sobras_n() >= 2:
+		return "sobras"
+	if _picables().size() >= 2:
+		return "picar"
+	return ""
+
+func gastar_invitar() -> void:
+	match para_invitar():
+		"plato":
+			jg.jugador.poner_mano("", jg)
+		"sobras":
+			for i in 2:
+				var l := _sobras_lote()
+				l["n"] = int(l["n"]) - 1
+				despensa = despensa.filter(func(x): return int(x["n"]) > 0)
+		"picar":
+			for p in _picables().slice(0, 2):
+				_consumir(p, 1)
+	comida_hecha(0.55)
+	Objetivos.hecho("accion", {"ac": {"id": "comer_juntas"}, "tipo": "comer"})   # cuenta como comer (paso y deseo de cena)
+
 ## la despensa da para una semana: `nevera_llena` productos distintos sin caducar (data/comida.json)
 func nevera_llena() -> bool:
 	var ps := {}

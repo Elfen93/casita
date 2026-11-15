@@ -278,6 +278,8 @@ func abrir(v: bool) -> void:
 		jg.trabajo.abrir(false)
 	if v and jg.objetivos != null and jg.objetivos.modo != "":  # --- objetivos --- una hoja cada vez
 		jg.objetivos.cerrar()
+	if v and jg.relaciones != null:
+		jg.relaciones.ui.cerrar()
 	abierta = v
 	hoja["raiz"].visible = v
 	if v:

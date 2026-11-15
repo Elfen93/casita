@@ -1068,6 +1068,8 @@ func abrir(v: bool) -> void:
 		confirmar_dejar = false
 		if jg.objetivos != null and jg.objetivos.modo != "":   # una hoja cada vez
 			jg.objetivos.cerrar()
+		if jg.relaciones != null:
+			jg.relaciones.ui.cerrar()
 	abierta = v
 	hoja["raiz"].visible = v
 	if v:
@@ -1288,6 +1290,8 @@ func cmd(c: String, a: Array) -> bool:
 		"metro":
 			print("metro: %s" % str(metro_pos))
 		"menu_rect":
+			if a.size() > 1:
+				return false     # con texto: el botón del Menú que empiece así (relaciones.gd)
 			var r1: Rect2 = b_menu_t.get_global_rect()
 			var r2: Rect2 = b_menu_d.get_global_rect()
 			print("menu_rect: t=%d,%d d=%d,%d" % [int(r1.get_center().x), int(r1.get_center().y), int(r2.get_center().x), int(r2.get_center().y)])

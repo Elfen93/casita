@@ -54,7 +54,7 @@
       {"id": "nevera", "e": "🧊", "t": "Llenar la nevera", "f": "Llenaste la nevera. Da gusto abrirla.", "r": 12, "regla": "compra", "dias": 4, "si": ["siempre"]},
       {"id": "dormir8", "e": "🛏", "t": "Dormir ocho horas de un tirón", "f": "Dormiste ocho horas seguidas. Hacía tiempo.", "r": 8, "regla": "dormir", "meta": 480, "dias": 3, "si": ["energia_baja", "siempre"]},
       {"id": "cena", "e": "🍳", "t": "Cenar algo hecho en casa", "f": "Cenaste algo hecho por ti.", "r": 8, "regla": "cena", "dias": 3, "si": ["en_casa", "hambre_baja"]},
-      {"id": "amistad", "e": "🤝", "t": "Hacer amistad con alguien del barrio", "f": "Ya tienes con quién tomar algo en el barrio.", "r": 18, "regla": "amistad", "meta": 3, "dias": 10, "si": ["social_bajo", "siempre"]},
+      {"id": "amistad", "e": "🤝", "t": "Hacer amistad con alguien del barrio", "f": "Ya tienes con quién tomar algo en el barrio.", "r": 18, "regla": "amistad", "dias": 14, "si": ["social_bajo", "siempre"]},
       {"id": "cana", "e": "🍺", "t": "Tomarte algo en el bar", "f": "Te tomaste algo en el bar, sin prisa.", "r": 6, "regla": "accion:beber", "dias": 3, "si": ["social_bajo", "diversion_baja"]},
       {"id": "tele", "e": "📺", "t": "Una tarde de sofá y tele", "f": "Tarde de sofá. Sin culpa.", "r": 6, "regla": "accion:tele", "dias": 3, "si": ["diversion_baja", "en_casa"]},
       {"id": "ducha", "e": "🚿", "t": "Ducharte con calma", "f": "Ducha larga. Como nueva persona.", "r": 4, "regla": "accion:ducharse", "dias": 2, "si": ["higiene_baja"]},
