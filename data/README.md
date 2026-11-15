@@ -128,6 +128,18 @@ Muebles que se pueden comprar para tu piso en Godot (`godot/scripts/muebles.gd`)
 | `categorias` | Lista ordenada de `[id, nombre]` (dormitorio, bano, cocina, salon, decoracion). |
 | `muebles` | Por tipo: `p` precio en euros (donde hay equivalente en `objetos.json` se usa el mismo), `cat` id de categoría y `d` una línea de descripción. Vender devuelve la mitad de `p`. |
 
+### objetivos.json
+Empezar y objetivos en Godot (`godot/scripts/inicio.gd`, `objetivos.gd`, `historia.gd`). Huecos: `{o}` terminación del género del personaje (a/o) y los que diga cada texto.
+| Sección | Qué es |
+|---|---|
+| `inicio` | Situación de partida: `dinero` (euros con los que se empieza), `titulo`, `texto` (`{nombre}`, `{edad}`, `{dinero}`), `casa`, `sin_trabajo`, `elige_trabajo` y `boton_sin_trabajo` (si TRABAJO da ofertas), etiquetas del nombre, `historia` (primera línea del diario) y `aviso`. |
+| `portada` | Textos de la portada con partida guardada: `titulo`, `sub`, `lema`, `partida` (`{nombre}`, `{dia}`, `{n}`, `{hora}`), botones y confirmación. |
+| `pasos` | Primeros pasos guiados: `lista` de `{id, e, t (lo que hay que hacer), f (una frase de pista)}`. Los `id` (`casa`, `comer`, `dormir`, `super`, `hablar`, `trabajo`) los marca el código. `titulo`, `fin`, `saltar`, `saltados`, `hecho` (`{t}`). |
+| `deseos` | `lista` de deseos: `id`, `e`, `t`, `f` (frase para la historia al cumplirlo), `r` (ánimo que da; nunca dinero), `regla` (cómo se cumple, es código: `compra`, `dormir`, `cena`, `amistad`, `platos`, `mueble`, `ahorro`, `fin_mes` o `accion:<id de acción>`), `meta` (cifra de la regla: minutos, charlas, euros), `dias` (caduca sin castigo), `si` (etiquetas que lo hacen probable: `siempre`, `energia_baja`, `hambre_baja`, `social_bajo`, `diversion_baja`, `higiene_baja`, `en_casa`, `platos_sucios`; y requisitos: `con_trabajo`, `dinero_<euros>`). `max` deseos a la vez (`max_con_pasos` mientras hay primeros pasos), `cada_min` minutos de juego entre uno nuevo y el siguiente, y los textos `nuevo`, `cumplido`, `caducado`, `ninguno`. |
+| `animo` | `niveles` `[[desde, palabra], …]` de mayor a menor, `decae_dia` (lo que se pasa al día la alegría de los deseos), `max_alegria`, `explica`. |
+| `historia` | `dias` que se guardan, textos del panel y del resumen al despertar, y las frases del diario: `acciones` (por id de acción de `interiores.json`: `[icono, frase]`, `{p}` = con quién) y sueltas (`casa`, `super`, `compra` `{g}`, `dormir` `{h}`, `siesta`, `mueble`, `trabajo_bar`, `fin_mes` `{d}`). |
+| `menu` | Nombres de las secciones del Menú. |
+
 ### libros.json
 | Sección | En el código | Qué es |
 |---|---|---|

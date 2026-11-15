@@ -129,6 +129,7 @@ var d_pinza := 0.0
 
 var guardado: Guardado  # --- guardado ---
 var muebles: Muebles  # --- muebles ---
+var objetivos: Objetivos  # --- objetivos ---
 
 func _ready() -> void:
 	if OS.has_feature("web") and str(JavaScriptBridge.eval("window.location.search")).contains("crear"):  # --- crear ---
@@ -153,32 +154,16 @@ func _ready() -> void:
 			nec_tasa[n[0]] = float(n[3])
 	dinero = float(reglas.get("dificultades", {}).get("normal", {}).get("money", 1000))
 	_fuentes()
-	# --- elegir personaje --- partida guardada: el suyo (Kate si es antigua); partida nueva: se elige antes de montar el mundo
-	modelo_pj = Guardado.modelo_guardado()
-	var nueva := modelo_pj == ""
-	if nueva:
-		set_process(false)
-		set_process_input(false)
-		var capa := CanvasLayer.new()
-		capa.layer = 20
-		add_child(capa)
-		var el := ElegirPersonaje.new(personas.get("personaje_base", {}), Figura.MODELO_DEFECTO, fuente)
-		capa.add_child(el)
-		if OS.has_feature("web"):
-			# las pruebas (window.casita_cmd) no pasan por la pantalla: la primera orden elige el de siempre y espera al mundo
-			js_cb = JavaScriptBridge.create_callback(func(args: Array):
-				if cmd_pendiente.is_empty():
-					cmd_pendiente = args.duplicate()
-					el.elegido.emit.call_deferred(Figura.MODELO_DEFECTO))
-			JavaScriptBridge.get_interface("window").casita_cmd = js_cb
-		modelo_pj = await el.elegido
-		capa.queue_free()
-		set_process(true)
-		set_process_input(true)
+	# --- objetivos --- portada (Continuar / Partida nueva), elegir personaje y situación de partida: scripts/inicio.gd
+	var ini: Dictionary = await Inicio.new(self).correr()  # --- objetivos ---
+	modelo_pj = ini["modelo"]  # --- objetivos ---
+	var nueva: bool = ini["nueva"]  # --- objetivos ---
 	Figura.modelo_jugador = modelo_pj
 	if PersonaAnimada.disponible(modelo_pj) and not PersonaAnimada.listo(modelo_pj):
 		Paquetes.pedir(PersonaAnimada.paquete(modelo_pj), Callable(), true)   # web: el suyo, lo primero
 	nombre_pj = Figura.nombre_de(modelo_pj, personas.get("personaje_base", {}))
+	if str(ini.get("nombre", "")) != "":  # --- objetivos ---
+		nombre_pj = str(ini["nombre"])  # --- objetivos ---
 	_entorno()
 	cola = Cola.new(self)
 	_mundo()
@@ -194,7 +179,10 @@ func _ready() -> void:
 	guardado.escuchas_web()  # --- guardado ---
 	muebles = Muebles.new(self)  # --- muebles ---
 	muebles.crear_ui(ui)  # --- muebles ---
+	objetivos = Objetivos.new(self)  # --- objetivos --- (registra sus secciones de guardado antes de cargar)
+	objetivos.crear_ui(ui)  # --- objetivos ---
 	guardado.cargar_inicio()  # --- guardado ---
+	objetivos.empezar(ini)  # --- objetivos --- partida nueva: nombre, dinero, primer deseo; cargada: sigue
 	if nueva:
 		guardado.guardar()  # la elección queda guardada aunque se cierre enseguida
 	if OS.has_feature("web"):
@@ -227,6 +215,7 @@ func elegir_personaje() -> void:
 		var antes := modelo_pj
 		modelo_pj = m
 		if guardado.guardar():
+			Inicio.saltar_portada = true  # --- objetivos --- al recargar no sale la portada
 			get_tree().reload_current_scene()
 		else:
 			modelo_pj = antes
@@ -1123,6 +1112,8 @@ func _eur(x: float) -> String:
 	return ("-" if x < 0.0 else "") + s + o + dec + " €"
 
 func _aviso(t: String) -> void:
+	if objetivos != null and objetivos.aviso(t):  # --- objetivos --- cola de avisos: no se pisan
+		return  # --- objetivos ---
 	toast.text = t
 	toast.visible = true
 	toast_t = 2.6
@@ -1440,6 +1431,8 @@ func _en_ui(p: Vector2) -> bool:
 		return true  # --- muebles ---
 	if guardado.en_ui(p):  # --- guardado ---
 		return true  # --- guardado ---
+	if objetivos.en_ui(p):  # --- objetivos ---
+		return true  # --- objetivos ---
 	return velo.visible
 
 func _input(ev: InputEvent) -> void:
@@ -1657,6 +1650,7 @@ func _ficha_vecino(x: Dictionary) -> void:
 func _process(dt: float) -> void:
 	guardado.tick(dt)  # --- guardado ---
 	muebles.tick(dt)  # --- muebles ---
+	objetivos.tick(dt)  # --- objetivos ---
 	if muebles.activo:  # --- muebles --- el tiempo y el personaje se paran
 		dt = 0.0  # --- muebles ---
 	_dedo_tick(dt)
@@ -1820,6 +1814,8 @@ func _cmd_js(args: Array) -> void:
 		return  # --- cámara ---
 	if muebles.cmd(c, args):  # --- muebles ---
 		return  # --- muebles ---
+	if objetivos.cmd(c, args):  # --- objetivos ---
+		return  # --- objetivos ---
 	match c:
 		"ir":
 			_ir_a_edificio(str(a))
