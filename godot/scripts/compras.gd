@@ -170,6 +170,14 @@ func _hay_caducado() -> bool:
 			return true
 	return false
 
+## la despensa da para una semana: `nevera_llena` productos distintos sin caducar (data/comida.json)
+func nevera_llena() -> bool:
+	var ps := {}
+	for l in despensa:
+		if not _caducado(l) and not str(l["p"]).begins_with("sobras:"):
+			ps[l["p"]] = true
+	return ps.size() >= int(D.get("nevera_llena", 10))
+
 func _sobras_lote() -> Dictionary:
 	var mejor: Dictionary = {}
 	for l in despensa:
@@ -178,16 +186,9 @@ func _sobras_lote() -> Dictionary:
 				mejor = l
 	return mejor
 
-## el envoltorio único del dinero de este bloque: cuando exista la función de movimientos (bloque TRABAJO), se cambia aquí
+## el envoltorio único del dinero de este bloque: la cuenta del banco (cuenta.gd). Si no llega, no cobra y devuelve false.
 func _pagar(concepto: String, euros: float) -> bool:
-	if euros <= 0.0:
-		return true
-	if jg.dinero < euros:
-		return false
-	jg.dinero -= euros
-	if OS.is_debug_build():
-		print("pago: %s %.2f" % [concepto, euros])
-	return true
+	return jg.cuenta.pagar(concepto, euros)
 
 func _t(k: String) -> String:
 	var v = D.get("textos", {}).get(k, k)
@@ -267,6 +268,7 @@ func terminar(ac: Dictionary, o) -> Variant:
 				despensa.append({"p": "sobras:" + rid, "n": sob, "cad": dia() + int(D.get("sobras_dias", 3))})
 			jg.hab["cocina"] = float(jg.hab.get("cocina", 0.0)) + float(D.get("habilidad", 0.4)) * (1.0 + 0.5 * int(re.get("nivel", 0)))
 			var t := "%s listo." % str(re["n"])
+			Historia.contar("Cocinaste %s." % str(re["n"]).to_lower(), "🍳")
 			if sob > 0:
 				t += " %d %s a la nevera." % [sob, "ración" if sob == 1 else "raciones"]
 			return t
@@ -275,6 +277,8 @@ func terminar(ac: Dictionary, o) -> Variant:
 			if not _pagar("Menú del día", _precio_menu()):
 				return "No te llega el dinero."
 			a.poner_mano("menu", jg)
+			Objetivos.hecho("compra", {"donde": "bar", "gasto": _precio_menu()})
+			Historia.contar("Comiste el menú del día en el bar.", "🍽")
 			return "Menú del día: primero, segundo y postre. %s." % Acciones.jg_eur(_precio_menu())
 		"sobras":
 			var l := _sobras_lote()
@@ -300,6 +304,8 @@ func terminar(ac: Dictionary, o) -> Variant:
 			bolsa.clear()
 			guardando = false
 			a.poner_mano("", jg)
+			if n > 0:   # (la historia ya cuenta la compra y, si estaba, el deseo «Llenar la nevera»)
+				Objetivos.hecho("nevera", {"llena": nevera_llena()})
 			return "%s (%d)" % [_t("guardado"), n]
 		"de_nevera":
 			var p2 := str(ac.get("producto", ""))
@@ -689,6 +695,7 @@ func pagar() -> void:
 	jg._cerrar_ficha_y_saltar(mins, "Comprando…", func():
 		jg.jugador.poner_mano("bolsa", jg)
 		jg._aviso(_t("pagado").replace("{v}", jg._eur(t)))
+		Objetivos.hecho("compra", {"donde": "super", "gasto": t})
 		jg._ir_a_edificio("casa"))
 
 func comer_en_super() -> void:
@@ -701,6 +708,8 @@ func comer_en_super() -> void:
 	jg._cerrar_ficha_y_saltar(float(S.get("comer_min", 30)), "Comiendo en un banco…", func():
 		jg.nec["hambre"] = minf(100.0, jg.nec["hambre"] + float(fu.get("hambre", 45)))
 		comida_hecha(float(fu.get("calidad", 0.5)))
+		Objetivos.hecho("compra", {"donde": "banco", "gasto": float(S.get("comer_precio", 6.5))})
+		Historia.contar("Comiste un bocadillo en un banco, al salir del súper.", "🥪")
 		jg._aviso("Bocadillo y fruta en un banco. Hambre arriba."))
 
 # =============== comida a domicilio ===============
@@ -714,6 +723,8 @@ func pedir_domicilio() -> void:
 		return
 	var d: Dictionary = D.get("domicilio", {})
 	pedido = {"llega": jg.minutos + float(d.get("espera_min", 40)), "est": "espera"}
+	Objetivos.hecho("compra", {"donde": "domicilio", "gasto": pr})
+	Historia.contar("Pediste la cena a domicilio: %s." % jg._eur(pr), "🛵")
 	jg._cerrar_ficha()
 	jg._aviso(_t("pedido").replace("{v}", Acciones.jg_eur(pr)).replace("{m}", str(int(d.get("espera_min", 40)))))
 

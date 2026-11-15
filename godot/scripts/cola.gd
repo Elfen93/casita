@@ -211,6 +211,7 @@ func _hacer(dm: float) -> void:
 func _fin_dormir() -> void:
 	if act.is_empty():
 		return
+	Objetivos.hecho("dormir", {"min": float(act["ac"].get("min", 0.0))})  # --- objetivos ---
 	act["est"] = "hacer"
 	_soltar()
 	act = {}
@@ -277,6 +278,7 @@ func _terminar() -> void:
 		msg = "Nada. Otra vez será."
 	if msg != "":
 		jg._aviso(msg)
+	Objetivos.hecho("accion", {"ac": ac, "obj": o, "tipo": t})  # --- objetivos ---
 	_soltar()
 	act = {}
 	uso = -1

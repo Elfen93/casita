@@ -132,6 +132,7 @@ Compras y comida de la versión Godot (`godot/scripts/compras.gd`; el juego web 
 | `recetas` | Por id: `n`, `e`, `nivel` (0-2, ver `niveles`), `min`, `ing` (`[["a\|b", usos], …]`: un ingrediente con alternativas separadas por `\|`), `raciones` (una a la mano, el resto a la nevera como sobras), `hambre` (lo que llena una ración; de pie, el 70 %), `energia` (opcional), `calidad` (0-1, para la nutrición) y `pasos` (textos que salen mientras se cocina). |
 | `niveles` | Puntos de la habilidad `cocina` (en `main.hab`) que pide cada nivel de receta. `habilidad`: lo que sube al cocinar (× 1 + 0,5 × nivel). |
 | `sobras_dias` | Días que aguantan las sobras en la nevera (calentarlas: acción `sobras` de la nevera). |
+| `nevera_llena` | Productos distintos sin caducar (sin contar sobras) para que la nevera cuente como llena al guardar la compra (`Objetivos.hecho("nevera", {llena})`). |
 | `fuera` | Platos que no salen de una receta (`domicilio`, `menu`, `super`): `n`, `e`, `hambre`, `calidad`. |
 | `domicilio` | `pedido` + `envio` (€), `espera_min` (hasta que llega el rider), `espera_puerta_min` (lo que espera en la puerta antes de dejarlo), `app` (inventada) y `rider` (`id`, `g`, `edad` para su aspecto). |
 | `menu` | Menú del día del bar: `h` `[desde, hasta]` y `dias` (0 = lunes). El producto `menu` (precio, efecto) está en `interiores.json` → `productos`. |
@@ -162,6 +163,18 @@ Trabajo y dinero de la versión Godot (`godot/scripts/trabajo.gd`, `cuenta.gd`, 
 | `nomina` | `dia` del mes en que se cobra, `valor_por_coste` (lo que factura la empresa por cada euro que cuesta la trabajadora) y textos de la tarjeta de nómina y del finiquito. |
 | `paro` | `cotizado_inicial` (días cotizados al empezar) y `base_inicial` (base reguladora si aún no hay nóminas); prestación contributiva (`contributiva_min_dias`, `dias_por_180`, `max_dias`, `pct` `[[hasta el día, %]]`, `min`, `max` en euros al mes); subsidio (`subsidio_min_dias`, `subsidio`, `subsidio_meses` `[[menos de N días, meses]]`); `dia_pago`; la oficina de empleo (`sepe_*`, en El Casco: se va en metro) y textos. |
 | `dinero` | `banco`, `vivienda` (tipo de `viviendas.json` del piso: alquiler mensual = `rent` × 52 / 12, redondeado a 5 €), `alquiler_dia`, `billete` (metro, por trayecto), `abono` (`n`, `i`, `dia`: se cobra si el trabajo es en otro barrio), `facturas` (`id`, `n`, `e`, `dia`, `i` euros, `var` ± euros según el mes), `recargo` (gastos de devolución de un recibo sin saldo), textos de recibos devueltos, alquiler impagado y `casero_avisos` `[[días de retraso, título, texto]]`, `categorias` (concepto de movimiento → categoría) y `cat_n` (nombre de cada categoría). |
+
+### objetivos.json
+Empezar y objetivos en Godot (`godot/scripts/inicio.gd`, `objetivos.gd`, `historia.gd`). Huecos: `{o}` terminación del género del personaje (a/o) y los que diga cada texto.
+| Sección | Qué es |
+|---|---|
+| `inicio` | Situación de partida: `dinero` (euros con los que se empieza: lo que queda con la fianza y el primer mes de alquiler pagados), `titulo`, `texto` (`{nombre}`, `{edad}`, `{dinero}`), `casa` (`{alquiler}`: el alquiler del mes, de `trabajo.json` → `dinero.vivienda`), `sin_trabajo` (si no hay puestos para el personaje), `elige_trabajo` y `boton_sin_trabajo` (con las ofertas de `Trabajo.ofertas_inicio`), etiquetas del nombre, `historia` (primera línea del diario) y `aviso`. |
+| `portada` | Textos de la portada con partida guardada: `titulo`, `sub`, `lema`, `partida` (`{nombre}`, `{dia}`, `{n}`, `{hora}`), botones y confirmación. |
+| `pasos` | Primeros pasos guiados: `lista` de `{id, e, t (lo que hay que hacer), f (una frase de pista)}`. Los `id` (`casa`, `comer`, `dormir`, `super`, `hablar`, `trabajo`) los marca el código. `t_con`/`f_con` (opcional): el texto si ya se tiene trabajo. `titulo`, `fin`, `saltar`, `saltados`, `hecho` (`{t}`). |
+| `deseos` | `lista` de deseos: `id`, `e`, `t`, `f` (frase para la historia al cumplirlo), `r` (ánimo que da; nunca dinero), `regla` (cómo se cumple, es código: `compra`, `dormir`, `cena`, `amistad`, `platos`, `mueble`, `ahorro`, `fin_mes` o `accion:<id de acción>`), `meta` (cifra de la regla: minutos, charlas, euros), `dias` (caduca sin castigo), `si` (etiquetas que lo hacen probable: `siempre`, `energia_baja`, `hambre_baja`, `social_bajo`, `diversion_baja`, `higiene_baja`, `en_casa`, `platos_sucios`; y requisitos: `con_trabajo`, `dinero_<euros>`). `max` deseos a la vez (`max_con_pasos` mientras hay primeros pasos), `cada_min` minutos de juego entre uno nuevo y el siguiente, y los textos `nuevo`, `cumplido`, `caducado`, `ninguno`. |
+| `animo` | `niveles` `[[desde, palabra], …]` de mayor a menor, `decae_dia` (lo que se pasa al día la alegría de los deseos), `max_alegria`, `explica`. |
+| `historia` | `dias` que se guardan, textos del panel y del resumen al despertar, y las frases del diario: `acciones` (por id de acción de `interiores.json`: `[icono, frase]`, `{p}` = con quién) y sueltas (`casa`, `super`, `compra` `{g}`, `dormir` `{h}`, `siesta`, `mueble`, `fin_mes` `{d}`). Cocinar, el trabajo y el dinero los cuentan compras.gd, trabajo.gd y cuenta.gd con sus propias frases. |
+| `menu` | Nombres de las secciones del Menú. |
 
 ### libros.json
 | Sección | En el código | Qué es |

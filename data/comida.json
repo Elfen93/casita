@@ -65,6 +65,7 @@
   "habilidad": 0.4,
 
   "sobras_dias": 3,
+  "nevera_llena": 14,
 
   "fuera": {"domicilio": {"n": "comida a domicilio", "e": "🛵", "hambre": 55, "calidad": 0.4}, "menu": {"n": "menú del día", "e": "🍽️", "hambre": 70, "calidad": 0.7}, "super": {"n": "bocadillo y fruta del súper", "e": "🥪", "hambre": 45, "calidad": 0.5}},
 

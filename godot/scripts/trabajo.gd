@@ -64,8 +64,11 @@ var b_menu_t: Button
 var b_menu_d: Button
 var metro_pos := Vector2.ZERO
 
-func _init(m) -> void:
+var _modelo := ""          # solo en la consulta de la pantalla de partida nueva (ofertas_inicio): el personaje elegido
+
+func _init(m, modelo_inicio := "") -> void:
 	jg = m
+	_modelo = modelo_inicio
 	T = Datos.cargar("trabajo")
 	J = T.get("jornada", {})
 	DIAS_MES = int(T.get("calendario", {}).get("dias_mes", 28))
@@ -80,6 +83,8 @@ func _init(m) -> void:
 		vec[str(v["id"])] = v
 	cotizados = int(T.get("paro", {}).get("cotizado_inicial", 540))
 	estudios = str(T.get("estudios_inicial", "eso"))
+	if _modelo != "":
+		return      # consulta sin mundo (pantalla de partida nueva): ni puesto, ni metro, ni guardado
 	var ed := edad()
 	if ed >= int(T.get("edad_min", 16)) and ed < 67:
 		aceptar(str(T.get("puesto_inicial", "")), 0)
@@ -88,10 +93,55 @@ func _init(m) -> void:
 
 # =============== quién y qué ===============
 func fem() -> bool:
-	return str(Figura.jugable(jg.modelo_pj).get("genero", "f")) == "f"
+	return str(Figura.jugable(_modelo if _modelo != "" else jg.modelo_pj).get("genero", "f")) == "f"
 
 func edad() -> int:
-	return int(Figura.jugable(jg.modelo_pj).get("edad", 27))
+	return int(Figura.jugable(_modelo if _modelo != "" else jg.modelo_pj).get("edad", 27))
+
+# =============== partida nueva (lo usa inicio.gd, antes de que exista el mundo) ===============
+## lo que se puede elegir en la situación de partida: el puesto inicial (camarera en el Bar Manolo) y hasta `n` ofertas de
+## esta semana a las que se puede optar. [{id, n, e, d}] (n: puesto · empresa; d: horario y sueldo neto)
+static func ofertas_inicio(main, modelo: String, n := 3) -> Array:
+	var t := Trabajo.new(main, modelo)
+	var ids: Array = []
+	var ini := str(t.T.get("puesto_inicial", ""))
+	if t.edad() < int(t.T.get("edad_min", 16)) or t.edad() >= 67:
+		return []
+	if not t.puesto(ini).is_empty():
+		ids.append(ini)
+	for o in t.ofertas():
+		if ids.size() > n:
+			break
+		if o["motivo"] == "" and not ids.has(o["id"]):
+			ids.append(o["id"])
+	var r: Array = []
+	for id in ids:
+		var P := t.puesto(id)
+		r.append({"id": id, "e": str(P.get("e", "")), "n": "%s · %s" % [t.titulo(id), str(P.get("empresa", ""))],
+			"d": "%s, %s-%s · %s netos al mes" % [t.dias_txt(P["dias"]), main._hhmm(float(P["h"][0])), main._hhmm(fposmod(float(P["h"][1]), 24.0)), Inicio.eur(t.neto_mes(id))]})
+	return r
+
+## lo elegido en la situación de partida, con el mundo montado: id de puesto o "" (sin trabajo, a buscar)
+func elegir_inicial(id: String) -> void:
+	if id == puesto_id:
+		return
+	if id != "" and aceptar(id, dia()):
+		return
+	puesto_id = ""
+	nivel = 0
+	hoy = {}
+	parada = {"desde": dia(), "causa": "baja", "inscrita": false}   # dejó el trabajo de antes para mudarse: sin paro
+
+func con_trabajo() -> bool:
+	return puesto_id != ""
+
+## avisa a Objetivos (hecho «trabajo» {que, …}) y lo cuenta en la historia del día
+func _avisar(que: String, texto: String, icono := "", datos := {}) -> void:
+	var d := {"que": que}
+	d.merge(datos)
+	Objetivos.hecho("trabajo", d)
+	if texto != "":
+		Historia.contar(texto, icono)
 
 func puesto(id := "") -> Dictionary:
 	return T.get("puestos", {}).get(id if id != "" else puesto_id, {})
@@ -437,6 +487,7 @@ func _fin_jornada(d: int, suc: Array) -> void:
 		partes.append(ef)
 	partes.append(_pie())
 	jg.cuenta.tarjeta("%s %s" % [str(P.get("e", "")), _txt(str(J.get("titulo", "")))], partes)
+	_avisar("jornada", "Jornada de %s en %s%s." % [titulo().to_lower(), lugar_n(), ", con retraso" if float(h.get("tarde", 0.0)) > float(J.get("retraso_min", 5)) else ""], str(P.get("e", "")))
 	if _sancion_pend:
 		_sancion_pend = false
 		_sancion()
@@ -462,6 +513,7 @@ func _fin_turno(d: int) -> void:
 		desc_dias += 1
 		var F: Dictionary = T.get("faltas", {})
 		jg.cuenta.tarjeta("📋 " + str(J.get("falta_titulo", "")), [_txt(str(J.get("falta", ""))), PanelUI.huecos(str(F.get("descuento", "")), {"v": jg._eur(_desc_dia())})])
+		_avisar("falta", "Faltaste al trabajo. Te lo descuentan de la nómina.", "📋")
 		_sancion()
 		return
 	if not es_bar():
@@ -493,6 +545,7 @@ func _fin_turno(d: int) -> void:
 	partes.append("-")
 	partes.append(_pie())
 	jg.cuenta.tarjeta("%s %s" % [str(P.get("e", "")), _txt(str(J.get("titulo", "")))], partes)
+	_avisar("jornada", ("Turno en el bar: %d %s y %s de propina." % [bar_n, "consumición" if bar_n == 1 else "consumiciones", jg._eur(bar_prop)]) if bar_n > 0 else "Turno en el bar sin servir a nadie.", str(P.get("e", "")))
 	_sancion()
 	_ascenso()
 
@@ -524,13 +577,16 @@ func _sancion() -> void:
 	var p := puntos()
 	if p >= float(F.get("despido_puntos", 3)):
 		jg.cuenta.tarjeta("📋 " + str(F.get("despido_titulo", "")), [_txt(str(F.get("despido", "")))])
+		_avisar("despido", "Te despidieron de %s." % str(puesto().get("empresa", "")), "📋")
 		_despedir("despido")
 	elif p >= 2.0 and avisos < 2:
 		avisos = 2
 		jg.cuenta.tarjeta("📋 " + _txt(str(F.get("escrito_titulo", ""))), [_txt(str(F.get("escrito", "")))])
+		_avisar("aviso", "Amonestación por escrito en el trabajo.", "📋")
 	elif p >= 1.0 and avisos < 1:
 		avisos = 1
 		jg.cuenta.tarjeta("📋 " + _txt(str(F.get("aviso_titulo", ""))), [_txt(str(F.get("aviso", "")))])
+		_avisar("aviso", "Te llamaron la atención en el trabajo.", "📋")
 
 func _desc_dia() -> float:
 	return bruto_mes() / (float(puesto()["dias"].size()) * 52.0 / 12.0)
@@ -573,6 +629,7 @@ func _nomina(d: int, finiquito := false) -> Dictionary:
 	pagado_mes = ms
 	ult_nomina = n
 	tarjeta_nomina(n)
+	_avisar("nomina", "Cobraste %s: %s." % ["el finiquito" if finiquito else "la nómina", jg._eur(float(n["neto"]))], "💶", {"neto": float(n["neto"])})
 	return n
 
 static func _pct(x: float) -> String:
@@ -638,6 +695,7 @@ func _despedir(causa: String) -> void:
 
 func dejar() -> void:
 	confirmar_dejar = false
+	_avisar("baja", "Dejaste el trabajo en %s." % str(puesto().get("empresa", "")), "🚪")
 	_despedir("baja")
 	_rellenar()
 
@@ -812,6 +870,7 @@ func _resultado_entrevista(id: String, hig: float, ene: float) -> void:
 		var si: Array = E.get("si", [""])
 		partes.append(str(si[randi() % si.size()]))
 		var antes := puesto_id
+		_avisar("entrevista", "Entrevista en %s: te cogieron." % str(P.get("empresa", "")), "🤝", {"ok": true, "id": id})
 		aceptar(id, dia() + 1)
 		if antes != "":
 			partes.append("Dejas el trabajo de antes: es una baja voluntaria.")
@@ -823,6 +882,7 @@ func _resultado_entrevista(id: String, hig: float, ene: float) -> void:
 		partes.append(str(no[randi() % no.size()]))
 		entrevistas[id] = dia()
 		jg.cuenta.tarjeta("📋 " + tit, partes)
+		_avisar("entrevista", "Entrevista en %s: no hubo suerte." % str(P.get("empresa", "")), "📋", {"ok": false, "id": id})
 
 # =============== paro ===============
 func ir_sepe() -> void:
@@ -893,6 +953,7 @@ func _resultado_sepe() -> void:
 			parada.merge({"tipo": "nada", "resto": 0}, true)
 			partes.append(PanelUI.huecos(str(Pa.get("nada", "")), {"cot": cot}))
 	jg.cuenta.tarjeta("🏛 " + str(Pa.get("sepe_titulo", "")), partes)
+	_avisar("sepe", "Fuiste a la oficina de empleo.", "🏛")
 
 func _pagar_paro(d: int) -> void:
 	var Pa: Dictionary = T.get("paro", {})
@@ -908,6 +969,7 @@ func _pagar_paro(d: int) -> void:
 	parada["cobrados"] = cob + dias
 	parada["ult_cobro"] = d
 	jg._aviso("%s: %s" % [str(Pa.get("pago", "")), jg._eur(imp)])
+	Historia.contar("Cobraste el paro: %s." % jg._eur(imp), "🏛")
 	if int(parada["resto"]) <= 0:
 		jg.cuenta.tarjeta("🏛 " + str(Pa.get("sepe", "")), [str(Pa.get("fin", ""))])
 
@@ -994,22 +1056,9 @@ func _metro() -> void:
 # =============== panel «Trabajo» y botones del Menú ===============
 func crear_ui(ui: Control) -> void:
 	hoja = PanelUI.hoja(ui, func(): abrir(false))
-	# dos botones en el Menú (encima de «Guardar ahora»)
-	var g = jg.guardado
-	var vb: VBoxContainer = g.btn_guardar.get_parent()
-	var fila := HBoxContainer.new()
-	fila.add_theme_constant_override("separation", 8)
-	vb.add_child(fila)
-	vb.move_child(fila, g.btn_guardar.get_index())
-	b_menu_t = PanelUI.boton("📋 Trabajo", func(): abrir(true), 50.0, 17)
-	b_menu_d = PanelUI.boton("💶 Dinero", func(): jg.cuenta.abrir(true), 50.0, 17)
-	for b in [b_menu_t, b_menu_d]:
-		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		fila.add_child(b)
-	# en la confirmación de «Partida nueva» no salen
-	g.btn_nueva.pressed.connect(func(): fila.visible = false)
-	g.btn_no.pressed.connect(func(): fila.visible = true)
-	g.btn_menu.pressed.connect(func(): fila.visible = true)
+	# secciones «Trabajo» y «Dinero» de la rejilla del Menú (guardado.gd)
+	b_menu_t = jg.guardado.seccion_menu("trabajo", "Trabajo", func(): abrir(true))
+	b_menu_d = jg.guardado.seccion_menu("dinero", "Dinero", func(): jg.cuenta.abrir(true))
 
 func abrir(v: bool) -> void:
 	if v:
@@ -1017,10 +1066,14 @@ func abrir(v: bool) -> void:
 		jg.guardado._abrir_panel(false)
 		jg._cerrar_ficha()
 		confirmar_dejar = false
+		if jg.objetivos != null and jg.objetivos.modo != "":   # una hoja cada vez
+			jg.objetivos.cerrar()
 	abierta = v
 	hoja["raiz"].visible = v
 	if v:
 		_rellenar()
+		if puesto_id == "":
+			Objetivos.hecho("trabajo", {"que": "ofertas"})   # mirar las ofertas ya es buscar trabajo
 
 func _estado_hoy() -> String:
 	var d := dia()

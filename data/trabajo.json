@@ -197,7 +197,7 @@
     ],
     "pagada_deuda": "Pagado lo que debías: {n}, {v}.",
     "desahucio_pendiente": "Pendiente: el desahucio aún no está en el juego. Queda apuntado.",
-    "categorias": {"Nómina": "ingresos", "Finiquito": "ingresos", "Propinas": "ingresos", "Prestación por desempleo": "ingresos", "Subsidio por desempleo": "ingresos", "Venta de muebles": "ingresos", "Premio": "ingresos", "Ingreso": "ingresos", "Alquiler": "casa", "Luz": "casa", "Agua": "casa", "Internet (fibra)": "casa", "Móvil": "casa", "Gastos de devolución": "deudas", "Abono de transporte": "transporte", "Billete de metro": "transporte", "Súper": "comida", "Compra": "comida", "Bar": "ocio", "Muebles": "casa", "Otros gastos": "otros"},
+    "categorias": {"Nómina": "ingresos", "Finiquito": "ingresos", "Propinas": "ingresos", "Prestación por desempleo": "ingresos", "Subsidio por desempleo": "ingresos", "Venta de muebles": "ingresos", "Premio": "ingresos", "Ingreso": "ingresos", "Alquiler": "casa", "Luz": "casa", "Agua": "casa", "Internet (fibra)": "casa", "Móvil": "casa", "Gastos de devolución": "deudas", "Abono de transporte": "transporte", "Billete de metro": "transporte", "Súper": "comida", "Compra": "comida", "Compra en el súper": "comida", "Comer en el súper": "comida", "Comida a domicilio": "comida", "Menú del día": "comida", "Bar": "ocio", "Muebles": "casa", "Otros gastos": "otros"},
     "cat_n": {"ingresos": "Ingresos", "casa": "Casa", "comida": "Comida", "ocio": "Bar y ocio", "transporte": "Transporte", "deudas": "Recargos", "otros": "Otros"}
   }
 }

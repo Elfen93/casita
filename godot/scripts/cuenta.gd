@@ -41,11 +41,15 @@ func _init(m) -> void:
 	D = T.get("dinero", {})
 	DIAS_MES = int(T.get("calendario", {}).get("dias_mes", 28))
 	HORA = int(T.get("calendario", {}).get("hora_pagos", 9))
-	var V: Dictionary = Datos.cargar("viviendas").get("viviendas", {})
-	var sem := float(V.get(str(D.get("vivienda", "viejo")), {}).get("rent", 185))
-	alquiler = roundf(sem * 52.0 / 12.0 / 5.0) * 5.0     # el alquiler semanal del juego web, al mes y redondeado
+	alquiler = alquiler_datos()
 	jg.guardado.registrar("cuenta", 1, _guardar, _aplicar)
 	_despertar.call_deferred()
+
+## el alquiler mensual del piso (data/trabajo.json -> dinero.vivienda): el semanal del juego web, al mes y redondeado a 5 €
+static func alquiler_datos() -> float:
+	var V: Dictionary = Datos.cargar("viviendas").get("viviendas", {})
+	var sem := float(V.get(str(Datos.cargar("trabajo").get("dinero", {}).get("vivienda", "viejo")), {}).get("rent", 185))
+	return roundf(sem * 52.0 / 12.0 / 5.0) * 5.0
 
 func _despertar() -> void:
 	silencio = false
@@ -147,6 +151,8 @@ func tick() -> void:
 func _pagos_del_dia(d: int) -> void:
 	var dm := dia_mes(d)
 	# lo que se debía: se vuelve a pasar cada mañana
+	if dm == 1 and d > 0:   # --- objetivos --- se cierra el mes (antes de pasar el alquiler del nuevo)
+		Objetivos.hecho("fin_mes", {"dinero": jg.dinero, "deuda": deuda_total()})
 	_cobrar_deudas(d)
 	if dm == int(D.get("alquiler_dia", 1)) and d > 0:
 		_cobrar("Alquiler", alquiler, d, true)
@@ -168,7 +174,10 @@ func _importe_factura(f: Dictionary, d: int) -> float:
 func _cobrar(concepto: String, importe: float, d: int, alq: bool) -> void:
 	if pagar(concepto, importe):
 		jg._aviso("%s: %s" % [concepto, jg._eur(importe)])
+		if alq:
+			Historia.contar("Pagaste el alquiler: %s." % jg._eur(importe), "🏠")
 		return
+	Historia.contar(("No llegó para el alquiler: %s." % jg._eur(importe)) if alq else ("Recibo devuelto: %s, %s." % [concepto, jg._eur(importe)]), "⚠")
 	if alq:
 		deudas.append({"c": concepto, "i": importe, "d": d, "alq": true})
 		tarjeta(str(D.get("alquiler_impagado_titulo", "")), [PanelUI.huecos(str(D.get("alquiler_impagado", "")), {"v": jg._eur(importe), "s": jg._eur(jg.dinero), "casero": str(D.get("casero", "el casero"))})])
@@ -184,6 +193,7 @@ func _cobrar_deudas(_d: int) -> void:
 	for x in deudas:
 		if quedan.is_empty() and pagar(str(x["c"]), float(x["i"])):
 			jg._aviso(PanelUI.huecos(str(D.get("pagada_deuda", "")), {"n": x["c"], "v": jg._eur(float(x["i"]))}))
+			Historia.contar("Pagaste lo que debías: %s, %s." % [str(x["c"]), jg._eur(float(x["i"]))], "✅")
 			continue
 		quedan.append(x)
 	deudas = quedan
@@ -208,6 +218,7 @@ func _casero(d: int) -> void:
 		var a: Array = av[casero_avisos]
 		casero_avisos += 1
 		var partes: Array = [str(a[2])]
+		Historia.contar(str(a[1]) + ".", "📨")
 		if casero_avisos == av.size():
 			desahucio_pendiente = true
 			partes.append(str(D.get("desahucio_pendiente", "")))
@@ -265,6 +276,8 @@ func crear_ui(ui: Control) -> void:
 func abrir(v: bool) -> void:
 	if v and jg.trabajo != null:
 		jg.trabajo.abrir(false)
+	if v and jg.objetivos != null and jg.objetivos.modo != "":  # --- objetivos --- una hoja cada vez
+		jg.objetivos.cerrar()
 	abierta = v
 	hoja["raiz"].visible = v
 	if v:

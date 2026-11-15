@@ -1,0 +1,118 @@
+{
+  "_": "Empezar y objetivos en Godot (godot/scripts/inicio.gd, objetivos.gd, historia.gd): la portada, la situación de partida, los primeros pasos guiados, los deseos, el ánimo y la historia de cada día. Campos en data/README.md.",
+  "inicio": {
+    "dinero": 480,
+    "titulo": "Una casa con eco",
+    "texto": "{nombre} tiene {edad} años, dos maletas y {dinero} en la cuenta: lo que quedó tras pagar la fianza y el primer mes de alquiler. Acaba de llegar a La Ribera.",
+    "casa": "Alquila el bajo del bloque: salón con cocina, un baño, un dormitorio y una ventana a la acera. El casero vuelve a cobrar el día 1 del mes que viene: {alquiler}. Luz, agua, internet y móvil, aparte.",
+    "sin_trabajo": "Trabajo, de momento, no hay. Toca buscar.",
+    "elige_trabajo": "Antes de deshacer las maletas, hay que elegir de qué se vive. La nómina llega el día 26:",
+    "boton_sin_trabajo": "Sin trabajo, a buscar",
+    "nombre": "Te llamas",
+    "cambiar_nombre": "Cambiar",
+    "pedir_nombre": "¿Cómo te llamas?",
+    "boton": "Empezar",
+    "historia": "Llegaste a La Ribera con {dinero} y dos maletas.",
+    "aviso": "Bienvenid{o} a La Ribera"
+  },
+  "portada": {
+    "titulo": "Casita",
+    "sub": "La Ribera",
+    "lema": "Un alquiler, un barrio y la gente de al lado.",
+    "partida": "{nombre} · {dia}, día {n} · {hora}",
+    "continuar": "Continuar",
+    "nueva": "Partida nueva",
+    "aviso_nueva": "Se borra la partida guardada. Empiezas de cero, con otra persona o con la misma.",
+    "si": "Sí, empezar de cero",
+    "no": "No, volver"
+  },
+  "pasos": {
+    "titulo": "Primeros pasos",
+    "fin": "Primeros pasos hechos. Lo demás se aprende viviendo.",
+    "saltar": "Saltar los primeros pasos",
+    "saltados": "Sin guía. Si te pierdes, en Menú → Objetivos.",
+    "hecho": "Hecho: {t}",
+    "lista": [
+      {"id": "casa", "e": "🏠", "t": "Entra en casa", "f": "El bajo del bloque. Toca el portal y entra andando."},
+      {"id": "comer", "e": "🍽", "t": "Come algo", "f": "La nevera da para picar. Cocinar llena más, y ensucia platos."},
+      {"id": "dormir", "e": "🛏", "t": "Duerme en tu cama", "f": "Al fondo, en el dormitorio. Ocho horas, si te dejan."},
+      {"id": "super", "e": "🛒", "t": "Ve al súper", "f": "La nevera no se llena sola. Busca el carro en el plano."},
+      {"id": "hablar", "e": "💬", "t": "Habla con alguien del barrio", "f": "En el bar siempre hay quien tiene ganas de charla."},
+      {"id": "trabajo", "e": "💶", "t": "Busca trabajo", "f": "El alquiler no espera. Pregunta en los comercios y en el bar.", "t_con": "Ve a tu primer día de trabajo", "f_con": "A su hora sale sola hacia el trabajo, si no está liada. Los retrasos se apuntan."}
+    ]
+  },
+  "deseos": {
+    "titulo": "Lo que te apetece",
+    "nuevo": "Te apetece: {t}",
+    "cumplido": "Deseo cumplido: {t}",
+    "caducado": "Se te pasaron las ganas de: {t}",
+    "ninguno": "Ahora mismo no te apetece nada en concreto.",
+    "max": 3,
+    "max_con_pasos": 1,
+    "cada_min": 120,
+    "lista": [
+      {"id": "nevera", "e": "🧊", "t": "Llenar la nevera", "f": "Llenaste la nevera. Da gusto abrirla.", "r": 12, "regla": "compra", "dias": 4, "si": ["siempre"]},
+      {"id": "dormir8", "e": "🛏", "t": "Dormir ocho horas de un tirón", "f": "Dormiste ocho horas seguidas. Hacía tiempo.", "r": 8, "regla": "dormir", "meta": 480, "dias": 3, "si": ["energia_baja", "siempre"]},
+      {"id": "cena", "e": "🍳", "t": "Cenar algo hecho en casa", "f": "Cenaste algo hecho por ti.", "r": 8, "regla": "cena", "dias": 3, "si": ["en_casa", "hambre_baja"]},
+      {"id": "amistad", "e": "🤝", "t": "Hacer amistad con alguien del barrio", "f": "Ya tienes con quién tomar algo en el barrio.", "r": 18, "regla": "amistad", "meta": 3, "dias": 10, "si": ["social_bajo", "siempre"]},
+      {"id": "cana", "e": "🍺", "t": "Tomarte algo en el bar", "f": "Te tomaste algo en el bar, sin prisa.", "r": 6, "regla": "accion:beber", "dias": 3, "si": ["social_bajo", "diversion_baja"]},
+      {"id": "tele", "e": "📺", "t": "Una tarde de sofá y tele", "f": "Tarde de sofá. Sin culpa.", "r": 6, "regla": "accion:tele", "dias": 3, "si": ["diversion_baja", "en_casa"]},
+      {"id": "ducha", "e": "🚿", "t": "Ducharte con calma", "f": "Ducha larga. Como nueva persona.", "r": 4, "regla": "accion:ducharse", "dias": 2, "si": ["higiene_baja"]},
+      {"id": "platos", "e": "🧼", "t": "Irte a dormir con los platos fregados", "f": "Te acostaste con la cocina recogida.", "r": 5, "regla": "platos", "dias": 3, "si": ["platos_sucios"]},
+      {"id": "mueble", "e": "🏠", "t": "Poner algo tuyo en casa", "f": "La casa ya tiene algo tuyo.", "r": 12, "regla": "mueble", "dias": 7, "si": ["dinero_150"]},
+      {"id": "ahorro", "e": "💶", "t": "Ahorrar 300 €", "f": "Juntaste 300 € más. Un colchón fino, pero colchón.", "r": 20, "regla": "ahorro", "meta": 300, "dias": 21, "si": ["con_trabajo"]},
+      {"id": "sin_deudas", "e": "⚖", "t": "Llegar a fin de mes sin deber nada", "f": "Fin de mes sin deber nada. Ni al casero.", "r": 15, "regla": "fin_mes", "dias": 31, "si": ["con_trabajo", "siempre"]}
+    ]
+  },
+  "animo": {
+    "titulo": "Ánimo",
+    "explica": "Sale de cómo estás (las seis barras) y de lo que te va saliendo bien. Cumplir un deseo levanta el ánimo; no da dinero.",
+    "decae_dia": 8,
+    "max_alegria": 30,
+    "niveles": [[75, "Content{o}"], [55, "Bien"], [35, "Regular"], [18, "De bajón"], [0, "Fatal"]]
+  },
+  "historia": {
+    "titulo": "Historia",
+    "dias": 14,
+    "vacio": "Aún no ha pasado nada que contar.",
+    "dia_vacio": "Un día sin nada que contar. También pasa.",
+    "veces": "({n} veces)",
+    "resumen": "Ayer, {dia}",
+    "resumen_deseos": "Deseos cumplidos: {n}",
+    "resumen_animo": "Ánimo al acabar el día: {a}",
+    "resumen_hoy": "Hoy te apetece: {t}",
+    "boton_resumen": "A por el día",
+    "mas": "y {n} cosas más",
+    "mas_1": "y una cosa más",
+    "acciones": {
+      "picar": ["🧊", "Picaste algo de la nevera."],
+      "comer_mesa": ["🍽", "Comiste sentad{o} a la mesa."],
+      "comer_sofa": ["🍲", "Comiste en el sofá."],
+      "comer_pie": ["🍲", "Comiste de pie."],
+      "fregar": ["🧼", "Fregaste los platos."],
+      "ducharse": ["🚿", "Te duchaste."],
+      "tele": ["📺", "Viste la tele."],
+      "beber": ["🍺", "Te tomaste algo en el bar."],
+      "charlar": ["💬", "Charlaste con {p} en el bar."],
+      "chiste": ["💬", "Le contaste un chiste a {p}."],
+      "servir": ["🍻", "Serviste mesas en el bar."],
+      "navegar": ["💻", "Navegaste un rato."],
+      "regar": ["🌱", "Regaste la planta."]
+    },
+    "casa": ["🏠", "Entraste por primera vez en tu casa."],
+    "super": ["🛒", "Fuiste al súper."],
+    "compra": ["🛒", "Gastaste {g} en el súper."],
+    "dormir": ["🛏", "Dormiste {h} horas."],
+    "siesta": ["🛏", "Echaste una siesta."],
+    "mueble": ["🏠", "Pusiste un mueble nuevo en casa."],
+    "fin_mes": ["⚖", "Cerraste el mes con {d}."]
+  },
+  "menu": {
+    "historia": "Historia",
+    "objetivos": "Objetivos",
+    "gente": "Gente",
+    "trabajo": "Trabajo",
+    "dinero": "Dinero",
+    "pronto": "Aún no hay nada aquí."
+  }
+}
