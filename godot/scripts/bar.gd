@@ -216,6 +216,8 @@ func _tick_cliente(c: Dictionary, dm: float) -> void:
 		"bebiendo":
 			c["t"] -= dm
 			if c["t"] <= 0.0:
+				if bool(Acciones.producto(a.mano).get("alcohol", false)):
+					a.beber_copa()   # lo lleva su Actor de una visita a otra (se pasa con las horas)
 				a.poner_mano("", jg)
 				c["est"] = "charlando"
 				c["t"] = 14.0 + float(hash(str(c["x"]["v"]["id"]) + "c") % 10)
@@ -281,6 +283,7 @@ func _tick_camarero(dm: float) -> void:
 			if _llegado(a):
 				a.mirar(Vector2(0, -1))
 				cam_est = "prep"
+				a.act_anim = "camarero_servir"   # data/animaciones.json (Bartending)
 				cam_t = float(Acciones.D["productos"][cam_job["prod"]]["min_prep"])
 				cam_job["total"] = cam_t
 		"prep":
@@ -288,6 +291,7 @@ func _tick_camarero(dm: float) -> void:
 			a.progreso(1.0 - cam_t / maxf(0.1, float(cam_job["total"])), jg)
 			if cam_t <= 0.0:
 				a.progreso(-1.0, jg)
+				a.act_anim = ""
 				var b := _barra()
 				a.fijar_ruta(jg.nav.camino(a.pos2(), Vector2(clampf(cam_job["cust"], b.pos.x - 3.0, b.pos.x + 3.0), b.pos.y - 1.1)), false)
 				cam_est = "ir_serv"

@@ -7,9 +7,19 @@ const ALTURA_PJ := 1.7
 const CALLE := 8.0            # ancho de calzada
 const ACERA := 3.0            # ancho de cada acera
 const CELDA := 1.0            # rejilla de caminos (m)
-const VEL_ANDAR := 3.5        # m/s visual, paso vivo
-const VEL_CORRER := 7.0       # el doble si el destino queda lejos
-const CORRER_DESDE := 60.0    # m de trayecto a partir de los que se corre
+# VELOCIDADES DE VERDAD: andar 1,6 m/s (5,8 km/h, paso normal de adulto) y trotar 2,4 m/s (8,6 km/h). Con la zancada
+# medida de las animaciones de Mixamo (andar 1,36-1,44 m/s y trote 1,63-1,79 m/s a ritmo 1 en adultos) el ritmo de
+# las piernas queda en 1,1-1,2 andando y 1,3-1,5 trotando: no parece una película acelerada. (La animación «correr»
+# es un trote: a 3,3-3,8 m/s pediría ritmo 2-2,3.) Los niños dan pasos más cortos y llevan más ritmo (Timmy ~2,5).
+const VEL_ANDAR := 1.6        # m/s
+const VEL_CORRER := 2.4       # trote, si el destino queda lejos
+const CORRER_DESDE := 20.0    # m de trayecto a partir de los que se trota (dentro de casa siempre se anda)
+# PRISA EN TRAYECTOS LARGOS: a paso real cruzar el barrio (~400 m) tardaría casi 3 min de tiempo real. Mientras quedan
+# muchos metros, el que anda va más deprisa (x1 hasta PRISA_DESDE m por delante, subiendo hasta xPRISA_MAX a 2·PRISA_DESDE)
+# y frena a su paso natural al acercarse: lo que se ve de cerca (salir, llegar, andar por casa) va al ritmo de verdad.
+# Las animaciones siguen a la velocidad real (los pies no resbalan); el reloj del juego no depende de esto (MIN_POR_UNIDAD).
+const PRISA_DESDE := 30.0
+const PRISA_MAX := 2.5
 # EL RELOJ AL ANDAR: el trayecto cobra lo que costaría en el juego web, no lo que dure verlo:
 # 10 m por unidad (0,119 min de juego por unidad del dato; cruzar los 120 de punta a punta = 14 min de juego)
 # 10 m por unidad del dato a 84 m/min = 0,119 min de juego por unidad.
@@ -25,6 +35,141 @@ static func v2(a: Array) -> Vector2:
 static func rect(rb: Array) -> Rect2:
 	return Rect2(float(rb[0]) * M_UNIDAD, float(rb[1]) * M_UNIDAD, float(rb[2] - rb[0]) * M_UNIDAD, float(rb[3] - rb[1]) * M_UNIDAD)
 
+## multiplicador de velocidad por prisa (ver PRISA_DESDE) para quien le quedan `ruta` puntos desde `desde`
+static func prisa(desde: Vector2, ruta: Array) -> float:
+	var rest := 0.0
+	var ant := desde
+	for p in ruta:
+		rest += ant.distance_to(p)
+		ant = p
+		if rest >= PRISA_DESDE * PRISA_MAX:
+			break
+	return clampf(rest / PRISA_DESDE, 1.0, PRISA_MAX)
+
 # minutos de juego que cuesta recorrer `metros` andando por la calle
 static func min_de_metros(metros: float) -> float:
 	return metros / M_UNIDAD * MIN_POR_UNIDAD
+
+# ---------------------------------------------------------------- ZANCADA (que los pies no resbalen)
+# «Avance» de una animación de andar/correr = metros por segundo que recorre el pie apoyado (hacia atrás, respecto al
+# cuerpo) con la animación a velocidad 1,0. Si el actor se mueve a v m/s, la animación tiene que ir a v / avance:
+# así el pie que pisa se queda quieto en el suelo. El avance depende del tamaño del personaje (piernas más cortas,
+# pasos más cortos), por eso se guarda relativo y se multiplica por la escala de cada persona.
+# Valores de reserva (si no hay dato ni se puede medir), en ALTURAS del personaje por segundo:
+#   andar ≈ 0,8 alturas/s (Remy: 1,44 m/s con 1,80 m; Quaternius 0,87-0,90), correr ≈ 1,0 alturas/s (Remy trota:
+#   1,79 m/s; la carrera de Quaternius da 2,0-2,1).
+const ZANCADA_RESERVA := {"andar": 0.8, "correr": 1.0}
+const RITMO_MIN := 0.4        # topes de speed_scale: fuera de esto algo va mal (dato raro); mejor que resbale un poco
+const RITMO_MAX := 8.0        # (x1,8 a doble velocidad de juego y hasta x2 de prisa: un niño trotando lejos a doble velocidad llega al tope)
+static var _zancadas := {}    # caché de medidas: clave -> avance por unidad de escala de la cadena de nodos
+
+## m/s del pie apoyado de `an` (a velocidad 1,0) en el espacio de `raiz` (la persona: origen en el suelo, +Y arriba).
+## Se mide en la propia animación: cinemática directa de los huesos de los pies, sin reproducirla (< 1 ms, y se
+## guarda en caché). 0.0 si no se puede.
+## `clave` distingue animaciones de igual forma en esqueletos distintos (la caché se comparte entre personas).
+static func medir_zancada(sk: Skeleton3D, an: Animation, raiz: Node, clave: String) -> float:
+	if sk == null or an == null or an.length <= 0.0:
+		return 0.0
+	# cadena de transformaciones del esqueleto hasta la persona (incluye la escala de cada una: altura, edad…)
+	var cadena := Transform3D.IDENTITY
+	var n: Node = sk
+	while n != null and n != raiz:
+		if n is Node3D:
+			cadena = (n as Node3D).transform * cadena
+		n = n.get_parent()
+	var esc := cadena.basis.get_scale().x
+	if esc <= 0.0:
+		return 0.0
+	var pies := _huesos_pies(sk)
+	if pies.is_empty():
+		return 0.0
+	# la clave incluye el largo de la pierna en reposo: dos esqueletos con los mismos huesos pero otras proporciones no se mezclan
+	var pierna := sk.get_bone_global_rest(pies[0]).origin.length()
+	var k := "%s|%d|%.4f|%d|%.4f|%.4f" % [clave, sk.get_bone_count(), an.length, an.get_track_count(), sk.motion_scale, pierna]
+	if _zancadas.has(k):
+		return float(_zancadas[k]) * esc
+	# pistas por hueso
+	var pistas := {}   # hueso -> {"p": idx, "r": idx, "s": idx}
+	for i in an.get_track_count():
+		var b := sk.find_bone(str(an.track_get_path(i).get_concatenated_subnames()))
+		if b < 0:
+			continue
+		var d: Dictionary = pistas.get(b, {})
+		match an.track_get_type(i):
+			Animation.TYPE_POSITION_3D: d["p"] = i
+			Animation.TYPE_ROTATION_3D: d["r"] = i
+			Animation.TYPE_SCALE_3D: d["s"] = i
+		pistas[b] = d
+	# muestreo del ciclo: posición de cada pie (en el espacio de la persona) en N+1 instantes
+	const N := 96
+	var dt := an.length / N
+	var tray := []   # por pie: Array de Vector3
+	for p in pies:
+		tray.append([])
+	for j in N + 1:
+		var t := minf(j * dt, an.length)
+		var glob := {}
+		for pi_ in pies.size():
+			tray[pi_].append(cadena * _global_hueso(sk, an, pistas, pies[pi_], t, glob).origin)
+	var med := _vel_pie_apoyado(tray, dt, func(q: Vector3): return q.y, func(v: Vector3): return Vector2(v.x, v.z).length())
+	if not is_finite(med) or med <= 0.0:
+		return 0.0
+	_zancadas[k] = med / esc
+	return med
+
+## Velocidad en planta del pie mientras PISA = mediana de la velocidad de cada pie en los instantes en que está a
+## ras de su punto más bajo (banda del 3 % de lo que sube y baja; si salen muy pocas muestras se ensancha).
+## La banda tiene que ser estrecha: al correr, el pie baja casi rozando el suelo un par de fotogramas antes de pisar
+## y ahí aún va hacia delante; con una banda ancha el avance salía un 20-30 % corto. Mismo criterio que exportar_remy.py.
+static func _vel_pie_apoyado(tray: Array, dt: float, alto: Callable, planta: Callable) -> float:
+	for banda in [0.03, 0.06, 0.1, 0.2]:
+		var vs: Array[float] = []
+		for tr in tray:
+			var ymin := INF
+			var ymax := -INF
+			for q in tr:
+				ymin = minf(ymin, alto.call(q))
+				ymax = maxf(ymax, alto.call(q))
+			var umbral: float = ymin + banda * (ymax - ymin)
+			for j in range(1, tr.size() - 1):
+				if alto.call(tr[j]) <= umbral:
+					vs.append(planta.call((tr[j + 1] - tr[j - 1]) / (2.0 * dt)))
+		if vs.size() >= 4:
+			vs.sort()
+			return vs[vs.size() / 2]
+	return 0.0
+
+## índices de los huesos de los pies (Mixamo: «…LeftFoot»; Quaternius: «Foot.L»)
+static func _huesos_pies(sk: Skeleton3D) -> Array:
+	var izq := -1
+	var der := -1
+	for i in sk.get_bone_count():
+		var nm := sk.get_bone_name(i).to_lower()
+		if nm.ends_with("leftfoot") or nm in ["foot.l", "foot_l", "l_foot"]:
+			izq = i
+		elif nm.ends_with("rightfoot") or nm in ["foot.r", "foot_r", "r_foot"]:
+			der = i
+	return [izq, der] if izq >= 0 and der >= 0 else []
+
+## pose global (espacio del esqueleto) del hueso `b` en el instante t de la animación; sin pista, el reposo.
+## Las pistas de posición se multiplican por motion_scale, como hace el AnimationPlayer (personajes que usan las
+## animaciones de otro con otra altura de cadera).
+static func _global_hueso(sk: Skeleton3D, an: Animation, pistas: Dictionary, b: int, t: float, glob: Dictionary) -> Transform3D:
+	if glob.has(b):
+		return glob[b]
+	var reposo := sk.get_bone_rest(b)
+	var pos := reposo.origin
+	var rot := reposo.basis.get_rotation_quaternion()
+	var es := reposo.basis.get_scale()
+	var d: Dictionary = pistas.get(b, {})
+	if d.has("p"):
+		pos = an.position_track_interpolate(d["p"], t) * sk.motion_scale
+	if d.has("r"):
+		rot = an.rotation_track_interpolate(d["r"], t)
+	if d.has("s"):
+		es = an.scale_track_interpolate(d["s"], t)
+	var local := Transform3D(Basis(rot) * Basis.from_scale(es), pos)
+	var padre := sk.get_bone_parent(b)
+	var g := local if padre < 0 else _global_hueso(sk, an, pistas, padre, t, glob) * local
+	glob[b] = g
+	return g

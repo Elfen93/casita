@@ -20,9 +20,9 @@
   },
 
   "productos": {
-    "cana": {"n": "caña", "e": "🍺", "precio": 2.5, "min_prep": 1.5, "sitio": "grifo", "beber": {"diversion": 8, "social": 5}, "min_beber": 25},
+    "cana": {"n": "caña", "e": "🍺", "alcohol": true, "precio": 2.5, "min_prep": 1.5, "sitio": "grifo", "beber": {"diversion": 8, "social": 5}, "min_beber": 25},
     "cafe": {"n": "café", "e": "☕", "precio": 1.4, "min_prep": 1.5, "sitio": "cafetera", "beber": {"diversion": 3, "energia": 6, "social": 3}, "min_beber": 15},
-    "coctel": {"n": "cóctel", "e": "🍹", "precio": 7.0, "min_prep": 3, "sitio": "coctelera", "beber": {"diversion": 12, "social": 7}, "min_beber": 30},
+    "coctel": {"n": "cóctel", "e": "🍹", "alcohol": true, "precio": 7.0, "min_prep": 3, "sitio": "coctelera", "beber": {"diversion": 12, "social": 7}, "min_beber": 30},
     "plato": {"n": "plato de comida", "e": "🍲", "precio": 0, "comer": {"hambre": 60}, "comer_de_pie": {"hambre": 40}, "min_comer": 20}
   },
 
@@ -88,7 +88,7 @@
       "solido": false,
       "partes": [{"t": "caja", "p": [0, 1.3, 0], "s": [0.3, 0.35, 0.3], "c": "#c9ccd0"}, {"t": "caja", "p": [0, 1.15, 0.18], "s": [0.06, 0.14, 0.06], "c": "#d9a21b"}],
       "uso": [[0, -1.1]],
-      "acciones": [{"id": "tirar_cana", "n": "Tirar una caña", "e": "🍺", "tipo": "tirar", "producto": "cana", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}],
+      "acciones": [{"id": "tirar_cana", "n": "Tirar una caña", "e": "🍺", "anim": "camarero_servir", "tipo": "tirar", "producto": "cana", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}],
       "modelo": {"escena": "res://arte/muebles/grifo_cerveza.tscn", "sobre": 1.1, "alto": 1.55}
     },
     "cafetera": {
@@ -98,7 +98,7 @@
       "solido": false,
       "partes": [{"t": "caja", "p": [0, 1.4, 0], "s": [0.6, 0.5, 0.45], "c": "#2c2d33"}, {"t": "caja", "p": [0, 1.2, 0.2], "s": [0.2, 0.06, 0.12], "c": "#c9ccd0"}],
       "uso": [[0, -1.1]],
-      "acciones": [{"id": "hacer_cafe", "n": "Hacer un café", "e": "☕", "tipo": "tirar", "producto": "cafe", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}],
+      "acciones": [{"id": "hacer_cafe", "n": "Hacer un café", "e": "☕", "anim": "camarero_servir", "tipo": "tirar", "producto": "cafe", "min": 1.5, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"]}],
       "modelo": {"escena": "res://arte/muebles/cafetera.tscn", "sobre": 1.1, "alto": 1.54}
     },
     "coctelera": {
@@ -108,7 +108,7 @@
       "solido": false,
       "partes": [{"t": "cil", "p": [0, 1.3, 0], "s": [0.16, 0.34, 0.16], "c": "#d4d8dc"}, {"t": "cil", "p": [0, 1.52, 0], "s": [0.1, 0.1, 0.1], "c": "#b0b4b8"}],
       "uso": [[0, -1.1]],
-      "acciones": [{"id": "preparar", "n": "Preparar", "e": "🍸", "tipo": "preparar", "por_receta": true, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"], "habilidad": {"cocteleria": 1.0}}],
+      "acciones": [{"id": "preparar", "n": "Preparar", "e": "🍸", "anim": "camarero_servir", "tipo": "preparar", "por_receta": true, "postura": "tras_barra", "req": ["trabaja_aqui", "mano_libre"], "habilidad": {"cocteleria": 1.0}}],
       "modelo": {"escena": "res://arte/muebles/coctelera.tscn", "sobre": 1.1, "alto": 1.33}
     },
     "estante": {
@@ -134,7 +134,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.9, 0], "s": [0.8, 1.8, 0.7], "c": "#b0262e"}, {"t": "caja", "p": [0, 1.3, 0.36], "s": [0.6, 0.4, 0.04], "c": "#f2d45c"}, {"t": "caja", "p": [0, 1.9, 0], "s": [0.7, 0.2, 0.6], "c": "#2c2d33"}],
       "uso": [[0, 1.0]],
-      "acciones": [{"id": "moneda", "n": "Echar una moneda", "e": "🎰", "tipo": "normal", "min": 1, "coste": 1, "postura": "de_pie", "req": ["dinero", "libre"], "efectos": {"diversion": 1.5}, "azar": {"prob": 0.07, "premio": 10}}],
+      "acciones": [{"id": "moneda", "n": "Echar una moneda", "e": "🎰", "anim": "pulsar_boton", "tipo": "normal", "min": 1, "coste": 1, "postura": "de_pie", "req": ["dinero", "libre"], "efectos": {"diversion": 1.5}, "azar": {"prob": 0.07, "premio": 10}}],
       "modelo": {"escena": "res://arte/muebles/tragaperras.tscn", "alto": 1.78}
     },
     "puerta_bano": {
@@ -154,8 +154,9 @@
       "partes": [],
       "uso": [[0, 1.1]],
       "acciones": [
-        {"id": "servir", "n": "Servir el pedido", "e": "🍻", "tipo": "servir", "min": 0.5, "postura": "de_pie", "req": ["trabaja_aqui", "pedido_servible"]},
-        {"id": "charlar", "n": "Charlar", "e": "💬", "tipo": "normal", "min": 12, "postura": "de_pie", "req": ["cliente_sentado"], "efectos": {"social": 14, "diversion": 3}}
+        {"id": "servir", "n": "Servir el pedido", "e": "🍻", "anim": "interactuar", "tipo": "servir", "min": 0.5, "postura": "de_pie", "req": ["trabaja_aqui", "pedido_servible"]},
+        {"id": "charlar", "n": "Charlar", "e": "💬", "anim": "gesto:charlar", "tipo": "normal", "min": 12, "postura": "de_pie", "req": ["cliente_sentado"], "efectos": {"social": 14, "diversion": 3}},
+        {"id": "chiste", "n": "Contar un chiste", "e": "😂", "anim": "gesto:chiste", "tipo": "normal", "min": 5, "postura": "de_pie", "req": ["cliente_sentado"], "efectos": {"social": 6, "diversion": 6}}
       ]
     },
     "cama": {
@@ -166,8 +167,8 @@
       "partes": [{"t": "caja", "p": [0, 0.3, 0], "s": [1.02, 0.6, 1.92], "c": "#e8e0d0"}],
       "uso": [[-0.9, 0]],
       "acciones": [
-        {"id": "dormir_8", "n": "Dormir 8 horas", "e": "🛏️", "tipo": "dormir", "min": 480, "postura": "tumbado", "req": ["libre"], "energia_min": 0.21},
-        {"id": "siesta", "n": "Echar una siesta (1 h)", "e": "😴", "tipo": "dormir", "min": 60, "postura": "tumbado", "req": ["libre"], "energia_min": 0.21}
+        {"id": "dormir_8", "n": "Dormir 8 horas", "e": "🛏️", "anim": "cama.dormir", "tipo": "dormir", "min": 480, "postura": "tumbado", "req": ["libre"], "energia_min": 0.21},
+        {"id": "siesta", "n": "Echar una siesta (1 h)", "e": "😴", "anim": "cama.siesta", "tipo": "dormir", "min": 60, "postura": "tumbado", "req": ["libre"], "energia_min": 0.21}
       ],
       "modelo": {"escena": "res://arte/muebles/cama.tscn", "alto": 0.64, "asiento": 0.38}
     },
@@ -178,7 +179,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.92, 0], "s": [0.62, 1.85, 0.69], "c": "#dddddd"}],
       "uso": [[0, 0.95]],
-      "acciones": [{"id": "picar", "n": "Picar algo", "e": "🧀", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre"], "efectos": {"hambre": 25}, "fin": "Algo es algo."}],
+      "acciones": [{"id": "picar", "n": "Picar algo", "e": "🧀", "anim": "nevera.picar", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre"], "efectos": {"hambre": 25}, "fin": "Algo es algo."}],
       "modelo": {"escena": "res://arte/muebles/nevera.tscn", "alto": 1.85}
     },
     "cocina": {
@@ -188,7 +189,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [0.6, 0.92, 0.63], "c": "#cfcfcf"}],
       "uso": [[0, 0.95]],
-      "acciones": [{"id": "cocinar", "n": "Cocinar", "e": "🍳", "tipo": "tirar", "producto": "plato", "min": 30, "postura": "de_pie", "req": ["libre", "mano_libre", "sin_platos_sucios"]}],
+      "acciones": [{"id": "cocinar", "n": "Cocinar", "e": "🍳", "anim": "fogon.receta", "tipo": "tirar", "producto": "plato", "min": 30, "postura": "de_pie", "req": ["libre", "mano_libre", "sin_platos_sucios"]}],
       "modelo": {"escena": "res://arte/muebles/cocina.tscn", "alto": 0.92}
     },
     "sofa": {
@@ -199,9 +200,9 @@
       "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [2.25, 0.92, 1.2], "c": "#6b7f9a"}],
       "uso": [[-0.5, 1.7], [0.5, 1.7]],
       "acciones": [
-        {"id": "descansar", "n": "Sentarse a descansar", "e": "🛋️", "tipo": "normal", "min": 30, "postura": "sentado", "req": ["libre"], "efectos_min": {"energia": 0.25}},
-        {"id": "tele", "n": "Ver la tele", "e": "📺", "tipo": "normal", "min": 60, "postura": "sentado", "req": ["libre", "hay_tele"], "efectos_min": {"diversion": 0.3}},
-        {"id": "comer_sofa", "n": "Comer", "e": "🍲", "tipo": "comer", "min": 20, "postura": "sentado", "req": ["libre", "plato_mano"], "estado": {"platos_sucios": true}}
+        {"id": "descansar", "n": "Sentarse a descansar", "e": "🛋️", "anim": "sofa.tirarse", "tipo": "normal", "min": 30, "postura": "sentado", "req": ["libre"], "efectos_min": {"energia": 0.25}},
+        {"id": "tele", "n": "Ver la tele", "e": "📺", "anim": "tele.tele", "tipo": "normal", "min": 60, "postura": "sentado", "req": ["libre", "hay_tele"], "efectos_min": {"diversion": 0.3}},
+        {"id": "comer_sofa", "n": "Comer", "e": "🍲", "anim": "sentado+comer", "tipo": "comer", "min": 20, "postura": "sentado", "req": ["libre", "plato_mano"], "estado": {"platos_sucios": true}}
       ],
       "modelo": {"escena": "res://arte/muebles/sofa.tscn", "alto": 0.92, "asiento": 0.4},
       "asientos": [[-0.5, 0.4, 0], [0.5, 0.4, 0]]
@@ -213,7 +214,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 1.0, 0], "s": [0.9, 2.0, 0.9], "c": "#bcd4dc"}],
       "uso": [[0, 0.95]],
-      "acciones": [{"id": "ducharse", "n": "Ducharse", "e": "🚿", "tipo": "normal", "min": 15, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 100}, "fin": "Sales de la ducha."}],
+      "acciones": [{"id": "ducharse", "n": "Ducharse", "e": "🚿", "anim": "ducha.rapida", "tipo": "normal", "min": 15, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 100}, "fin": "Sales de la ducha."}],
       "modelo": {"escena": "res://arte/muebles/ducha.tscn", "alto": 2.07}
     },
     "fregadero": {
@@ -223,7 +224,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.46, 0], "s": [0.9, 0.92, 0.63], "c": "#c9ccd0"}],
       "uso": [[0, 0.95]],
-      "acciones": [{"id": "fregar", "n": "Fregar los platos", "e": "🧽", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre", "platos_sucios"], "estado": {"platos_sucios": false}, "fin": "Platos fregados."}],
+      "acciones": [{"id": "fregar", "n": "Fregar los platos", "e": "🧽", "anim": "fregadero.fregar", "tipo": "normal", "min": 10, "postura": "de_pie", "req": ["libre", "platos_sucios"], "estado": {"platos_sucios": false}, "fin": "Platos fregados."}],
       "modelo": {"escena": "res://arte/muebles/fregadero.tscn", "alto": 0.92}
     },
     "lavabo": {
@@ -233,7 +234,7 @@
       "solido": true,
       "partes": [{"t": "caja", "p": [0, 0.5, 0], "s": [0.58, 0.99, 0.47], "c": "#e8eef0"}],
       "uso": [[0, 0.9]],
-      "acciones": [{"id": "lavarse", "n": "Lavarse las manos y la cara", "e": "🧼", "tipo": "normal", "min": 3, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 15}}],
+      "acciones": [{"id": "lavarse", "n": "Lavarse las manos y la cara", "e": "🧼", "anim": "lavabo.cara", "tipo": "normal", "min": 3, "postura": "de_pie", "req": ["libre"], "efectos": {"higiene": 15}}],
       "modelo": {"escena": "res://arte/muebles/lavabo.tscn", "alto": 0.99}
     },
     "vater": {
@@ -244,7 +245,7 @@
       "partes": [{"t": "caja", "p": [0, 0.4, 0], "s": [0.4, 0.8, 0.59], "c": "#f2f2ee"}],
       "uso": [[0, 0.9]],
       "asiento": [0, 0.42, 0],
-      "acciones": [{"id": "usar_vater", "n": "Usar el váter", "e": "🚽", "tipo": "normal", "min": 5, "postura": "sentado", "req": ["libre"], "efectos": {"vejiga": 100}}],
+      "acciones": [{"id": "usar_vater", "n": "Usar el váter", "e": "🚽", "anim": "vater.usar", "tipo": "normal", "min": 5, "postura": "sentado", "req": ["libre"], "efectos": {"vejiga": 100}}],
       "modelo": {"escena": "res://arte/muebles/vater.tscn", "alto": 0.8, "asiento": 0.42}
     },
     "mesa_comedor": {
@@ -256,8 +257,8 @@
       "uso": [[-0.35, 1.6], [0.35, -1.6]],
       "asientos": [[-0.35, 0.42, 0.78, 180], [0.35, 0.42, -0.78, 0]],
       "acciones": [
-        {"id": "comer_mesa", "n": "Comer", "e": "🍲", "tipo": "comer", "min": 20, "postura": "sentado", "req": ["libre", "plato_mano"], "estado": {"platos_sucios": true}},
-        {"id": "comer_pie", "n": "Comer de pie", "e": "🍲", "tipo": "comer", "min": 10, "postura": "de_pie", "req": ["plato_mano", "sin_sitio"], "estado": {"platos_sucios": true}}
+        {"id": "comer_mesa", "n": "Comer", "e": "🍲", "anim": "sentado+comer", "tipo": "comer", "min": 20, "postura": "sentado", "req": ["libre", "plato_mano"], "estado": {"platos_sucios": true}},
+        {"id": "comer_pie", "n": "Comer de pie", "e": "🍲", "anim": "comer", "tipo": "comer", "min": 10, "postura": "de_pie", "req": ["plato_mano", "sin_sitio"], "estado": {"platos_sucios": true}}
       ],
       "modelo": {"escena": "res://arte/muebles/mesa_comedor.tscn", "alto": 0.75, "asiento": 0.43}
     },
@@ -270,8 +271,8 @@
     "alfombra": {"n": "Alfombra", "e": "🟫", "huella": [2.0, 1.4], "solido": false, "partes": [{"t": "caja", "p": [0, 0.01, 0], "s": [2.0, 0.02, 1.4], "c": "#c9a878"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/alfombra.tscn", "alto": 0.02}},
     "lampara_pie": {"n": "Lámpara de pie", "e": "💡", "huella": [0.63, 0.63], "solido": true, "partes": [{"t": "caja", "p": [0, 0.8, 0], "s": [0.63, 1.6, 0.63], "c": "#e8e0d0"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/lampara_pie.tscn", "alto": 1.6}},
     "estanteria": {"n": "Estantería", "e": "📚", "huella": [1.0, 0.34], "solido": true, "partes": [{"t": "caja", "p": [0, 0.96, 0], "s": [1.0, 1.93, 0.34], "c": "#8a6a4a"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/estanteria.tscn", "alto": 1.93}},
-    "escritorio": {"n": "Escritorio con ordenador", "e": "💻", "huella": [1.2, 0.6], "solido": true, "partes": [{"t": "caja", "p": [0, 0.57, 0], "s": [1.2, 1.15, 0.6], "c": "#b07a48"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/escritorio.tscn", "alto": 1.15}},
-    "planta": {"n": "Planta", "e": "🪴", "huella": [0.37, 0.42], "solido": true, "partes": [{"t": "caja", "p": [0, 0.57, 0], "s": [0.37, 1.15, 0.42], "c": "#4a8a3c"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/planta.tscn", "alto": 1.15}},
+    "escritorio": {"n": "Escritorio con ordenador", "e": "💻", "huella": [1.2, 0.6], "solido": true, "partes": [{"t": "caja", "p": [0, 0.57, 0], "s": [1.2, 1.15, 0.6], "c": "#b07a48"}], "uso": [[0, 1.15]], "asientos": [[0, 0.45, 0.62, 180]], "acciones": [{"id": "navegar", "n": "Navegar un rato", "e": "💻", "anim": "compu.navegar", "tipo": "normal", "min": 30, "postura": "sentado", "req": ["libre"], "efectos_min": {"diversion": 0.25}}], "modelo": {"escena": "res://arte/muebles/escritorio.tscn", "alto": 1.15}},
+    "planta": {"n": "Planta", "e": "🪴", "huella": [0.37, 0.42], "solido": true, "partes": [{"t": "caja", "p": [0, 0.57, 0], "s": [0.37, 1.15, 0.42], "c": "#4a8a3c"}], "uso": [[0, 0.8]], "acciones": [{"id": "regar", "n": "Regar", "e": "💧", "anim": "planta.regar", "tipo": "normal", "min": 3, "postura": "de_pie", "req": ["libre"], "efectos": {"diversion": 1}}], "modelo": {"escena": "res://arte/muebles/planta.tscn", "alto": 1.15}},
     "espejo": {"n": "Espejo de pie", "e": "🪞", "huella": [0.55, 0.3], "solido": true, "partes": [{"t": "caja", "p": [0, 0.85, 0], "s": [0.55, 1.7, 0.3], "c": "#c5dce8"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/espejo.tscn", "alto": 1.7}},
     "cubo_basura": {"n": "Cubo de basura", "e": "🗑️", "huella": [0.24, 0.27], "solido": true, "partes": [{"t": "caja", "p": [0, 0.25, 0], "s": [0.24, 0.5, 0.27], "c": "#8e959b"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/cubo_basura.tscn", "alto": 0.5}},
     "banera": {"n": "Bañera", "e": "🛁", "huella": [1.55, 0.72], "solido": true, "partes": [{"t": "caja", "p": [0, 0.28, 0], "s": [1.55, 0.55, 0.72], "c": "#e8e5de"}], "uso": [], "acciones": [], "modelo": {"escena": "res://arte/muebles/banera.tscn", "alto": 0.55}}

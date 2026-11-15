@@ -34,14 +34,27 @@ def _orden(T):
 
 def muestrear(T, fbx, mapa, paso=1, max_frames=None, rango=None):
     """devuelve (lista de frames {hueso: (loc, quat)}, datos) con la animación de fbx pasada al esqueleto T"""
-    sc=bpy.context.scene
     S,A,nuevos=_cargar(fbx)
-    S.animation_data.action=A
-    f0,f1=int(A.frame_range[0]),int(A.frame_range[1])
-    if rango: f0,f1=max(f0,rango[0]),min(f1,rango[1])
-    if max_frames: f1=min(f1,f0+max_frames)
     pref='mixamorig:' if any(b.name.startswith('mixamorig:') for b in S.data.bones) else ''
     pares={pref+k:v for k,v in mapa.items() if (pref+k) in S.data.bones and v in T.data.bones}
+    try:
+        return muestrear_accion(T,S,A,pares,pref+'Hips',paso=paso,max_frames=max_frames,rango=rango)
+    finally:
+        for o in nuevos:
+            if o.name in bpy.data.objects: bpy.data.objects.remove(o,do_unlink=True)
+        bpy.data.actions.remove(A)
+
+def muestrear_accion(T, S, A, pares, raiz_s, paso=1, max_frames=None, rango=None):
+    """lo mismo que muestrear() con el esqueleto fuente S ya cargado y su acción A; pares = {hueso fuente: hueso de T}.
+    Sirve para fuentes con otro esqueleto (Quaternius: ver QUATERNIUS_A_MIXAMO y pares_quaternius)."""
+    sc=bpy.context.scene
+    if S.animation_data is None: S.animation_data_create()
+    for tr in S.animation_data.nla_tracks: tr.mute=True
+    S.animation_data.action=A
+    if getattr(A,'slots',None) and S.animation_data.action_slot is None: S.animation_data.action_slot=A.slots[0]
+    f0,f1=int(round(A.frame_range[0])),int(round(A.frame_range[1]))
+    if rango: f0,f1=max(f0,rango[0]),min(f1,rango[1])
+    if max_frames: f1=min(f1,f0+max_frames)
     inv={v:k for k,v in pares.items()}
     Tw=T.matrix_world.copy(); Tw_q=Tw.to_quaternion(); Tw_qi=Tw_q.inverted()
     # reposo de la fuente (sin animar)
@@ -57,12 +70,13 @@ def muestrear(T, fbx, mapa, paso=1, max_frames=None, rango=None):
         ds=(s_rest[s].to_quaternion()@Y).normalized()
         dt=(Tw_q@REST[t].to_quaternion()@Y).normalized()
         alin[t]=dt.rotation_difference(ds)
-    raiz_s=pref+'Hips'; raiz_t=pares.get(raiz_s)
+    raiz_t=pares.get(raiz_s)
     h_s=s_rest[raiz_s].translation.z if raiz_s in s_rest else 1.0
     h_t=(Tw@REST[raiz_t]).translation.z if raiz_t else 1.0
     k=h_t/max(h_s,1e-6)
     p_s0=s_rest[raiz_s].translation.copy() if raiz_s in s_rest else Vector()
     S.animation_data.action=A
+    if getattr(A,'slots',None) and S.animation_data.action_slot is None: S.animation_data.action_slot=A.slots[0]
     orden=_orden(T); frames=[]
     for f in range(f0,f1+1,paso):
         sc.frame_set(f)
@@ -85,10 +99,32 @@ def muestrear(T, fbx, mapa, paso=1, max_frames=None, rango=None):
                 M[n]=base
         frames.append(fr)
     datos={'f0':f0,'fps':sc.render.fps/max(paso,1)*paso,'paso':paso,'k':k,'raiz':raiz_t}
-    for o in nuevos:
-        if o.name in bpy.data.objects: bpy.data.objects.remove(o,do_unlink=True)
-    bpy.data.actions.remove(A)
+    S.animation_data.action=None
     return frames,datos
+
+# Quaternius «Universal Animation Library» 1 y 2 (CC0; esqueleto tipo Unreal: root > pelvis > spine_01…): hueso de Mixamo -> hueso UAL.
+# Los dos esqueletos están en T-pose, de frente a -Y en Blender y con la izquierda en +X, así que el método de arriba vale tal cual.
+QUATERNIUS_A_MIXAMO = {'Hips':'pelvis','Spine':'spine_01','Spine1':'spine_02','Spine2':'spine_03','Neck':'neck_01','Head':'Head'}
+for _l,_s in (('Left','l'),('Right','r')):
+    QUATERNIUS_A_MIXAMO.update({_l+'Shoulder':'clavicle_'+_s,_l+'Arm':'upperarm_'+_s,_l+'ForeArm':'lowerarm_'+_s,_l+'Hand':'hand_'+_s,
+        _l+'UpLeg':'thigh_'+_s,_l+'Leg':'calf_'+_s,_l+'Foot':'foot_'+_s,_l+'ToeBase':'ball_'+_s})
+    for _d in ('Index','Middle','Ring','Pinky','Thumb'):
+        for _i in (1,2,3): QUATERNIUS_A_MIXAMO[_l+'Hand%s%d'%(_d,_i)]='%s_%02d_%s'%(_d.lower(),_i,_s)
+def pares_quaternius(S, mapa):
+    """{hueso UAL: hueso destino} a partir del mapa {hueso Mixamo sin prefijo: hueso destino} que usa hornear()"""
+    return {q:mapa[m] for m,q in QUATERNIUS_A_MIXAMO.items() if m in mapa and q in S.data.bones}
+def cargar_quaternius(glb):
+    """importa un glb de la UAL: devuelve (esqueleto, {nombre: acción}, objetos nuevos). Las pistas NLA quedan mudas."""
+    antes=set(bpy.data.objects); antes_a=set(bpy.data.actions)
+    bpy.ops.import_scene.gltf(filepath=glb)
+    nuevos=[o for o in bpy.data.objects if o not in antes]
+    S=[o for o in nuevos if o.type=='ARMATURE'][0]
+    acc={a.name.split('.')[0]:a for a in bpy.data.actions if a not in antes_a}
+    for a in acc.values(): a.use_fake_user=True
+    if S.animation_data:
+        for tr in list(S.animation_data.nla_tracks): S.animation_data.nla_tracks.remove(tr)
+        S.animation_data.action=None
+    return S,acc,nuevos
 
 def mezclar(frames_cuerpo, frames_brazos, huesos_brazos):
     n=len(frames_brazos); out=[]

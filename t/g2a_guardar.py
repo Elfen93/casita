@@ -81,13 +81,19 @@ try:
         for t in ('mousePressed','mouseReleased'):
             p.send('Input.dispatchMouseEvent',{'type':t,'x':x,'y':y,'button':'left','clickCount':1});p.dormir(0.2)
     tocar(340,165);p.dormir(1);p.shot(OUT+'/g6_menu.png')
-    tocar(210,448);p.dormir(1);p.shot(OUT+'/g6_confirmar.png')  # «Partida nueva»
+    tocar(210,478);p.dormir(1);p.shot(OUT+'/g6_confirmar.png')  # «Partida nueva» (debajo de «Cambiar personaje»)
     tocar(210,419);p.dormir(2);p.dormir(25)
-    chk('menú: «Sí, empezar de cero» borra y reinicia',ls('casita3d_partida') is None and minutos()<600,str(minutos()))
+    chk('menú: «Sí, empezar de cero» borra la partida',ls('casita3d_partida') is None)
+    # partida nueva: pantalla de elegir personaje; «›» y «Jugar» con el dedo
+    p.shot(OUT+'/g6_elegir.png')
+    tocar(360,697);p.dormir(1);tocar(210,800);p.dormir(8)
+    g=json.loads(ls('casita3d_partida') or '{}')
+    chk('elegir personaje: «›» y «Jugar» guardan el elegido',g.get('secciones',{}).get('personaje',{}).get('modelo')=='sophie',str(g.get('secciones',{}).get('personaje')))
+    chk('menú: partida nueva empieza de cero',minutos()<600,str(minutos()))
     # (e) la clave antigua no se toca
     chk('casita-save-v1 intacta',ls('casita-save-v1')==VIEJA)
     # guardar ahora desde el menú
-    tocar(340,165);p.dormir(1);tocar(210,388);p.dormir(1);p.shot(OUT+'/g6_guardado.png')
+    tocar(340,165);p.dormir(1);tocar(210,358);p.dormir(1);p.shot(OUT+'/g6_guardado.png')
     chk('menú: «Guardar ahora» escribe la partida',ls('casita3d_partida') is not None)
 finally:
     p.cerrar();srv.kill()
