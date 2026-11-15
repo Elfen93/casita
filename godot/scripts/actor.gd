@@ -9,6 +9,7 @@ var vel := Escala.VEL_ANDAR
 var ult_paso := 0.0
 var postura := "de_pie"
 var mano := ""            # "cana", "cafe", "coctel:mojito"…
+var carga := false        # lleva algo en brazos (la compra, un pedido): anda con andar_cargando  # --- compras ---
 var mano_n: Node3D
 var etq_mano: Label3D
 var barra_n: Node3D
@@ -317,6 +318,8 @@ func anim_tick() -> void:
 	elif anda:
 		var v := _vel_real()
 		n = _elegir_marcha(v)
+		if carga and mixamo:  # --- compras --- con la compra en brazos
+			n = "cargar_caja_trotar" if vel >= Escala.VEL_CORRER - 0.1 else "andar_cargando"  # --- compras ---
 		_marcha = n
 		# PIES SIN RESBALAR: la animación va al ritmo de la velocidad REAL del actor (main la multiplica: x0,9 los
 		# vecinos, x1,8 a doble velocidad de juego), dividida por lo que avanza su zancada a ritmo 1
@@ -344,6 +347,8 @@ func anim_tick() -> void:
 		n = act_anim
 	elif bebe:
 		n = "borracho_idle+beber" if borracho() else "beber"
+	elif carga and mixamo:  # --- compras ---
+		n = "cargar_caja_idle"  # --- compras ---
 	else:
 		n = _reposo_de_pie(dt)
 	if not anda:
